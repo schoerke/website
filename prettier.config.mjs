@@ -1,11 +1,16 @@
 /** @type {import('prettier').Config} */
 const config = {
-  singleQuote: true,
-  trailingComma: 'all',
+  plugins: [
+    'prettier-plugin-organize-imports',
+    // NOTE: Must come last
+    'prettier-plugin-tailwindcss',
+  ],
   printWidth: 120,
-  tabWidth: 2,
   semi: false,
-  plugins: ['prettier-plugin-tailwindcss', 'prettier-plugin-organize-imports'],
+  singleQuote: true,
+  tabWidth: 2,
+  tailwindConfig: './tailwind.config.js',
+  trailingComma: 'all',
 }
 
 export default config
