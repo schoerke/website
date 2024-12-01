@@ -27,6 +27,9 @@ importers:
       '@payloadcms/storage-s3':
         specifier: ^3.2.2
         version: 3.2.2(payload@3.2.2(graphql@16.9.0)(monaco-editor@0.52.0)(react-dom@19.0.0-rc-65a56d0e-20241020(react@19.0.0-rc-65a56d0e-20241020))(react@19.0.0-rc-65a56d0e-20241020)(typescript@5.7.2))
+      '@payloadcms/translations':
+        specifier: ^3.2.2
+        version: 3.2.2
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3

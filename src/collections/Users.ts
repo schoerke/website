@@ -1,7 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
 export const Users: CollectionConfig = {
-  slug: 'users',
   admin: {
     useAsTitle: 'email',
   },
@@ -9,12 +8,11 @@ export const Users: CollectionConfig = {
   fields: [
     {
       name: 'name',
-      type: 'text',
       required: true,
+      type: 'text',
     },
     {
       name: 'role',
-      type: 'select',
       options: [
         {
           label: 'Admin',
@@ -25,6 +23,8 @@ export const Users: CollectionConfig = {
           value: 'editor',
         },
       ],
+      type: 'select',
     },
   ],
+  slug: 'users',
 }
