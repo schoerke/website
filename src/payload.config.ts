@@ -8,6 +8,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+import { Employees } from './collections/Employees'
 import { Media } from './collections/Media'
 import { Users } from './collections/Users'
 
@@ -21,7 +22,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Users, Media],
+  collections: [Employees, Users, Media],
   db: mongooseAdapter({
     url: process.env.DATABASE_URI ?? '',
   }),

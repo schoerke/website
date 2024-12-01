@@ -11,6 +11,7 @@ export interface Config {
     users: UserAuthOperations;
   };
   collections: {
+    employees: Employee;
     users: User;
     media: Media;
     'payload-locked-documents': PayloadLockedDocument;
@@ -19,6 +20,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    employees: EmployeesSelect<false> | EmployeesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -59,22 +61,18 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "employees".
  */
-export interface User {
+export interface Employee {
   id: string;
   name: string;
-  role?: ('admin' | 'editor') | null;
+  title: string;
+  email: string;
+  phone: string;
+  mobile: string;
+  image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -97,11 +95,34 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  name: string;
+  role?: ('admin' | 'editor') | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
   id: string;
   document?:
+    | ({
+        relationTo: 'employees';
+        value: string | Employee;
+      } | null)
     | ({
         relationTo: 'users';
         value: string | User;
@@ -151,6 +172,20 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employees_select".
+ */
+export interface EmployeesSelect<T extends boolean = true> {
+  name?: T;
+  title?: T;
+  email?: T;
+  phone?: T;
+  mobile?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
