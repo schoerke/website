@@ -9,24 +9,28 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
+  allConfig: js.configs.all,
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
 })
 
-export default [
+const config = [
   eslintConfigPrettier,
   perfectionist.configs['recommended-alphabetical'],
   ...compat.extends('next/core-web-vitals'),
   {
     languageOptions: {
       ecmaVersion: 5,
-      sourceType: 'script',
-
       parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+        ecmaVersion: 2022,
         project: ['./tsconfig.json'],
+        sourceType: 'module',
         tsconfigRootDir: '/Users/scott/code/production/schoerke/ksschoerke',
       },
+      sourceType: 'script',
     },
   },
   {
@@ -51,3 +55,5 @@ export default [
     ],
   },
 ]
+
+export default config
