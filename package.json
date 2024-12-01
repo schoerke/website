@@ -12,6 +12,7 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
+    "migrate:media": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/migrateWordpressMedia.js",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
   },
@@ -22,7 +23,9 @@
     "@payloadcms/richtext-lexical": "latest",
     "@payloadcms/storage-s3": "^3.2.2",
     "cross-env": "^7.0.3",
+    "fast-xml-parser": "^4.5.0",
     "graphql": "^16.8.1",
+    "mime": "^4.0.4",
     "next": "15.0.3",
     "payload": "latest",
     "react": "19.0.0-rc-65a56d0e-20241020",
