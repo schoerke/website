@@ -11,6 +11,7 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 // Collections
+import { Artists } from './collections/Artists'
 import { Employees } from './collections/Employees'
 import { Media } from './collections/Media'
 import { Users } from './collections/Users'
@@ -25,7 +26,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Employees, Users, Media],
+  collections: [Artists, Employees, Users, Media],
   db: mongooseAdapter({
     url: process.env.DATABASE_URI ?? '',
   }),
@@ -36,7 +37,6 @@ export default buildConfig({
   },
   localization: {
     defaultLocale: 'de',
-    fallback: true,
     locales: [
       {
         code: 'en',

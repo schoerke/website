@@ -11,6 +11,7 @@ export interface Config {
     users: UserAuthOperations;
   };
   collections: {
+    artists: Artist;
     employees: Employee;
     users: User;
     media: Media;
@@ -20,6 +21,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    artists: ArtistsSelect<false> | ArtistsSelect<true>;
     employees: EmployeesSelect<false> | EmployeesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -61,15 +63,26 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "employees".
+ * via the `definition` "artists".
  */
-export interface Employee {
+export interface Artist {
   id: string;
   name: string;
-  title: string;
-  email: string;
-  phone: string;
-  mobile: string;
+  biography: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -92,6 +105,21 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employees".
+ */
+export interface Employee {
+  id: string;
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+  mobile: string;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -119,6 +147,10 @@ export interface User {
 export interface PayloadLockedDocument {
   id: string;
   document?:
+    | ({
+        relationTo: 'artists';
+        value: string | Artist;
+      } | null)
     | ({
         relationTo: 'employees';
         value: string | Employee;
@@ -172,6 +204,17 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "artists_select".
+ */
+export interface ArtistsSelect<T extends boolean = true> {
+  name?: T;
+  biography?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
