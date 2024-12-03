@@ -2,7 +2,7 @@ import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import eslintConfigPrettier from 'eslint-config-prettier'
-import perfectionist from 'eslint-plugin-perfectionist'
+// import perfectionist from 'eslint-plugin-perfectionist'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -16,7 +16,7 @@ const compat = new FlatCompat({
 
 const config = [
   eslintConfigPrettier,
-  perfectionist.configs['recommended-alphabetical'],
+  // perfectionist.configs['recommended-alphabetical'],
   ...compat.extends('next/core-web-vitals'),
   {
     languageOptions: {
