@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
+  slug: 'media',
   access: {
     read: () => true,
   },
@@ -14,6 +15,16 @@ export const Media: CollectionConfig = {
       type: 'text',
     },
   ],
-  slug: 'media',
-  upload: true,
+  upload: {
+    imageSizes: [
+      {
+        name: 'thumbnail',
+        width: 300,
+        height: 300,
+        position: 'center',
+      },
+    ],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    adminThumbnail: 'thumbnail',
+  },
 }

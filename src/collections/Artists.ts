@@ -2,6 +2,10 @@ import type { CollectionConfig } from 'payload'
 
 export const Artists: CollectionConfig = {
   admin: {
+    group: {
+      de: 'Künstler Management',
+      en: 'Artist Management',
+    },
     useAsTitle: 'name',
   },
   fields: [

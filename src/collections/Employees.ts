@@ -1,6 +1,17 @@
 import type { CollectionConfig } from 'payload'
 
 export const Employees: CollectionConfig = {
+  slug: 'employees',
+  labels: {
+    singular: {
+      de: 'Mitarbeiter',
+      en: 'Employee',
+    },
+    plural: {
+      de: 'Mitarbeiter',
+      en: 'Employees',
+    },
+  },
   admin: {
     useAsTitle: 'name',
   },
@@ -52,11 +63,4 @@ export const Employees: CollectionConfig = {
       type: 'upload',
     },
   ],
-  labels: {
-    plural: {
-      de: 'Mitarbeiter',
-      en: 'Employees',
-    },
-  },
-  slug: 'employees',
 }

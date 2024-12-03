@@ -14,6 +14,7 @@ import { fileURLToPath } from 'url'
 import { Artists } from './collections/Artists'
 import { Employees } from './collections/Employees'
 import { Media } from './collections/Media'
+import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
@@ -26,7 +27,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Artists, Employees, Users, Media],
+  collections: [Artists, Employees, Posts, Users, Media],
   db: mongooseAdapter({
     url: process.env.DATABASE_URI ?? '',
   }),
@@ -36,17 +37,17 @@ export default buildConfig({
     supportedLanguages: { de, en },
   },
   localization: {
-    defaultLocale: 'de',
     locales: [
       {
-        code: 'en',
         label: 'English',
+        code: 'en',
       },
       {
-        code: 'de',
         label: 'Deutsch',
+        code: 'de',
       },
     ],
+    defaultLocale: 'de',
   },
   plugins: [
     s3Storage({
@@ -66,6 +67,11 @@ export default buildConfig({
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   sharp,
+  upload: {
+    limits: {
+      fileSize: 5_000_000, // 5 MB in bytes
+    },
+  },
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
