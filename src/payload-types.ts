@@ -85,6 +85,25 @@ export interface Artist {
     };
     [k: string]: unknown;
   };
+  url?: string | null;
+  contactPersons?: (string | Employee)[] | null;
+  image?: (string | null) | Media;
+  biographyPDF?: (string | null) | Media;
+  instrument?: ('piano' | 'conductor') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employees".
+ */
+export interface Employee {
+  id: string;
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+  mobile: string;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -117,21 +136,6 @@ export interface Media {
       filename?: string | null;
     };
   };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "employees".
- */
-export interface Employee {
-  id: string;
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  mobile: string;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -257,7 +261,11 @@ export interface PayloadMigration {
 export interface ArtistsSelect<T extends boolean = true> {
   name?: T;
   biography?: T;
+  url?: T;
+  contactPersons?: T;
   image?: T;
+  biographyPDF?: T;
+  instrument?: T;
   updatedAt?: T;
   createdAt?: T;
 }

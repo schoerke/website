@@ -8,13 +8,6 @@ export const Media: CollectionConfig = {
   admin: {
     group: 'Content Management',
   },
-  fields: [
-    {
-      name: 'alt',
-      required: true,
-      type: 'text',
-    },
-  ],
   upload: {
     imageSizes: [
       {
@@ -24,7 +17,14 @@ export const Media: CollectionConfig = {
         position: 'center',
       },
     ],
-    mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    mimeTypes: ['image/*'],
     adminThumbnail: 'thumbnail',
   },
+  fields: [
+    {
+      name: 'alt',
+      required: true,
+      type: 'text',
+    },
+  ],
 }

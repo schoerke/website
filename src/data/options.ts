@@ -20,3 +20,10 @@ export const categoryOptions = [
   },
   ...artistOptions,
 ]
+
+export const instrumentOptions = [
+  {
+    value: 'piano',
+    label: 'Piano',
+  },
+]
