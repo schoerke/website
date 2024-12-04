@@ -3,8 +3,6 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
-import { de } from '@payloadcms/translations/languages/de'
-import { en } from '@payloadcms/translations/languages/en'
 import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -16,6 +14,12 @@ import { Employees } from './collections/Employees'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
+
+// Translations
+import customDE from '@/i18n/de'
+import customEN from '@/i18n/en'
+import { de } from '@payloadcms/translations/languages/de'
+import { en } from '@payloadcms/translations/languages/en'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -35,6 +39,14 @@ export default buildConfig({
   i18n: {
     fallbackLanguage: 'de',
     supportedLanguages: { de, en },
+    translations: {
+      de: {
+        custom: customDE,
+      },
+      en: {
+        custom: customEN,
+      },
+    },
   },
   localization: {
     locales: [
