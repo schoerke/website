@@ -159,7 +159,23 @@ export interface Post {
     };
     [k: string]: unknown;
   };
-  categories?: ('news' | 'projects' | 'home' | 'maurice-steger')[] | null;
+  categories?:
+    | (
+        | 'news'
+        | 'projects'
+        | 'home'
+        | 'Tzimon Barto'
+        | 'Marc Gruber'
+        | 'Claire Huangci'
+        | 'Ruth Killius'
+        | 'Christian Poltéra'
+        | 'Martin Stadtfeld'
+        | 'Maurice Steger'
+        | 'Mario Venzago'
+        | 'Christian Zacharias'
+        | 'Thomas Zehetmair'
+      )[]
+    | null;
   image?: (string | null) | Media;
   createdBy: string | User;
   updatedAt: string;
