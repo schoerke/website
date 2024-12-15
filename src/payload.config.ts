@@ -16,8 +16,6 @@ import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 
 // Translations
-import customDE from '@/i18n/de'
-import customEN from '@/i18n/en'
 import { de } from '@payloadcms/translations/languages/de'
 import { en } from '@payloadcms/translations/languages/en'
 
@@ -37,26 +35,17 @@ export default buildConfig({
   }),
   editor: lexicalEditor(),
   i18n: {
-    fallbackLanguage: 'de',
     supportedLanguages: { de, en },
-    translations: {
-      de: {
-        custom: customDE,
-      },
-      en: {
-        custom: customEN,
-      },
-    },
   },
   localization: {
     locales: [
       {
-        label: 'English',
-        code: 'en',
+        code: 'de',
+        label: 'Deutsch',
       },
       {
-        label: 'Deutsch',
-        code: 'de',
+        code: 'en',
+        label: 'English',
       },
     ],
     defaultLocale: 'de',

@@ -11,6 +11,7 @@ const artists = [
   'Mario Venzago',
   'Christian Zacharias',
   'Thomas Zehetmair',
+  'Tianwa Yang',
 ]
 
 export const mapArtistOptions = () => {
