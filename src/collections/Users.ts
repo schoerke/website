@@ -1,10 +1,26 @@
 import type { CollectionConfig } from 'payload'
 
+// REFACTOR: Extract access helpers
 export const Users: CollectionConfig = {
+  slug: 'users',
   admin: {
     useAsTitle: 'email',
+    group: 'Organization',
   },
   auth: true,
+  access: {
+    create: () => true,
+    read: () => true,
+    update: ({ req: { user }, id }) => {
+      if (user?.role && user.role === 'admin') {
+        return true
+      }
+      return user?.id === id
+    },
+    delete: ({ req: { user } }) => {
+      return Boolean(user)
+    },
+  },
   fields: [
     {
       name: 'name',
@@ -13,6 +29,14 @@ export const Users: CollectionConfig = {
     },
     {
       name: 'role',
+      access: {
+        update: ({ req: { user } }) => {
+          if (user?.role && user.role === 'admin') {
+            return true
+          }
+          return false
+        },
+      },
       options: [
         {
           label: 'Admin',
@@ -26,5 +50,4 @@ export const Users: CollectionConfig = {
       type: 'select',
     },
   ],
-  slug: 'users',
 }
