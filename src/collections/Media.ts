@@ -26,5 +26,9 @@ export const Media: CollectionConfig = {
       required: true,
       type: 'text',
     },
+    {
+      name: 'credit',
+      type: 'text',
+    },
   ],
 }

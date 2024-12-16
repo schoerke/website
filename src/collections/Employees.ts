@@ -14,6 +14,7 @@ export const Employees: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'name',
+    group: 'Organization',
   },
   fields: [
     {
