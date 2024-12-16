@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url'
 import { Artists } from './collections/Artists'
 import { Employees } from './collections/Employees'
 import { Media } from './collections/Media'
+import { NewsletterContacts } from './collections/NewsletterContacts'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 
@@ -29,7 +30,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Artists, Employees, Posts, Users, Media],
+  collections: [Artists, Employees, Posts, Users, Media, NewsletterContacts],
   db: mongooseAdapter({
     url: process.env.DATABASE_URI ?? '',
   }),
