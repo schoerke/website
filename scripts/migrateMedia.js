@@ -4,7 +4,7 @@ import fs from 'fs'
 import mime from 'mime'
 import { getPayload } from 'payload'
 
-const migrateWordpressMedia = async () => {
+const migrateMedia = async () => {
   console.log('Starting migration')
   const payload = await getPayload({ config })
   const xmlData = fs.readFileSync('./media.xml', 'utf8')
@@ -39,4 +39,4 @@ const migrateWordpressMedia = async () => {
   })
 }
 
-migrateWordpressMedia()
+migrateMedia()
