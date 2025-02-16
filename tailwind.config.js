@@ -20,13 +20,6 @@ const config = {
         sm: '40rem',
         xl: '80rem',
       },
-      extend: {
-        fontFamily: {
-          sans: ['var(--font-inter)'],
-          inter: ['var(--font-inter)'],
-          playfair: ['var(--font-playfair)', 'serif'],
-        },
-      },
     },
   },
 }

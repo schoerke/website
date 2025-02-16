@@ -1,7 +1,7 @@
 const Typography: React.FC = () => {
   const textStyles = [
     {
-      category: 'Headlines',
+      category: 'Headlines - Playfair Display',
       examples: [
         { name: 'H1', className: 'font-playfair text-5xl font-bold', text: 'Main Headline' },
         { name: 'H2', className: 'font-playfair text-4xl font-bold', text: 'Section Headline' },
@@ -10,7 +10,7 @@ const Typography: React.FC = () => {
       ],
     },
     {
-      category: 'Body Text',
+      category: 'Body Text - Inter',
       examples: [
         {
           name: 'Large Body',
@@ -28,6 +28,11 @@ const Typography: React.FC = () => {
           text: 'Smaller body text for less prominent content. The quick brown fox jumps over the lazy dog.',
         },
         {
+          name: 'Small - Italic',
+          className: 'font-inter text-sm italic',
+          text: 'Smaller body text for less prominent content. The quick brown fox jumps over the lazy dog.',
+        },
+        {
           name: 'Caption',
           className: 'font-inter text-xs',
           text: 'Caption text for images or footnotes. The quick brown fox jumps over the lazy dog.',
@@ -42,6 +47,7 @@ const Typography: React.FC = () => {
       <div className="max-w-4xl space-y-12">
         {textStyles.map((section) => (
           <div key={section.category} className="space-y-4">
+            <h2 className="font-playfair text-2xl">{section.category}</h2>
             <div className="space-y-8">
               {section.examples.map((example) => (
                 <div key={example.name} className="space-y-1">

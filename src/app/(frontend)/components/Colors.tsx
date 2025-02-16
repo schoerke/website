@@ -9,7 +9,7 @@ const Colors: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <h1 className="my-4 text-3xl">Brand Colors</h1>
+      <h1 className="font-playfair my-4 text-3xl">Brand Colors</h1>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {brandColors.map(({ name, hex }) => (
           <div
@@ -23,7 +23,7 @@ const Colors: React.FC = () => {
             >
               {name}
             </h3>
-            <p className="font-mono" style={{ color: ['Primary', 'Text'].includes(name) ? '#ffffff' : '#000000' }}>
+            <p className="font-inter" style={{ color: ['Primary', 'Text'].includes(name) ? '#ffffff' : '#000000' }}>
               {hex}
             </p>
           </div>
