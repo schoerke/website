@@ -42,8 +42,8 @@ const Typography: React.FC = () => {
   ]
 
   return (
-    <>
-      <h1 className="font-playfair my-8 text-3xl">Typography</h1>
+    <main>
+      <h1 className="font-playfair my-8 text-5xl font-bold">Typography</h1>
       <div className="max-w-4xl space-y-12">
         {textStyles.map((section) => (
           <div key={section.category} className="space-y-4">
@@ -58,7 +58,7 @@ const Typography: React.FC = () => {
           </div>
         ))}
       </div>
-    </>
+    </main>
   )
 }
 

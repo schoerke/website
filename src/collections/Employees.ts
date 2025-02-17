@@ -63,5 +63,12 @@ export const Employees: CollectionConfig = {
       relationTo: 'media',
       type: 'upload',
     },
+    {
+      name: 'order',
+      type: 'number',
+      admin: {
+        position: 'sidebar',
+      },
+    },
   ],
 }
