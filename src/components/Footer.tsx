@@ -39,6 +39,7 @@ const Footer: React.FC = () => {
                 { text: 'Contact', href: '/contact' },
                 { text: 'Impressum', href: '/impressum' },
                 { text: 'Datenschutz', href: '/datenschutz' },
+                { text: 'Branding', href: '/brand' },
               ].map((link) => (
                 <li key={link.text}>
                   <a href={link.href} className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-800">
@@ -50,7 +51,7 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="order-2 mt-4 md:mt-0 lg:col-start-1 xl:order-4 xl:col-auto">
-            <address className="not-italic">
+            <address className="text-sm not-italic">
               <div className="text-gray-600">
                 <p className="mb-2 text-xl font-bold">
                   Künstlersekretariat <br className="hidden xl:block" />
