@@ -3,6 +3,15 @@ const config = {
   content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}'],
   darkMode: ['selector', '[data-theme="dark"]'],
   theme: {
+    extend: {
+      colors: {
+        'primary-yellow': '#fcc302',
+        'primary-platinum': '#e3e3e3',
+        'primary-silver': '#adb2b4',
+        'primary-black': '#222126',
+        'primary-white': '#ffffff',
+      },
+    },
     container: {
       center: true,
       padding: {

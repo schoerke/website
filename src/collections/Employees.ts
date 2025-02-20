@@ -65,6 +65,7 @@ export const Employees: CollectionConfig = {
     },
     {
       name: 'order',
+      required: true,
       type: 'number',
       admin: {
         position: 'sidebar',

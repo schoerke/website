@@ -6,23 +6,32 @@ import { getPayload } from 'payload'
 // This page will be dynamically rendered
 export const dynamic = 'force-dynamic'
 
-const TeamMemberCard: React.FC<Employee> = ({ name, title, image }) => {
-  const img = image as Media
+const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, mobile }) => {
+  const img = image as Media | undefined
+  const imageUrl = typeof img?.url === 'string' ? img.url : ''
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">
-      <div className="h-72 w-full">
+    <div className="group overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">
+      <div className="relative h-72 w-full">
         <Image
-          src={img?.url}
-          alt={name || 'Team member'}
+          src={imageUrl}
+          alt={name || 'Team Member'}
           width={400}
           height={400}
           className="h-full w-full object-cover"
         />
+        <div className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"></div>
       </div>
       <div className="p-6">
-        <h3 className="font-playfair mb-2 text-2xl font-bold">{name}</h3>
-        <p className="text-primary mb-3 text-sm font-medium">{title}</p>
+        <h3 className="font-playfair mb-2 text-3xl font-bold">{name}</h3>
+        <p className="font-playfair mb-3 text-xl">{title}</p>
+        <p className="mb-2 text-xs">
+          <a href={`mailto:${email}`} className="text-primary-yellow hover:underline">
+            {email}
+          </a>
+        </p>
+        <p className="text-xs">Telefon: {phone}</p>
+        <p className="text-xs">Mobil: {mobile}</p>
       </div>
     </div>
   )

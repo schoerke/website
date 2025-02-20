@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
 
           <div className="order-2 mt-4 md:mt-0 lg:col-start-1 xl:order-4 xl:col-auto">
             <address className="text-sm not-italic">
-              <div className="text-gray-600">
+              <div>
                 <p className="mb-2 text-xl font-bold">
                   Künstlersekretariat <br className="hidden xl:block" />
                   Astrid Schoerke

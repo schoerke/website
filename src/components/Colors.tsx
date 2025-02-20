@@ -1,34 +1,62 @@
+interface ColorProps {
+  name: string
+  hex: string
+}
+
+interface ColorSectionProps {
+  title: string
+  colors: ColorProps[]
+}
+
+const ColorCard: React.FC<ColorProps> = ({ name, hex }) => (
+  <div
+    key={name}
+    style={{ backgroundColor: hex }}
+    className={`flex min-h-[200px] flex-col items-center justify-center rounded-lg p-6 text-center shadow-lg ${
+      name === 'Background' ? 'border border-gray-200' : ''
+    }`}
+  >
+    <h3
+      className="font-playfair mb-2 text-xl font-bold"
+      style={{ color: ['Yellow', 'Raisin Black'].includes(name) ? '#ffffff' : '#000000' }}
+    >
+      {name}
+    </h3>
+    <p className="font-inter" style={{ color: ['Yellow', 'Raisin Black'].includes(name) ? '#ffffff' : '#000000' }}>
+      {hex}
+    </p>
+  </div>
+)
+
+const ColorSection: React.FC<ColorSectionProps> = ({ title, colors }) => (
+  <div className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+    {colors.map((color) => (
+      <ColorCard key={color.name} {...color} />
+    ))}
+  </div>
+)
+
 const Colors: React.FC = () => {
-  const brandColors = [
-    { name: 'Primary', hex: '#FCC302' },
-    { name: 'Secondary', hex: '#E3E3E3' },
-    { name: 'Background', hex: '#FFFFFF' },
-    { name: 'Accent', hex: '#ADB2B4' },
-    { name: 'Text', hex: '#222126' },
+  const primaryColors = [
+    { name: 'Mikado Yellow', hex: '#FCC302' },
+    { name: 'Platinum', hex: '#E3E3E3' },
+    { name: 'Silver', hex: '#ADB2B4' },
+    { name: 'Raisin Black', hex: '#222126' },
+    { name: 'White', hex: '#FFFFFF' },
+  ]
+
+  const secondaryColors = [
+    { name: 'Sage', hex: '#94A187' },
+    { name: 'Dusty Blue', hex: '#7C9CBC' },
+    { name: 'Mauve', hex: '#A67F8E' },
+    { name: 'Warm Gray', hex: '#9A8F97' },
+    { name: 'Olive', hex: '#8B8B6B' },
   ]
 
   return (
     <main>
       <h1 className="font-playfair my-8 text-5xl font-bold">Colors</h1>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {brandColors.map(({ name, hex }) => (
-          <div
-            key={name}
-            style={{ backgroundColor: hex }}
-            className={`flex min-h-[200px] flex-col items-center justify-center rounded-lg p-6 text-center shadow-lg ${name === 'Background' ? 'border border-gray-200' : ''}`}
-          >
-            <h3
-              className="font-playfair mb-2 text-xl font-bold"
-              style={{ color: ['Primary', 'Text'].includes(name) ? '#ffffff' : '#000000' }}
-            >
-              {name}
-            </h3>
-            <p className="font-inter" style={{ color: ['Primary', 'Text'].includes(name) ? '#ffffff' : '#000000' }}>
-              {hex}
-            </p>
-          </div>
-        ))}
-      </div>
+      <ColorSection title="Primary" colors={primaryColors} />
     </main>
   )
 }
