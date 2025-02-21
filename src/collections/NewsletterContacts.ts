@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const NewsletterContacts: CollectionConfig = {
   slug: 'newsletter-contacts',
   admin: {
-    group: 'Newsletter',
+    group: 'Content Management',
     useAsTitle: 'email',
   },
   fields: [

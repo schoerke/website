@@ -16,11 +16,8 @@ export const Artists: CollectionConfig = {
     read: () => true,
   },
   admin: {
-    group: {
-      de: 'Künstler Management',
-      en: 'Artist Management',
-    },
     useAsTitle: 'name',
+    group: 'Organization',
   },
   fields: [
     {
@@ -185,6 +182,13 @@ export const Artists: CollectionConfig = {
               type: 'text',
             },
           ],
+        },
+        {
+          label: {
+            en: 'Projects',
+            de: 'Projekte',
+          },
+          fields: [],
         },
       ],
     },
