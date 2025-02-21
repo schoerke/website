@@ -36,7 +36,7 @@ export default buildConfig({
   }),
   editor: lexicalEditor(),
   i18n: {
-    supportedLanguages: { de, en },
+    translations: { de, en },
   },
   localization: {
     locales: [
