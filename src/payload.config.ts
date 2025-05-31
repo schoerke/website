@@ -12,9 +12,11 @@ import { fileURLToPath } from 'url'
 import { Artists } from './collections/Artists'
 import { Employees } from './collections/Employees'
 import { Media } from './collections/Media'
-import { NewsletterContacts } from './collections/NewsletterContacts'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
+
+// v2: Newsletter Contact Management
+// import { NewsletterContacts } from './collections/NewsletterContacts'
 
 // Translations
 import { de } from '@payloadcms/translations/languages/de'
@@ -30,13 +32,13 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Artists, Employees, Posts, Users, Media, NewsletterContacts],
+  collections: [Artists, Employees, Posts, Users, Media],
   db: mongooseAdapter({
     url: process.env.DATABASE_URI ?? '',
   }),
   editor: lexicalEditor(),
   i18n: {
-    translations: { de, en },
+    supportedLanguages: { de, en },
   },
   localization: {
     locales: [
