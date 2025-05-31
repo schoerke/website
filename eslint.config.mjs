@@ -28,7 +28,7 @@ const config = [
         ecmaVersion: 2022,
         project: ['./tsconfig.json'],
         sourceType: 'module',
-        tsconfigRootDir: '/Users/scott/code/production/schoerke/ksschoerke',
+        tsconfigRootDir: __dirname,
       },
       sourceType: 'script',
     },
