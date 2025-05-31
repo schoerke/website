@@ -21,6 +21,8 @@ import { Users } from './collections/Users'
 // Translations
 import { de } from '@payloadcms/translations/languages/de'
 import { en } from '@payloadcms/translations/languages/en'
+import customDE from './i18n/de'
+import customEN from './i18n/en'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -39,6 +41,14 @@ export default buildConfig({
   editor: lexicalEditor(),
   i18n: {
     supportedLanguages: { de, en },
+    translations: {
+      de: {
+        custom: customDE,
+      },
+      en: {
+        custom: customEN,
+      },
+    },
   },
   localization: {
     locales: [

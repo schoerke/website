@@ -1,4 +1,4 @@
-const deCustom = {
+const customDE = {
   cello: 'Cello',
   conductor: 'Dirigent',
   horn: 'Horn',
@@ -7,4 +7,4 @@ const deCustom = {
   violin: 'Geige',
 }
 
-export default deCustom
+export default customDE
