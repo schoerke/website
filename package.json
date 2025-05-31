@@ -16,7 +16,7 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
   },
-  "packageManager": "pnpm@10.4.0",
+  "packageManager": "pnpm@10.11.0",
   "dependencies": {
     "@payloadcms/db-mongodb": "3.39.1",
     "@payloadcms/next": "3.39.1",

@@ -1,18 +1,17 @@
-import { Employee, Media } from '@/payload-types'
+import { Employee } from '@/payload-types'
 import config from '@payload-config'
-import Image from 'next/image'
 import { getPayload } from 'payload'
 
 // This page will be dynamically rendered
 export const dynamic = 'force-dynamic'
 
-const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, mobile }) => {
-  const img = image as Media | undefined
-  const imageUrl = typeof img?.url === 'string' ? img.url : ''
+const TeamMemberCard: React.FC<Employee> = ({ name, title, email, phone, mobile }) => {
+  // const img = image as Media | undefined
+  // const imageUrl = typeof img?.url === 'string' ? img.url : ''
 
   return (
     <div className="group overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">
-      <div className="relative h-72 w-full">
+      {/* <div className="relative h-72 w-full">
         <Image
           src={imageUrl}
           alt={name || 'Team Member'}
@@ -21,7 +20,7 @@ const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, 
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"></div>
-      </div>
+      </div> */}
       <div className="p-6">
         <h3 className="font-playfair mb-2 text-3xl font-bold">{name}</h3>
         <p className="font-playfair mb-3 text-xl">{title}</p>

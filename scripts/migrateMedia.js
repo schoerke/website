@@ -27,7 +27,7 @@ const migrateMedia = async () => {
     await payload.create({
       collection: 'media',
       data: {
-        alt: mediaItem.title ?? 'Missing alt text',
+        alt: mediaItem.alt ?? 'MISSING ALT TEXT',
       },
       file: {
         data: buffer,
