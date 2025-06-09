@@ -7,6 +7,7 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
+import { getServerSideURL } from './utilities/getURL'
 
 // Collections
 import { Artists } from './collections/Artists'
@@ -38,6 +39,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI ?? '',
   }),
+  cors: [getServerSideURL()].filter(Boolean),
   editor: lexicalEditor(),
   i18n: {
     supportedLanguages: { de, en },
