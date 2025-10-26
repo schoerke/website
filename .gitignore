@@ -41,7 +41,3 @@ next-env.d.ts
 .env
 
 /media
-
-docs/**
-!docs/adr/
-!docs/adr/**
