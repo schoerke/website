@@ -7,6 +7,14 @@ const config = {
   tabWidth: 2,
   tailwindConfig: './tailwind.config.js',
   trailingComma: 'all',
+  overrides: [
+    {
+      files: '*.md',
+      options: {
+        proseWrap: 'always',
+      },
+    },
+  ],
 }
 
 export default config
