@@ -1,39 +1,26 @@
-import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import eslintConfigPrettier from 'eslint-config-prettier'
-// import perfectionist from 'eslint-plugin-perfectionist'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const compat = new FlatCompat({
-  allConfig: js.configs.all,
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-})
 
-const config = [
+export default [
+  js.configs.recommended,
   eslintConfigPrettier,
-  // perfectionist.configs['recommended-alphabetical'],
-  ...compat.extends('next/core-web-vitals'),
   {
     languageOptions: {
-      ecmaVersion: 5,
+      ecmaVersion: 2022,
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-        ecmaVersion: 2022,
+        ecmaFeatures: { jsx: true },
         project: ['./tsconfig.json'],
         sourceType: 'module',
         tsconfigRootDir: __dirname,
       },
-      sourceType: 'script',
+      sourceType: 'module',
     },
-  },
-  {
     plugins: {
       'typescript-eslint': typescriptEslint,
     },
@@ -55,5 +42,3 @@ const config = [
     ],
   },
 ]
-
-export default config
