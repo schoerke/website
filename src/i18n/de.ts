@@ -1,10 +1,15 @@
-const customDE = {
-  cello: 'Cello',
-  conductor: 'Dirigent',
-  horn: 'Horn',
-  piano: 'Klavier',
-  viola: 'Bratsche',
-  violin: 'Geige',
+import { de as defaultDE } from '@payloadcms/translations/languages/de'
+
+const de = {
+  ...defaultDE,
+  custom: {
+    cello: 'Cello',
+    conductor: 'Dirigent',
+    horn: 'Horn',
+    piano: 'Klavier',
+    viola: 'Bratsche',
+    violin: 'Geige',
+  },
 }
 
-export default customDE
+export default de

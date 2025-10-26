@@ -1,13 +1,13 @@
-// storage-adapter-import-placeholder
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { s3Storage } from '@payloadcms/storage-s3'
 import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
-import { getServerSideURL } from './utilities/getURL'
+
+// Adapters & Plugins
+import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 // Collections
 import { Artists } from './collections/Artists'
@@ -20,10 +20,8 @@ import { Users } from './collections/Users'
 // import { NewsletterContacts } from './collections/NewsletterContacts'
 
 // Translations
-import { de } from '@payloadcms/translations/languages/de'
-import { en } from '@payloadcms/translations/languages/en'
-import customDE from './i18n/de'
-import customEN from './i18n/en'
+import de from './i18n/de'
+import en from './i18n/en'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -36,21 +34,16 @@ export default buildConfig({
     user: Users.slug,
   },
   collections: [Artists, Employees, Posts, Users, Media],
-  db: mongooseAdapter({
-    url: process.env.DATABASE_URI ?? '',
+  db: sqliteAdapter({
+    client: {
+      url: process.env.DATABASE_URI!,
+      authToken: process.env.DATABASE_AUTH_TOKEN!,
+    },
   }),
-  cors: [getServerSideURL()].filter(Boolean),
   editor: lexicalEditor(),
   i18n: {
     supportedLanguages: { de, en },
-    translations: {
-      de: {
-        custom: customDE,
-      },
-      en: {
-        custom: customEN,
-      },
-    },
+    translations: { de, en },
   },
   localization: {
     locales: [
