@@ -6,10 +6,66 @@
  * and re-run `payload generate:types` to regenerate this file.
  */
 
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Brisbane'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
+
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
+  blocks: {};
   collections: {
     artists: Artist;
     employees: Employee;
@@ -32,11 +88,11 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   globals: {};
   globalsSelect: {};
-  locale: 'en' | 'de';
+  locale: 'de' | 'en';
   user: User & {
     collection: 'users';
   };
@@ -68,13 +124,16 @@ export interface UserAuthOperations {
  * via the `definition` "artists".
  */
 export interface Artist {
-  id: string;
+  id: number;
+  contactPersons?: (number | Employee)[] | null;
+  image?: (number | null) | Media;
   name: string;
+  instrument: ('piano' | 'conductor' | 'violin')[];
   biography: {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -85,11 +144,18 @@ export interface Artist {
     };
     [k: string]: unknown;
   };
-  url?: string | null;
-  contactPersons?: (string | Employee)[] | null;
-  image?: (string | null) | Media;
-  biographyPDF?: (string | null) | Media;
-  instrument?: ('piano' | 'conductor') | null;
+  downloads?: {
+    biographyPDF?: (number | null) | Media;
+    galleryZIP?: (number | null) | Media;
+  };
+  youtube?: {};
+  homepageURL?: string | null;
+  externalCalendarURL?: string | null;
+  facebookURL?: string | null;
+  instagramURL?: string | null;
+  twitterURL?: string | null;
+  youtubeURL?: string | null;
+  spotifyURL?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -98,13 +164,14 @@ export interface Artist {
  * via the `definition` "employees".
  */
 export interface Employee {
-  id: string;
+  id: number;
   name: string;
   title: string;
   email: string;
   phone: string;
   mobile: string;
-  image?: (string | null) | Media;
+  image: number | Media;
+  order: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -113,8 +180,9 @@ export interface Employee {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt: string;
+  credit?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -142,13 +210,13 @@ export interface Media {
  * via the `definition` "posts".
  */
 export interface Post {
-  id: string;
+  id: number;
   title: string;
   content: {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -164,20 +232,21 @@ export interface Post {
         | 'news'
         | 'projects'
         | 'home'
-        | 'Tzimon Barto'
-        | 'Marc Gruber'
-        | 'Claire Huangci'
-        | 'Ruth Killius'
-        | 'Christian Poltéra'
-        | 'Martin Stadtfeld'
-        | 'Maurice Steger'
-        | 'Mario Venzago'
-        | 'Christian Zacharias'
-        | 'Thomas Zehetmair'
+        | 'tzimon-barto'
+        | 'marc-gruber'
+        | 'claire-huangci'
+        | 'ruth-killius'
+        | 'christian-poltéra'
+        | 'martin-stadtfeld'
+        | 'maurice-steger'
+        | 'mario-venzago'
+        | 'christian-zacharias'
+        | 'thomas-zehetmair'
+        | 'tianwa-yang'
       )[]
     | null;
-  image?: (string | null) | Media;
-  createdBy: string | User;
+  image?: (number | null) | Media;
+  createdBy: number | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -187,7 +256,7 @@ export interface Post {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   name: string;
   role?: ('admin' | 'editor') | null;
   updatedAt: string;
@@ -199,6 +268,13 @@ export interface User {
   hash?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
   password?: string | null;
 }
 /**
@@ -206,32 +282,32 @@ export interface User {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'artists';
-        value: string | Artist;
+        value: number | Artist;
       } | null)
     | ({
         relationTo: 'employees';
-        value: string | Employee;
+        value: number | Employee;
       } | null)
     | ({
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
       } | null)
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -241,10 +317,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -264,7 +340,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -275,13 +351,25 @@ export interface PayloadMigration {
  * via the `definition` "artists_select".
  */
 export interface ArtistsSelect<T extends boolean = true> {
-  name?: T;
-  biography?: T;
-  url?: T;
   contactPersons?: T;
   image?: T;
-  biographyPDF?: T;
+  name?: T;
   instrument?: T;
+  biography?: T;
+  downloads?:
+    | T
+    | {
+        biographyPDF?: T;
+        galleryZIP?: T;
+      };
+  youtube?: T | {};
+  homepageURL?: T;
+  externalCalendarURL?: T;
+  facebookURL?: T;
+  instagramURL?: T;
+  twitterURL?: T;
+  youtubeURL?: T;
+  spotifyURL?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -296,6 +384,7 @@ export interface EmployeesSelect<T extends boolean = true> {
   phone?: T;
   mobile?: T;
   image?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -329,6 +418,13 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -336,6 +432,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  credit?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

@@ -1,4 +1,4 @@
-import { kebabCase } from 'lodash'
+const kebabCase = (str: string) => str.toLowerCase().replace(/\s+/g, '-')
 
 const artists = [
   'Tzimon Barto',
