@@ -52,42 +52,50 @@ async function run() {
     console.log('Using default media ID:', defaultMediaId)
 
     for (const artistData of artistsData.artists) {
-      // Create artist with the default media reference
-      const artist = {
+      // 1. Create artist in default locale (English)
+      const artistEn = {
         ...artistData,
         image: defaultMediaId,
         biography: {
           root: {
             type: 'root',
-            children: [
-              {
-                type: 'paragraph',
-                children: [
-                  {
-                    text: artistData.biography.en[0].children[0].text,
-                    type: 'text',
-                    version: 1,
-                  },
-                ],
-                version: 1,
-              },
-            ],
-            direction: 'ltr' as const,
-            format: '' as const,
+            children: artistData.biography.en,
+            direction: 'ltr',
+            format: '',
             indent: 0,
             version: 1,
           },
-          en: artistData.biography.en,
-          de: artistData.biography.de,
         },
       } as any
 
-      await payload.create({
+      const created = await payload.create({
         collection: 'artists',
-        data: artist,
+        data: artistEn,
       })
 
-      console.log(`Created artist: ${artistData.name}`)
+      console.log(`Created artist: ${artistData.name} (en)`)
+
+      // 2. Update artist for German locale if biography.de exists
+      if (artistData.biography.de) {
+        await payload.update({
+          collection: 'artists',
+          id: created.id,
+          data: {
+            biography: {
+              root: {
+                type: 'root',
+                children: artistData.biography.de,
+                direction: 'ltr',
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+          locale: 'de',
+        })
+        console.log(`Updated artist: ${artistData.name} (de)`)
+      }
     }
   } catch (error) {
     console.error(JSON.stringify(error))

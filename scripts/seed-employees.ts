@@ -1,35 +1,17 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import type { Employee } from '../src/payload-types.ts'
+import { getEmployeeByName, getEmployeeImageId } from '../src/services/employee.ts'
 import { createDefaultImage } from './utils/createDefaultImage.ts'
 
 import employeesData from './seeds/employees.json'
 
-async function getEmployeeImageId(payload: any, employee: Employee) {
+async function getImageId(payload: any, employee: Employee) {
   // Try to find existing media first
-  const employeeImage = await payload.find({
-    collection: 'media',
-    where: {
-      alt: { equals: employee.name },
-    },
-    limit: 1,
-  })
+  const employeeImageId = await getEmployeeImageId(employee)
 
-  if (employeeImage.totalDocs > 0) {
-    return employeeImage.docs[0].id
-  }
-
-  // Otherwise use a default image
-  const defaultAvatar = await payload.find({
-    where: {
-      filename: { equals: 'default-avatar.webp' },
-    },
-    collection: 'media',
-    limit: 1,
-  })
-
-  if (defaultAvatar.totalDocs > 0) {
-    return defaultAvatar.docs[0].id
+  if (employeeImageId) {
+    return employeeImageId
   }
 
   // If no default image exists, create one
@@ -42,16 +24,10 @@ async function run() {
     const payload = await getPayload({ config })
 
     for (const employeeData of employeesData.employees) {
-      const imageId = await getEmployeeImageId(payload, employeeData as Employee)
+      const imageId = await getImageId(payload, employeeData as Employee)
 
       // Check if employee already exists
-      const existingEmployee = await payload.find({
-        collection: 'employees',
-        where: {
-          name: { equals: employeeData.name },
-        },
-        limit: 1,
-      })
+      const existingEmployee = await getEmployeeByName(employeeData.name)
 
       if (existingEmployee.totalDocs > 0) {
         console.log(`Employee already exists: ${employeeData.name}`)

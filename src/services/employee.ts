@@ -1,0 +1,58 @@
+import config from '@payload-config'
+import { getPayload } from 'payload'
+import type { Employee } from '../payload-types'
+
+const payload = await getPayload({ config })
+
+export const getEmployees = async () => {
+  return await payload.find({
+    collection: 'employees',
+  })
+}
+
+export const getEmployeeById = async (id: string) => {
+  return await payload.findByID({
+    collection: 'artists',
+    id: id,
+  })
+}
+
+export const getEmployeeByName = async (name: string) => {
+  return await payload.find({
+    collection: 'employees',
+    where: {
+      name: { equals: name },
+    },
+    limit: 1,
+  })
+}
+
+export async function getEmployeeImageId(employee: Employee) {
+  // Try to find existing media first
+  const employeeImage = await payload.find({
+    collection: 'media',
+    where: {
+      alt: { equals: employee.name },
+    },
+    limit: 1,
+  })
+
+  if (employeeImage.totalDocs > 0) {
+    return employeeImage.docs[0].id
+  }
+
+  // Otherwise use a default image
+  const defaultAvatar = await payload.find({
+    where: {
+      filename: { equals: 'default-avatar.webp' },
+    },
+    collection: 'media',
+    limit: 1,
+  })
+
+  if (defaultAvatar.totalDocs > 0) {
+    return defaultAvatar.docs[0].id
+  }
+
+  return null
+}
