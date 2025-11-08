@@ -60,7 +60,7 @@ export const Employees: CollectionConfig = {
         position: 'sidebar',
       },
       name: 'image',
-      required: true,
+      // required: true,
       relationTo: 'media',
       type: 'upload',
     },

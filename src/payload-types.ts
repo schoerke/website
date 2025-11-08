@@ -170,7 +170,7 @@ export interface Employee {
   email: string;
   phone: string;
   mobile: string;
-  image: number | Media;
+  image?: (number | null) | Media;
   order: number;
   updatedAt: string;
   createdAt: string;

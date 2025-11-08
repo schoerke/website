@@ -2,9 +2,12 @@
 
 ## Overview & Goals
 
-The Artist List page showcases all artists from Payload CMS, allowing users to browse, filter by instrument, and view artist details. The page is optimized for SEO, performance, and accessibility, and follows the existing TeamPage grid design.
+The Artist List page showcases all artists from Payload CMS, allowing users to browse, filter by instrument, and view
+artist details. The page is optimized for SEO, performance, and accessibility, and follows the existing TeamPage grid
+design.
 
 **Key features:**
+
 - Image slider of all artists (auto-advancing, clickable)
 - Instrument filter tabs (single-select, unselect to show all)
 - Responsive artist grid (image, name, instrument)
@@ -14,7 +17,8 @@ The Artist List page showcases all artists from Payload CMS, allowing users to b
 
 ## Data Fetching
 
-- Use Next.js `getServerSideProps` (or `getStaticProps` if content is static) to fetch all artists and their instruments from Payload CMS using the Payload Local API.
+- Use Next.js `getServerSideProps` (or `getStaticProps` if content is static) to fetch all artists and their instruments
+  from Payload CMS using the Payload Local API.
 - Fetch only required fields: name, image, instrument, slug/id.
 - Extract unique instruments for filter tabs.
 
@@ -63,4 +67,3 @@ The Artist List page showcases all artists from Payload CMS, allowing users to b
 ## Design Reference
 
 - The artist grid should visually match the existing TeamPage grid for consistency.
-

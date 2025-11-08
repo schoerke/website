@@ -59,19 +59,22 @@ export default buildConfig({
     defaultLocale: 'de',
   },
   plugins: [
+    // Cloudflare R2
     s3Storage({
-      bucket: process.env.AWS_S3_BUCKET ?? '',
+      bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
       collections: {
         media: true,
       },
       config: {
         credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? '',
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? '',
+          accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
+          secretAccessKey: process.env.CLOUDFLARE_SECRET ?? '',
         },
-        region: process.env.AWS_REGION,
+        region: 'auto',
+        endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
       },
     }),
+
     payloadCloudPlugin(),
   ],
   secret: process.env.PAYLOAD_SECRET || '',

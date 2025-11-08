@@ -8,7 +8,17 @@ export const dynamic = 'force-dynamic'
 
 const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, mobile }) => {
   const img = image as Media | undefined
-  const imageUrl = typeof img?.url === 'string' ? img.url : ''
+
+  const R2_PUBLIC_ENDPOINT = process.env.NEXT_PUBLIC_S3_HOSTNAME
+
+  const getImageUrl = (img: Media | undefined) => {
+    if (!img) return '/placeholder.jpg'
+    if (img.url && img.url.startsWith('http')) return img.url
+    if (img.filename) return `${R2_PUBLIC_ENDPOINT}/${img.filename}`
+    return '/placeholder.jpg'
+  }
+
+  const imageUrl = getImageUrl(img)
 
   return (
     <div className="group overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">
