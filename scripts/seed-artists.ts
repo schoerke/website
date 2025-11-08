@@ -6,7 +6,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import artistsData from '../data/seeds/artists.json'
+import artistsData from './seeds/artists.json'
 
 async function getDefaultMedia(payload: any) {
   // Try to find existing media first

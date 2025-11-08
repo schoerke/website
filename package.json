@@ -15,7 +15,8 @@
     "migrate:media": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/migrateWordpressMedia.js",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "seed:artists": "payload run ./scripts/seed-artists.ts"
+    "seed:artists": "payload run ./scripts/seed-artists.ts",
+    "seed:employees": "payload run ./scripts/seed-employees.ts"
   },
   "packageManager": "pnpm@10.19.0",
   "dependencies": {
