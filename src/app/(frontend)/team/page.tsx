@@ -19,6 +19,7 @@ const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, 
           width={400}
           height={400}
           className="h-full w-full object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"></div>
       </div>

@@ -30,3 +30,7 @@
 ## Search
 
 - [ ] Setup [Search Plugin](https://payloadcms.com/docs/plugins/search)
+
+## Footer
+
+- [ ] Move icon to local asset
