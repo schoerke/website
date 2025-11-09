@@ -1,5 +1,7 @@
 # Artist List Page Design
 
+Status: IMPLEMENTED
+
 ## Overview & Goals
 
 The Artist List page showcases all artists from Payload CMS, allowing users to browse, filter by instrument, and view

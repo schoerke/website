@@ -1,9 +1,7 @@
 [
   {
     "id": 4,
-    "instrument": [
-      "piano"
-    ],
+    "instrument": ["piano"],
     "image": null,
     "name": "Tzimon Barto",
     "contactPersons": [],
@@ -55,9 +53,7 @@
   },
   {
     "id": 3,
-    "instrument": [
-      "violin"
-    ],
+    "instrument": ["violin"],
     "image": null,
     "name": "Tianwa Yang",
     "contactPersons": [],
@@ -120,9 +116,7 @@
   },
   {
     "id": 2,
-    "instrument": [
-      "conductor"
-    ],
+    "instrument": ["conductor"],
     "image": null,
     "name": "Mario Venzago",
     "contactPersons": [],
@@ -185,10 +179,7 @@
   },
   {
     "id": 1,
-    "instrument": [
-      "conductor",
-      "piano"
-    ],
+    "instrument": ["conductor", "piano"],
     "image": null,
     "name": "Christian Zacharias",
     "contactPersons": [

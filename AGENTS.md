@@ -21,6 +21,10 @@
     - Tailwind CSS plugin enabled
 - **Imports:** Use ES module syntax; imports are auto-organized
 - **Types:** Use TypeScript for all new code
+- **React Components:** Always define components using the following pattern:
+  - `const ComponentName: React.FC<Props> = (props) => { ... }`
+  - Place `export default ComponentName` at the end of the file.
+  - Use named types/interfaces for props (e.g., `ComponentNameProps`).
 - **Naming:** Use descriptive, camelCase for variables/functions, PascalCase for types/components
 - **Error Handling:** Prefer explicit error handling; avoid silent failures
 - **Linting:** Follows Next.js, Prettier, and TypeScript ESLint rules
@@ -31,5 +35,6 @@ _This file is for agentic coding agents. Update if project conventions change._
 ## Library Installation Policy
 
 - **NEVER install new libraries or dependencies without explicit user confirmation.**
-- **ALWAYS ask for user approval before running any package manager command (e.g., pnpm, npm, yarn, pip, etc.) that would add, remove, or update dependencies.**
+- **ALWAYS ask for user approval before running any package manager command (e.g., pnpm, npm, yarn, pip, etc.) that
+  would add, remove, or update dependencies.**
 - If a new library is required for a solution, clearly explain why and request permission before proceeding.

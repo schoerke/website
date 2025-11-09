@@ -12,3 +12,16 @@ export const getArtistById = async (payload: Payload, id: string) => {
     id: id,
   })
 }
+
+// Fetch only the fields needed for the artist list page
+export const getArtistListData = async (payload: Payload) => {
+  return await payload.find({
+    collection: 'artists',
+    select: {
+      name: true,
+      image: true,
+      instrument: true,
+      id: true,
+    },
+  })
+}
