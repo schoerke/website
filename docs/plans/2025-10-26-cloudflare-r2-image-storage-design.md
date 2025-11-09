@@ -75,6 +75,8 @@ if you want to use your own custom domain (e.g., `img.yoursite.com`) with a Work
 subdomain through Cloudflare. This does not affect your main site hosting (e.g., on Vercel); only the DNS for the
 subdomain used by the Worker needs to be on Cloudflare.
 
+## 4. Ongoing Backups (R2 → S3 via GitHub Actions)
+
 - **Backup Script:** Node.js or rclone script to sync new/changed files from R2 to S3.
 - **Scheduling:** GitHub Actions workflow runs nightly (or as needed).
 - **Credentials:** Store R2 and S3 keys as GitHub Secrets.
