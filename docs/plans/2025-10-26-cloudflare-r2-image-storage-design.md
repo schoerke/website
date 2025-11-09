@@ -75,6 +75,14 @@ if you want to use your own custom domain (e.g., `img.yoursite.com`) with a Work
 subdomain through Cloudflare. This does not affect your main site hosting (e.g., on Vercel); only the DNS for the
 subdomain used by the Worker needs to be on Cloudflare.
 
+**DNS Hosting Requirement for R2 Custom Domain:**  
+To use a Cloudflare R2 Custom Domain (e.g., `media.ks-schoerke.de`), the DNS for your domain (`ks-schoerke.de`) must be
+managed by Cloudflare. This allows you to point your main site (`ks-schoerke.de` and `www.ks-schoerke.de`) to Vercel
+using A/CNAME records, and your media subdomain (`media.ks-schoerke.de`) to R2 using a CNAME as instructed by
+Cloudflare.  
+You cannot use R2 Custom Domain for a subdomain if your DNS is managed elsewhere (e.g., at your registrar or Vercel).  
+No Worker is required for this setup.
+
 ## 4. Ongoing Backups (R2 → S3 via GitHub Actions)
 
 - **Backup Script:** Node.js or rclone script to sync new/changed files from R2 to S3.
