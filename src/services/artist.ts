@@ -1,15 +1,12 @@
-import config from '@payload-config'
-import { getPayload } from 'payload'
+import type { Payload } from 'payload'
 
-const payload = await getPayload({ config })
-
-export const getArtists = async () => {
+export const getArtists = async (payload: Payload) => {
   return await payload.find({
     collection: 'artists',
   })
 }
 
-export const getArtistById = async (id: string) => {
+export const getArtistById = async (payload: Payload, id: string) => {
   return await payload.findByID({
     collection: 'artists',
     id: id,

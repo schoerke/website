@@ -1,0 +1,519 @@
+[
+  {
+    "id": 4,
+    "instrument": [
+      "piano"
+    ],
+    "image": null,
+    "name": "Tzimon Barto",
+    "contactPersons": [],
+    "biography": {
+      "root": {
+        "children": [
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "German Bio",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          }
+        ],
+        "direction": null,
+        "format": "",
+        "indent": 0,
+        "type": "root",
+        "version": 1
+      }
+    },
+    "downloads": {
+      "biographyPDF": null,
+      "galleryZIP": null
+    },
+    "youtubeLinks": [],
+    "homepageURL": null,
+    "externalCalendarURL": null,
+    "facebookURL": null,
+    "instagramURL": null,
+    "twitterURL": null,
+    "youtubeURL": null,
+    "spotifyURL": null,
+    "updatedAt": "2025-11-08T21:10:30.895Z",
+    "createdAt": "2025-11-08T21:10:15.726Z"
+  },
+  {
+    "id": 3,
+    "instrument": [
+      "violin"
+    ],
+    "image": null,
+    "name": "Tianwa Yang",
+    "contactPersons": [],
+    "biography": {
+      "root": {
+        "type": "root",
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "text": "With great sovereignty, uncompromising musical understanding and ravishing interpretations, Tianwa Yang has earned a place among the ranks of the leading violinists. The works of Wolfgang Rihm and Jörg Widmann as well as her work with contemporary composers are as close to her heart as the “classics” of J. S. Bach, Beethoven, Brahms, Prokofiev, R. Schumann and Tchaikovsky. Her profound preoccupation with music and her authentic playing, which is both at ease and electrifying, have been honored with numerous prizes. In 2022 she received the OPUS KLASSIK as “Instrumentalist of the Year”.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "version": 1
+          }
+        ],
+        "direction": "ltr",
+        "format": "",
+        "indent": 0,
+        "version": 1
+      },
+      "en": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "With great sovereignty, uncompromising musical understanding and ravishing interpretations, Tianwa Yang has earned a place among the ranks of the leading violinists. The works of Wolfgang Rihm and Jörg Widmann as well as her work with contemporary composers are as close to her heart as the “classics” of J. S. Bach, Beethoven, Brahms, Prokofiev, R. Schumann and Tchaikovsky. Her profound preoccupation with music and her authentic playing, which is both at ease and electrifying, have been honored with numerous prizes. In 2022 she received the OPUS KLASSIK as “Instrumentalist of the Year”."
+            }
+          ]
+        }
+      ],
+      "de": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Mit großer Souveränität, kompromisslosem Musikverstand und hinreißenden Interpretationen hat Tianwa Yang sich einen Platz in der Riege der maßgeblichen Geiger:innen erspielt. Die Werke von Wolfgang Rihm und Jörg Widmann und die Arbeit mit zeitgenössischen Komponist:innen liegen ihr dabei ebenso am Herzen wie die “Klassiker” von J. S. Bach, Beethoven, Brahms, Prokofjew, R. Schumann und Tschaikowski. Ihre tiefgründige Beschäftigung mit der Musik und ihr authentisches, gleichermaßen in sich ruhendes wie elektrisierendes Spiel, wurde mit zahlreichen Preisen ausgezeichnet, u.a. mit dem OPUS KLASSIK als “Instrumentalistin des Jahres” 2022."
+            }
+          ]
+        }
+      ]
+    },
+    "downloads": {
+      "biographyPDF": null,
+      "galleryZIP": null
+    },
+    "youtubeLinks": [],
+    "homepageURL": "https://tianwayang.com",
+    "externalCalendarURL": "",
+    "facebookURL": "",
+    "instagramURL": "",
+    "twitterURL": "",
+    "youtubeURL": "",
+    "spotifyURL": "",
+    "updatedAt": "2025-11-08T15:40:12.668Z",
+    "createdAt": "2025-11-08T15:40:12.667Z"
+  },
+  {
+    "id": 2,
+    "instrument": [
+      "conductor"
+    ],
+    "image": null,
+    "name": "Mario Venzago",
+    "contactPersons": [],
+    "biography": {
+      "root": {
+        "type": "root",
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "text": "Conducting is the greatest fulfillment of Mario Venzago’s life – he has wanted to do it from an early age on. Imagination and a willingness to take risks characterize his very own style and have allowed him to conduct concerts, recordings, operas and increasingly so, his own compositions around the world for some years now. ",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "version": 1
+          }
+        ],
+        "direction": "ltr",
+        "format": "",
+        "indent": 0,
+        "version": 1
+      },
+      "en": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Conducting is the greatest fulfillment of Mario Venzago’s life – he has wanted to do it from an early age on. Imagination and a willingness to take risks characterize his very own style and have allowed him to conduct concerts, recordings, operas and increasingly so, his own compositions around the world for some years now. "
+            }
+          ]
+        }
+      ],
+      "de": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Dirigieren ist für Mario Venzago Lebenserfüllung – er wollte es schon von klein auf. Fantasie und Risikobereitschaft zeichnen seinen ganz eigenen Stil aus und lassen ihn nun bereits seit vielen Jahren rund um die Welt Konzert, Aufnahmen, Opern und seit einigen Jahren auch verstärkt seine eigenen Kompositionen gestalten."
+            }
+          ]
+        }
+      ]
+    },
+    "downloads": {
+      "biographyPDF": null,
+      "galleryZIP": null
+    },
+    "youtubeLinks": [],
+    "homepageURL": "https://mariovenzago.com",
+    "externalCalendarURL": "",
+    "facebookURL": "",
+    "instagramURL": "",
+    "twitterURL": "",
+    "youtubeURL": "",
+    "spotifyURL": "",
+    "updatedAt": "2025-11-08T15:40:12.231Z",
+    "createdAt": "2025-11-08T15:40:12.230Z"
+  },
+  {
+    "id": 1,
+    "instrument": [
+      "conductor",
+      "piano"
+    ],
+    "image": null,
+    "name": "Christian Zacharias",
+    "contactPersons": [
+      {
+        "id": 1,
+        "name": "Eva Wagner",
+        "title": "Managing Director",
+        "email": "e.wagner@ks-schoerke.de",
+        "phone": "+49 (0)611-50 58 90 51",
+        "mobile": "+49 (0)172 821 32 58",
+        "image": {
+          "id": 1,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-08T20:11:14.955Z",
+          "createdAt": "2025-11-08T20:11:14.955Z",
+          "url": "/api/media/file/eva-wagner.jpg",
+          "thumbnailURL": "/api/media/file/eva-wagner-300x300.jpg",
+          "filename": "eva-wagner.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 10730,
+          "width": 304,
+          "height": 304,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/eva-wagner-300x300.jpg",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/jpeg",
+              "filesize": 10609,
+              "filename": "eva-wagner-300x300.jpg"
+            }
+          }
+        },
+        "order": 1,
+        "updatedAt": "2025-11-08T20:41:20.578Z",
+        "createdAt": "2025-11-08T20:41:20.577Z"
+      },
+      {
+        "id": 4,
+        "name": "Justine Stemmelin",
+        "title": "Assistant Artist Manager",
+        "email": "j.stemmelin@ks-schoerke.de",
+        "phone": "+49 (0)611-50 58 90 53",
+        "mobile": "+49 (0)162 98 99 741",
+        "image": {
+          "id": 2,
+          "alt": "Default Avatar",
+          "credit": null,
+          "updatedAt": "2025-11-08T20:11:46.660Z",
+          "createdAt": "2025-11-08T20:11:46.660Z",
+          "url": "/api/media/file/default-avatar.webp",
+          "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
+          "filename": "default-avatar.webp",
+          "mimeType": "image/webp",
+          "filesize": 872,
+          "width": 300,
+          "height": 300,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/default-avatar-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 872,
+              "filename": "default-avatar-300x300.webp"
+            }
+          }
+        },
+        "order": 4,
+        "updatedAt": "2025-11-08T20:41:22.263Z",
+        "createdAt": "2025-11-08T20:41:22.263Z"
+      }
+    ],
+    "biography": {
+      "root": {
+        "children": [
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "“Sein Ansatz ist oft akribisch und detailliert, mit besonderem Augenmerk auf Klarheit und Ausgewogenheit des Klangs, die die Transparenz der musikalischen Linien und den strukturellen Zusammenhalt betont, so dass der Diskurs natürlich fließen und jede thematische Einheit mit ihrem eigenen Charakter glänzen kann, ohne dass die Einheitlichkeit verloren geht.”",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "quote",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Christian Zacharias ist der Erzähler unter den Dirigenten und Pianisten seiner Generation. In jeder seiner durchdachten, detailgenauen und klar artikulierten Interpretationen wird deutlich: Zacharias ist an dem interessiert, was hinter den Noten steckt.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Mit einer einmaligen Kombination von Integrität und Individualität, brillanter sprachlicher Ausdrucksfähigkeit, tiefem musikalischen Verständnis und einem sicheren künstlerischen Instinkt, sowie mit seiner charismatischen und einnehmenden Künstlerpersönlichkeit, etablierte sich Christian Zacharias nicht nur als weltweit führender Dirigent und Pianist, sondern auch als musikalischer Denker. Zahlreiche umjubelte Konzerte mit den weltbesten Orchestern, herausragenden Dirigenten und Solisten, und vielfache Ehrungen sowie Aufnahmen zeichnen seine internationale Karriere aus.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Seit 2021/2022 ist Christian Zacharias Erster Gastdirigent beim Orquesta Ciudad de Granada. Außerdem ist er seit 2021/2022 als Associate Conductor Teil des künstlerischen Leitungsteams des Orchestre National Auvergne Rhône-Alpes. Konzerte führen ihn zudem regelmäßig zu u.a. den seit Jahren verbundenen Göteborger Symphonikern, dem Orchestra della Svizzera Italiana, dem Orchestre National du Toulouse, dem Opern- und Museumsorchester Frankfurt, dem Philharmonischen Orchester Posen sowie dem Orchestre Philharmonique de Monte Carlo und dem Saint Paul Chamber Orchestra. Außerdem ist er ein gern gesehener Gast beim Boston Symphony Orchestra, dem Konzerthausorchester Berlin, den Bamberger Symphonikern, den Stuttgarter Philharmonikern oder dem Nationalorchester Lyon.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Klavierabende, die vereinzelt noch Teil des vollen Kalenders sind, führten ihn in die Metropolen Europas, u.a. nach Paris, London, Madrid und Frankfurt, sowie zu renommierten Festivals wie der Schubertiade, nach La Roque d’Anthéron und zu Piano aux Jacobins in Toulouse. Neben Rezitalen offerieren Zacharias Klavier-Lectures zu Themen, wie bspw. Von Couperin bis Poulenc, Von Madrigalen bis Edith Piaf, Warum klingt Schubert wie Schubert? oder Haydn, eine Schöpfung aus dem Nichts? seinem Publikum eindrucksvolle musikalische Einblicke.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Eine besondere Liebe zu Opern führte zur musikalischen Leitung von Mozarts La Clemenza di Tito und Le Nozze di Figaro sowie Offenbachs La Belle Hélène. Die Produktion von Nicolais Die lustigen Weiber von Windsor, welche er an der Opéra Royal de Wallonie in Liège dirigierte, wurde von der Association Professionnelle de la Critique Théâtre, Musique et Danse in Paris mit dem Prix de l‘Europe Francophone 2014/2015 ausgezeichnet.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Zudem entstanden seit 1990 folgende Filme: Domenico Scarlatti in Sevilla, Robert Schumann – der Dichter spricht (beide für INA, Paris), Zwischen Bühne und Künstlerzimmer (für WDR-arte), De B comme Beethoven à Z comme Zacharias (für RTS, Schweiz) sowie die Aufnahme aller Klavierkonzerte von Beethoven (für SSR-arte).",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Das musikalische Wirken Christian Zacharias wurde vielfach geehrt, u.a. mit dem Midem Classical Award Artist of the Year 2007, der ehrenvollen Auszeichnung Officier dans l’Ordre des Arts et des Lettres des französischen Staates sowie einer Ehrung aus Rumänien für seine Verdienste um die Kultur. Darüber hinaus wurde Christian Zacharias 2016 zum Mitglied der Königlichen Schwedischen Akademie für Musik ernannt und erhielt 2017 einen Ehrendoktor der Universität Göteborg.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Zahlreiche von der internationalen Presse hoch gelobte Aufnahmen entstanden in seiner Zeit als Chefdirigent des Orchestre de Chambre de Lausanne. Besonders hervorzuheben ist die Gesamtaufnahme aller Klavierkonzerte Mozarts – ausgezeichnet mit dem Diapason d’Or de l’Année, Choc du Monde de la Musique und ECHO KLASSIK – sowie aller Sinfonien Schumanns. Fast zwanzig Jahre später erschienen 2022/2023 zwei Alben mit Sonaten von Haydn und Partiten sowie Suiten von Bach.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 1,
+                "mode": "normal",
+                "style": "",
+                "text": "Saison 2025/26 | Foto: Constanze Zacharias | Anfangszitat: Granada Hoy, 28. April 2024",
+                "type": "text",
+                "version": 1
+              },
+              {
+                "type": "linebreak",
+                "version": 1
+              },
+              {
+                "detail": 0,
+                "format": 1,
+                "mode": "normal",
+                "style": "",
+                "text": "Änderungen und Kürzungen bedürfen der Absprache mit der Künstlersekretariat Astrid Schoerke GmbH",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 1,
+            "textStyle": ""
+          }
+        ],
+        "direction": "ltr",
+        "format": "",
+        "indent": 0,
+        "type": "root",
+        "version": 1,
+        "textFormat": 1
+      }
+    },
+    "downloads": {
+      "biographyPDF": null,
+      "galleryZIP": null
+    },
+    "youtubeLinks": [
+      {
+        "id": "6910797f1cf7ce628a47b4be",
+        "label": "Mozart: Piano concert No. 24 K491 – With the Kammerorchester Basel",
+        "url": "https://www.youtube.com/watch?v=XNvdaBBBNK0"
+      },
+      {
+        "id": "691079bd1cf7ce628a47b4c0",
+        "label": "W. A. Mozart: Le nozze di Figaro – overture – Christian Zacharias – Sinfónica de Galicia",
+        "url": "https://youtu.be/WOnHM82vo8s"
+      }
+    ],
+    "homepageURL": "https://christian-zacharias.com",
+    "externalCalendarURL": "",
+    "facebookURL": "",
+    "instagramURL": "",
+    "twitterURL": "",
+    "youtubeURL": "",
+    "spotifyURL": "",
+    "updatedAt": "2025-11-09T12:08:13.539Z",
+    "createdAt": "2025-11-08T15:40:11.704Z"
+  }
+]

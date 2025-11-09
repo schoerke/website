@@ -27,3 +27,9 @@
 - **Ignore:** build, dist, node_modules, temp, .git, .yarn, .tmp
 
 _This file is for agentic coding agents. Update if project conventions change._
+
+## Library Installation Policy
+
+- **NEVER install new libraries or dependencies without explicit user confirmation.**
+- **ALWAYS ask for user approval before running any package manager command (e.g., pnpm, npm, yarn, pip, etc.) that would add, remove, or update dependencies.**
+- If a new library is required for a solution, clearly explain why and request permission before proceeding.

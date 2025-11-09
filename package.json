@@ -15,8 +15,11 @@
     "migrate:media": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/migrateWordpressMedia.js",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "seed:artists": "payload run ./scripts/seed-artists.ts",
-    "seed:employees": "payload run ./scripts/seed-employees.ts"
+    "seed:artists": "payload run ./scripts/seedArtists.ts",
+    "seed:employees": "payload run ./scripts/seedEmployees.ts",
+    "dump": "tsx scripts/dumpCollection.ts",
+    "dump:artists": "pnpm dump artists",
+    "dump:employees": "pnpm dump employees"
   },
   "packageManager": "pnpm@10.19.0",
   "dependencies": {
@@ -51,6 +54,7 @@
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "dotenv": "^17.2.3",
     "eslint": "^9.34.0",
     "eslint-config-next": "16.0.0",
     "eslint-config-prettier": "^10.1.8",
@@ -61,6 +65,7 @@
     "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "^4.1.12",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "5.9.3"
   },

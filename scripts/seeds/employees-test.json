@@ -1,0 +1,150 @@
+[
+  {
+    "id": 4,
+    "name": "Justine Stemmelin",
+    "title": "Assistant Artist Manager",
+    "email": "j.stemmelin@ks-schoerke.de",
+    "phone": "+49 (0)611-50 58 90 53",
+    "mobile": "+49 (0)162 98 99 741",
+    "image": {
+      "id": 2,
+      "alt": "Default Avatar",
+      "credit": null,
+      "updatedAt": "2025-11-08T20:11:46.660Z",
+      "createdAt": "2025-11-08T20:11:46.660Z",
+      "url": "/api/media/file/default-avatar.webp",
+      "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
+      "filename": "default-avatar.webp",
+      "mimeType": "image/webp",
+      "filesize": 872,
+      "width": 300,
+      "height": 300,
+      "focalX": 50,
+      "focalY": 50,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/default-avatar-300x300.webp",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/webp",
+          "filesize": 872,
+          "filename": "default-avatar-300x300.webp"
+        }
+      }
+    },
+    "order": 4,
+    "updatedAt": "2025-11-08T20:41:22.263Z",
+    "createdAt": "2025-11-08T20:41:22.263Z"
+  },
+  {
+    "id": 3,
+    "name": "Veronika Fischer",
+    "title": "Assistant Artist Manager",
+    "email": "t.fischer@ks-schoerke.de",
+    "phone": "+49 (0)611-50 58 90 54",
+    "mobile": "+49 (0)162 965 73 46",
+    "image": {
+      "id": 2,
+      "alt": "Default Avatar",
+      "credit": null,
+      "updatedAt": "2025-11-08T20:11:46.660Z",
+      "createdAt": "2025-11-08T20:11:46.660Z",
+      "url": "/api/media/file/default-avatar.webp",
+      "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
+      "filename": "default-avatar.webp",
+      "mimeType": "image/webp",
+      "filesize": 872,
+      "width": 300,
+      "height": 300,
+      "focalX": 50,
+      "focalY": 50,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/default-avatar-300x300.webp",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/webp",
+          "filesize": 872,
+          "filename": "default-avatar-300x300.webp"
+        }
+      }
+    },
+    "order": 3,
+    "updatedAt": "2025-11-08T20:41:21.689Z",
+    "createdAt": "2025-11-08T20:41:21.688Z"
+  },
+  {
+    "id": 2,
+    "name": "Tina Nurnus",
+    "title": "Artist Manager",
+    "email": "t.nurnus@ks-schoerke.de",
+    "phone": "+49 (0)611-50 58 90 52",
+    "mobile": "+49 (0)172 821 32 59",
+    "image": {
+      "id": 2,
+      "alt": "Default Avatar",
+      "credit": null,
+      "updatedAt": "2025-11-08T20:11:46.660Z",
+      "createdAt": "2025-11-08T20:11:46.660Z",
+      "url": "/api/media/file/default-avatar.webp",
+      "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
+      "filename": "default-avatar.webp",
+      "mimeType": "image/webp",
+      "filesize": 872,
+      "width": 300,
+      "height": 300,
+      "focalX": 50,
+      "focalY": 50,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/default-avatar-300x300.webp",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/webp",
+          "filesize": 872,
+          "filename": "default-avatar-300x300.webp"
+        }
+      }
+    },
+    "order": 2,
+    "updatedAt": "2025-11-08T20:41:21.145Z",
+    "createdAt": "2025-11-08T20:41:21.145Z"
+  },
+  {
+    "id": 1,
+    "name": "Eva Wagner",
+    "title": "Managing Director",
+    "email": "e.wagner@ks-schoerke.de",
+    "phone": "+49 (0)611-50 58 90 51",
+    "mobile": "+49 (0)172 821 32 58",
+    "image": {
+      "id": 1,
+      "alt": "Eva Wagner",
+      "credit": null,
+      "updatedAt": "2025-11-08T20:11:14.955Z",
+      "createdAt": "2025-11-08T20:11:14.955Z",
+      "url": "/api/media/file/eva-wagner.jpg",
+      "thumbnailURL": "/api/media/file/eva-wagner-300x300.jpg",
+      "filename": "eva-wagner.jpg",
+      "mimeType": "image/jpeg",
+      "filesize": 10730,
+      "width": 304,
+      "height": 304,
+      "focalX": 50,
+      "focalY": 50,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/eva-wagner-300x300.jpg",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/jpeg",
+          "filesize": 10609,
+          "filename": "eva-wagner-300x300.jpg"
+        }
+      }
+    },
+    "order": 1,
+    "updatedAt": "2025-11-08T20:41:20.578Z",
+    "createdAt": "2025-11-08T20:41:20.577Z"
+  }
+]

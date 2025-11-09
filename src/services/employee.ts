@@ -1,23 +1,20 @@
-import config from '@payload-config'
-import { getPayload } from 'payload'
+import type { Payload } from 'payload'
 import type { Employee } from '../payload-types'
 
-const payload = await getPayload({ config })
-
-export const getEmployees = async () => {
+export const getEmployees = async (payload: Payload) => {
   return await payload.find({
     collection: 'employees',
   })
 }
 
-export const getEmployeeById = async (id: string) => {
+export const getEmployeeById = async (payload: Payload, id: string) => {
   return await payload.findByID({
     collection: 'artists',
     id: id,
   })
 }
 
-export const getEmployeeByName = async (name: string) => {
+export const getEmployeeByName = async (payload: Payload, name: string) => {
   return await payload.find({
     collection: 'employees',
     where: {
@@ -27,7 +24,7 @@ export const getEmployeeByName = async (name: string) => {
   })
 }
 
-export async function getEmployeeImageId(employee: Employee) {
+export async function getEmployeeImageId(payload: Payload, employee: Employee) {
   // Try to find existing media first
   const employeeImage = await payload.find({
     collection: 'media',

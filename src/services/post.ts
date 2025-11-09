@@ -1,17 +1,14 @@
-import config from '@payload-config'
-import { getPayload } from 'payload'
+import type { Payload } from 'payload'
 
-const payload = await getPayload({ config })
-
-export const getAllPosts = async () => {
+export const getAllPosts = async (payload: Payload) => {
   return await payload.find({
     collection: 'posts',
   })
 }
 
-export const getAllNewsPosts = async () => {
+export const getAllNewsPosts = async (payload: Payload) => {
   return await payload.find({
-    collection: 'artists',
+    collection: 'posts',
     where: {
       categories: {
         equals: 'news',
@@ -23,9 +20,9 @@ export const getAllNewsPosts = async () => {
   })
 }
 
-export const getAllProjectPosts = async () => {
+export const getAllProjectPosts = async (payload: Payload) => {
   return await payload.find({
-    collection: 'artists',
+    collection: 'posts',
     where: {
       categories: {
         equals: 'projects',
@@ -37,12 +34,46 @@ export const getAllProjectPosts = async () => {
   })
 }
 
-export const getAllHomepagePosts = async () => {
+export const getAllHomepagePosts = async (payload: Payload) => {
   return await payload.find({
-    collection: 'artists',
+    collection: 'posts',
     where: {
       categories: {
         equals: 'home',
+      },
+      published: {
+        equals: true,
+      },
+    },
+  })
+}
+
+export const getAllNewsPostsByArtist = async (payload: Payload, artistId: string) => {
+  return await payload.find({
+    collection: 'posts',
+    where: {
+      categories: {
+        equals: 'news',
+      },
+      artists: {
+        contains: artistId,
+      },
+      published: {
+        equals: true,
+      },
+    },
+  })
+}
+
+export const getAllProjectPostsByArtist = async (payload: Payload, artistId: string) => {
+  return await payload.find({
+    collection: 'posts',
+    where: {
+      categories: {
+        equals: 'projects',
+      },
+      artists: {
+        contains: artistId,
       },
       published: {
         equals: true,
