@@ -4,7 +4,8 @@
 
 ## Purpose
 
-Allow editors to add, label, reorder, and display multiple YouTube music videos for each artist. These videos will be embedded on the public artist page.
+Allow editors to add, label, reorder, and display multiple YouTube music videos for each artist. These videos will be
+embedded on the public artist page.
 
 ---
 
@@ -17,12 +18,14 @@ Allow editors to add, label, reorder, and display multiple YouTube music videos 
   - `label` (string, required): Short description/title for the video (e.g., "Official Music Video")
   - `url` (string, required): YouTube video URL
 
-**Validation:**  
+**Validation:**
+
 - The `url` field must match a YouTube URL pattern.  
   Example regex:  
   `/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}/`
 
 **Schema snippet:**
+
 ```js
 {
   name: 'youtubeLinks',
@@ -74,21 +77,20 @@ Allow editors to add, label, reorder, and display multiple YouTube music videos 
   - Embed the YouTube video using an `<iframe>`, extracting the video ID from the URL.
 
 **Example rendering logic:**
+
 ```tsx
-{artist.youtubeLinks.map(({ label, url }, idx) => {
-  const match = url.match(/(?:v=|be\/)([\w-]{11})/)
-  const videoId = match ? match[1] : null
-  return videoId ? (
-    <div key={idx}>
-      <h3>{label}</h3>
-      <iframe
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title={label}
-        allowFullScreen
-      />
-    </div>
-  ) : null
-})}
+{
+  artist.youtubeLinks.map(({ label, url }, idx) => {
+    const match = url.match(/(?:v=|be\/)([\w-]{11})/)
+    const videoId = match ? match[1] : null
+    return videoId ? (
+      <div key={idx}>
+        <h3>{label}</h3>
+        <iframe src={`https://www.youtube.com/embed/${videoId}`} title={label} allowFullScreen />
+      </div>
+    ) : null
+  })
+}
 ```
 
 ---

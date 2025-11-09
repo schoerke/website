@@ -1,10 +1,12 @@
 # Select Box Option Constants Design
 
-**Date:** 2025-11-09
+- **Date:** 2025-11-09
+- **Status:** IMPLEMENTED
 
 ## Overview
 
-Maintain select box option lists as named exports in a single TypeScript file, with type safety and localization support for both frontend and backend use.
+Maintain select box option lists as named exports in a single TypeScript file, with type safety and localization support
+for both frontend and backend use.
 
 ## File Location
 
@@ -43,9 +45,11 @@ export const roleOptions: SelectOption[] = [
 ## Usage
 
 - Import only the needed list(s):
+
   ```ts
   import { instrumentOptions, roleOptions, SelectOption } from '@/constants/options'
   ```
+
 - Use `SelectOption` type for props, validation, etc.
 
 ## Rationale
@@ -55,7 +59,3 @@ export const roleOptions: SelectOption[] = [
 - **TypeScript types** ensure consistency and type safety
 - **Localization** via `label` object supports multiple languages
 - **Shared usage** for both frontend and backend logic
-
----
-
-_Design validated and ready for implementation._
