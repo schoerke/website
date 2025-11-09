@@ -125,10 +125,22 @@ export interface UserAuthOperations {
  */
 export interface Artist {
   id: number;
-  contactPersons?: (number | Employee)[] | null;
+  instrument: (
+    | 'piano'
+    | 'piano-forte'
+    | 'harpsichord'
+    | 'conductor'
+    | 'violin'
+    | 'viola'
+    | 'cello'
+    | 'bass'
+    | 'horn'
+    | 'recorder'
+    | 'chamber-music'
+  )[];
   image?: (number | null) | Media;
   name: string;
-  instrument: ('piano' | 'conductor' | 'violin')[];
+  contactPersons?: (number | Employee)[] | null;
   biography: {
     root: {
       type: string;
@@ -148,7 +160,13 @@ export interface Artist {
     biographyPDF?: (number | null) | Media;
     galleryZIP?: (number | null) | Media;
   };
-  youtube?: {};
+  youtubeLinks?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
   homepageURL?: string | null;
   externalCalendarURL?: string | null;
   facebookURL?: string | null;
@@ -156,22 +174,6 @@ export interface Artist {
   twitterURL?: string | null;
   youtubeURL?: string | null;
   spotifyURL?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "employees".
- */
-export interface Employee {
-  id: number;
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  mobile: string;
-  image?: (number | null) | Media;
-  order: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -204,6 +206,22 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employees".
+ */
+export interface Employee {
+  id: number;
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+  mobile: string;
+  image?: (number | null) | Media;
+  order: number;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -351,10 +369,10 @@ export interface PayloadMigration {
  * via the `definition` "artists_select".
  */
 export interface ArtistsSelect<T extends boolean = true> {
-  contactPersons?: T;
+  instrument?: T;
   image?: T;
   name?: T;
-  instrument?: T;
+  contactPersons?: T;
   biography?: T;
   downloads?:
     | T
@@ -362,7 +380,13 @@ export interface ArtistsSelect<T extends boolean = true> {
         biographyPDF?: T;
         galleryZIP?: T;
       };
-  youtube?: T | {};
+  youtubeLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
   homepageURL?: T;
   externalCalendarURL?: T;
   facebookURL?: T;

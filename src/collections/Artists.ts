@@ -1,3 +1,4 @@
+import { INSTRUMENTS } from '@/constants/options'
 import type { CollectionConfig } from 'payload'
 
 export const Artists: CollectionConfig = {
@@ -21,14 +22,14 @@ export const Artists: CollectionConfig = {
   },
   fields: [
     {
-      name: 'contactPersons',
-      label: {
-        de: 'Schoerke Kontakte',
-        en: 'Schoerke Contacts',
-      },
-      type: 'relationship',
-      relationTo: 'employees',
+      name: 'instrument',
+      type: 'select',
+      required: true,
       hasMany: true,
+      options: INSTRUMENTS.map((opt) => ({
+        value: opt.value,
+        label: ({ t }) => (t as any)(`instruments:${opt.value}`),
+      })),
       admin: {
         position: 'sidebar',
       },
@@ -58,35 +59,16 @@ export const Artists: CollectionConfig = {
               required: true,
               type: 'text',
             },
+
             {
-              name: 'instrument',
-              type: 'select',
-              required: true,
+              name: 'contactPersons',
+              label: {
+                de: 'Schoerke Kontakte',
+                en: 'Schoerke Contacts',
+              },
+              type: 'relationship',
+              relationTo: 'employees',
               hasMany: true,
-              // TODO: Add dynamic options
-              options: [
-                {
-                  value: 'piano',
-                  label: {
-                    de: 'Klavier',
-                    en: 'Piano',
-                  },
-                },
-                {
-                  value: 'conductor',
-                  label: {
-                    de: 'Dirigent',
-                    en: 'Conductor',
-                  },
-                },
-                {
-                  value: 'violin',
-                  label: {
-                    de: 'Violine',
-                    en: 'Violin',
-                  },
-                },
-              ],
             },
           ],
         },
@@ -133,10 +115,42 @@ export const Artists: CollectionConfig = {
               ],
             },
             {
-              name: 'youtube',
+              name: 'youtubeLinks',
               label: 'YouTube Links',
-              type: 'group',
-              fields: [],
+              type: 'array',
+              labels: {
+                singular: {
+                  en: 'YouTube Video',
+                  de: 'YouTube-Video',
+                },
+                plural: {
+                  en: 'YouTube Videos',
+                  de: 'YouTube-Videos',
+                },
+              },
+              fields: [
+                {
+                  name: 'label',
+                  label: 'Label',
+                  type: 'text',
+                  required: true,
+                },
+                {
+                  name: 'url',
+                  label: 'YouTube URL',
+                  type: 'text',
+                  required: true,
+                  admin: {
+                    placeholder: 'https://www.youtube.com/watch?v=...',
+                  },
+                  validate: (value: unknown) => {
+                    if (typeof value !== 'string') return 'Please enter a valid YouTube URL'
+
+                    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}/
+                    return youtubeRegex.test(value) ? true : 'Please enter a valid YouTube URL'
+                  },
+                },
+              ],
             },
           ],
         },
@@ -182,13 +196,6 @@ export const Artists: CollectionConfig = {
               type: 'text',
             },
           ],
-        },
-        {
-          label: {
-            en: 'Projects',
-            de: 'Projekte',
-          },
-          fields: [],
         },
       ],
     },
