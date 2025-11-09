@@ -10,6 +10,11 @@
 @theme {
   --font-inter: 'Inter', sans-serif;
   --font-playfair: 'Playfair Display', serif;
+  --color-primary-yellow: #fcc302;
+  --color-primary-platinum: #e3e3e3;
+  --color-primary-silver: #adb2b4;
+  --color-primary-black: #222126;
+  --color-primary-white: #ffffff;
 }
 
 @theme inline {

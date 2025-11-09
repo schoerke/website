@@ -1,18 +1,12 @@
-import Image from 'next/image'
+import FooterLogo from './FooterLogo'
 
-const Footer: React.FC = () => {
+const Footer = async () => {
   return (
-    <footer>
+    <footer className="bg-primary-platinum">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-4">
           <div className="order-1 flex flex-col items-start lg:col-start-1 xl:col-auto">
-            <Image
-              src="https://ik.imagekit.io/qy9qrvele0b/logo_icon.png?updatedAt=1739717132045"
-              alt="Schoerke Logo"
-              className="mb-4 h-24 w-auto"
-              width={96}
-              height={96}
-            />
+            <FooterLogo />
           </div>
 
           <div className="order-3 mt-4 md:mt-0 lg:col-start-2 lg:row-span-2 xl:col-auto">
