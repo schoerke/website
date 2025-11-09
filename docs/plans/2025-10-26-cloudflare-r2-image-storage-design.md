@@ -44,31 +44,36 @@ To serve images from R2 via a production-grade, CDN-cached public URL:
 2. **Choose a Custom Domain:**  
    Decide on a subdomain for images (e.g., `media.yoursite.com`). This domain must be managed by Cloudflare.
 
-3. **Add Custom Domain in Cloudflare Dashboard:**  
+3. **Add Custom Domain in Cloudflare Dashboard:**
    - Go to Cloudflare dashboard → R2 → select your bucket.
    - In the "Custom Domains" section, click "Add Custom Domain."
    - Enter your chosen domain (e.g., `media.yoursite.com`).
    - Cloudflare will provide a CNAME target (e.g., `xxxxxx.r2.dev`).
 
-4. **Update DNS:**  
+4. **Update DNS:**
    - In Cloudflare DNS, add a CNAME record:
      - Name: your subdomain (e.g., `media`)
      - Target: the CNAME value from above
      - Proxy status: Proxied (orange cloud) for CDN caching.
 
-5. **Wait for Propagation:**  
+5. **Wait for Propagation:**
    - After DNS propagates, your images will be available at `https://media.yoursite.com/path/to/image.jpg`.
 
-6. **(Optional) Set Cache Headers:**  
+6. **(Optional) Set Cache Headers:**
    - For optimal caching, set `Cache-Control` headers on R2 objects (e.g., `public, max-age=31536000`).
 
-7. **Update Frontend:**  
+7. **Update Frontend:**
    - Use the new custom domain URLs in your frontend code.
 
 **Note:**  
-You can migrate to a Worker-based solution later if you need custom logic or image processing, simply by updating the DNS to point your custom domain to a Worker.
+You can migrate to a Worker-based solution later if you need custom logic or image processing, simply by updating the
+DNS to point your custom domain to a Worker.
 
-## 4. Ongoing Backups (R2 → S3 via GitHub Actions)
+**Additional Note:**  
+You do not need to have your domain registered with Cloudflare to use a Worker on a `.workers.dev` subdomain. However,
+if you want to use your own custom domain (e.g., `img.yoursite.com`) with a Worker, you must manage DNS for that
+subdomain through Cloudflare. This does not affect your main site hosting (e.g., on Vercel); only the DNS for the
+subdomain used by the Worker needs to be on Cloudflare.
 
 - **Backup Script:** Node.js or rclone script to sync new/changed files from R2 to S3.
 - **Scheduling:** GitHub Actions workflow runs nightly (or as needed).
