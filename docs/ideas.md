@@ -1,0 +1,1 @@
+- add Collection callback to create/update fixtures for easy seeding and testing

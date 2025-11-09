@@ -38,7 +38,10 @@ export const Artists: CollectionConfig = {
       name: 'image',
       relationTo: 'media',
       type: 'upload',
-      label: 'Featured Image',
+      label: {
+        en: 'Featured Image',
+        de: 'Vorschaubild',
+      },
       admin: {
         position: 'sidebar',
       },
@@ -103,13 +106,19 @@ export const Artists: CollectionConfig = {
                 {
                   name: 'biographyPDF',
                   type: 'upload',
-                  label: 'Biography PDF Download',
+                  label: {
+                    en: 'Biography PDF Download',
+                    de: 'Biographie PDF Download',
+                  },
                   relationTo: 'media',
                 },
                 {
                   name: 'galleryZIP',
                   type: 'upload',
-                  label: 'Gallery ZIP Download',
+                  label: {
+                    en: 'Gallery ZIP Download',
+                    de: 'Galerie ZIP Download',
+                  },
                   relationTo: 'media',
                 },
               ],
@@ -156,6 +165,10 @@ export const Artists: CollectionConfig = {
         },
         {
           label: 'URLs',
+          description: {
+            de: 'Externe Links zu Homepage und Social Media Profilen des Künstlers.',
+            en: 'External links to the artist’s homepage and social media profiles.',
+          },
           fields: [
             {
               name: 'homepageURL',
