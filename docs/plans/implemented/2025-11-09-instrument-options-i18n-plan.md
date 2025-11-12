@@ -1,6 +1,6 @@
 # Plan: Internationalized Instrument Options in Create Artist Form
 
-**Status: IMPLEMENTED**
+- **Status**: IMPLEMENTED
 
 ## Goal
 

@@ -70,7 +70,7 @@ codebase is structured for clarity, ease of contribution, and long-term sustaina
 
 ## Directory Structure
 
-```
+```text
 .
 ├── data/                  # Static data files (e.g., media.xml)
 ├── docs/                  # Documentation (ADRs, plans, components, issues, questions, todos)
@@ -211,21 +211,17 @@ pnpm build
 
 ## Troubleshooting & FAQ
 
-- **No automated tests?**  
-  There are currently no automated test scripts or test files present. Please add tests for new features where
-  appropriate.
+- **No automated tests?** There are currently no automated test scripts or test files present. Please add tests for new
+  features where appropriate.
 
-- **Formatting issues?**  
-  Run `pnpm format` to auto-format codebase.
+- **Formatting issues?** Run `pnpm format` to auto-format codebase.
 
-- **Linting errors?**  
-  Run `pnpm lint` and fix reported issues.
+- **Linting errors?** Run `pnpm lint` and fix reported issues.
 
-- **Environment variables missing?**  
-  Ensure all required `.env` files are present and configured.
+- **Environment variables missing?** Ensure all required `.env` files are present and configured.
 
-- **Payload CMS issues?**  
-  Check `src/payload.config.ts` and the [Payload CMS documentation](https://payloadcms.com/docs/).
+- **Payload CMS issues?** Check `src/payload.config.ts` and the
+  [Payload CMS documentation](https://payloadcms.com/docs/).
 
 ---
 

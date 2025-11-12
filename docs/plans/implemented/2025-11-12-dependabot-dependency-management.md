@@ -1,6 +1,6 @@
 # Dependabot Dependency Management Plan
 
-**Status: IMPLEMENTED**
+- **Status**: IMPLEMENTED
 
 ## Overview
 
@@ -55,9 +55,11 @@ updates:
 
 - **Update frequency:** `daily`, `weekly`, or `monthly`
 - **Open PR limit:**
+
   ```yaml
   open-pull-requests-limit: 5
   ```
+
 - **Multiple ecosystems:** Add more `updates` entries for e.g. GitHub Actions
 - **Security updates only:** Enable in GitHub settings, omit config file if desired
 

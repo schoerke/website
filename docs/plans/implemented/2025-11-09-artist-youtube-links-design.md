@@ -1,6 +1,7 @@
 # Artist Collection: YouTube Links Feature Design
 
-**Date:** 2025-11-09
+- **Date:** 2025-11-09
+- **Status:** IMPLEMENTED
 
 ## Purpose
 
@@ -20,8 +21,7 @@ embedded on the public artist page.
 
 **Validation:**
 
-- The `url` field must match a YouTube URL pattern.  
-  Example regex:  
+- The `url` field must match a YouTube URL pattern. Example regex:
   `/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}/`
 
 **Schema snippet:**
@@ -100,7 +100,3 @@ embedded on the public artist page.
 - No changes needed to existing service methods; the new field will be included automatically.
 - Editors can manage YouTube links directly in the Payload admin UI.
 - The feature is fully localized within the Artist collection and does not require a separate collection.
-
----
-
-**End of design.**
