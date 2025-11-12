@@ -26,6 +26,27 @@ updates:
 - For pnpm, use `package-ecosystem: "npm"` (Dependabot supports pnpm lockfiles)
 - Add additional entries for other package managers or subdirectories as needed
 
+## Personalized dependabot.yml Example
+
+Based on your preferences (weekly updates, npm/pnpm and GitHub Actions, single package.json, manual review), use this config:
+
+```yaml
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+```
+
+- This will check for updates to both your npm/pnpm dependencies and your GitHub Actions workflows every week.
+- No PR volume limit is set (uses Dependabot’s default).
+- Auto-merge is not enabled; you’ll review PRs manually.
+
 ## Customization Options
 
 - **Update frequency:** `daily`, `weekly`, or `monthly`
