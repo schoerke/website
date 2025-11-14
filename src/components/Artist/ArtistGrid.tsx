@@ -9,6 +9,7 @@ type Artist = {
   name: string
   image?: any
   instrument?: string[]
+  slug?: string
 }
 
 interface ArtistGridProps {
@@ -39,6 +40,7 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
               name={artist.name}
               image={artist.image}
               instrument={artist.instrument ?? []}
+              slug={artist.slug}
             />
           ))}
         </div>

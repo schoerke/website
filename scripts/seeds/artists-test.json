@@ -1,8 +1,35 @@
 [
   {
     "id": 4,
-    "instrument": ["piano"],
-    "image": null,
+    "instrument": [
+      "piano"
+    ],
+    "image": {
+      "id": 6,
+      "alt": "Tzimon Barto",
+      "credit": "Malcolm Yawn",
+      "updatedAt": "2025-11-09T17:47:51.124Z",
+      "createdAt": "2025-11-09T17:46:27.114Z",
+      "url": "/api/media/file/C-Malcolm-Yawn-2.jpeg",
+      "thumbnailURL": "/api/media/file/C-Malcolm-Yawn-2-300x300.jpg",
+      "filename": "C-Malcolm-Yawn-2.jpeg",
+      "mimeType": "image/jpeg",
+      "filesize": 913633,
+      "width": 4480,
+      "height": 4910,
+      "focalX": 51,
+      "focalY": 30,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/C-Malcolm-Yawn-2-300x300.jpg",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/jpeg",
+          "filesize": 11158,
+          "filename": "C-Malcolm-Yawn-2-300x300.jpg"
+        }
+      }
+    },
     "name": "Tzimon Barto",
     "contactPersons": [],
     "biography": {
@@ -48,13 +75,40 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": null,
-    "updatedAt": "2025-11-08T21:10:30.895Z",
+    "updatedAt": "2025-11-09T17:46:29.041Z",
     "createdAt": "2025-11-08T21:10:15.726Z"
   },
   {
     "id": 3,
-    "instrument": ["violin"],
-    "image": null,
+    "instrument": [
+      "violin"
+    ],
+    "image": {
+      "id": 5,
+      "alt": "Tianwa Yang",
+      "credit": "Andrej Grilc",
+      "updatedAt": "2025-11-09T17:43:34.814Z",
+      "createdAt": "2025-11-09T17:43:34.814Z",
+      "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc3.jpeg",
+      "thumbnailURL": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc3-300x300.jpg",
+      "filename": "K1600_Tianwa-Yang_CAndrej-Grilc3.jpeg",
+      "mimeType": "image/jpeg",
+      "filesize": 142371,
+      "width": 1800,
+      "height": 1200,
+      "focalX": 50,
+      "focalY": 50,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc3-300x300.jpg",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/jpeg",
+          "filesize": 16688,
+          "filename": "K1600_Tianwa-Yang_CAndrej-Grilc3-300x300.jpg"
+        }
+      }
+    },
     "name": "Tianwa Yang",
     "contactPersons": [],
     "biography": {
@@ -111,13 +165,40 @@
     "twitterURL": "",
     "youtubeURL": "",
     "spotifyURL": "",
-    "updatedAt": "2025-11-08T15:40:12.668Z",
+    "updatedAt": "2025-11-09T17:43:37.319Z",
     "createdAt": "2025-11-08T15:40:12.667Z"
   },
   {
     "id": 2,
-    "instrument": ["conductor"],
-    "image": null,
+    "instrument": [
+      "conductor"
+    ],
+    "image": {
+      "id": 4,
+      "alt": "Mario Venzago",
+      "credit": "Alberto Venzago",
+      "updatedAt": "2025-11-09T17:42:06.980Z",
+      "createdAt": "2025-11-09T17:42:06.980Z",
+      "url": "/api/media/file/6_c-Alberto-Venzago.jpg",
+      "thumbnailURL": "/api/media/file/6_c-Alberto-Venzago-300x300.jpg",
+      "filename": "6_c-Alberto-Venzago.jpg",
+      "mimeType": "image/jpeg",
+      "filesize": 425150,
+      "width": 688,
+      "height": 1030,
+      "focalX": 50,
+      "focalY": 50,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/6_c-Alberto-Venzago-300x300.jpg",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/jpeg",
+          "filesize": 13753,
+          "filename": "6_c-Alberto-Venzago-300x300.jpg"
+        }
+      }
+    },
     "name": "Mario Venzago",
     "contactPersons": [],
     "biography": {
@@ -174,13 +255,41 @@
     "twitterURL": "",
     "youtubeURL": "",
     "spotifyURL": "",
-    "updatedAt": "2025-11-08T15:40:12.231Z",
+    "updatedAt": "2025-11-09T17:42:09.024Z",
     "createdAt": "2025-11-08T15:40:12.230Z"
   },
   {
     "id": 1,
-    "instrument": ["conductor", "piano"],
-    "image": null,
+    "instrument": [
+      "conductor",
+      "piano"
+    ],
+    "image": {
+      "id": 3,
+      "alt": "Christian Zacharias",
+      "credit": "Constanze Zacharias",
+      "updatedAt": "2025-11-09T17:40:11.488Z",
+      "createdAt": "2025-11-09T17:40:11.488Z",
+      "url": "/api/media/file/CZbunt13.jpg",
+      "thumbnailURL": "/api/media/file/CZbunt13-300x300.jpg",
+      "filename": "CZbunt13.jpg",
+      "mimeType": "image/jpeg",
+      "filesize": 54510,
+      "width": 1024,
+      "height": 684,
+      "focalX": 50,
+      "focalY": 50,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/CZbunt13-300x300.jpg",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/jpeg",
+          "filesize": 9739,
+          "filename": "CZbunt13-300x300.jpg"
+        }
+      }
+    },
     "name": "Christian Zacharias",
     "contactPersons": [
       {
@@ -194,7 +303,7 @@
           "id": 1,
           "alt": "Eva Wagner",
           "credit": null,
-          "updatedAt": "2025-11-08T20:11:14.955Z",
+          "updatedAt": "2025-11-09T19:43:47.730Z",
           "createdAt": "2025-11-08T20:11:14.955Z",
           "url": "/api/media/file/eva-wagner.jpg",
           "thumbnailURL": "/api/media/file/eva-wagner-300x300.jpg",
@@ -203,8 +312,8 @@
           "filesize": 10730,
           "width": 304,
           "height": 304,
-          "focalX": 50,
-          "focalY": 50,
+          "focalX": 53,
+          "focalY": 39,
           "sizes": {
             "thumbnail": {
               "url": "/api/media/file/eva-wagner-300x300.jpg",
@@ -504,7 +613,7 @@
     "twitterURL": "",
     "youtubeURL": "",
     "spotifyURL": "",
-    "updatedAt": "2025-11-09T12:08:13.539Z",
+    "updatedAt": "2025-11-09T17:40:39.288Z",
     "createdAt": "2025-11-08T15:40:11.704Z"
   }
 ]

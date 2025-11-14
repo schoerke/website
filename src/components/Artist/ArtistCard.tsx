@@ -1,11 +1,13 @@
 import type { Media } from '@/payload-types'
 import Image from 'next/image'
+import Link from 'next/link'
 
 interface ArtistCardProps {
   id: string
   name: string
   instrument?: string[]
   image?: number | null | Media
+  slug?: string
 }
 
 const R2_PUBLIC_ENDPOINT = process.env.NEXT_PUBLIC_S3_HOSTNAME
@@ -17,12 +19,33 @@ function getImageUrl(img: Media | null | undefined): string {
   return '/placeholder.jpg'
 }
 
-const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image }) => {
+const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }) => {
   // If image is a number or null, treat as missing
   const img = typeof image === 'object' && image !== null ? (image as Media) : null
   const imageUrl = getImageUrl(img)
 
-  return (
+  return slug ? (
+    <Link
+      href={`/artists/${slug}`}
+      className="group block overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]"
+    >
+      <div className="relative h-72 w-full">
+        <Image
+          src={imageUrl}
+          alt={name}
+          width={400}
+          height={400}
+          className="h-full w-full object-cover"
+          priority={false}
+        />
+        <div className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"></div>
+      </div>
+      <div className="p-6">
+        <h3 className="font-playfair mb-2 text-2xl font-bold">{name}</h3>
+        <p className="text-sm text-gray-700">{instrument?.join(', ') ?? ''}</p>
+      </div>
+    </Link>
+  ) : (
     <div className="group overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">
       <div className="relative h-72 w-full">
         <Image
@@ -43,5 +66,4 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image }) => {
   )
 }
 
-export default ArtistCard;
-
+export default ArtistCard

@@ -36,6 +36,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cross-env": "^10.0.0",
+    "embla-carousel-react": "^8.6.0",
     "fast-xml-parser": "^5.2.5",
     "graphql": "^16.11.0",
     "libsql": "^0.5.22",

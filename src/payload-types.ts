@@ -125,6 +125,11 @@ export interface UserAuthOperations {
  */
 export interface Artist {
   id: number;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
   instrument: (
     | 'piano'
     | 'piano-forte'
@@ -369,6 +374,8 @@ export interface PayloadMigration {
  * via the `definition` "artists_select".
  */
 export interface ArtistsSelect<T extends boolean = true> {
+  generateSlug?: T;
+  slug?: T;
   instrument?: T;
   image?: T;
   name?: T;

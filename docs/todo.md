@@ -30,3 +30,11 @@
 ## UI
 
 - [x] Move footer icon to local asset
+
+### Artist Feature Enhancements (Optional)
+
+- [ ] Further enhance the artist detail page (add social links, downloads, YouTube, etc.)
+- [ ] Add error handling, loading states, or SEO meta tags to artist detail page
+- [ ] Reuse the ImageSlider on the homepage or other pages
+- [ ] Add tests for ImageSlider, ImageSlide, and artist detail page
+- [ ] Update documentation for new components and features

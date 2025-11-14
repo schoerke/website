@@ -22,6 +22,7 @@ export const getArtistListData = async (payload: Payload) => {
       image: true,
       instrument: true,
       id: true,
+      slug: true,
     },
   })
 }

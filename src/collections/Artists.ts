@@ -1,5 +1,6 @@
 import { INSTRUMENTS } from '@/constants/options'
 import type { CollectionConfig } from 'payload'
+import { slugField } from 'payload'
 
 export const Artists: CollectionConfig = {
   slug: 'artists',
@@ -21,6 +22,9 @@ export const Artists: CollectionConfig = {
     group: 'Organization',
   },
   fields: [
+    slugField({
+      name: 'slug',
+    }),
     {
       name: 'instrument',
       type: 'select',
@@ -61,6 +65,7 @@ export const Artists: CollectionConfig = {
               name: 'name',
               required: true,
               type: 'text',
+              unique: true,
             },
 
             {
