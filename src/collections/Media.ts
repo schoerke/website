@@ -16,6 +16,18 @@ export const Media: CollectionConfig = {
         height: 300,
         position: 'center',
       },
+      {
+        name: 'card',
+        width: 768,
+        height: 768,
+        position: 'centre',
+      },
+      {
+        name: 'hero',
+        width: 1200,
+        height: 800,
+        position: 'centre',
+      },
     ],
     mimeTypes: ['image/*'],
     adminThumbnail: 'thumbnail',

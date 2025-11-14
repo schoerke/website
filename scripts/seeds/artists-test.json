@@ -1,9 +1,7 @@
 [
   {
     "id": 4,
-    "instrument": [
-      "piano"
-    ],
+    "instrument": ["piano"],
     "image": {
       "id": 6,
       "alt": "Tzimon Barto",
@@ -80,9 +78,7 @@
   },
   {
     "id": 3,
-    "instrument": [
-      "violin"
-    ],
+    "instrument": ["violin"],
     "image": {
       "id": 5,
       "alt": "Tianwa Yang",
@@ -170,9 +166,7 @@
   },
   {
     "id": 2,
-    "instrument": [
-      "conductor"
-    ],
+    "instrument": ["conductor"],
     "image": {
       "id": 4,
       "alt": "Mario Venzago",
@@ -260,10 +254,7 @@
   },
   {
     "id": 1,
-    "instrument": [
-      "conductor",
-      "piano"
-    ],
+    "instrument": ["conductor", "piano"],
     "image": {
       "id": 3,
       "alt": "Christian Zacharias",
