@@ -148,6 +148,7 @@ export interface Artist {
   image?: (number | null) | Media;
   name: string;
   contactPersons?: (number | Employee)[] | null;
+  quote?: string | null;
   biography: {
     root: {
       type: string;
@@ -415,6 +416,7 @@ export interface ArtistsSelect<T extends boolean = true> {
   image?: T;
   name?: T;
   contactPersons?: T;
+  quote?: T;
   biography?: T;
   downloads?:
     | T

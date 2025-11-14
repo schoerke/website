@@ -131,4 +131,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  .bio-prose p,
+  .bio-prose p[style] {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
 }

@@ -21,7 +21,24 @@ const config = {
         xl: '80rem',
       },
     },
+    extend: {
+      typography: () => ({
+        DEFAULT: {
+          css: [
+            {
+              p: {
+                marginTop: '1.5rem',
+                marginBottom: '1.5rem',
+              },
+            },
+          ],
+        },
+      }),
+    },
   },
 }
 
-export default config
+export default {
+  ...config,
+  plugins: [typography],
+}

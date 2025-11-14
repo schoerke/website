@@ -87,6 +87,16 @@ export const Artists: CollectionConfig = {
           },
           fields: [
             {
+              name: 'quote',
+              label: {
+                en: 'Highlight Quote',
+                de: 'Hervorgehobenes Zitat',
+              },
+              type: 'text',
+              required: false,
+              localized: true,
+            },
+            {
               name: 'biography',
               type: 'richText',
               required: true,
