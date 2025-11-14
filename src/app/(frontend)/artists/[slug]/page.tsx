@@ -4,11 +4,12 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 
-export default async function ArtistDetailPage({ params }: { params: { slug: string } }) {
+export default async function ArtistDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'artists',
-    where: { slug: { equals: params.slug } },
+    where: { slug: { equals: slug } },
     limit: 1,
   })
   const artist = result.docs[0]
