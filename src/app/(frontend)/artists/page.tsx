@@ -20,13 +20,29 @@ const ArtistsPage = async () => {
   // Extract unique instruments for filter tabs
   const instruments = artists ? Array.from(new Set(artists.flatMap((artist: any) => artist.instrument || []))) : []
 
-  // Prepare images for the slider
-  const sliderImages = (artists || []).map((artist: any) => ({
-    src: artist.image?.url || '/placeholder.jpg',
-    alt: artist.name,
-    bannerText: artist.name,
-    link: artist.slug ? `/artists/${artist.slug}` : undefined,
-  }))
+  // Prepare images for the slider and randomize their order
+  function shuffleArray<T>(array: T[]): T[] {
+    const arr = [...array]
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+    return arr
+  }
+
+  const sliderImages = shuffleArray(
+    (artists || []).map((artist: any) => {
+      const sizes = artist.image?.sizes || {}
+      const src = sizes.hero?.url || sizes.card?.url || sizes.thumbnail?.url || artist.image?.url || '/placeholder.jpg'
+      return {
+        src,
+        alt: artist.name,
+        bannerText: artist.name,
+        link: artist.slug ? `/artists/${artist.slug}` : undefined,
+        sizesAttr: '(max-width: 768px) 100vw, 1200px',
+      }
+    }),
+  )
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -34,7 +50,7 @@ const ArtistsPage = async () => {
       {error && <div className="text-red-600">{error}</div>}
       {!error && artists && artists.length > 0 && (
         <div className="mb-12">
-          <ImageSlider images={sliderImages} autoAdvance interval={8000} showArrows={false} showDots />
+          <ImageSlider images={sliderImages} autoAdvance interval={6000} showArrows={false} showDots />
         </div>
       )}
       {!error && artists && artists.length === 0 && <div className="text-gray-500">No artists found.</div>}

@@ -6,6 +6,7 @@ export type ImageSlideData = {
   alt: string
   bannerText?: string
   link?: string
+  sizesAttr?: string
 }
 
 interface ImageSlideProps {
@@ -24,7 +25,7 @@ const ImageSlide: React.FC<ImageSlideProps> = ({ image, isActive }) => {
         fill
         className="rounded-lg object-cover"
         loading="lazy"
-        sizes="(max-width: 768px) 100vw, 50vw"
+        sizes={image.sizesAttr || '(max-width: 768px) 100vw, 50vw'}
       />
       {image.bannerText && (
         <div

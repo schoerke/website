@@ -13,6 +13,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
     limit: 1,
   })
   const artist = result.docs[0]
+
   if (!artist) return notFound()
 
   return (

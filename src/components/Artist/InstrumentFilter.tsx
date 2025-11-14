@@ -1,6 +1,5 @@
 'use client'
 
-import * as React from 'react'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 type InstrumentFilterProps = {
@@ -24,12 +23,7 @@ const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, select
       aria-label="Filter artists by instrument"
     >
       {instruments.map((instrument) => (
-        <ToggleGroupItem
-          key={instrument}
-          value={instrument}
-          aria-label={instrument}
-          className="capitalize"
-        >
+        <ToggleGroupItem key={instrument} value={instrument} aria-label={instrument} className="capitalize">
           {instrument}
         </ToggleGroupItem>
       ))}
