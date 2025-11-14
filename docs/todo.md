@@ -10,17 +10,13 @@
 
 ## Media
 
-- separate collections for photos and documents
+- separate collections for photos and documents?
 - can use different blob storage adapters per collection: <https://www.youtube.com/watch?v=HG0kOQiy_EU>
 
 ## Monitoring
 
 - [ ] Setup [Sentry Plugin](https://payloadcms.com/docs/plugins/sentry)
 - db monitoring?
-
-## Event Tracking
-
-- What are good options here?
 
 ## SEO
 
@@ -31,6 +27,6 @@
 
 - [ ] Setup [Search Plugin](https://payloadcms.com/docs/plugins/search)
 
-## Footer
+## UI
 
-- [ ] Move icon to local asset
+- [x] Move footer icon to local asset
