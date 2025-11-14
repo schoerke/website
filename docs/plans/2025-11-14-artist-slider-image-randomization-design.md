@@ -4,7 +4,9 @@
 
 ## Overview
 
-This document describes the approach for randomizing the order of images in the artist slider on the artist list page. The goal is to provide a fresh, randomized image order for each artist every time the page loads, improving visual variety and flexibility.
+This document describes the approach for randomizing the order of images in the artist slider on the artist list page.
+The goal is to provide a fresh, randomized image order for each artist every time the page loads, improving visual
+variety and flexibility.
 
 ## Requirements
 
@@ -18,7 +20,8 @@ This document describes the approach for randomizing the order of images in the 
 ### Data Fetching
 
 - Update the data fetching logic for the artist list page (e.g., in `src/services/artist.ts` or the relevant API route).
-- After fetching each artist and their associated images from Payload CMS using the local API, apply a shuffle algorithm to the images array before returning the data to the frontend.
+- After fetching each artist and their associated images from Payload CMS using the local API, apply a shuffle algorithm
+  to the images array before returning the data to the frontend.
 
 #### Example (TypeScript)
 
@@ -36,14 +39,15 @@ function shuffleArray<T>(array: T[]): T[] {
 
 export const getArtistsWithShuffledImages = async () => {
   const { docs: artists } = await payload.find({ collection: 'artists' })
-  return artists.map(artist => ({
+  return artists.map((artist) => ({
     ...artist,
     images: shuffleArray(artist.images || []),
   }))
 }
 ```
 
-- Integrate this logic into the existing data fetching function (e.g., `getArtistListData` or a new function as appropriate).
+- Integrate this logic into the existing data fetching function (e.g., `getArtistListData` or a new function as
+  appropriate).
 
 ### Frontend
 
@@ -57,6 +61,7 @@ export const getArtistsWithShuffledImages = async () => {
 
 ## Notes
 
-- This approach ensures a consistent, randomized order per page load, with no flicker or reordering during client-side navigation.
-- If future requirements call for more advanced ordering (e.g., session-persistent or user-customizable), this design can be extended.
-
+- This approach ensures a consistent, randomized order per page load, with no flicker or reordering during client-side
+  navigation.
+- If future requirements call for more advanced ordering (e.g., session-persistent or user-customizable), this design
+  can be extended.
