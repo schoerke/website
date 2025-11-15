@@ -10,7 +10,7 @@
 
 ## Media
 
-- separate collections for photos and documents?
+- separate collections for photos and documents? (not for now)
 - can use different blob storage adapters per collection: <https://www.youtube.com/watch?v=HG0kOQiy_EU>
 
 ## Monitoring
@@ -23,16 +23,17 @@
 - [ ] Setup [Seo Plugin](https://payloadcms.com/docs/plugins/seo)
 - [ ] Setup [Redirect Plugin](https://payloadcms.com/docs/plugins/redirects)
 
-## Search
-
-- [ ] Setup [Search Plugin](https://payloadcms.com/docs/plugins/search)
-
 ## UI
 
 - [x] Move footer icon to local asset
 - [ ] Add "Back to top" button
 - [ ] Restrict image size on artist detail page to avoid huge images breaking layout
 - [ ] Enhance image slider banner (news title)
+
+### Pages
+
+- [ ] Add Impressum page
+- [ ] Add Datenschutz page
 
 ### Artist Feature Enhancements (Optional)
 

@@ -4,13 +4,14 @@
 
 Implement a fast, mobile-friendly search feature that allows users to search across all public content (Artists,
 Projects, News, Employees, Media, Posts, Pages) via both a dedicated search page and a cmd-k style command palette
-(using KBar). The search will use a static JSON index generated from public content.
+(using KBar). The search will use the official Payload CMS Search Plugin as the primary backend, with performance
+optimizations and a static JSON backup for resilience.
 
 ## Requirements
 
 - **Content indexed:** Artists, Projects, News, Employees, Media, Posts, Pages (public/published only)
-- **Indexing method:** Static JSON file (`public/search-index.json`), generated via Payload CMS hooks, scheduled job, or
-  during build
+- **Indexing method:** Payload CMS Search Plugin maintains a real-time search collection; optional static JSON file
+  (`public/search-index.json`) generated from the search collection as a backup
 - **Frontend:**
   - Dedicated search page
   - Command palette (KBar) with cmd-k/ctrl-k shortcut
@@ -20,33 +21,46 @@ Projects, News, Employees, Media, Posts, Pages) via both a dedicated search page
 
 ## Architecture
 
-### 1. Search Index Generation
+### 1. Search Indexing (Payload Search Plugin)
 
-- **Trigger:**
-  - Preferred: Payload CMS `afterChange`/`afterDelete` hooks
-  - Alternatives: Scheduled job (cron, GitHub Action), or during site build
-- **Process:**
-  1. Fetch all public content from Payload CMS
-  2. Normalize into an array of items with: `id`, `type`, `title`, `description`, `url`
-  3. Write to `public/search-index.json`
-- **Security:** Only public fields included
+- **Plugin-managed:**
+  - The Payload Search Plugin automatically maintains a “search” collection in the database, syncing search-critical
+    fields from all public content in real time.
+  - You configure which fields are indexed and how results are prioritized.
+- **API:**
+  - The frontend queries the search collection via Payload’s REST or GraphQL API for live, up-to-date results.
+- **Security:**
+  - Configure access control so only public/published content is exposed to unauthenticated users.
 
 ### 2. Frontend Integration
 
-- **Loading:** Fetch `/search-index.json` on app load or when needed
-- **Mapping:** Map each item to a KBar action (`id`, `name`, `subtitle`, `section`, `url`, `perform`)
-- **Context:** Store mapped actions in React context/state for KBar and search page
-- **Grouping & Ranking:** Use KBar’s `section` for grouping; implement simple keyword-based ranking
+- **KBar:**
+  - On palette open or as the user types, debounce input (e.g., 200–300ms) and send a search query to the Payload API.
+  - Map returned search records to KBar actions (id, name, section, url, etc.).
+  - Group and display results by content type, ranked by plugin prioritization.
+- **Dedicated Search Page:**
+  - As the user types, debounce input and send queries to the Payload API.
+  - Display grouped, ranked results as cards or list items.
+  - Show “No results found” if the API returns nothing.
+- **Performance:**
+  - Debounce all search requests to reduce API load and improve UX.
+  - Optionally cache recent queries/results in memory to avoid duplicate API calls.
+  - Limit API fields to only those needed for display; paginate if necessary.
 
-### 3. Dedicated Search Page
+### 3. Static JSON Backup (Optional)
 
-- **UI:** Search input, grouped results, cards/list items linking to content
-- **UX:** Responsive, accessible, “No results found” message if empty
+- **Generation:**
+  - Periodically (e.g., nightly or on deploy), generate a static JSON index from the search collection and store it at
+    `public/search-index.json`.
+- **Fallback Logic:**
+  - If the Payload API is unavailable or slow, the frontend loads and searches the static JSON as a backup.
+  - Ensures search is always available, even during Payload downtime or deploys.
 
-### 4. Command Palette (KBar)
+### 4. Mobile & Accessibility
 
-- **UI:** Cmd-k/ctrl-k shortcut, grouped results, instant navigation
-- **UX:** Mobile-friendly, accessible, customizable
+- **UI:**
+  - Responsive layouts for both KBar and the search page.
+  - Large touch targets, accessible navigation, keyboard and screen reader support.
 
 ## Implementation Notes
 
@@ -54,3 +68,5 @@ Projects, News, Employees, Media, Posts, Pages) via both a dedicated search page
 - No sensitive or unpublished data in the index
 - No external search service required
 - Reuse mapping/filtering logic between KBar and search page
+- Debounce and cache search requests for performance
+- Static JSON backup ensures resilience
