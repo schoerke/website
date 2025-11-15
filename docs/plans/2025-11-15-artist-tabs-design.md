@@ -29,11 +29,11 @@ Before implementing the Artist detail page tab group, complete the following gro
   - Use **Radix UI `Select`** for the dropdown menu on mobile for accessible, consistent tab selection.
   - Both components provide strong accessibility and integrate well with the existing stack.
 
-
-
 ## Overview
 
-This document describes the design for a tab group component on the Artist detail page. The tab group organizes artist-related content into clearly separated, easily accessible sections, improving navigation and discoverability for users. The component is specific to the Artist detail page and is tailored to the data model and UX needs of this site.
+This document describes the design for a tab group component on the Artist detail page. The tab group organizes
+artist-related content into clearly separated, easily accessible sections, improving navigation and discoverability for
+users. The component is specific to the Artist detail page and is tailored to the data model and UX needs of this site.
 
 ## Goals
 
@@ -41,7 +41,8 @@ This document describes the design for a tab group component on the Artist detai
 - Reduce page length and cognitive load by separating content into tabs
 - Enable deep linking and browser navigation for specific sections
 - Optimize performance by lazy-loading tab content as needed
-- On desktop, tabs are shown as a horizontal tab list using Radix UI `ToggleGroup`; on mobile, they collapse into a dropdown menu using Radix UI `Select`
+- On desktop, tabs are shown as a horizontal tab list using Radix UI `ToggleGroup`; on mobile, they collapse into a
+  dropdown menu using Radix UI `Select`
 - **Support internationalization (i18n) for all tab labels, placeholders, and UI text**
 
 ## Tab Group Structure & Behavior
@@ -65,10 +66,12 @@ This document describes the design for a tab group component on the Artist detai
 ## Tab Details
 
 ### Biography
+
 - Renders from already-fetched artist data (no additional fetch)
 - No change to current loading logic
 
 ### Repertoire
+
 - New `repertoire` RichText field on the Artist collection
 - Supports text formatting (headings, lists, bold, italics, links); no images or embedded media
 - No maximum length
@@ -76,13 +79,17 @@ This document describes the design for a tab group component on the Artist detai
 - Placeholder message shown if field is empty
 
 ### Discography
-- For initial implementation, use a `discography` **RichText field** on the Artist collection (matches current client data).
+
+- For initial implementation, use a `discography` **RichText field** on the Artist collection (matches current client
+  data).
 - Supports text formatting (headings, lists, bold, italics, links); no images or embedded media.
 - No maximum length.
 - Renders using the existing RichText renderer.
 - Placeholder message shown if field is empty.
 - Future: Can migrate to a structured array of objects if/when needed.
+
 ### Video
+
 - New `videos` array field on the Artist collection
 - Each object contains at least a YouTube video URL or ID
 - Renders as a list of YouTube embeds, each wrapped in a details/summary accordion
@@ -90,18 +97,21 @@ This document describes the design for a tab group component on the Artist detai
 - Placeholder message shown if array is empty
 
 ### News
+
 - Pulls from the Posts collection, filtered by artist and the "news" category
 - Uses a reusable PostList component for rendering
 - Displays posts relevant to the artist, showing title, date, excerpt, and link to full post
 - Placeholder message shown if no posts are found
 
 ### Projects
+
 - Pulls from the Posts collection, filtered by artist and the "project" category
 - Uses the same reusable PostList component as News
 - Displays posts relevant to the artist and categorized as "project"
 - Placeholder message shown if no posts are found
 
 ### Concert Dates
+
 - Only rendered if the `externalCalendarURL` field exists on the Artist collection
 - Displays a button or prominent link to open the external calendar in a new tab
 - Not rendered if the field is missing or empty
@@ -118,7 +128,7 @@ This document describes the design for a tab group component on the Artist detai
 
 ## Future-Proofing & Extensibility
 
-- Tab content components are designed to be easily extended as the data model evolves (e.g., richer discography or video info)
+- Tab content components are designed to be easily extended as the data model evolves (e.g., richer discography or video
+  info)
 - The PostList component is reusable for other parts of the site
 - The Concert Dates tab can be expanded to show structured concert data in the future if requirements change
-

@@ -32,7 +32,7 @@ export const Artists: CollectionConfig = {
       hasMany: true,
       options: INSTRUMENTS.map((opt) => ({
         value: opt.value,
-        label: ({ t }) => (t as any)(`instruments:${opt.value}`),
+        label: ({ t }) => (t as any)(`custom:instruments:${opt.value}`),
       })),
       admin: {
         position: 'sidebar',
@@ -110,6 +110,54 @@ export const Artists: CollectionConfig = {
         },
         {
           label: {
+            en: 'Repertoire',
+            de: 'Repertoire',
+          },
+          fields: [
+            {
+              name: 'repertoire',
+              type: 'richText',
+              required: false,
+              localized: true,
+              label: {
+                en: 'Repertoire',
+                de: 'Repertoire',
+              },
+              admin: {
+                description: {
+                  en: 'Artist repertoire. No images or embedded media allowed.',
+                  de: 'Repertoire des Künstlers. Keine Bilder oder eingebetteten Medien erlaubt.',
+                },
+              },
+            },
+          ],
+        },
+        {
+          label: {
+            en: 'Discography',
+            de: 'Diskographie',
+          },
+          fields: [
+            {
+              name: 'discography',
+              type: 'richText',
+              required: false,
+              localized: true,
+              label: {
+                en: 'Discography',
+                de: 'Diskographie',
+              },
+              admin: {
+                description: {
+                  en: 'Artist discography. No images or embedded media allowed.',
+                  de: 'Diskographie des Künstlers. Keine Bilder oder eingebetteten Medien erlaubt.',
+                },
+              },
+            },
+          ],
+        },
+        {
+          label: {
             de: 'Medien',
             en: 'Media',
           },
@@ -158,6 +206,7 @@ export const Artists: CollectionConfig = {
                   label: 'Label',
                   type: 'text',
                   required: true,
+                  localized: true,
                 },
                 {
                   name: 'url',

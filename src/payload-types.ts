@@ -164,6 +164,42 @@ export interface Artist {
     };
     [k: string]: unknown;
   };
+  /**
+   * Artist repertoire. No images or embedded media allowed.
+   */
+  repertoire?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Artist discography. No images or embedded media allowed.
+   */
+  discography?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   downloads?: {
     biographyPDF?: (number | null) | Media;
     galleryZIP?: (number | null) | Media;
@@ -418,6 +454,8 @@ export interface ArtistsSelect<T extends boolean = true> {
   contactPersons?: T;
   quote?: T;
   biography?: T;
+  repertoire?: T;
+  discography?: T;
   downloads?:
     | T
     | {
