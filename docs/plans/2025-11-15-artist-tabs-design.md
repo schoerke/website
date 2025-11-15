@@ -1,5 +1,37 @@
 # Artist Detail Page Tab Group – Design
 
+## Preparation & Prerequisites
+
+Before implementing the Artist detail page tab group, complete the following groundwork:
+
+- **Artist Collection Schema Updates (in Payload CMS):**
+  - Add a `repertoire` field (RichText, no images/media).
+  - Add a `discography` field (array of objects; structure flexible, at minimum a title).
+  - (The `videos` and `externalCalendarURL` fields are already present.)
+
+- **Posts Collection:**
+  - Ensure posts can be filtered by artist and by category ("news" and "project").
+  - Confirm the Post model has appropriate references or tags for filtering.
+
+- **i18n Preparation:**
+  - Add tab labels, placeholders, and all UI text to translation files.
+  - Ensure the CMS supports multi-language content for fields as needed.
+
+- **Reusable Components:**
+  - Create or update a reusable `PostList` component for News and Projects tabs.
+  - Ensure a skeleton loader component is available for loading states.
+
+- **Design/UX:**
+  - Confirm mobile dropdown/tab design and accessibility patterns.
+  - Prepare placeholder messages for empty states in all supported languages.
+
+- **Component Libraries:**
+  - Use **Radix UI `ToggleGroup`** for the horizontal tab list on desktop.
+  - Use **Radix UI `Select`** for the dropdown menu on mobile for accessible, consistent tab selection.
+  - Both components provide strong accessibility and integrate well with the existing stack.
+
+
+
 ## Overview
 
 This document describes the design for a tab group component on the Artist detail page. The tab group organizes artist-related content into clearly separated, easily accessible sections, improving navigation and discoverability for users. The component is specific to the Artist detail page and is tailored to the data model and UX needs of this site.
@@ -10,7 +42,7 @@ This document describes the design for a tab group component on the Artist detai
 - Reduce page length and cognitive load by separating content into tabs
 - Enable deep linking and browser navigation for specific sections
 - Optimize performance by lazy-loading tab content as needed
-- Ensure accessibility and mobile usability
+- On desktop, tabs are shown as a horizontal tab list using Radix UI `ToggleGroup`; on mobile, they collapse into a dropdown menu using Radix UI `Select`
 - **Support internationalization (i18n) for all tab labels, placeholders, and UI text**
 
 ## Tab Group Structure & Behavior
