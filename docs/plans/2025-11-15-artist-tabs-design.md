@@ -2,11 +2,12 @@
 
 ## Preparation & Prerequisites
 
-Before implementing the Artist detail page tab group, complete the following groundwork:
+The following groundwork has been completed:
 
-- **Artist Collection Schema Updates (in Payload CMS):**
-  - Add a `repertoire` field (RichText, no images/media).
-  - Add a `discography` field (RichText, no images/media; matches current client data).
+- Added a `repertoire` field (RichText, no images/media) as a new tab in the Artist collection.
+- Added a `discography` field (RichText, no images/media) as a new tab in the Artist collection.
+
+The following groundwork remains:
 
 - **Posts Collection:**
   - Ensure posts can be filtered by artist and by category ("news" and "project").
