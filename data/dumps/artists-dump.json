@@ -3,7 +3,9 @@
     "id": 4,
     "generateSlug": false,
     "slug": "tzimon-barto",
-    "instrument": ["piano"],
+    "instrument": [
+      "piano"
+    ],
     "image": {
       "id": 6,
       "alt": "Tzimon Barto",
@@ -101,7 +103,9 @@
     "id": 3,
     "generateSlug": false,
     "slug": "tianwa-yang",
-    "instrument": ["violin"],
+    "instrument": [
+      "violin"
+    ],
     "image": {
       "id": 5,
       "alt": "Tianwa Yang",
@@ -145,7 +149,114 @@
       }
     },
     "name": "Tianwa Yang",
-    "contactPersons": [],
+    "contactPersons": [
+      {
+        "id": 1,
+        "name": "Eva Wagner",
+        "title": "Managing Director",
+        "email": "e.wagner@ks-schoerke.de",
+        "phone": "+49 (0)611-50 58 90 51",
+        "mobile": "+49 (0)172 821 32 58",
+        "image": {
+          "id": 1,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-14T21:38:43.214Z",
+          "createdAt": "2025-11-08T20:11:14.955Z",
+          "url": "/api/media/file/eva-wagner.jpg",
+          "thumbnailURL": "/api/media/file/eva-wagner-300x300.jpg",
+          "filename": "eva-wagner.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 10730,
+          "width": 304,
+          "height": 304,
+          "focalX": 53,
+          "focalY": 39,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/eva-wagner-300x300.jpg",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/jpeg",
+              "filesize": 10609,
+              "filename": "eva-wagner-300x300.jpg"
+            },
+            "card": {
+              "url": null,
+              "width": null,
+              "height": null,
+              "mimeType": null,
+              "filesize": null,
+              "filename": null
+            },
+            "hero": {
+              "url": null,
+              "width": null,
+              "height": null,
+              "mimeType": null,
+              "filesize": null,
+              "filename": null
+            }
+          }
+        },
+        "order": 1,
+        "updatedAt": "2025-11-08T20:41:20.578Z",
+        "createdAt": "2025-11-08T20:41:20.577Z"
+      },
+      {
+        "id": 4,
+        "name": "Justine Stemmelin",
+        "title": "Assistant Artist Manager",
+        "email": "j.stemmelin@ks-schoerke.de",
+        "phone": "+49 (0)611-50 58 90 53",
+        "mobile": "+49 (0)162 98 99 741",
+        "image": {
+          "id": 2,
+          "alt": "Default Avatar",
+          "credit": null,
+          "updatedAt": "2025-11-14T21:38:42.617Z",
+          "createdAt": "2025-11-08T20:11:46.660Z",
+          "url": "/api/media/file/default-avatar.webp",
+          "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
+          "filename": "default-avatar.webp",
+          "mimeType": "image/webp",
+          "filesize": 856,
+          "width": 300,
+          "height": 300,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/default-avatar-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 856,
+              "filename": "default-avatar-300x300.webp"
+            },
+            "card": {
+              "url": null,
+              "width": null,
+              "height": null,
+              "mimeType": null,
+              "filesize": null,
+              "filename": null
+            },
+            "hero": {
+              "url": null,
+              "width": null,
+              "height": null,
+              "mimeType": null,
+              "filesize": null,
+              "filename": null
+            }
+          }
+        },
+        "order": 4,
+        "updatedAt": "2025-11-08T20:41:22.263Z",
+        "createdAt": "2025-11-08T20:41:22.263Z"
+      }
+    ],
     "quote": "Tianwa Yang faszinierte Zuhörerinnen und Zuhörer vom ersten fundierten Bogenstrich des bekannten Themas an. Ihr Spiel von dezidierter Präzision und vollkommener Intonation, aber es ist nicht nur das. In jeder Note, jeder Sequenz, in jedem Moment war Yangs geballte Energie zu spüren. Eine gebändigte Kraft, die punktgenau mit brillanter Technik entfesselt wurde.",
     "biography": {
       "root": {
@@ -4163,20 +4274,22 @@
       }
     ],
     "homepageURL": "https://tianwayang.com",
-    "externalCalendarURL": "",
+    "externalCalendarURL": "https://tianwayang.com/de/termine",
     "facebookURL": "",
     "instagramURL": "",
     "twitterURL": "",
     "youtubeURL": "",
     "spotifyURL": "",
-    "updatedAt": "2025-11-15T16:40:40.856Z",
+    "updatedAt": "2025-11-15T16:46:11.706Z",
     "createdAt": "2025-11-08T15:40:12.667Z"
   },
   {
     "id": 2,
     "generateSlug": false,
     "slug": "mario-venzago",
-    "instrument": ["conductor"],
+    "instrument": [
+      "conductor"
+    ],
     "image": {
       "id": 4,
       "alt": "Mario Venzago",
@@ -4220,49 +4333,258 @@
       }
     },
     "name": "Mario Venzago",
-    "contactPersons": [],
-    "quote": null,
+    "contactPersons": [
+      {
+        "id": 1,
+        "name": "Eva Wagner",
+        "title": "Managing Director",
+        "email": "e.wagner@ks-schoerke.de",
+        "phone": "+49 (0)611-50 58 90 51",
+        "mobile": "+49 (0)172 821 32 58",
+        "image": {
+          "id": 1,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-14T21:38:43.214Z",
+          "createdAt": "2025-11-08T20:11:14.955Z",
+          "url": "/api/media/file/eva-wagner.jpg",
+          "thumbnailURL": "/api/media/file/eva-wagner-300x300.jpg",
+          "filename": "eva-wagner.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 10730,
+          "width": 304,
+          "height": 304,
+          "focalX": 53,
+          "focalY": 39,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/eva-wagner-300x300.jpg",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/jpeg",
+              "filesize": 10609,
+              "filename": "eva-wagner-300x300.jpg"
+            },
+            "card": {
+              "url": null,
+              "width": null,
+              "height": null,
+              "mimeType": null,
+              "filesize": null,
+              "filename": null
+            },
+            "hero": {
+              "url": null,
+              "width": null,
+              "height": null,
+              "mimeType": null,
+              "filesize": null,
+              "filename": null
+            }
+          }
+        },
+        "order": 1,
+        "updatedAt": "2025-11-08T20:41:20.578Z",
+        "createdAt": "2025-11-08T20:41:20.577Z"
+      },
+      {
+        "id": 4,
+        "name": "Justine Stemmelin",
+        "title": "Assistant Artist Manager",
+        "email": "j.stemmelin@ks-schoerke.de",
+        "phone": "+49 (0)611-50 58 90 53",
+        "mobile": "+49 (0)162 98 99 741",
+        "image": {
+          "id": 2,
+          "alt": "Default Avatar",
+          "credit": null,
+          "updatedAt": "2025-11-14T21:38:42.617Z",
+          "createdAt": "2025-11-08T20:11:46.660Z",
+          "url": "/api/media/file/default-avatar.webp",
+          "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
+          "filename": "default-avatar.webp",
+          "mimeType": "image/webp",
+          "filesize": 856,
+          "width": 300,
+          "height": 300,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/default-avatar-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 856,
+              "filename": "default-avatar-300x300.webp"
+            },
+            "card": {
+              "url": null,
+              "width": null,
+              "height": null,
+              "mimeType": null,
+              "filesize": null,
+              "filename": null
+            },
+            "hero": {
+              "url": null,
+              "width": null,
+              "height": null,
+              "mimeType": null,
+              "filesize": null,
+              "filename": null
+            }
+          }
+        },
+        "order": 4,
+        "updatedAt": "2025-11-08T20:41:22.263Z",
+        "createdAt": "2025-11-08T20:41:22.263Z"
+      }
+    ],
+    "quote": "Und da ist das Orchester, das unter der zugewandten, ja liebevollen Leitung von Stargast Mario Venzago blitzsauber, hell-wach, schmissig und wunderbar opulent aufspielt.",
     "biography": {
       "root": {
-        "type": "root",
         "children": [
           {
-            "type": "paragraph",
             "children": [
               {
-                "text": "Conducting is the greatest fulfillment of Mario Venzago’s life – he has wanted to do it from an early age on. Imagination and a willingness to take risks characterize his very own style and have allowed him to conduct concerts, recordings, operas and increasingly so, his own compositions around the world for some years now. ",
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Dirigieren ist für Mario Venzago Lebenserfüllung – er wollte es schon von klein auf. Fantasie und Risikobereitschaft zeichnen seinen ganz eigenen Stil aus und lassen ihn nun bereits seit vielen Jahren rund um die Welt Konzert, Aufnahmen, Opern und seit einigen Jahren auch verstärkt seine eigenen Kompositionen gestalten.",
                 "type": "text",
                 "version": 1
               }
             ],
-            "version": 1
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Elf Jahre lang, zwischen 2010 und 2021, war Venzago Chefdirigent und Künstlerischer Leiter des Berner Symphonieorchesters. Zuvor hat er als Chefdirigent bzw. Generalmusikdirektor das Indianapolis Symphony Orchestra, die Göteborg Symfoniker, das Euskadiko Orkestra (Baskisches Nationalorchestra), das Sinfonieorchester Basel, die Grazer Oper und das Grazer Philharmonische Orchester, die Deutsche Kammerphilharmonie Frankfurt (heute Bremen), das Philharmonische Orchester Heidelberg, sowie das Musikkollegium Winterthur geleitet. Von 2010 bis 2014 war er Principal Conductor der Royal Northern Sinfonia, von 2010 bis 2019 Artist in Association bei der finnischen Tapiola Sinfonietta und von 2000 bis 2003 Künstlerischer Leiter des Baltimore Music Summer Fest, als Nachfolger von Pinchas Zukerman und David Zinman. Die Saison 2025/2026 führt ihn u.a. zurück zum Baltimore Symphony Orchestra, dem Berner Symphonieorchester, dem Philharmonischen Orchester Heidelberg, dem Yomiuri Nippon Symphony Orchestra Tokio, nach Singapur und zur NFM Wroclaw Philharmonic.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Mario Venzago dirigierte die bedeutendsten Orchester weltweit, u.a. die Berliner Philharmoniker, das Gewandhausorchester Leipzig, die Orchester von Philadelphia und Boston, das London Philharmonic Orchestra, das Orchestre Philharmonique de Radio France, das Orchestra Filarmonica della Scala und das NHK Symphony Orchestra. Er ist regelmäßiger Gast international renommierter Orchester wie Seoul Philharmonic Orchestra, Helsinki Philharmonic Orchestra, St. Petersburger Philharmoniker, Konzerthausorchester Berlin und Frankfurter Museumsorchester. Dabei konzertierte er mit den berühmtesten Solisten der Welt und arbeitet bei Opernproduktionen mit Regisseuren wie Ruth Berghaus, Peter Konwitschny oder Hans Neuenfels.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Mehrere seiner Einspielungen wurden mit internationalen Preisen ausgezeichnet, bspw. dem Grand Prix du Disque, dem Diapason d‘Or de l‘Année und dem Prix Edison. Die Einspielungen der Opern Venus und Penthesilea sowie die Aufnahme aller Chorwerke von Othmar Schoeck mit dem MDR Chor und Sinfonieorchester fanden große internationale Anerkennung und erhielten höchste Auszeichnungen; so auch der ihm folgende Film Mein Bruder der Dirigent von Alberto Venzago, der europaweit in den Kinos lief und auf DVD erschienen ist. Bei cpo veröffentlichte Mario Venzago sein Projekt Der andere Bruckner mit der Gesamtaufnahme aller zehn Bruckner-Sinfonien, dessen Einzelveröffentlichungen von der internationalen Kritik hoch gelobt wurden. Bei Sony Classical erschien die aufsehenerregende Einspielung der von Venzago vollendeten Unvollendeten von Franz Schubert mit dem Kammerorchester Basel sowie die Gesamtaufnahme der Serenaden und Sinfonien von Johannes Brahms. Weitere Einspielungen umfassen Othmar Schoecks Oper Schloss Dürande in einer Neufassung mit dem Berner Symphonieorchester und die Kantate Vom Fischer und syner Fru mit dem Musikkollegium Winterthur. Zuletzt erschien 2022 bei Prospero die Einspielung der rekonstruierten 7. Sinfonie Schuberts mit dem Berner Symphonieorchester, eine Suite aus Bernard Herrmanns Wuthering Heights mit dem Singapore Symphony Orchestra bei Chandos Records und ebenfalls mit Singapore Symphony Paganinis 1. Violinkonzert mit der 15-jährigen Chloe Chua bei Pentatone/Naxos.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "Neben seiner Tätigkeit als Dirigent widmet sich Mario Venzago vermehrt seiner Leidenschaft zu komponieren. 2021 brachte er mit Soyoung Yoon und dem Berner Symphonieorchester sein Violinkonzert zur Uraufführung. 2026 wird sein Klavierkonzert mit Claire Huangci und dem Philharmonischen Orchester Heidelberg uraufgeführt. Auch seine 3 Orchesterstücke werden in der kommenden Saison mehrfach aufgeführt. Verschiedene Werke, u.a. zwei Opern, sind bei Universal Edition verlegerisch in Vorbereitung.",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 1,
+                "mode": "normal",
+                "style": "",
+                "text": "Saison 2025/26 | Foto: Alberto Venzago | Anfangszitat: Mainpost, 5. Juni 2025",
+                "type": "text",
+                "version": 1
+              },
+              {
+                "type": "linebreak",
+                "version": 1
+              },
+              {
+                "detail": 0,
+                "format": 1,
+                "mode": "normal",
+                "style": "",
+                "text": "Änderungen und Kürzungen bedürfen der Absprache mit der Künstlersekretariat Astrid Schoerke GmbH",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": null,
+            "format": "start",
+            "indent": 0,
+            "type": "paragraph",
+            "version": 1,
+            "textFormat": 0,
+            "textStyle": ""
           }
         ],
         "direction": "ltr",
         "format": "",
         "indent": 0,
+        "type": "root",
         "version": 1
-      },
-      "en": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "text": "Conducting is the greatest fulfillment of Mario Venzago’s life – he has wanted to do it from an early age on. Imagination and a willingness to take risks characterize his very own style and have allowed him to conduct concerts, recordings, operas and increasingly so, his own compositions around the world for some years now. "
-            }
-          ]
-        }
-      ],
-      "de": [
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "text": "Dirigieren ist für Mario Venzago Lebenserfüllung – er wollte es schon von klein auf. Fantasie und Risikobereitschaft zeichnen seinen ganz eigenen Stil aus und lassen ihn nun bereits seit vielen Jahren rund um die Welt Konzert, Aufnahmen, Opern und seit einigen Jahren auch verstärkt seine eigenen Kompositionen gestalten."
-            }
-          ]
-        }
-      ]
+      }
     },
     "repertoire": null,
     "discography": null,
@@ -4278,14 +4600,17 @@
     "twitterURL": "",
     "youtubeURL": "",
     "spotifyURL": "",
-    "updatedAt": "2025-11-09T17:42:09.024Z",
+    "updatedAt": "2025-11-15T16:48:45.382Z",
     "createdAt": "2025-11-08T15:40:12.230Z"
   },
   {
     "id": 1,
     "generateSlug": false,
     "slug": "christian-zacharias",
-    "instrument": ["conductor", "piano"],
+    "instrument": [
+      "conductor",
+      "piano"
+    ],
     "image": {
       "id": 3,
       "alt": "Christian Zacharias",

@@ -16,8 +16,8 @@ function getValidCollections(config: any): string[] {
 
 async function exportCollection(payload: any, collection: string) {
   const result = await payload.find({ collection })
-  const outFile = `${collection}-test.json`
-  const outPath = path.join(process.cwd(), 'scripts', 'seeds', outFile)
+  const outFile = `${collection}-dump.json`
+  const outPath = path.join(process.cwd(), 'data', 'dumps', outFile)
 
   await writeFile(outPath, JSON.stringify(result.docs, null, 2), 'utf-8')
 

@@ -10,13 +10,13 @@
       "id": 2,
       "alt": "Default Avatar",
       "credit": null,
-      "updatedAt": "2025-11-08T20:11:46.660Z",
+      "updatedAt": "2025-11-14T21:38:42.617Z",
       "createdAt": "2025-11-08T20:11:46.660Z",
       "url": "/api/media/file/default-avatar.webp",
       "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
       "filename": "default-avatar.webp",
       "mimeType": "image/webp",
-      "filesize": 872,
+      "filesize": 856,
       "width": 300,
       "height": 300,
       "focalX": 50,
@@ -27,8 +27,24 @@
           "width": 300,
           "height": 300,
           "mimeType": "image/webp",
-          "filesize": 872,
+          "filesize": 856,
           "filename": "default-avatar-300x300.webp"
+        },
+        "card": {
+          "url": null,
+          "width": null,
+          "height": null,
+          "mimeType": null,
+          "filesize": null,
+          "filename": null
+        },
+        "hero": {
+          "url": null,
+          "width": null,
+          "height": null,
+          "mimeType": null,
+          "filesize": null,
+          "filename": null
         }
       }
     },
@@ -47,13 +63,13 @@
       "id": 2,
       "alt": "Default Avatar",
       "credit": null,
-      "updatedAt": "2025-11-08T20:11:46.660Z",
+      "updatedAt": "2025-11-14T21:38:42.617Z",
       "createdAt": "2025-11-08T20:11:46.660Z",
       "url": "/api/media/file/default-avatar.webp",
       "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
       "filename": "default-avatar.webp",
       "mimeType": "image/webp",
-      "filesize": 872,
+      "filesize": 856,
       "width": 300,
       "height": 300,
       "focalX": 50,
@@ -64,8 +80,24 @@
           "width": 300,
           "height": 300,
           "mimeType": "image/webp",
-          "filesize": 872,
+          "filesize": 856,
           "filename": "default-avatar-300x300.webp"
+        },
+        "card": {
+          "url": null,
+          "width": null,
+          "height": null,
+          "mimeType": null,
+          "filesize": null,
+          "filename": null
+        },
+        "hero": {
+          "url": null,
+          "width": null,
+          "height": null,
+          "mimeType": null,
+          "filesize": null,
+          "filename": null
         }
       }
     },
@@ -84,13 +116,13 @@
       "id": 2,
       "alt": "Default Avatar",
       "credit": null,
-      "updatedAt": "2025-11-08T20:11:46.660Z",
+      "updatedAt": "2025-11-14T21:38:42.617Z",
       "createdAt": "2025-11-08T20:11:46.660Z",
       "url": "/api/media/file/default-avatar.webp",
       "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
       "filename": "default-avatar.webp",
       "mimeType": "image/webp",
-      "filesize": 872,
+      "filesize": 856,
       "width": 300,
       "height": 300,
       "focalX": 50,
@@ -101,8 +133,24 @@
           "width": 300,
           "height": 300,
           "mimeType": "image/webp",
-          "filesize": 872,
+          "filesize": 856,
           "filename": "default-avatar-300x300.webp"
+        },
+        "card": {
+          "url": null,
+          "width": null,
+          "height": null,
+          "mimeType": null,
+          "filesize": null,
+          "filename": null
+        },
+        "hero": {
+          "url": null,
+          "width": null,
+          "height": null,
+          "mimeType": null,
+          "filesize": null,
+          "filename": null
         }
       }
     },
@@ -121,7 +169,7 @@
       "id": 1,
       "alt": "Eva Wagner",
       "credit": null,
-      "updatedAt": "2025-11-08T20:11:14.955Z",
+      "updatedAt": "2025-11-14T21:38:43.214Z",
       "createdAt": "2025-11-08T20:11:14.955Z",
       "url": "/api/media/file/eva-wagner.jpg",
       "thumbnailURL": "/api/media/file/eva-wagner-300x300.jpg",
@@ -130,8 +178,8 @@
       "filesize": 10730,
       "width": 304,
       "height": 304,
-      "focalX": 50,
-      "focalY": 50,
+      "focalX": 53,
+      "focalY": 39,
       "sizes": {
         "thumbnail": {
           "url": "/api/media/file/eva-wagner-300x300.jpg",
@@ -140,6 +188,22 @@
           "mimeType": "image/jpeg",
           "filesize": 10609,
           "filename": "eva-wagner-300x300.jpg"
+        },
+        "card": {
+          "url": null,
+          "width": null,
+          "height": null,
+          "mimeType": null,
+          "filesize": null,
+          "filename": null
+        },
+        "hero": {
+          "url": null,
+          "width": null,
+          "height": null,
+          "mimeType": null,
+          "filesize": null,
+          "filename": null
         }
       }
     },
