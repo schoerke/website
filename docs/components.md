@@ -1,3 +1,5 @@
+# Components
+
 ## Layout
 
 - MainNavigation
@@ -9,14 +11,14 @@
 
 ## Home
 
-- Slider (with banner)
+- ImageSlider
 - Quote
 - Contact
 
 ## Artists
 
-- Slider
-- ArtistList
+- ImageSlider
+- ArtistGrid
 - ArtistCard
 - ArtistCategories
 
@@ -24,6 +26,7 @@
 
 - TabsList
 - Ansprechpartner
+- Quote
 - Downloads
 - ImageGallery
 

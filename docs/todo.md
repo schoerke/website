@@ -32,6 +32,7 @@
 - [x] Move footer icon to local asset
 - [ ] Add "Back to top" button
 - [ ] Restrict image size on artist detail page to avoid huge images breaking layout
+- [ ] Enhance image slider banner (news title)
 
 ### Artist Feature Enhancements (Optional)
 

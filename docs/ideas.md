@@ -1,1 +1,25 @@
+# Ideas for Future Features
+
+## Idea: Fixture Management
+
 - add Collection callback to create/update fixtures for easy seeding and testing
+
+## Idea: PDF Generation
+
+- artist biographies
+
+## Idea: Newsletter Management
+
+- manage contacts via Mailjet API
+- manage campaigns via Mailjet API
+- preview campaigns in-app before sending
+- schedule campaigns for future sending
+- track campaign performance metrics (open rates, click rates, etc.)
+
+## Cmd-K: Advanced Search
+
+- implement Cmd-K style search for quick navigation
+- search across collections, media, and pages
+- display search results in a modal or overlay
+- support keyboard navigation for search results
+- allow filtering of search results by collection or type

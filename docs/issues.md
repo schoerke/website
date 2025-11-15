@@ -20,17 +20,8 @@
 
 ## Localization
 
-- the UI is not being localized (eg. Post labels, dates and times in Posts list)
-
 ## Mobile Design
-
-- I don't want to rebuild this (it's awful)
 
 ## Tailwind
 
-- Google Fonts don't seem to be applied
-
 ## Assets
-
-- logo is flickering
-  - serve static asset
