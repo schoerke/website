@@ -1,4 +1,4 @@
-import FooterLogo from './FooterLogo'
+import FooterLogo from '@/components/Footer/FooterLogo'
 
 const Footer = async () => {
   return (

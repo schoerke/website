@@ -1,5 +1,5 @@
-import Colors from '@/components/Colors'
-import Typography from '@/components/Typography'
+import Colors from '@/components/Brand/Colors'
+import Typography from '@/components/Brand/Typography'
 
 const ColorsPage: React.FC = () => {
   return (
