@@ -62,11 +62,12 @@ export const Posts: CollectionConfig = {
         en: 'Created by',
       },
       type: 'relationship',
-      relationTo: 'users',
+      relationTo: 'employees',
       required: true,
       admin: {
         position: 'sidebar',
       },
+      defaultValue: 1, // Eva Wagner
     },
   ],
   versions: {

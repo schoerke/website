@@ -324,7 +324,7 @@ export interface Post {
       )[]
     | null;
   image?: (number | null) | Media;
-  createdBy: number | User;
+  createdBy: number | Employee;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
