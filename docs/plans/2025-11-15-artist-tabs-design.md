@@ -6,8 +6,7 @@ Before implementing the Artist detail page tab group, complete the following gro
 
 - **Artist Collection Schema Updates (in Payload CMS):**
   - Add a `repertoire` field (RichText, no images/media).
-  - Add a `discography` field (array of objects; structure flexible, at minimum a title).
-  - (The `videos` and `externalCalendarURL` fields are already present.)
+  - Add a `discography` field (RichText, no images/media; matches current client data).
 
 - **Posts Collection:**
   - Ensure posts can be filtered by artist and by category ("news" and "project").
@@ -77,12 +76,12 @@ This document describes the design for a tab group component on the Artist detai
 - Placeholder message shown if field is empty
 
 ### Discography
-- New `discography` array field on the Artist collection
-- Each object represents a recording (structure flexible for now; at minimum, a title)
-- Renders as a list of recordings (optionally grid view in the future)
-- Placeholder message shown if array is empty
-- Designed to be easily extended as the data model evolves
-
+- For initial implementation, use a `discography` **RichText field** on the Artist collection (matches current client data).
+- Supports text formatting (headings, lists, bold, italics, links); no images or embedded media.
+- No maximum length.
+- Renders using the existing RichText renderer.
+- Placeholder message shown if field is empty.
+- Future: Can migrate to a structured array of objects if/when needed.
 ### Video
 - New `videos` array field on the Artist collection
 - Each object contains at least a YouTube video URL or ID
