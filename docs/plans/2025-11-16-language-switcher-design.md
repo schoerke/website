@@ -100,26 +100,31 @@ CMS best practices.
 ## 8. Edge Case Analysis & Findings
 
 ### Key Findings
-- next-intl enables fully localized URLs (e.g., `/kuenstler` for German, `/en/artists` for English) with a single set of page files and a central routing config.
-- Your Payload CMS setup guarantees consistent slugs across locales for dynamic content (artists), so language switching is reliable.
-- Payload CMS is configured to serve fallback content if a translation is missing, so users never see a 404 due to missing translations.
+
+- next-intl enables fully localized URLs (e.g., `/kuenstler` for German, `/en/artists` for English) with a single set of
+  page files and a central routing config.
+- Your Payload CMS setup guarantees consistent slugs across locales for dynamic content (artists), so language switching
+  is reliable.
+- Payload CMS is configured to serve fallback content if a translation is missing, so users never see a 404 due to
+  missing translations.
 
 ### Edge Case Table
 
-| Edge Case                        | Risk/Impact                | Status/Recommendation                |
-|-----------------------------------|----------------------------|--------------------------------------|
-| Missing translation/slug          | 404 or fallback            | **Handled by Payload fallback**      |
-| Locale switch on dynamic page     | Wrong slug or 404          | **Handled by consistent slugs**      |
-| Default locale prefix             | SEO/canonical issues       | Handled by next-intl config          |
-| Static/dynamic route config       | 404s, broken links         | Handled by next-intl config          |
-| Link/navigation handling          | Broken navigation/SEO      | Use next-intl `Link` everywhere      |
-| SEO alternate links               | SEO issues                 | Use next-intl/SEO plugin             |
-| Middleware matcher                | Broken API/static files    | Use recommended matcher              |
-| Locale detection/cookie           | Wrong locale, UX issues    | Handled by next-intl middleware      |
-| Adding new locales/routes         | 404s, missing translations | Update config and translations       |
-| Payload CMS integration           | Routing/link breakage      | **Handled by your data model**       |
+| Edge Case                     | Risk/Impact                | Status/Recommendation           |
+| ----------------------------- | -------------------------- | ------------------------------- |
+| Missing translation/slug      | 404 or fallback            | **Handled by Payload fallback** |
+| Locale switch on dynamic page | Wrong slug or 404          | **Handled by consistent slugs** |
+| Default locale prefix         | SEO/canonical issues       | Handled by next-intl config     |
+| Static/dynamic route config   | 404s, broken links         | Handled by next-intl config     |
+| Link/navigation handling      | Broken navigation/SEO      | Use next-intl `Link` everywhere |
+| SEO alternate links           | SEO issues                 | Use next-intl/SEO plugin        |
+| Middleware matcher            | Broken API/static files    | Use recommended matcher         |
+| Locale detection/cookie       | Wrong locale, UX issues    | Handled by next-intl middleware |
+| Adding new locales/routes     | 404s, missing translations | Update config and translations  |
+| Payload CMS integration       | Routing/link breakage      | **Handled by your data model**  |
 
 ### Recommendations
+
 - Use next-intl’s helpers for navigation and language switching.
 - Keep your routing config and translation files up to date as you add new routes or locales.
 - Test navigation and fallback behavior periodically to ensure everything works as expected.
@@ -128,60 +133,87 @@ CMS best practices.
 
 ---
 
-This section documents the architectural decisions and edge case handling for your internationalized routing and language switcher, ensuring maintainability and robustness as your project evolves.
+This section documents the architectural decisions and edge case handling for your internationalized routing and
+language switcher, ensuring maintainability and robustness as your project evolves.
 
 ## 9. Documentation Maintenance
 
-- Update all project documentation (README, onboarding guides, developer docs) to reflect the next-intl-based routing and language switcher setup.
+- Update all project documentation (README, onboarding guides, developer docs) to reflect the next-intl-based routing
+  and language switcher setup.
 - Clearly document the process for adding new content, pages, or routes:
   - How to update `src/i18n/routing.ts` with new localized pathnames.
   - How to add new page files (single set per logical route).
   - How to add new locales or translations.
   - How to use next-intl’s helpers for navigation and language switching.
   - How to ensure Payload CMS slugs and fallbacks are configured for new content.
-- Ensure that all team members and future maintainers understand the workflow for expanding the site’s content and routes in a localized, SEO-friendly way.
+- Ensure that all team members and future maintainers understand the workflow for expanding the site’s content and
+  routes in a localized, SEO-friendly way.
 
 ---
 
-This step ensures your documentation stays in sync with your architecture, making it easy for anyone to add new content or routes using the next-intl and Payload CMS setup.
+This step ensures your documentation stays in sync with your architecture, making it easy for anyone to add new content
+or routes using the next-intl and Payload CMS setup.
 
 ## 10. SEO Integration Clarification
 
-- There is no official "next-intl SEO plugin." For SEO best practices, use next-intl’s routing config and helpers to generate `<link rel="alternate" hreflang="...">` tags in your layouts or pages.
-- Alternatively, you can use a general SEO plugin (like next-seo) or your CMS’s SEO plugin (e.g., Payload SEO plugin) in combination with next-intl’s routing info.
+- There is no official "next-intl SEO plugin." For SEO best practices, use next-intl’s routing config and helpers to
+  generate `<link rel="alternate" hreflang="...">` tags in your layouts or pages.
+- Alternatively, you can use a general SEO plugin (like next-seo) or your CMS’s SEO plugin (e.g., Payload SEO plugin) in
+  combination with next-intl’s routing info.
 - Example: Generating alternate links in your layout using next-intl’s routing config:
 
 ```tsx
 // app/layout.tsx or app/[...]/layout.tsx
-import {routing} from '@/i18n/routing';
-import {getLocale} from 'next-intl/server';
-import {usePathname} from 'next-intl/navigation';
+import { routing } from '@/i18n/routing'
+import { getLocale } from 'next-intl/server'
+import { usePathname } from 'next-intl/navigation'
 
-export default async function RootLayout({children}) {
-  const locale = await getLocale();
-  const pathname = usePathname(); // or your own logic to get the current path
+export default async function RootLayout({ children }) {
+  const locale = await getLocale()
+  const pathname = usePathname() // or your own logic to get the current path
 
   return (
     <html lang={locale}>
       <head>
         {/* Generate alternate links for all locales */}
         {routing.locales.map((loc) => (
-          <link
-            key={loc}
-            rel="alternate"
-            hrefLang={loc}
-            href={routing.getLocalizedPathname(pathname, loc)}
-          />
+          <link key={loc} rel="alternate" hrefLang={loc} href={routing.getLocalizedPathname(pathname, loc)} />
         ))}
       </head>
       <body>{children}</body>
     </html>
-  );
+  )
 }
 ```
 
-- Update your documentation and code to clarify that next-intl provides the tools for SEO integration, but not a dedicated SEO plugin.
+- Update your documentation and code to clarify that next-intl provides the tools for SEO integration, but not a
+  dedicated SEO plugin.
+
+## 11. Payload CMS Integration Findings
+
+- The `slug` field on the Artist collection is configured as `localized: true`, so each locale has its own slug.
+- When fetching an artist via the Payload Local API, you can request the `localizations` field, which returns an array of all other locales and their slugs.
+- This allows you to build an `alternateSlugs` object for the language switcher in a single API call, with no need for additional requests.
+- The language switcher uses this object to generate correct links for each locale, falling back to the homepage or disabling the link if a translation is missing.
+- This approach is efficient, robust, and officially supported by Payload CMS and next-intl.
+
+## 12. Official Documentation Consulted
+
+- **next-intl**
+  - [Routing Configuration](https://next-intl.dev/docs/routing/configuration)
+  - [Dynamic Segments](https://next-intl.dev/docs/routing/configuration#dynamic-segments)
+  - [Middleware Setup](https://next-intl.dev/docs/routing/middleware)
+  - [Navigation Helpers](https://next-intl.dev/docs/routing/navigation)
+  - [Locale Detection](https://next-intl.dev/docs/routing/setup)
+- **Payload CMS**
+  - [Localization Overview](https://payloadcms.com/docs/localization/overview)
+  - [Field-Level Localization](https://github.com/payloadcms/payload/blob/main/docs/configuration/localization.mdx)
+  - [Local API Usage](https://github.com/payloadcms/payload/blob/main/docs/local-api/overview.mdx)
+  - [Fetching Localized Documents](https://github.com/payloadcms/payload/blob/main/docs/configuration/localization.mdx#find-localized-documents-using-payload-local-api-with-javascript)
+- **Next.js**
+  - [App Router Internationalization](https://nextjs.org/docs/app/guides/internationalization)
+  - [App Router Routing Overview](https://nextjs.org/docs/app/building-your-application/routing)
 
 ---
 
-This clarification ensures your team understands how to handle SEO with next-intl and avoids confusion about plugin availability.
+This section ensures future agents and maintainers can quickly understand the rationale, official sources, and best practices behind the language switcher and i18n architecture in this project.
