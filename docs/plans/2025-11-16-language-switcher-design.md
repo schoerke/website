@@ -4,7 +4,9 @@
 
 ## 1. Overview
 
-This design describes a robust, minimal, and idiomatic approach for implementing a language switcher in a Next.js App Router project using Payload CMS for content and the official Payload SEO plugin for SEO metadata. Locale is determined solely by the URL, leveraging Next.js i18n routing. No React context or global state is used.
+This design describes a robust, minimal, and idiomatic approach for implementing a language switcher in a Next.js App
+Router project using Payload CMS for content and the official Payload SEO plugin for SEO metadata. Locale is determined
+solely by the URL, leveraging Next.js i18n routing. No React context or global state is used.
 
 ## 2. Directory & Routing Structure
 
