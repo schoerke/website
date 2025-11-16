@@ -3,9 +3,7 @@
     "id": 4,
     "generateSlug": false,
     "slug": "tzimon-barto",
-    "instrument": [
-      "piano"
-    ],
+    "instrument": ["piano"],
     "image": {
       "id": 6,
       "alt": "Tzimon Barto",
@@ -103,9 +101,7 @@
     "id": 3,
     "generateSlug": false,
     "slug": "tianwa-yang",
-    "instrument": [
-      "violin"
-    ],
+    "instrument": ["violin"],
     "image": {
       "id": 5,
       "alt": "Tianwa Yang",
@@ -4287,9 +4283,7 @@
     "id": 2,
     "generateSlug": false,
     "slug": "mario-venzago",
-    "instrument": [
-      "conductor"
-    ],
+    "instrument": ["conductor"],
     "image": {
       "id": 4,
       "alt": "Mario Venzago",
@@ -4607,10 +4601,7 @@
     "id": 1,
     "generateSlug": false,
     "slug": "christian-zacharias",
-    "instrument": [
-      "conductor",
-      "piano"
-    ],
+    "instrument": ["conductor", "piano"],
     "image": {
       "id": 3,
       "alt": "Christian Zacharias",
