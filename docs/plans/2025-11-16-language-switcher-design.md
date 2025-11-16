@@ -129,3 +129,18 @@ CMS best practices.
 ---
 
 This section documents the architectural decisions and edge case handling for your internationalized routing and language switcher, ensuring maintainability and robustness as your project evolves.
+
+## 9. Documentation Maintenance
+
+- Update all project documentation (README, onboarding guides, developer docs) to reflect the next-intl-based routing and language switcher setup.
+- Clearly document the process for adding new content, pages, or routes:
+  - How to update `src/i18n/routing.ts` with new localized pathnames.
+  - How to add new page files (single set per logical route).
+  - How to add new locales or translations.
+  - How to use next-intl’s helpers for navigation and language switching.
+  - How to ensure Payload CMS slugs and fallbacks are configured for new content.
+- Ensure that all team members and future maintainers understand the workflow for expanding the site’s content and routes in a localized, SEO-friendly way.
+
+---
+
+This step ensures your documentation stays in sync with your architecture, making it easy for anyone to add new content or routes using the next-intl and Payload CMS setup.
