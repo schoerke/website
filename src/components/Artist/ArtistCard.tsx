@@ -1,6 +1,10 @@
+'use client'
+
+import { publicEnv } from '@/config/env'
+import { Link } from '@/i18n/navigation'
 import type { Media } from '@/payload-types'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import Link from 'next/link'
 
 interface ArtistCardProps {
   id: string
@@ -10,19 +14,22 @@ interface ArtistCardProps {
   slug?: string
 }
 
-const R2_PUBLIC_ENDPOINT = process.env.NEXT_PUBLIC_S3_HOSTNAME
-
 function getImageUrl(img: Media | null | undefined): string {
   if (!img) return '/placeholder.jpg'
   if (img.url && img.url.startsWith('http')) return img.url
-  if (img.filename) return `${R2_PUBLIC_ENDPOINT}/${img.filename}`
+  if (img.filename) return `${publicEnv.r2PublicEndpoint}/${img.filename}`
   return '/placeholder.jpg'
 }
 
 const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }) => {
+  const t = useTranslations('custom.instruments')
+
   // If image is a number or null, treat as missing
   const img = typeof image === 'object' && image !== null ? (image as Media) : null
   const imageUrl = getImageUrl(img)
+
+  // Translate instruments
+  const translatedInstruments = instrument?.map((inst) => t(inst as any)).join(', ') ?? ''
 
   return slug ? (
     <Link
@@ -42,7 +49,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }
       </div>
       <div className="p-6">
         <h3 className="font-playfair mb-2 text-2xl font-bold">{name}</h3>
-        <p className="text-sm text-gray-700">{instrument?.join(', ') ?? ''}</p>
+        <p className="text-sm text-gray-700">{translatedInstruments}</p>
       </div>
     </Link>
   ) : (
@@ -60,7 +67,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }
       </div>
       <div className="p-6">
         <h3 className="font-playfair mb-2 text-2xl font-bold">{name}</h3>
-        <p className="text-sm text-gray-700">{instrument?.join(', ') ?? ''}</p>
+        <p className="text-sm text-gray-700">{translatedInstruments}</p>
       </div>
     </div>
   )

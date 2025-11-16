@@ -1,4 +1,5 @@
 'use client'
+import { Link } from '@/i18n/navigation'
 import useEmblaCarousel from 'embla-carousel-react'
 import React, { useCallback, useEffect, useState } from 'react'
 import ImageSlide, { ImageSlideData } from './ImageSlide'
@@ -55,9 +56,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
           {images.map((img, idx) => (
             <div className="min-w-0 flex-[0_0_100%]" key={img.src + idx}>
               {img.link ? (
-                <a href={img.link} tabIndex={-1} aria-label={img.bannerText || img.alt}>
+                <Link href={img.link} tabIndex={-1} aria-label={img.bannerText || img.alt}>
                   <ImageSlide image={img} isActive={selectedIndex === idx} />
-                </a>
+                </Link>
               ) : (
                 <ImageSlide image={img} isActive={selectedIndex === idx} />
               )}

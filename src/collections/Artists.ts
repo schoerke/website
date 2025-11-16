@@ -1,4 +1,5 @@
 import { INSTRUMENTS } from '@/constants/options'
+import { validateQuote, validateURL, validateYouTubeURL } from '@/validators/fields'
 import type { CollectionConfig } from 'payload'
 import { slugField } from 'payload'
 
@@ -102,12 +103,7 @@ export const Artists: CollectionConfig = {
               type: 'text',
               required: false,
               localized: true,
-              validate: (value: unknown) => {
-                // value should not start or end with quotation marks
-                if (typeof value !== 'string') return true
-                const quoteRegex = /^["“”‘’']|["“”‘’']$/
-                return quoteRegex.test(value) ? 'Please avoid starting or ending the quote with quotation marks' : true
-              },
+              validate: validateQuote,
             },
             {
               name: 'biography',
@@ -229,12 +225,7 @@ export const Artists: CollectionConfig = {
                   admin: {
                     placeholder: 'https://www.youtube.com/watch?v=...',
                   },
-                  validate: (value: unknown) => {
-                    if (typeof value !== 'string') return 'Please enter a valid YouTube URL'
-
-                    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}/
-                    return youtubeRegex.test(value) ? true : 'Please enter a valid YouTube URL'
-                  },
+                  validate: validateYouTubeURL,
                 },
               ],
             },
@@ -251,6 +242,7 @@ export const Artists: CollectionConfig = {
               name: 'homepageURL',
               label: 'Homepage URL',
               type: 'text',
+              validate: validateURL(),
             },
             {
               name: 'externalCalendarURL',
@@ -259,31 +251,52 @@ export const Artists: CollectionConfig = {
                 en: 'External Calendar URL',
               },
               type: 'text',
+              validate: validateURL(),
             },
             {
               name: 'facebookURL',
               label: 'Facebook URL',
               type: 'text',
+              validate: validateURL({
+                allowedDomains: ['facebook.com', 'fb.com'],
+                message: 'Please enter a valid Facebook URL',
+              }),
             },
             {
               name: 'instagramURL',
               label: 'Instagram URL',
               type: 'text',
+              validate: validateURL({
+                allowedDomains: ['instagram.com'],
+                message: 'Please enter a valid Instagram URL',
+              }),
             },
             {
               name: 'twitterURL',
               label: 'Twitter/X URL',
               type: 'text',
+              validate: validateURL({
+                allowedDomains: ['twitter.com', 'x.com'],
+                message: 'Please enter a valid Twitter/X URL',
+              }),
             },
             {
               name: 'youtubeURL',
               label: 'YouTube URL',
               type: 'text',
+              validate: validateURL({
+                allowedDomains: ['youtube.com', 'youtu.be'],
+                message: 'Please enter a valid YouTube URL',
+              }),
             },
             {
               name: 'spotifyURL',
               label: 'Spotify URL',
               type: 'text',
+              validate: validateURL({
+                allowedDomains: ['spotify.com', 'open.spotify.com'],
+                message: 'Please enter a valid Spotify URL',
+              }),
             },
           ],
         },

@@ -2,15 +2,23 @@ import ArtistGrid from '@/components/Artist/ArtistGrid'
 import ImageSlider from '@/components/ui/ImageSlider'
 import config from '@/payload.config'
 import { getArtistListData } from '@/services/artist'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { getPayload } from 'payload'
 
-const ArtistsPage = async () => {
+const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params
+
+  // Enable static rendering
+  setRequestLocale(locale)
+
+  const t = await getTranslations({ locale, namespace: 'custom.pages.artists' })
+
   let artists = null
   let error = null
 
   try {
     const payload = await getPayload({ config })
-    const result = await getArtistListData(payload)
+    const result = await getArtistListData(payload, locale as 'de' | 'en')
     artists = result?.docs || []
   } catch (e) {
     console.error('Error loading artists:', e)
@@ -45,8 +53,8 @@ const ArtistsPage = async () => {
   )
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-      <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">Artists</h1>
+    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
+      <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">{t('title')}</h1>
       {error && <div className="text-red-600">{error}</div>}
       {!error && artists && artists.length > 0 && (
         <div className="mb-12">

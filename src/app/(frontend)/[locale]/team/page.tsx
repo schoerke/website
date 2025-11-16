@@ -1,5 +1,8 @@
+import { publicEnv } from '@/config/env'
 import { Employee, Media } from '@/payload-types'
+import { getEmployees } from '@/services/employee'
 import config from '@payload-config'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import { getPayload } from 'payload'
 
@@ -9,12 +12,10 @@ export const dynamic = 'force-dynamic'
 const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, mobile }) => {
   const img = image as Media | undefined
 
-  const R2_PUBLIC_ENDPOINT = process.env.NEXT_PUBLIC_S3_HOSTNAME
-
   const getImageUrl = (img: Media | undefined) => {
     if (!img) return '/placeholder.jpg'
     if (img.url && img.url.startsWith('http')) return img.url
-    if (img.filename) return `${R2_PUBLIC_ENDPOINT}/${img.filename}`
+    if (img.filename) return `${publicEnv.r2PublicEndpoint}/${img.filename}`
     return '/placeholder.jpg'
   }
 
@@ -48,16 +49,20 @@ const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, 
   )
 }
 
-const TeamPage = async () => {
+const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params
+
+  // Enable static rendering
+  setRequestLocale(locale)
+
+  const t = await getTranslations({ locale, namespace: 'custom.pages.team' })
+
   const payload = await getPayload({ config })
-  const { docs: employees } = await payload.find({
-    collection: 'employees',
-    sort: 'order',
-  })
+  const { docs: employees } = await getEmployees(payload, locale as 'de' | 'en')
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-      <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">Team</h1>
+    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
+      <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">{t('title')}</h1>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {employees.map((employee: Employee) => (
           <TeamMemberCard key={employee.name} {...employee} />

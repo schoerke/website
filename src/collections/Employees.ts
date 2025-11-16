@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { authenticated } from '@/access/authenticated'
+
 export const Employees: CollectionConfig = {
   slug: 'employees',
   labels: {
@@ -15,6 +17,14 @@ export const Employees: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Organization',
+  },
+  access: {
+    // Public can read employee info for contact page display
+    read: () => true,
+    // Only authenticated users can create/update/delete
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
   },
   fields: [
     {

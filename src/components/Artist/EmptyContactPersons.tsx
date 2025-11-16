@@ -1,4 +1,4 @@
-import { GENERAL_CONTACT } from '@/constants/options'
+import { GENERAL_CONTACT } from '@/constants/contact'
 import React from 'react'
 
 const EmptyContactPersons: React.FC = () => (
@@ -14,11 +14,6 @@ const EmptyContactPersons: React.FC = () => (
       <li>
         <a href={`tel:${GENERAL_CONTACT.phone}`}>{GENERAL_CONTACT.phone}</a>
       </li>
-      {GENERAL_CONTACT.mobile && (
-        <li>
-          <a href={`tel:${GENERAL_CONTACT.mobile}`}>{GENERAL_CONTACT.mobile}</a>
-        </li>
-      )}
     </ul>
   </section>
 )

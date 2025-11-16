@@ -1,8 +1,8 @@
 import ContactPersons from '@/components/Artist/ContactPersons'
 import ClientRichText from '@/components/ui/ClientRichText'
+import { Link } from '@/i18n/navigation'
 import config from '@/payload.config'
 import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 
@@ -15,30 +15,32 @@ function isMedia(obj: unknown): obj is { url: string } {
   return typeof obj === 'object' && obj !== null && 'url' in obj && typeof (obj as any).url === 'string'
 }
 
-import de from '@/i18n/de'
-import en from '@/i18n/en'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
-export default async function ArtistDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
+export default async function ArtistDetailPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
+  const { slug, locale } = await params
+
+  // Enable static rendering
+  setRequestLocale(locale)
+
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'artists',
     where: { slug: { equals: slug } },
     limit: 1,
+    locale: locale as 'de' | 'en',
   })
   const artist = result.docs[0] as Artist | undefined
 
   if (!artist) return notFound()
 
-  // TODO: Replace with actual locale detection from Next.js router or context
-  const locale = 'de' // Default to German
-  const t = locale === 'de' ? de : en
+  const t = await getTranslations({ locale, namespace: 'custom.pages.artist' })
   const [openQuote, closeQuote] = getQuoteMarks(locale)
 
   const { name, image, quote, biography, contactPersons } = artist
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
       <h1 className="font-playfair mb-6 text-6xl font-bold">{name}</h1>
       <div className="mb-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
         {isMedia(image) && (
@@ -78,7 +80,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
           href="/artists"
           className="inline-flex items-center gap-2 rounded bg-white px-4 py-2 font-medium text-gray-900 transition-colors hover:bg-gray-100"
         >
-          <span aria-hidden="true">&larr;</span> {t.custom.pages.artist.backButton}
+          <span aria-hidden="true">&larr;</span> {t('backButton')}
         </Link>
       </div>
     </main>
