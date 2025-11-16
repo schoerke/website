@@ -95,6 +95,12 @@ export const Artists: CollectionConfig = {
               type: 'text',
               required: false,
               localized: true,
+              validate: (value: unknown) => {
+                // value should not start or end with quotation marks
+                if (typeof value !== 'string') return true
+                const quoteRegex = /^["“”‘’']|["“”‘’']$/
+                return quoteRegex.test(value) ? 'Please avoid starting or ending the quote with quotation marks' : true
+              },
             },
             {
               name: 'biography',
