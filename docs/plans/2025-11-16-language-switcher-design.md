@@ -53,4 +53,28 @@ This design describes a robust, minimal, and idiomatic approach for implementing
 
 ---
 
+### Detailed Implementation Checklist
+
+- [ ] Update `next.config.mjs` for i18n (locales, defaultLocale)
+- [ ] Remove duplicated locale directories; use a single set of page files
+- [ ] Refactor all page components to access locale from params/context
+- [ ] Update data fetching to use locale for Payload CMS queries
+- [ ] Audit Payload CMS for translations and unique slugs per locale
+- [ ] Confirm Payload API fetches by ID and locale
+- [ ] Refactor language switcher as pure link-based component
+- [ ] Accept current and alternate locale slugs as props
+- [ ] Render links for both languages, highlight current
+- [ ] Handle missing translation by linking to homepage and indicating unavailability
+- [ ] Use accessible markup in switcher
+- [ ] Create static mapping for static page equivalents
+- [ ] Update static page components to use mapping
+- [ ] Add switcher to main navigation/header
+- [ ] Test navigation for dynamic/static pages
+- [ ] Test fallback for missing translations
+- [ ] Test accessibility (keyboard, screen reader)
+- [ ] Verify Payload SEO plugin output
+- [ ] Document implementation for maintainers
+
+---
+
 This design prioritizes simplicity, maintainability, and full alignment with Next.js and Payload CMS best practices.
