@@ -144,3 +144,44 @@ This section documents the architectural decisions and edge case handling for yo
 ---
 
 This step ensures your documentation stays in sync with your architecture, making it easy for anyone to add new content or routes using the next-intl and Payload CMS setup.
+
+## 10. SEO Integration Clarification
+
+- There is no official "next-intl SEO plugin." For SEO best practices, use next-intl’s routing config and helpers to generate `<link rel="alternate" hreflang="...">` tags in your layouts or pages.
+- Alternatively, you can use a general SEO plugin (like next-seo) or your CMS’s SEO plugin (e.g., Payload SEO plugin) in combination with next-intl’s routing info.
+- Example: Generating alternate links in your layout using next-intl’s routing config:
+
+```tsx
+// app/layout.tsx or app/[...]/layout.tsx
+import {routing} from '@/i18n/routing';
+import {getLocale} from 'next-intl/server';
+import {usePathname} from 'next-intl/navigation';
+
+export default async function RootLayout({children}) {
+  const locale = await getLocale();
+  const pathname = usePathname(); // or your own logic to get the current path
+
+  return (
+    <html lang={locale}>
+      <head>
+        {/* Generate alternate links for all locales */}
+        {routing.locales.map((loc) => (
+          <link
+            key={loc}
+            rel="alternate"
+            hrefLang={loc}
+            href={routing.getLocalizedPathname(pathname, loc)}
+          />
+        ))}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+- Update your documentation and code to clarify that next-intl provides the tools for SEO integration, but not a dedicated SEO plugin.
+
+---
+
+This clarification ensures your team understands how to handle SEO with next-intl and avoids confusion about plugin availability.
