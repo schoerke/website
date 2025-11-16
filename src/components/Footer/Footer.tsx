@@ -1,4 +1,5 @@
 import FooterLogo from '@/components/Footer/FooterLogo'
+import { GENERAL_CONTACT } from '@/constants/contact'
 
 const Footer = async () => {
   return (
@@ -48,22 +49,39 @@ const Footer = async () => {
             <address className="text-sm not-italic">
               <div>
                 <p className="mb-2 text-xl font-bold">
-                  Künstlersekretariat <br className="hidden xl:block" />
-                  Astrid Schoerke
+                  {(() => {
+                    const prefix = 'Künstlersekretariat'
+                    if (GENERAL_CONTACT.name.startsWith(prefix)) {
+                      const rest = GENERAL_CONTACT.name.slice(prefix.length)
+                      return (
+                        <>
+                          {prefix}
+                          <br className="md:hidden" />
+                          {rest}
+                        </>
+                      )
+                    }
+                    return GENERAL_CONTACT.name
+                  })()}
                 </p>
-                <p className="mb-2">Emanuel-Geibel-Str. 10</p>
-                <p className="mb-2">D-65185 Wiesbaden</p>
+                <p className="mb-2">{GENERAL_CONTACT.street}</p>
                 <p className="mb-2">
-                  <a href="tel:+49061150589050" className="transition duration-150 ease-in-out hover:text-gray-800">
-                    +49 (0)611-50 58 90 50
+                  D-{GENERAL_CONTACT.zipCode} {GENERAL_CONTACT.city}
+                </p>
+                <p className="mb-2">
+                  <a
+                    href={`tel:${GENERAL_CONTACT.phone.replace(/[^+\d]/g, '')}`}
+                    className="transition duration-150 ease-in-out hover:text-gray-800"
+                  >
+                    {GENERAL_CONTACT.phone}
                   </a>
                 </p>
                 <p>
                   <a
-                    href="mailto:info@ks-schoerke.de"
+                    href={`mailto:${GENERAL_CONTACT.email}`}
                     className="transition duration-150 ease-in-out hover:text-gray-800"
                   >
-                    info@ks-schoerke.de
+                    {GENERAL_CONTACT.email}
                   </a>
                 </p>
               </div>

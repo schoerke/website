@@ -19,6 +19,7 @@ const de = {
     pages: {
       artist: {
         backButton: 'Zurück zu den Künstlern',
+        contactPersons: 'Ansprechpartner',
       },
     },
   },

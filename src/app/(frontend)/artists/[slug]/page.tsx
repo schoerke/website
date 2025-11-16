@@ -1,3 +1,4 @@
+import ContactPersons from '@/components/Artist/ContactPersons'
 import ClientRichText from '@/components/ui/ClientRichText'
 import config from '@/payload.config'
 import Image from 'next/image'
@@ -7,6 +8,8 @@ import { getPayload } from 'payload'
 
 import type { Artist } from '@/payload-types'
 import { getQuoteMarks } from '@/utils/content'
+
+import { isEmployee } from '@/utils/collection'
 
 function isMedia(obj: unknown): obj is { url: string } {
   return typeof obj === 'object' && obj !== null && 'url' in obj && typeof (obj as any).url === 'string'
@@ -24,33 +27,37 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
     limit: 1,
   })
   const artist = result.docs[0] as Artist | undefined
+
   if (!artist) return notFound()
 
-  // Localized quote support
   // TODO: Replace with actual locale detection from Next.js router or context
   const locale = 'de' // Default to German
-
-  const { name, image, quote, biography } = artist
-
-  // Select translation object
   const t = locale === 'de' ? de : en
-
-  // Get quote marks
   const [openQuote, closeQuote] = getQuoteMarks(locale)
+
+  const { name, image, quote, biography, contactPersons } = artist
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
       <h1 className="font-playfair mb-6 text-6xl font-bold">{name}</h1>
       <div className="mb-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
         {isMedia(image) && (
-          <div className="mb-0 lg:mb-0 lg:w-1/2">
-            <Image
-              src={image.url}
-              alt={name}
-              width={600}
-              height={600}
-              className="h-auto w-full rounded-lg object-cover"
-            />
+          <div className="mb-0 lg:mb-0 lg:w-3/4">
+            <div className="relative aspect-square w-full lg:aspect-video">
+              <Image
+                src={image.url}
+                alt={name}
+                fill
+                className="rounded-lg object-cover"
+                sizes="(min-width: 1024px) 600px, 100vw"
+                priority
+              />
+            </div>
+          </div>
+        )}
+        {contactPersons && (
+          <div className="lg:w-1/4">
+            <ContactPersons employees={Array.isArray(contactPersons) ? contactPersons.filter(isEmployee) : undefined} />
           </div>
         )}
       </div>

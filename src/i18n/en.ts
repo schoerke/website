@@ -19,6 +19,7 @@ const en = {
     pages: {
       artist: {
         backButton: 'Back to Artists',
+        contactPersons: 'Contact Persons',
       },
     },
   },
