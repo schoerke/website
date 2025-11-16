@@ -1,24 +1,28 @@
 # ADR: Adoption of next-intl for Internationalization
 
-**Date:** 2025-11-16
-**Status:** Accepted
+- **Date:** 2025-11-16
+- **Status:** Accepted
 
 ## Context
 
-The project requires robust, maintainable, and SEO-friendly internationalization (i18n) for both static and dynamic content. The Next.js App Router’s built-in i18n is not flexible enough for fully localized URLs and dynamic segments. The team evaluated several options, including built-in Next.js i18n, custom middleware, and third-party libraries.
+The project requires robust, maintainable, and SEO-friendly internationalization (i18n) for both static and dynamic
+content. The Next.js App Router’s built-in i18n is not flexible enough for fully localized URLs and dynamic segments.
+The team evaluated several options, including built-in Next.js i18n, custom middleware, and third-party libraries.
 
 ## Decision
 
 We will use [next-intl](https://amannn.github.io/next-intl/) as the primary i18n solution for the following reasons:
 
-- **Fully Localized URLs:** next-intl allows mapping any internal route to any external, locale-specific URL (e.g., `/kuenstler` for German, `/en/artists` for English).
+- **Fully Localized URLs:** next-intl allows mapping any internal route to any external, locale-specific URL (e.g.,
+  `/kuenstler` for German, `/en/artists` for English).
 - **Dynamic Segments:** Supports dynamic segments and CMS-driven slugs per locale.
 - **Centralized Routing Config:** All localized pathnames are defined in a single TypeScript config file.
 - **Middleware Integration:** Handles locale negotiation, redirects, and rewrites via middleware.
 - **Navigation Helpers:** Provides locale-aware `Link`, `usePathname`, and other navigation utilities.
 - **SEO:** Enables correct generation of alternate links and canonical URLs for all locales.
 - **No React Context Required:** Locale is handled at the routing/middleware level, not via global React state.
-- **Efficient Integration with Payload CMS:** Only one API call is needed to fetch all localized slugs for dynamic content.
+- **Efficient Integration with Payload CMS:** Only one API call is needed to fetch all localized slugs for dynamic
+  content.
 
 ## Consequences
 
@@ -40,4 +44,3 @@ We will use [next-intl](https://amannn.github.io/next-intl/) as the primary i18n
 - [Project i18n Design Doc](../plans/2025-11-16-i18n-design.md)
 - [Payload CMS Localization](https://payloadcms.com/docs/localization/overview)
 - [Next.js App Router Internationalization](https://nextjs.org/docs/app/guides/internationalization)
-
