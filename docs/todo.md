@@ -8,6 +8,10 @@
 - Migrate all projects
 - Migrate all news posts from last year?
 
+## Collections
+
+- [ ] Ensure proper validation
+
 ## Media
 
 - separate collections for photos and documents? (not for now)
@@ -25,7 +29,6 @@
 
 ## UI
 
-- [x] Move footer icon to local asset
 - [ ] Add "Back to top" button
 - [ ] Restrict image size on artist detail page to avoid huge images breaking layout
 - [ ] Enhance image slider banner (news title)

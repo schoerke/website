@@ -77,6 +77,13 @@ export const Artists: CollectionConfig = {
               type: 'relationship',
               relationTo: 'employees',
               hasMany: true,
+              maxRows: 2,
+              validate: (value) => {
+                if (Array.isArray(value) && value.length > 2) {
+                  return 'You can only select up to 2 contact persons.'
+                }
+                return true
+              },
             },
           ],
         },

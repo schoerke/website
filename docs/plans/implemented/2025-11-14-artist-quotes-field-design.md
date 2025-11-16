@@ -1,7 +1,8 @@
 # Artist Quotes Field Design
 
-**Date:** 2025-11-14  
-**Topic:** Artist Collection – Quotes Field and Rotating Display
+- **Date:** 2025-11-14
+- **Topic:** Artist Collection – Quotes Field and Rotating Display
+- **Status: IMPLEMENTED**
 
 ---
 
@@ -80,7 +81,3 @@ displayed on the artist detail page, fading smoothly between each quote every 5�
 - Use the current i18n setup to select the correct language for each quote/citation.
 - Animation should be smooth and not distracting.
 - Follow project code style and component conventions.
-
----
-
-**End of design.**
