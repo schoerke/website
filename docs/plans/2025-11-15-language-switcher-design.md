@@ -11,10 +11,12 @@
 ## 2. Components & Directory Structure
 
 - Wrapper `page.tsx` files for each locale/route (e.g., /artists, /en/artists), located in src/app/(frontend)/.
-- Shared React components (e.g., ArtistListPage, ArtistDetailPage) in src/components/, receive `locale` and other params.
+- Shared React components (e.g., ArtistListPage, ArtistDetailPage) in src/components/, receive `locale` and other
+  params.
 - Language switcher component in main navigation/header, displays EN / DE.
 
 **Example:**
+
 ```
 src/app/(frontend)/
   artists/
@@ -25,6 +27,7 @@ src/app/(frontend)/
       [slug]/page.tsx    // English artist detail
       page.tsx           // English artist list
 ```
+
 Each wrapper imports and renders the shared component, passing the correct locale.
 
 ## 3. Language Switcher Logic
