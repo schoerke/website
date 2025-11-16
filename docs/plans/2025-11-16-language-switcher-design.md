@@ -1,82 +1,90 @@
-# Language Switcher Design (Next.js i18n, Payload CMS)
+# Language Switcher Design (Next.js App Router + next-intl, Payload CMS)
 
-**Date:** 2025-11-16
+**Date:** 2025-11-16 (revised)
 
 ## 1. Overview
 
-This design describes a robust, minimal, and idiomatic approach for implementing a language switcher in a Next.js App
-Router project using Payload CMS for content and the official Payload SEO plugin for SEO metadata. Locale is determined
-solely by the URL, leveraging Next.js i18n routing. No React context or global state is used.
+This design describes a robust, flexible, and idiomatic approach for implementing a language switcher and fully localized URLs in a Next.js App Router project using [next-intl](https://amannn.github.io/next-intl/) for internationalization and Payload CMS for content. Locale is determined by next-intl’s routing configuration and middleware. No React context or global state is used.
 
-## 2. Directory & Routing Structure
+## 2. Routing & Directory Structure
 
-- Use a single set of page files for all locales (no duplication under `/en/`).
-- Next.js i18n routing (configured in `next.config.mjs`) handles locale prefixes in URLs.
-- Example:
-  - `/artists/[slug]/page.tsx` handles both `/artists/[slug]` (default, e.g. German) and `/en/artists/[slug]` (English).
-- Page components access the current locale via route params or Next.js context.
+- Use a single set of page files for each logical route (e.g., `app/artists/page.tsx`, `app/artists/[slug]/page.tsx`).
+- All localized URLs are defined in `src/i18n/routing.ts` using next-intl’s `defineRouting`.
+- No need to duplicate folders for each locale.
+- next-intl maps localized URLs (e.g., `/kuenstler`, `/en/artists`) to the correct page files.
+- No `/de/` prefix for the default locale if `localePrefix: 'as-needed'` is set.
 
-## 3. Data Fetching & Locale Handling
+## 3. next-intl Routing Configuration Example
 
-- For dynamic content (e.g., artist detail):
-  - Fetch the document by ID and current locale from Payload CMS.
-  - To get the alternate locale’s slug, fetch the same document by ID with the alternate locale.
-  - Pass both slugs to the language switcher component.
-- For static pages:
-  - Use a static mapping of route equivalents between locales.
-  - If mapping is missing, link to the homepage of the selected language.
+```ts
+// src/i18n/routing.ts
+import {defineRouting} from 'next-intl/routing';
 
-## 4. Language Switcher Component
+export const routing = defineRouting({
+  locales: ['de', 'en'],
+  defaultLocale: 'de',
+  localePrefix: 'as-needed',
+  pathnames: {
+    '/artists': { de: '/kuenstler', en: '/artists' },
+    '/artists/[slug]': { de: '/kuenstler/[slug]', en: '/artists/[slug]' },
+    // Add more routes as needed
+  }
+});
+```
 
-- Pure link-based: renders links to the equivalent page in the other language.
-- Highlights the current language.
-- Receives current and alternate slugs as props.
-- If alternate translation is missing, links to the homepage and may visually indicate unavailability.
-- Uses accessible markup (`<nav aria-label="Language selector">`, `<a aria-current="page">`).
-- No client-side fetching or state management.
+## 4. Middleware Setup
 
-## 5. Accessibility & SEO
+```ts
+// middleware.ts
+import createMiddleware from 'next-intl/middleware';
+import {routing} from './src/i18n/routing';
 
-- Ensure keyboard navigation and screen reader compatibility.
-- Clearly indicate the current language visually.
-- Rely on the official Payload SEO plugin to generate `<link rel="alternate" hreflang="...">` and other SEO metadata.
+export default createMiddleware(routing);
 
-## 6. Implementation Order
+export const config = {
+  matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
+};
+```
 
-1. Update `next.config.mjs` for i18n (locales, defaultLocale).
-2. Restructure page directories: remove duplicated locale directories, use a single set of page files.
-3. Update page components to access locale from params/context and fetch content accordingly.
-4. Ensure Payload CMS content has translations and unique slugs per locale.
-5. Refactor the language switcher as a pure link-based component.
-6. For static pages, create a static mapping for route equivalents.
-7. Integrate the switcher in navigation/header.
-8. Test navigation, fallback, accessibility, and Payload SEO plugin output.
-9. Document the implementation for maintainers.
+## 5. Page Usage Example
+
+```tsx
+// app/artists/[slug]/page.tsx
+import {getLocale} from 'next-intl/server';
+
+export default async function ArtistDetailPage({params}: {params: {slug: string}}) {
+  const locale = await getLocale();
+  // Fetch and render artist for the current locale
+}
+```
+
+## 6. Language Switcher Example
+
+```tsx
+import {Link, usePathname} from 'next-intl/navigation';
+
+export default function LanguageSwitcher() {
+  const pathname = usePathname();
+  return (
+    <nav>
+      <Link href={pathname} locale="de">Deutsch</Link>
+      <Link href={pathname} locale="en">English</Link>
+    </nav>
+  );
+}
+```
+
+## 7. Implementation Steps
+
+1. Install next-intl: `pnpm add next-intl`
+2. Create `src/i18n/routing.ts` with your locales, default locale, and localized pathnames.
+3. Add `middleware.ts` at the project root using next-intl’s `createMiddleware` and your routing config.
+4. Use a single set of page files for each logical route.
+5. Use `getLocale()` from next-intl/server in your page components.
+6. Use next-intl’s `Link` and navigation helpers for all internal links and language switchers.
+7. Test all localized URLs and navigation.
+8. Document the routing config and how to add new localized routes.
 
 ---
 
-### Detailed Implementation Checklist
-
-- [ ] Update `next.config.mjs` for i18n (locales, defaultLocale)
-- [ ] Remove duplicated locale directories; use a single set of page files
-- [ ] Refactor all page components to access locale from params/context
-- [ ] Update data fetching to use locale for Payload CMS queries
-- [ ] Audit Payload CMS for translations and unique slugs per locale
-- [ ] Confirm Payload API fetches by ID and locale
-- [ ] Refactor language switcher as pure link-based component
-- [ ] Accept current and alternate locale slugs as props
-- [ ] Render links for both languages, highlight current
-- [ ] Handle missing translation by linking to homepage and indicating unavailability
-- [ ] Use accessible markup in switcher
-- [ ] Create static mapping for static page equivalents
-- [ ] Update static page components to use mapping
-- [ ] Add switcher to main navigation/header
-- [ ] Test navigation for dynamic/static pages
-- [ ] Test fallback for missing translations
-- [ ] Test accessibility (keyboard, screen reader)
-- [ ] Verify Payload SEO plugin output
-- [ ] Document implementation for maintainers
-
----
-
-This design prioritizes simplicity, maintainability, and full alignment with Next.js and Payload CMS best practices.
+This design prioritizes flexibility, maintainability, and full alignment with Next.js App Router, next-intl, and Payload CMS best practices.
