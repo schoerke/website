@@ -29,9 +29,10 @@
 
 ## UI
 
-- [ ] Add "Back to top" button
-- [ ] Restrict image size on artist detail page to avoid huge images breaking layout
-- [ ] Enhance image slider banner (news title)
+- Add "Back to top" button
+- Enhance image slider banner (news title)
+- Custom ordering for artist list (conductors, violin, cello, etc.)
+- Localized 404 page
 
 ### Pages
 
