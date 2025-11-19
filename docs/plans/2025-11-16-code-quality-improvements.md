@@ -1,8 +1,6 @@
 # Code Quality Improvements Plan
 
-**Date:** 2025-11-16
-**Status:** Planned
-**Type:** Technical Debt & Code Quality
+**Date:** 2025-11-16 **Status:** Planned **Type:** Technical Debt & Code Quality
 
 ## Context
 
@@ -70,8 +68,7 @@ interface ClientRichTextProps {
 }
 ```
 
-**Effort:** Medium
-**Impact:** High - Improves type safety and developer experience
+**Effort:** Medium **Impact:** High - Improves type safety and developer experience
 
 ---
 
@@ -124,8 +121,7 @@ export class ErrorBoundary extends Component<
 </ErrorBoundary>
 ```
 
-**Effort:** Low
-**Impact:** High - Better user experience, prevents full app crashes
+**Effort:** Low **Impact:** High - Better user experience, prevents full app crashes
 
 ---
 
@@ -175,8 +171,7 @@ function ArtistsSlider({ artists }: { artists: Artist[] }) {
 }
 ```
 
-**Effort:** Medium
-**Impact:** High - Prevents hydration errors and improves UX
+**Effort:** Medium **Impact:** High - Prevents hydration errors and improves UX
 
 ---
 
@@ -209,8 +204,7 @@ export const getArtistListData = unstable_cache(
 revalidateTag('artists')
 ```
 
-**Effort:** Medium
-**Impact:** High - Improves performance and reduces database load
+**Effort:** Medium **Impact:** High - Improves performance and reduces database load
 
 ---
 
@@ -266,8 +260,7 @@ export function logError(message: string, context?: Record<string, any>) {
 }
 ```
 
-**Effort:** Medium
-**Impact:** High - Better debugging, user feedback, and production monitoring
+**Effort:** Medium **Impact:** High - Better debugging, user feedback, and production monitoring
 
 ---
 
@@ -290,8 +283,7 @@ export const SLIDER_INTERVAL_MS = 6000
 export const IMAGE_SLIDER_DEFAULT_INTERVAL_MS = 6000
 ```
 
-**Effort:** Low
-**Impact:** Medium - Improves maintainability
+**Effort:** Low **Impact:** Medium - Improves maintainability
 
 ---
 
@@ -317,8 +309,7 @@ export function isMedia(obj: unknown): obj is Media {
 }
 ```
 
-**Effort:** Medium
-**Impact:** Medium - Consistency and runtime validation
+**Effort:** Medium **Impact:** Medium - Consistency and runtime validation
 
 ---
 
@@ -333,8 +324,7 @@ export function isMedia(obj: unknown): obj is Media {
 
 **Solution:** Remove or track in issue tracker
 
-**Effort:** Low
-**Impact:** Low - Code cleanliness
+**Effort:** Low **Impact:** Low - Code cleanliness
 
 ---
 
@@ -355,8 +345,7 @@ export default function PayloadRichText({ content, className }: Props) {
 }
 ```
 
-**Effort:** Low
-**Impact:** Low - Code simplification
+**Effort:** Low **Impact:** Low - Code simplification
 
 ---
 
@@ -382,8 +371,7 @@ const Footer: React.FC = () => {
 <Footer />  // No props needed
 ```
 
-**Effort:** Low
-**Impact:** Low - Cleaner component API
+**Effort:** Low **Impact:** Low - Cleaner component API
 
 ---
 
@@ -408,8 +396,7 @@ const ComponentName: React.FC<Props> = (props) => { ... }
   - Always `export default ComponentName` at end of file
 ```
 
-**Effort:** Low
-**Impact:** Low - Documentation clarity
+**Effort:** Low **Impact:** Low - Documentation clarity
 
 ---
 
@@ -432,8 +419,7 @@ export interface ArtistCardProps {
 const ArtistCard: React.FC<ArtistCardProps> = ({ ... }) => {
 ```
 
-**Effort:** Low
-**Impact:** Medium - Better component reusability
+**Effort:** Low **Impact:** Medium - Better component reusability
 
 ---
 
@@ -458,8 +444,7 @@ export function getQuoteMarks(locale: string): [string, string] {
 }
 ```
 
-**Effort:** Low
-**Impact:** Low - Future-proofing
+**Effort:** Low **Impact:** Low - Future-proofing
 
 ---
 
@@ -485,8 +470,7 @@ noArtistsForInstruments: 'No artists found for these instruments.',
 filterByInstrument: 'Filter artists by instrument',
 ```
 
-**Effort:** Low
-**Impact:** Low - Proper i18n completion
+**Effort:** Low **Impact:** Low - Proper i18n completion
 
 ---
 
@@ -525,8 +509,7 @@ filterByInstrument: 'Filter artists by instrument',
 <main id="main-content">{children}</main>
 ```
 
-**Effort:** Medium
-**Impact:** Medium - Better accessibility compliance
+**Effort:** Medium **Impact:** Medium - Better accessibility compliance
 
 ---
 
@@ -565,8 +548,7 @@ interface ArtistCardProps {
 const ArtistCard: React.FC<ArtistCardProps> = ({ ... }) => {
 ```
 
-**Effort:** Medium
-**Impact:** Low - Better developer experience
+**Effort:** Medium **Impact:** Low - Better developer experience
 
 ---
 
@@ -694,8 +676,7 @@ describe('ArtistCard', () => {
 - Phase 2: 70% coverage
 - Phase 3: 80% coverage
 
-**Effort:** High
-**Impact:** Critical - Enables confident refactoring and prevents regressions
+**Effort:** High **Impact:** Critical - Enables confident refactoring and prevents regressions
 
 ---
 

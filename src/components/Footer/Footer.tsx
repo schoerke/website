@@ -10,7 +10,6 @@ type FooterProps = {
 
 const Footer: React.FC<FooterProps> = async ({ locale }) => {
   const t = await getTranslations({ locale, namespace: 'custom.pages' })
-  const tFooter = await getTranslations({ locale, namespace: 'custom.footer' })
 
   const navigationLinks = [
     { text: t('home.title'), href: '/' as const, external: false },

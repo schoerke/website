@@ -1,9 +1,9 @@
 'use client'
-import LanguageSwitcher from '../ui/LanguageSwitcher'
+import LocaleSwitcher from '../ui/LocaleSwitcher'
 
 const Header: React.FC = () => (
   <header className="flex w-full justify-end p-4">
-    <LanguageSwitcher alternateSlugs={{ de: 'kuenstler', en: 'artists' }} />
+    <LocaleSwitcher alternateSlugs={{ de: 'kuenstler', en: 'artists' }} />
   </header>
 )
 
