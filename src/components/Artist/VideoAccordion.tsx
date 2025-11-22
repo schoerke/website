@@ -60,10 +60,10 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
         }
 
         return (
-          <div key={video.id || index} className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div key={video.id || index} className="overflow-hidden rounded-lg border border-gray-200">
             <button
               onClick={() => toggleAccordion(index)}
-              className="flex w-full items-center justify-between px-6 py-4 text-left transition-colors hover:bg-gray-50"
+              className="flex w-full items-center justify-between bg-gray-50 px-6 py-4 text-left transition-colors hover:bg-gray-100"
               aria-expanded={isOpen}
             >
               <span className="font-medium text-gray-900">{video.label}</span>
@@ -78,7 +78,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
             </button>
 
             {isOpen && (
-              <div className="border-t border-gray-200 p-6">
+              <div className="border-t border-gray-200 bg-white p-6">
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
                   <iframe
                     src={`https://www.youtube.com/embed/${videoId}`}

@@ -30,6 +30,8 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const [projectPosts, setProjectPosts] = useState<Post[]>([])
   const [newsLoading, setNewsLoading] = useState(false)
   const [projectsLoading, setProjectsLoading] = useState(false)
+  const [newsFetched, setNewsFetched] = useState(false)
+  const [projectsFetched, setProjectsFetched] = useState(false)
 
   // Get quote marks for the current locale
   const quoteMarks = getQuoteMarks(locale)
@@ -61,7 +63,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
 
   // Fetch news posts when news tab is selected
   useEffect(() => {
-    if (activeTab === 'news' && newsPosts.length === 0 && !newsLoading) {
+    if (activeTab === 'news' && !newsFetched && !newsLoading) {
       setNewsLoading(true)
       fetch(
         `/api/posts?where[categories][contains]=news&where[artists][equals]=${artist.id}&where[_status][equals]=published`,
@@ -70,17 +72,19 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
         .then((data) => {
           setNewsPosts(data.docs || [])
           setNewsLoading(false)
+          setNewsFetched(true)
         })
         .catch((err) => {
           console.error('Failed to fetch news posts:', err)
           setNewsLoading(false)
+          setNewsFetched(true)
         })
     }
-  }, [activeTab, artist.id, newsPosts.length, newsLoading])
+  }, [activeTab, artist.id, newsFetched, newsLoading])
 
   // Fetch project posts when projects tab is selected
   useEffect(() => {
-    if (activeTab === 'projects' && projectPosts.length === 0 && !projectsLoading) {
+    if (activeTab === 'projects' && !projectsFetched && !projectsLoading) {
       setProjectsLoading(true)
       fetch(
         `/api/posts?where[categories][contains]=projects&where[artists][equals]=${artist.id}&where[_status][equals]=published`,
@@ -89,25 +93,33 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
         .then((data) => {
           setProjectPosts(data.docs || [])
           setProjectsLoading(false)
+          setProjectsFetched(true)
         })
         .catch((err) => {
           console.error('Failed to fetch project posts:', err)
           setProjectsLoading(false)
+          setProjectsFetched(true)
         })
     }
-  }, [activeTab, artist.id, projectPosts.length, projectsLoading])
+  }, [activeTab, artist.id, projectsFetched, projectsLoading])
 
   return (
-    <div className="mx-auto max-w-4xl py-12">
+    <div className="w-full">
       {/* Desktop: Horizontal Tab List (ToggleGroup) */}
       <div className="mb-8 hidden md:block">
         <ToggleGroup
           type="single"
           value={activeTab}
           onValueChange={(value) => value && handleTabChange(value as TabId)}
+          className="inline-flex justify-start gap-0 bg-gray-100 p-1"
         >
           {tabs.map((tab) => (
-            <ToggleGroupItem key={tab} value={tab} aria-label={t(`tabs.${tab}`)}>
+            <ToggleGroupItem
+              key={tab}
+              value={tab}
+              aria-label={t(`tabs.${tab}`)}
+              className="data-[state=on]:bg-primary-yellow data-[state=on]:text-primary-black rounded-none px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-900 data-[state=on]:shadow-sm"
+            >
               {t(`tabs.${tab}`)}
             </ToggleGroupItem>
           ))}
@@ -117,12 +129,12 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
       {/* Mobile: Dropdown (Select) */}
       <div className="mb-8 md:hidden">
         <Select value={activeTab} onValueChange={(value) => handleTabChange(value as TabId)}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="bg-primary-yellow text-primary-black w-full text-lg font-medium uppercase">
             <SelectValue placeholder={t(`tabs.${activeTab}`)} />
           </SelectTrigger>
           <SelectContent>
             {tabs.map((tab) => (
-              <SelectItem key={tab} value={tab}>
+              <SelectItem key={tab} value={tab} className="uppercase">
                 {t(`tabs.${tab}`)}
               </SelectItem>
             ))}
@@ -131,7 +143,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
       </div>
 
       {/* Tab Content */}
-      <div className="rounded-lg bg-gray-50 p-6">
+      <div key={activeTab} className="animate-in fade-in duration-300">
         {activeTab === 'biography' && (
           <BiographyTab content={artist.biography} quote={artist.quote} quoteMarks={quoteMarks} />
         )}

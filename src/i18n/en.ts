@@ -49,27 +49,27 @@ const en = {
         tabs: {
           biography: 'Biography',
           repertoire: 'Repertoire',
-          discography: 'Discography',
+          discography: 'Recordings',
           video: 'Video',
           news: 'News',
           projects: 'Projects',
-          concertDates: 'Concert Dates',
+          concertDates: 'Calendar',
         },
         empty: {
           biography: 'No biography available.',
           repertoire: 'No repertoire information available.',
-          discography: 'No discography entries available.',
+          discography: 'No recordings available.',
           video: 'No videos available.',
           news: 'No news articles available.',
           projects: 'No projects available.',
-          concertDates: 'No upcoming concert dates.',
+          concertDates: 'No upcoming dates.',
         },
         loading: 'Loading...',
         video: {
           accordionTrigger: 'Show video',
         },
         concertDates: {
-          button: 'View Concert Dates',
+          button: 'View Calendar',
         },
       },
       contact: {

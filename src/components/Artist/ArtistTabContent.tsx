@@ -15,7 +15,7 @@ export const BiographyTab: React.FC<BiographyTabProps> = ({ content, quote, quot
   const [openQuote, closeQuote] = quoteMarks || ['', '']
 
   return (
-    <div className="prose max-w-none">
+    <div className="bio-prose prose max-w-none">
       {quote && (
         <blockquote className="border-primary-yellow mb-6 border-l-4 pl-6 text-lg italic text-gray-700 dark:text-gray-200">
           {openQuote}
@@ -94,8 +94,8 @@ export const NewsTab: React.FC<NewsTabProps> = ({ posts, loading, emptyMessage }
     return (
       <div className="space-y-6">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex gap-6 rounded-lg bg-white p-6 shadow-md">
-            <Skeleton className="h-32 w-32 flex-shrink-0" />
+          <div key={i} className="flex gap-6">
+            <Skeleton className="h-32 w-32 flex-shrink-0 rounded-lg" />
             <div className="flex-1 space-y-3">
               <Skeleton className="h-6 w-3/4" />
               <Skeleton className="h-4 w-1/4" />
@@ -122,8 +122,8 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ posts, loading, emptyM
     return (
       <div className="space-y-6">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex gap-6 rounded-lg bg-white p-6 shadow-md">
-            <Skeleton className="h-32 w-32 flex-shrink-0" />
+          <div key={i} className="flex gap-6">
+            <Skeleton className="h-32 w-32 flex-shrink-0 rounded-lg" />
             <div className="flex-1 space-y-3">
               <Skeleton className="h-6 w-3/4" />
               <Skeleton className="h-4 w-1/4" />
@@ -151,7 +151,7 @@ export const ConcertDatesTab: React.FC<ConcertDatesTabProps> = ({ externalCalend
         href={externalCalendarURL}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-8 py-4 text-lg font-medium text-white shadow-md transition-colors hover:bg-blue-700"
+        className="bg-primary-yellow text-primary-black hover:bg-primary-yellow/90 focus:ring-primary-yellow inline-flex items-center gap-2 rounded-lg px-8 py-4 text-lg font-medium shadow-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
       >
         {buttonText}
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
