@@ -15,7 +15,16 @@
  * - Normal text (format: 0) → Title and description
  * - Italic text (format: 2) → Work titles or Label/Catalog# (last italic)
  *
- * Usage: pnpm migrate:discography
+ * Idempotency:
+ * The script is safe to run multiple times. It checks if recordings already exist
+ * for each artist and skips them to avoid duplicates. This means:
+ * - You can edit draft recordings and re-run the script safely
+ * - Only new artists (without recordings) will be processed
+ * - Use --force flag to bypass this check and create duplicates
+ *
+ * Usage:
+ *   pnpm migrate:discography           # Normal mode (skip existing)
+ *   pnpm migrate:discography --force   # Force mode (create duplicates)
  */
 
 import config from '@payload-config'
@@ -161,6 +170,12 @@ function createDescriptionRichText(parts: string[]) {
 async function migrateDiscography() {
   console.log('=== Starting Enhanced Discography Migration ===\n')
 
+  // Check for --force flag to skip duplicate check
+  const forceMode = process.argv.includes('--force')
+  if (forceMode) {
+    console.log('⚠️  Running in FORCE mode - will create duplicates if recordings exist\n')
+  }
+
   try {
     const payload = await getPayload({ config })
 
@@ -195,6 +210,26 @@ async function migrateDiscography() {
 
       try {
         console.log(`\n📝 Processing: ${artist.name}`)
+
+        // Check if recordings already exist for this artist (unless --force flag is used)
+        if (!forceMode) {
+          const existingRecordings = await payload.find({
+            collection: 'recordings',
+            where: {
+              'artistRoles.artist': {
+                equals: artist.id,
+              },
+            },
+            limit: 1,
+          })
+
+          if (existingRecordings.totalDocs > 0) {
+            console.log(`   ⏭️  Skipping - ${existingRecordings.totalDocs} recording(s) already exist`)
+            console.log(`      (Use --force flag to create anyway)`)
+            skippedCount++
+            continue
+          }
+        }
 
         const discography = artist.discography as RichTextContent
         const paragraphs = discography.root?.children || []
@@ -268,7 +303,7 @@ async function migrateDiscography() {
     // 3. Output migration summary
     console.log('\n=== Migration Complete ===')
     console.log(`✅ Created: ${createdCount} draft recordings`)
-    console.log(`⏭️  Skipped: ${skippedCount} artists (no discography)`)
+    console.log(`⏭️  Skipped: ${skippedCount} artists`)
 
     if (summary.length > 0) {
       console.log('\n📊 Summary by Artist:')
@@ -293,6 +328,8 @@ async function migrateDiscography() {
     console.log('   - Add cover art')
     console.log('   - Add recording year if known')
     console.log('   - Publish when ready')
+    console.log('\n💡 Tip: This script is idempotent - it skips artists with existing recordings.')
+    console.log('   To re-run for an artist, delete their recordings first, or use --force flag.')
 
     process.exit(0)
   } catch (error) {
