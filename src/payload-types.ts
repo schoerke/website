@@ -129,10 +129,7 @@ export interface UserAuthOperations {
  */
 export interface Artist {
   id: number;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
+  name: string;
   slug: string;
   instrument: (
     | 'piano'
@@ -148,7 +145,6 @@ export interface Artist {
     | 'chamber-music'
   )[];
   image?: (number | null) | Media;
-  name: string;
   contactPersons?: (number | Employee)[] | null;
   quote?: string | null;
   biography: {
@@ -350,14 +346,14 @@ export interface Recording {
   recordingLabel?: string | null;
   catalogNumber?: string | null;
   coverArt?: (number | null) | Media;
-  artistRoles: {
-    artist: number | Artist;
-    /**
-     * Select one or more roles for this artist
-     */
-    role: ('soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist')[];
-    id?: string | null;
-  }[];
+  /**
+   * Select one or more artists who performed in this recording
+   */
+  artists: (number | Artist)[];
+  /**
+   * Select one or more roles for the artists in this recording
+   */
+  roles: ('soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist')[];
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -483,11 +479,10 @@ export interface PayloadMigration {
  * via the `definition` "artists_select".
  */
 export interface ArtistsSelect<T extends boolean = true> {
-  generateSlug?: T;
+  name?: T;
   slug?: T;
   instrument?: T;
   image?: T;
-  name?: T;
   contactPersons?: T;
   quote?: T;
   biography?: T;
@@ -557,13 +552,8 @@ export interface RecordingsSelect<T extends boolean = true> {
   recordingLabel?: T;
   catalogNumber?: T;
   coverArt?: T;
-  artistRoles?:
-    | T
-    | {
-        artist?: T;
-        role?: T;
-        id?: T;
-      };
+  artists?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

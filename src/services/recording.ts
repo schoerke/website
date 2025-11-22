@@ -20,13 +20,13 @@ export const getAllRecordings = async (payload: Payload, locale?: LocaleCode) =>
 
 /**
  * Get recordings by artist ID
- * Queries the artistRoles array field for matching artist relationships
+ * Queries the artists relationship field for matching artist IDs
  */
 export const getRecordingsByArtist = async (payload: Payload, artistId: string, locale?: LocaleCode) => {
   return await payload.find({
     collection: 'recordings',
     where: {
-      'artistRoles.artist': {
+      artists: {
         equals: artistId,
       },
       _status: {

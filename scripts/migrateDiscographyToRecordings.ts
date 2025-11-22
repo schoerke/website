@@ -364,7 +364,7 @@ async function migrateDiscography() {
           const existingRecordings = await payload.find({
             collection: 'recordings',
             where: {
-              'artistRoles.artist': {
+              artists: {
                 equals: artistDE.id,
               },
             },
@@ -436,12 +436,8 @@ async function migrateDiscography() {
                 recordingYear: parsed.year || undefined,
                 recordingLabel: parsed.label || undefined,
                 catalogNumber: parsed.catalogNumber || undefined,
-                artistRoles: [
-                  {
-                    artist: artistDE.id,
-                    role: [role],
-                  },
-                ],
+                artists: [artistDE.id],
+                roles: [role],
                 _status: 'draft',
               },
               locale: 'de',

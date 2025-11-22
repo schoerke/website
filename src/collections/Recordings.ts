@@ -126,56 +126,44 @@ export const Recordings: CollectionConfig = {
       },
     },
     {
-      name: 'artistRoles',
-      type: 'array',
+      name: 'artists',
+      type: 'relationship',
+      relationTo: 'artists',
       required: true,
+      hasMany: true,
       minRows: 1,
       label: {
-        de: 'Künstler & Rollen',
-        en: 'Artists & Roles',
+        de: 'Künstler',
+        en: 'Artists',
       },
-      labels: {
-        singular: {
-          de: 'Künstler',
-          en: 'Artist',
-        },
-        plural: {
-          de: 'Künstler',
-          en: 'Artists',
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Select one or more artists who performed in this recording',
+          de: 'Wählen Sie einen oder mehrere Künstler, die an dieser Aufnahme beteiligt waren',
         },
       },
-      fields: [
-        {
-          name: 'artist',
-          type: 'relationship',
-          relationTo: 'artists',
-          required: true,
-          label: {
-            de: 'Künstler',
-            en: 'Artist',
-          },
+    },
+    {
+      name: 'roles',
+      type: 'select',
+      required: true,
+      hasMany: true,
+      label: {
+        de: 'Rollen',
+        en: 'Roles',
+      },
+      options: RECORDING_ROLES.map((opt) => ({
+        value: opt.value,
+        label: ({ t }) => (t as any)(`custom:recordingRoles:${opt.value}`),
+      })),
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Select one or more roles for the artists in this recording',
+          de: 'Wählen Sie eine oder mehrere Rollen für die Künstler dieser Aufnahme',
         },
-        {
-          name: 'role',
-          type: 'select',
-          required: true,
-          hasMany: true,
-          label: {
-            de: 'Rolle(n)',
-            en: 'Role(s)',
-          },
-          options: RECORDING_ROLES.map((opt) => ({
-            value: opt.value,
-            label: ({ t }) => (t as any)(`custom:recordingRoles:${opt.value}`),
-          })),
-          admin: {
-            description: {
-              en: 'Select one or more roles for this artist',
-              de: 'Wählen Sie eine oder mehrere Rollen für diesen Künstler',
-            },
-          },
-        },
-      ],
+      },
     },
   ],
   versions: {
