@@ -17,6 +17,7 @@
     "migrate:discography": "tsx scripts/migrateDiscographyToRecordings.ts",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "seed:all": "tsx scripts/seedAll.ts",
     "seed:artists": "payload run ./scripts/seedArtists.ts",
     "seed:employees": "payload run ./scripts/seedEmployees.ts",
     "dump": "tsx scripts/dumpCollection.ts",
