@@ -107,8 +107,8 @@ function parseRoleFromHeading(headingText: string): RecordingRole | null {
 }
 
 /**
- * Parse a label/catalog string
- * Returns { label, catalogNumber } or null if no match
+ * Parse a label/catalog string with optional year
+ * Returns { label, catalogNumber, year } or null if no match
  *
  * Handles patterns like:
  * - "MDG 903 2280-6 SACD (2023)"
@@ -118,29 +118,31 @@ function parseRoleFromHeading(headingText: string): RecordingRole | null {
  * - "CPO 555 123-2"
  * - "Deutsche Grammophon 479 0563"
  */
-function parseLabelCatalog(text: string): { label: string; catalogNumber: string } | null {
+function parseLabelCatalog(text: string): { label: string; catalogNumber: string; year: number | null } | null {
   // Pattern: Label name followed by catalog number (digits, dots, dashes, spaces)
   // May be followed by optional format/year info
   // Examples:
-  //   "MDG 903 2280-6 SACD (2023)" → label: "MDG", catalog: "903 2280-6"
-  //   "EMI 7 41112 7 (2000)" → label: "EMI", catalog: "7 41112 7"
-  //   "MDG 340 1182-2 (2003)" → label: "MDG", catalog: "340 1182-2"
+  //   "MDG 903 2280-6 SACD (2023)" → label: "MDG", catalog: "903 2280-6", year: 2023
+  //   "EMI 7 41112 7 (2000)" → label: "EMI", catalog: "7 41112 7", year: 2000
+  //   "MDG 340 1182-2 (2003)" → label: "MDG", catalog: "340 1182-2", year: 2003
 
   // Try pattern: "LABEL CATALOG (YEAR)" or "LABEL CATALOG FORMAT (YEAR)"
-  let match = text.match(/^([A-Z][A-Za-z\s&.]*?)\s+([\d.\-\s]+?)(?:\s+[A-Z][\w-]*)?(?:\s*\([0-9]{4}\))?$/i)
+  let match = text.match(/^([A-Z][A-Za-z\s&.]*?)\s+([\d.\-\s]+?)(?:\s+[A-Z][\w-]*)?(?:\s*\(([0-9]{4})\))?$/i)
   if (match) {
     return {
       label: match[1].trim(),
       catalogNumber: match[2].trim(),
+      year: match[3] ? parseInt(match[3], 10) : null,
     }
   }
 
-  // Fallback: Simple pattern "LABEL CATALOG" at start of string
+  // Fallback: Simple pattern "LABEL CATALOG" at start of string (no year)
   match = text.match(/^([A-Z][A-Za-z\s&.]+?)\s+([\d.\-\s]+)/)
   if (match) {
     return {
       label: match[1].trim(),
       catalogNumber: match[2].trim(),
+      year: null,
     }
   }
 
@@ -155,6 +157,7 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
   description: string[]
   label: string | null
   catalogNumber: string | null
+  year: number | null
 } {
   let composer = ''
   const titleParts: string[] = []
@@ -162,6 +165,7 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
   const italicTexts: string[] = []
   let label: string | null = null
   let catalogNumber: string | null = null
+  let year: number | null = null
 
   for (const child of paragraph.children) {
     if (child.type === 'linebreak') continue
@@ -200,6 +204,7 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
     if (parsed) {
       label = parsed.label
       catalogNumber = parsed.catalogNumber
+      year = parsed.year
       // Remove from italic texts since it's now extracted
       italicTexts.pop()
     }
@@ -213,6 +218,7 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
     if (parsed) {
       label = parsed.label
       catalogNumber = parsed.catalogNumber
+      year = parsed.year
       // Remove from title parts since it's now extracted
       titleParts.pop()
     }
@@ -246,6 +252,7 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
     description: descriptionParts,
     label,
     catalogNumber,
+    year,
   }
 }
 
@@ -412,6 +419,9 @@ async function migrateDiscography() {
             if (parsed.label && parsed.catalogNumber) {
               console.log(`         Label: ${parsed.label} ${parsed.catalogNumber}`)
             }
+            if (parsed.year) {
+              console.log(`         Year: ${parsed.year}`)
+            }
 
             // Create the recording in DE locale (includes all fields)
             const recording = await payload.create({
@@ -419,6 +429,7 @@ async function migrateDiscography() {
               data: {
                 title: parsed.title,
                 description: createDescriptionRichText(parsed.description),
+                recordingYear: parsed.year || undefined,
                 recordingLabel: parsed.label || undefined,
                 catalogNumber: parsed.catalogNumber || undefined,
                 artistRoles: [
