@@ -9,9 +9,9 @@ import { useEffect, useState } from 'react'
 import {
   BiographyTab,
   ConcertDatesTab,
-  DiscographyTab,
   NewsTab,
   ProjectsTab,
+  RecordingsTab,
   RepertoireTab,
   VideoTab,
 } from './ArtistTabContent'
@@ -28,10 +28,13 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const [activeTab, setActiveTab] = useState<TabId>('biography')
   const [newsPosts, setNewsPosts] = useState<Post[]>([])
   const [projectPosts, setProjectPosts] = useState<Post[]>([])
+  const [recordings, setRecordings] = useState<any[]>([])
   const [newsLoading, setNewsLoading] = useState(false)
   const [projectsLoading, setProjectsLoading] = useState(false)
+  const [recordingsLoading, setRecordingsLoading] = useState(false)
   const [newsFetched, setNewsFetched] = useState(false)
   const [projectsFetched, setProjectsFetched] = useState(false)
+  const [recordingsFetched, setRecordingsFetched] = useState(false)
 
   // Get quote marks for the current locale
   const quoteMarks = getQuoteMarks(locale)
@@ -103,6 +106,25 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     }
   }, [activeTab, artist.id, projectsFetched, projectsLoading])
 
+  // Fetch recordings when discography tab is selected
+  useEffect(() => {
+    if (activeTab === 'discography' && !recordingsFetched && !recordingsLoading) {
+      setRecordingsLoading(true)
+      fetch(`/api/recordings?where[artistRoles.artist][equals]=${artist.id}&where[_status][equals]=published`)
+        .then((res) => res.json())
+        .then((data) => {
+          setRecordings(data.docs || [])
+          setRecordingsLoading(false)
+          setRecordingsFetched(true)
+        })
+        .catch((err) => {
+          console.error('Failed to fetch recordings:', err)
+          setRecordingsLoading(false)
+          setRecordingsFetched(true)
+        })
+    }
+  }, [activeTab, artist.id, recordingsFetched, recordingsLoading])
+
   return (
     <div className="w-full">
       {/* Desktop: Horizontal Tab List (ToggleGroup) */}
@@ -151,7 +173,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           <RepertoireTab content={artist.repertoire} emptyMessage={t('empty.repertoire')} />
         )}
         {activeTab === 'discography' && (
-          <DiscographyTab content={artist.discography} emptyMessage={t('empty.discography')} />
+          <RecordingsTab recordings={recordings} loading={recordingsLoading} emptyMessage={t('empty.discography')} />
         )}
         {activeTab === 'video' && <VideoTab videos={artist.youtubeLinks} emptyMessage={t('empty.video')} />}
         {activeTab === 'news' && <NewsTab posts={newsPosts} loading={newsLoading} emptyMessage={t('empty.news')} />}

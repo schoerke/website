@@ -5,7 +5,9 @@
 
 ## Overview
 
-Implement a new `Recording` collection in Payload CMS to manage classical music recordings with artist relationships that support multiple roles (e.g., conductor, pianist, ensemble member). Recordings will be displayed on the "Recordings" tab of artist detail pages.
+Implement a new `Recording` collection in Payload CMS to manage classical music recordings with artist relationships
+that support multiple roles (e.g., conductor, pianist, ensemble member). Recordings will be displayed on the
+"Recordings" tab of artist detail pages.
 
 ## Goals
 
@@ -20,6 +22,7 @@ Implement a new `Recording` collection in Payload CMS to manage classical music 
 ### Collection: `recordings`
 
 **Admin Configuration:**
+
 - `useAsTitle`: `title`
 - `group`: "Content Management"
 - Access: Public read, authenticated create/update/delete (same pattern as Posts)
@@ -27,6 +30,7 @@ Implement a new `Recording` collection in Payload CMS to manage classical music 
 ### Fields
 
 #### Core Information
+
 - **title** (text, required, localized)
   - The recording/album title
 
@@ -39,6 +43,7 @@ Implement a new `Recording` collection in Payload CMS to manage classical music 
   - No images or embedded media allowed (consistent with Artists repertoire/discography pattern)
 
 #### Recording Metadata
+
 - **recordingYear** (number, optional)
   - Year of recording (not release year)
   - Validation: min 1900, max current year + 1
@@ -50,11 +55,13 @@ Implement a new `Recording` collection in Payload CMS to manage classical music 
   - Label catalog number (e.g., "DG 479 5382")
 
 #### Media
+
 - **coverArt** (upload, relationTo: 'media', optional)
   - Album/recording cover image
   - Position: sidebar
 
 #### Artist Relationships
+
 - **artistRoles** (array, required)
   - Label: "Artists & Roles" (localized: de: "Künstler & Rollen")
   - Minimum 1 entry required
@@ -73,6 +80,7 @@ Implement a new `Recording` collection in Payload CMS to manage classical music 
 ## Implementation Steps
 
 ### 1. Create Constants File
+
 **File:** `src/constants/recordingOptions.ts`
 
 ```typescript
@@ -86,6 +94,7 @@ export const RECORDING_ROLES = [
 ```
 
 ### 2. Create Collection File
+
 **File:** `src/collections/Recordings.ts`
 
 - Import access controls from `@/access/authenticated` and `@/access/authenticatedOrPublished`
@@ -96,15 +105,18 @@ export const RECORDING_ROLES = [
 - Enable versions with drafts (same pattern as Posts)
 
 ### 3. Update Payload Config
+
 **File:** `src/payload.config.ts`
 
 - Import `Recordings` collection
 - Add to collections array: `[Artists, Employees, Posts, Recordings, Users, Media]`
 
 ### 4. Add i18n Translations
+
 **Files:** `src/i18n/de.ts` and `src/i18n/en.ts`
 
 Add translations for:
+
 - `custom:recordingRoles:soloist`
 - `custom:recordingRoles:conductor`
 - `custom:recordingRoles:ensemble_member`
@@ -112,9 +124,11 @@ Add translations for:
 - `custom:recordingRoles:accompanist`
 
 ### 5. Create Service Layer
+
 **File:** `src/services/recording.ts`
 
 Create functions:
+
 - `getRecordingsByArtist(artistId: string, locale: string)` - Fetch recordings for a specific artist
 - `getAllRecordings(locale: string)` - Fetch all published recordings
 - Include artist population with roles
@@ -122,9 +136,11 @@ Create functions:
 ### 6. Frontend Components
 
 #### a. RecordingCard Component
+
 **File:** `src/components/Recording/RecordingCard.tsx`
 
 Display:
+
 - Cover art (with fallback)
 - Recording title
 - Composer
@@ -133,18 +149,21 @@ Display:
 - Description (truncated or expandable)
 
 #### b. RecordingGrid Component
+
 **File:** `src/components/Recording/RecordingGrid.tsx`
 
 - Grid layout for multiple recordings
 - Responsive design (similar to ArtistGrid pattern)
 
 #### c. Empty State Component
+
 **File:** `src/components/Recording/EmptyRecordings.tsx`
 
 - Display when artist has no recordings
 - Localized message
 
 ### 7. Update Artist Detail Page
+
 **File:** `src/app/(frontend)/[locale]/artists/[slug]/page.tsx`
 
 - Add "Recordings" tab to `ArtistTabs` component
@@ -152,6 +171,7 @@ Display:
 - Pass to `RecordingGrid` component
 
 ### 8. Update ArtistTabContent Component
+
 **File:** `src/components/Artist/ArtistTabContent.tsx`
 
 - Add case for 'recordings' tab
@@ -185,27 +205,32 @@ Display:
 ## Design Decisions
 
 ### Why Array of Artist-Role Objects?
+
 - Allows one artist to have multiple roles on same recording
 - Maintains clear relationship between artist and their specific role(s)
 - Easier to query "all recordings where Artist X is conductor"
 - More flexible than separate relationship fields per role
 
 ### Why No Slug?
+
 - Recordings are not primary navigation destinations
 - They exist as related content on artist pages
 - Reduces complexity and maintains focus on artists as main entities
 
 ### Why Localized Title/Composer?
+
 - Composer names may have different conventions (e.g., Tchaikovsky vs Tschaikowsky)
 - Recording titles may be translated
 - Maintains consistency with existing collection patterns
 
 ### Why Single Title Field?
+
 - Simplifies data entry
 - Most recordings have one primary title
 - Title can include work numbers/details (e.g., "Mozart: Piano Concertos Nos. 20 & 27")
 
 ### Why RichText Description?
+
 - Flexible content for various use cases: track listings, work details, program notes
 - Allows formatting (lists, paragraphs, bold/italic)
 - Consistent with Artists collection pattern (repertoire, discography fields)
@@ -243,7 +268,8 @@ Display:
 
 ## Estimated Complexity
 
-**Medium** - Straightforward collection setup with moderately complex artist-role relationships. Main complexity is in the array field structure and frontend display logic.
+**Medium** - Straightforward collection setup with moderately complex artist-role relationships. Main complexity is in
+the array field structure and frontend display logic.
 
 ## Data Migration
 
@@ -269,6 +295,7 @@ Since the existing `discography` field is unstructured richText, the migration w
 #### Manual Post-Migration Steps
 
 After running the script, content creators will need to:
+
 1. Review each draft Recording
 2. Extract and populate structured fields (title, composer, year, label, catalog number)
 3. Clean up description field to remove redundant metadata
@@ -291,9 +318,9 @@ async function migrateDiscography() {
   const artists = await payload.find({
     collection: 'artists',
     where: {
-      discography: { exists: true }
+      discography: { exists: true },
     },
-    limit: 1000
+    limit: 1000,
   })
 
   let createdCount = 0
@@ -317,11 +344,11 @@ async function migrateDiscography() {
         artistRoles: [
           {
             artist: artist.id,
-            role: ['soloist'] // Default role
-          }
+            role: ['soloist'], // Default role
+          },
         ],
-        _status: 'draft'
-      }
+        _status: 'draft',
+      },
     })
 
     createdCount++
@@ -348,6 +375,7 @@ migrateDiscography().catch((err) => {
 #### Package.json Script
 
 Add to `package.json`:
+
 ```json
 "migrate:discography": "tsx scripts/migrateDiscographyToRecordings.ts"
 ```
@@ -361,16 +389,19 @@ pnpm migrate:discography
 #### Migration Considerations
 
 **Pros of this approach:**
+
 - Preserves all existing discography data
 - Creates traceable draft entries for review
 - Allows content creators to properly structure the data
 - No data loss risk
 
 **Cons:**
+
 - Requires manual cleanup work
 - Not fully automated
 
 **Alternative approach (not recommended):**
+
 - Attempt to parse richText paragraphs programmatically to extract composer, title, catalog numbers
 - High risk of incorrect parsing due to inconsistent formatting
 - Better to have humans review and structure the data properly
@@ -378,5 +409,6 @@ pnpm migrate:discography
 #### Post-Migration Cleanup (Optional)
 
 After all recordings are migrated and published, optionally:
+
 1. Clear the `discography` field from Artists collection
 2. Or deprecate the field in a future schema update
