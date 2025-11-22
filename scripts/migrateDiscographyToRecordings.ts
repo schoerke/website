@@ -9,11 +9,25 @@
  * - Title (from normal text)
  * - Recording label and catalog number (from last italic text matching pattern)
  * - Description (remaining content)
+ * - Artist role (auto-detected based on instrument and content)
  *
  * Pattern:
  * - Bold text (format: 1) → Composer (first bold text in paragraph)
  * - Normal text (format: 0) → Title and description
  * - Italic text (format: 2) → Work titles or Label/Catalog# (last italic)
+ *
+ * Role Detection:
+ * The script intelligently detects artist roles based on:
+ * - Artist's instrument field (conductor, piano, violin, etc.)
+ * - Content keywords (Dirigent/conductor, Kammermusik/chamber music, etc.)
+ * - Context clues (Partner: = accompanist, Orchester/orchestra = ensemble)
+ *
+ * Roles assigned:
+ * - conductor: If instrument=conductor or content mentions "Dirigent/conductor"
+ * - accompanist: If piano + content mentions "Partner:/Begleitung"
+ * - chamber_musician: If content mentions chamber music/quartet/trio
+ * - ensemble_member: If content mentions orchestra/ensemble (but not conductor)
+ * - soloist: Default for solo performances
  *
  * Idempotency:
  * The script is safe to run multiple times. It checks if recordings already exist
@@ -45,6 +59,96 @@ interface RichTextContent {
   root: {
     children: ParagraphNode[]
   }
+}
+
+/**
+ * Detect artist role based on instrument and content
+ * Returns array of role values
+ */
+function detectArtistRole(
+  instruments: string[],
+  recordingContent: string,
+): ('soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist')[] {
+  const contentLower = recordingContent.toLowerCase()
+
+  // Check if content mentions conductor role (German: Dirigent)
+  const isConductor =
+    contentLower.includes('dirigent') || contentLower.includes('conductor') || contentLower.includes('conducting')
+
+  // Check for chamber music indicators
+  const isChamberMusic =
+    contentLower.includes('kammermusik') ||
+    contentLower.includes('chamber music') ||
+    contentLower.includes('quartett') ||
+    contentLower.includes('quartet') ||
+    contentLower.includes('trio') ||
+    contentLower.includes('duo')
+
+  // Check for accompanist indicators (German: Begleitung, Klavier)
+  const isAccompanist =
+    contentLower.includes('begleitung') ||
+    contentLower.includes('accompaniment') ||
+    (contentLower.includes('klavier') && contentLower.includes('partner'))
+
+  // Check for ensemble indicators
+  const isEnsemble =
+    contentLower.includes('ensemble') ||
+    contentLower.includes('orchester') ||
+    (contentLower.includes('orchestra') && !isConductor)
+
+  // Determine primary role based on instrument
+  const roles: ('soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist')[] = []
+
+  // Conductors
+  if (instruments.includes('conductor') || isConductor) {
+    roles.push('conductor')
+  }
+
+  // Piano/keyboard players
+  if (instruments.includes('piano') || instruments.includes('keyboard')) {
+    if (isAccompanist) {
+      roles.push('accompanist')
+    } else if (isChamberMusic) {
+      roles.push('chamber_musician')
+    } else {
+      roles.push('soloist')
+    }
+  }
+
+  // Orchestral/ensemble instruments
+  if (
+    instruments.some((i) =>
+      [
+        'violin',
+        'viola',
+        'cello',
+        'double_bass',
+        'flute',
+        'oboe',
+        'clarinet',
+        'bassoon',
+        'horn',
+        'trumpet',
+        'trombone',
+        'tuba',
+      ].includes(i),
+    )
+  ) {
+    if (isChamberMusic) {
+      roles.push('chamber_musician')
+    } else if (isEnsemble && !isConductor) {
+      roles.push('ensemble_member')
+    } else {
+      roles.push('soloist')
+    }
+  }
+
+  // Default to soloist if no roles detected
+  if (roles.length === 0) {
+    roles.push('soloist')
+  }
+
+  return roles
 }
 
 /**
@@ -210,6 +314,7 @@ async function migrateDiscography() {
 
       try {
         console.log(`\n📝 Processing: ${artist.name}`)
+        console.log(`   Instruments: ${artist.instrument?.join(', ') || 'none'}`)
 
         // Check if recordings already exist for this artist (unless --force flag is used)
         if (!forceMode) {
@@ -248,10 +353,23 @@ async function migrateDiscography() {
 
           const parsed = parseRecordingParagraph(paragraph)
 
+          // Build full content string for role detection
+          const fullContent = [
+            parsed.composer,
+            parsed.title,
+            ...parsed.description,
+            parsed.label || '',
+            parsed.catalogNumber || '',
+          ].join(' ')
+
+          // Detect artist role based on instrument and content
+          const detectedRoles = detectArtistRole(artist.instrument || [], fullContent)
+
           console.log(`   → "${parsed.composer} - ${parsed.title}"`)
           if (parsed.label && parsed.catalogNumber) {
             console.log(`      Label: ${parsed.label} ${parsed.catalogNumber}`)
           }
+          console.log(`      Role: ${detectedRoles.join(', ')}`)
 
           // Create the recording in DE locale first
           const recording = await payload.create({
@@ -265,7 +383,7 @@ async function migrateDiscography() {
               artistRoles: [
                 {
                   artist: artist.id,
-                  role: ['soloist'], // Default role
+                  role: detectedRoles,
                 },
               ],
               _status: 'draft',
