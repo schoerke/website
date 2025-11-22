@@ -1,5 +1,8 @@
 # Artist Detail Page Tab Group – Design
 
+**Status:** ✅ Implemented  
+**Implementation Date:** November 22, 2025
+
 ## Preparation & Prerequisites
 
 The following groundwork has been completed:
@@ -142,3 +145,63 @@ users. The component is specific to the Artist detail page and is tailored to th
   info)
 - The PostList component is reusable for other parts of the site
 - The Concert Dates tab can be expanded to show structured concert data in the future if requirements change
+
+---
+
+## Implementation Notes
+
+### UI/UX Refinements
+
+During implementation, the following styling enhancements were made to align with brand identity:
+
+#### Desktop Tabs (ToggleGroup)
+
+- **Layout:** Full-width container, left-aligned tabs, no max-width constraints
+- **Typography:** Inter font, medium weight, uppercase, 18px (text-lg)
+- **Container:** Light gray background (bg-gray-100), no rounded corners
+- **Individual tabs:** Flat/rectangular (rounded-none), no background by default
+- **Active state:** Primary yellow background (bg-primary-yellow), black text (text-primary-black)
+- **Hover state:** Medium gray background (bg-gray-200)
+- **Transitions:** Smooth color transitions on hover and activation
+
+#### Mobile Dropdown (Select)
+
+- **Trigger:** Primary yellow background (bg-primary-yellow), black text, 18px font, medium weight, uppercase
+- **Content:** Square edges (no rounded corners)
+- **Selected item:** Primary yellow background with black text
+- **All items:** Uppercase text for consistency
+
+#### Tab Content
+
+- **Transition:** 300ms fade-in animation when switching tabs (animate-in fade-in duration-300)
+- **Layout:** Full-width, no background containers, clean spacing
+- **Biography:** Added `.bio-prose` class for proper paragraph spacing (1.5rem top/bottom)
+- **Video accordion:** Gray background buttons (bg-gray-50), white video container backgrounds
+- **Skeleton loaders:** Minimal styling, no shadows or backgrounds
+- **Calendar button:** Primary yellow background with black text, hover/focus states
+
+#### Translation Updates
+
+- "Discography" → "Recordings" (both DE/EN)
+- "Concert Dates" → "Kalender/Calendar"
+- "Biografie" → "Biographie" (German)
+
+#### Bug Fixes
+
+- Fixed infinite loading state for empty News/Projects tabs by adding `newsFetched` and `projectsFetched` boolean flags
+- Empty arrays no longer cause skeleton loaders to display indefinitely
+
+### Components Modified
+
+- `src/components/Artist/ArtistTabs.tsx` - Main tabs component
+- `src/components/Artist/ArtistTabContent.tsx` - Individual tab content components
+- `src/components/Artist/VideoAccordion.tsx` - Video accordion styling
+- `src/components/ui/Select.tsx` - Removed rounded corners, added primary color for selected state
+- `src/i18n/de.ts` and `src/i18n/en.ts` - Translation updates
+
+### Key Implementation Decisions
+
+- Used `key={activeTab}` on content wrapper to trigger React remount for smooth fade-in transitions
+- Maintained accessibility with ARIA labels and keyboard navigation
+- Mobile-first approach with responsive breakpoints (md:hidden / md:block)
+- Uppercase styling applied consistently across desktop tabs and mobile dropdown
