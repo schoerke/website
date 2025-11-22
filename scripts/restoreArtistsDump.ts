@@ -18,6 +18,57 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+/**
+ * Normalize Lexical editor content to ensure compatibility
+ * This fixes issues with older Lexical formats
+ */
+function normalizeLexicalContent(content: any): any {
+  if (!content || typeof content !== 'object') {
+    return content
+  }
+
+  // Recursively process all nodes
+  if (content.root) {
+    return {
+      root: normalizeNode(content.root),
+    }
+  }
+
+  return content
+}
+
+function normalizeNode(node: any): any {
+  if (!node || typeof node !== 'object') {
+    return node
+  }
+
+  // If this is a text node (has 'text' property), ensure it has type 'text'
+  if ('text' in node && !node.type) {
+    node.type = 'text'
+  }
+
+  // Ensure type is set (default to paragraph if missing and has children)
+  if (!node.type) {
+    if (Array.isArray(node.children)) {
+      node.type = 'paragraph'
+    } else if ('text' in node) {
+      node.type = 'text'
+    }
+  }
+
+  // Process children recursively
+  if (Array.isArray(node.children)) {
+    node.children = node.children.map((child: any) => {
+      if (typeof child === 'object') {
+        return normalizeNode(child)
+      }
+      return child
+    })
+  }
+
+  return node
+}
+
 const main = async () => {
   const payload = await getPayload({ config })
 
@@ -45,6 +96,22 @@ const main = async () => {
         artistData.youtubeLinks = artistData.youtubeLinks.filter((link: any) => {
           return link.label && link.url
         })
+      }
+
+      // Normalize Lexical content to fix format issues
+      if (artistData.biography) {
+        const before = JSON.stringify(artistData.biography.root?.children?.[0]?.children?.[0])
+        artistData.biography = normalizeLexicalContent(artistData.biography)
+        const after = JSON.stringify(artistData.biography.root?.children?.[0]?.children?.[0])
+        if (before !== after) {
+          console.log(`   🔧 Normalized biography`)
+        }
+      }
+      if (artistData.repertoire) {
+        artistData.repertoire = normalizeLexicalContent(artistData.repertoire)
+      }
+      if (artistData.discography) {
+        artistData.discography = normalizeLexicalContent(artistData.discography)
       }
 
       // Remove invalid image references that might not exist
