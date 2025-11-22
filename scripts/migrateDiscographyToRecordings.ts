@@ -9,7 +9,7 @@
  * - Title (from normal text)
  * - Recording label and catalog number (from last italic text matching pattern)
  * - Description (remaining content)
- * - Artist role (auto-detected based on instrument and content)
+ * - Artist role (from H1 heading elements)
  *
  * Pattern:
  * - Bold text (format: 1) → Composer (first bold text in paragraph)
@@ -17,17 +17,25 @@
  * - Italic text (format: 2) → Work titles or Label/Catalog# (last italic)
  *
  * Role Detection:
- * The script intelligently detects artist roles based on:
- * - Artist's instrument field (conductor, piano, violin, etc.)
- * - Content keywords (Dirigent/conductor, Kammermusik/chamber music, etc.)
- * - Context clues (Partner: = accompanist, Orchester/orchestra = ensemble)
+ * The script uses H1 heading elements to group recordings by role.
+ * Structure your discography like this:
  *
- * Roles assigned:
- * - conductor: If instrument=conductor or content mentions "Dirigent/conductor"
- * - accompanist: If piano + content mentions "Partner:/Begleitung"
- * - chamber_musician: If content mentions chamber music/quartet/trio
- * - ensemble_member: If content mentions orchestra/ensemble (but not conductor)
- * - soloist: Default for solo performances
+ *   [H1] Soloist
+ *   [Paragraph] Beethoven - Violin Concerto...
+ *   [Paragraph] Prokofiev - Violin Sonatas...
+ *
+ *   [H1] Conductor
+ *   [Paragraph] Mahler - Symphony No. 5...
+ *   [Paragraph] Brahms - Symphony No. 1...
+ *
+ * Supported heading text (case-insensitive):
+ * - "Soloist" / "Solist" → soloist
+ * - "Conductor" / "Dirigent" → conductor
+ * - "Accompanist" / "Begleiter" → accompanist
+ * - "Chamber Musician" / "Kammermusiker" → chamber_musician
+ * - "Ensemble Member" / "Ensemblemitglied" → ensemble_member
+ *
+ * If no headings are found, defaults to 'soloist' for all recordings.
  *
  * Idempotency:
  * The script is safe to run multiple times. It checks if recordings already exist
@@ -51,8 +59,9 @@ interface TextNode {
 }
 
 interface ParagraphNode {
-  type: 'paragraph'
+  type: 'paragraph' | 'heading'
   children: TextNode[]
+  tag?: string // h1, h2, h3, etc.
 }
 
 interface RichTextContent {
@@ -61,94 +70,30 @@ interface RichTextContent {
   }
 }
 
+type RecordingRole = 'soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist'
+
 /**
- * Detect artist role based on instrument and content
- * Returns array of role values
+ * Map heading text to recording role
  */
-function detectArtistRole(
-  instruments: string[],
-  recordingContent: string,
-): ('soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist')[] {
-  const contentLower = recordingContent.toLowerCase()
+function parseRoleFromHeading(headingText: string): RecordingRole | null {
+  const text = headingText.toLowerCase().trim()
 
-  // Check if content mentions conductor role (German: Dirigent)
-  const isConductor =
-    contentLower.includes('dirigent') || contentLower.includes('conductor') || contentLower.includes('conducting')
+  // Soloist
+  if (text === 'soloist' || text === 'solist') return 'soloist'
 
-  // Check for chamber music indicators
-  const isChamberMusic =
-    contentLower.includes('kammermusik') ||
-    contentLower.includes('chamber music') ||
-    contentLower.includes('quartett') ||
-    contentLower.includes('quartet') ||
-    contentLower.includes('trio') ||
-    contentLower.includes('duo')
+  // Conductor
+  if (text === 'conductor' || text === 'dirigent') return 'conductor'
 
-  // Check for accompanist indicators (German: Begleitung, Klavier)
-  const isAccompanist =
-    contentLower.includes('begleitung') ||
-    contentLower.includes('accompaniment') ||
-    (contentLower.includes('klavier') && contentLower.includes('partner'))
+  // Accompanist
+  if (text === 'accompanist' || text === 'begleiter') return 'accompanist'
 
-  // Check for ensemble indicators
-  const isEnsemble =
-    contentLower.includes('ensemble') ||
-    contentLower.includes('orchester') ||
-    (contentLower.includes('orchestra') && !isConductor)
+  // Chamber Musician
+  if (text === 'chamber musician' || text === 'kammermusiker') return 'chamber_musician'
 
-  // Determine primary role based on instrument
-  const roles: ('soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist')[] = []
+  // Ensemble Member
+  if (text === 'ensemble member' || text === 'ensemblemitglied') return 'ensemble_member'
 
-  // Conductors
-  if (instruments.includes('conductor') || isConductor) {
-    roles.push('conductor')
-  }
-
-  // Piano/keyboard players
-  if (instruments.includes('piano') || instruments.includes('keyboard')) {
-    if (isAccompanist) {
-      roles.push('accompanist')
-    } else if (isChamberMusic) {
-      roles.push('chamber_musician')
-    } else {
-      roles.push('soloist')
-    }
-  }
-
-  // Orchestral/ensemble instruments
-  if (
-    instruments.some((i) =>
-      [
-        'violin',
-        'viola',
-        'cello',
-        'double_bass',
-        'flute',
-        'oboe',
-        'clarinet',
-        'bassoon',
-        'horn',
-        'trumpet',
-        'trombone',
-        'tuba',
-      ].includes(i),
-    )
-  ) {
-    if (isChamberMusic) {
-      roles.push('chamber_musician')
-    } else if (isEnsemble && !isConductor) {
-      roles.push('ensemble_member')
-    } else {
-      roles.push('soloist')
-    }
-  }
-
-  // Default to soloist if no roles detected
-  if (roles.length === 0) {
-    roles.push('soloist')
-  }
-
-  return roles
+  return null
 }
 
 /**
@@ -271,6 +216,45 @@ function createDescriptionRichText(parts: string[]) {
   }
 }
 
+/**
+ * Group paragraphs by role based on H1 headings
+ */
+function groupRecordingsByRole(nodes: ParagraphNode[]): Map<RecordingRole, ParagraphNode[]> {
+  const groups = new Map<RecordingRole, ParagraphNode[]>()
+  let currentRole: RecordingRole = 'soloist' // Default role
+
+  for (const node of nodes) {
+    // Check if this is an H1 heading
+    if (node.type === 'heading' && node.tag === 'h1') {
+      // Extract text from heading
+      const headingText = node.children
+        .filter((child) => child.type === 'text' && child.text)
+        .map((child) => child.text)
+        .join(' ')
+
+      const role = parseRoleFromHeading(headingText)
+      if (role) {
+        currentRole = role
+        console.log(`   📋 Found role section: ${headingText} → ${currentRole}`)
+      } else {
+        console.log(`   ⚠️  Unknown role heading: "${headingText}" - continuing with ${currentRole}`)
+      }
+      continue
+    }
+
+    // Skip non-paragraph nodes
+    if (node.type !== 'paragraph') continue
+
+    // Add paragraph to current role group
+    if (!groups.has(currentRole)) {
+      groups.set(currentRole, [])
+    }
+    groups.get(currentRole)!.push(node)
+  }
+
+  return groups
+}
+
 async function migrateDiscography() {
   console.log('=== Starting Enhanced Discography Migration ===\n')
 
@@ -337,76 +321,74 @@ async function migrateDiscography() {
         }
 
         const discography = artist.discography as RichTextContent
-        const paragraphs = discography.root?.children || []
+        const nodes = discography.root?.children || []
 
-        if (paragraphs.length === 0) {
-          console.log('   ⏭️  No paragraphs found')
+        if (nodes.length === 0) {
+          console.log('   ⏭️  No content found')
+          skippedCount++
+          continue
+        }
+
+        // Group recordings by role based on H1 headings
+        const roleGroups = groupRecordingsByRole(nodes)
+
+        if (roleGroups.size === 0) {
+          console.log('   ⏭️  No recording paragraphs found')
           skippedCount++
           continue
         }
 
         let recordingsCreated = 0
 
-        // Process each paragraph as a separate recording
-        for (const paragraph of paragraphs) {
-          if (paragraph.type !== 'paragraph') continue
+        // Process each role group
+        for (const [role, paragraphs] of roleGroups.entries()) {
+          console.log(`\n   🎵 Processing ${paragraphs.length} recording(s) as: ${role}`)
 
-          const parsed = parseRecordingParagraph(paragraph)
+          for (const paragraph of paragraphs) {
+            const parsed = parseRecordingParagraph(paragraph)
 
-          // Build full content string for role detection
-          const fullContent = [
-            parsed.composer,
-            parsed.title,
-            ...parsed.description,
-            parsed.label || '',
-            parsed.catalogNumber || '',
-          ].join(' ')
+            console.log(`      → "${parsed.composer} - ${parsed.title}"`)
+            if (parsed.label && parsed.catalogNumber) {
+              console.log(`         Label: ${parsed.label} ${parsed.catalogNumber}`)
+            }
 
-          // Detect artist role based on instrument and content
-          const detectedRoles = detectArtistRole(artist.instrument || [], fullContent)
+            // Create the recording in DE locale first
+            const recording = await payload.create({
+              collection: 'recordings',
+              data: {
+                title: parsed.title,
+                composer: parsed.composer,
+                description: createDescriptionRichText(parsed.description),
+                recordingLabel: parsed.label || undefined,
+                catalogNumber: parsed.catalogNumber || undefined,
+                artistRoles: [
+                  {
+                    artist: artist.id,
+                    role: [role],
+                  },
+                ],
+                _status: 'draft',
+              },
+              locale: 'de',
+            })
 
-          console.log(`   → "${parsed.composer} - ${parsed.title}"`)
-          if (parsed.label && parsed.catalogNumber) {
-            console.log(`      Label: ${parsed.label} ${parsed.catalogNumber}`)
+            // Update EN locale (same content for now)
+            await payload.update({
+              collection: 'recordings',
+              id: recording.id,
+              data: {
+                title: parsed.title,
+                composer: parsed.composer,
+                description: createDescriptionRichText(parsed.description),
+              },
+              locale: 'en',
+            })
+
+            recordingsCreated++
           }
-          console.log(`      Role: ${detectedRoles.join(', ')}`)
-
-          // Create the recording in DE locale first
-          const recording = await payload.create({
-            collection: 'recordings',
-            data: {
-              title: parsed.title,
-              composer: parsed.composer,
-              description: createDescriptionRichText(parsed.description),
-              recordingLabel: parsed.label || undefined,
-              catalogNumber: parsed.catalogNumber || undefined,
-              artistRoles: [
-                {
-                  artist: artist.id,
-                  role: detectedRoles,
-                },
-              ],
-              _status: 'draft',
-            },
-            locale: 'de',
-          })
-
-          // Update EN locale (same content for now)
-          await payload.update({
-            collection: 'recordings',
-            id: recording.id,
-            data: {
-              title: parsed.title,
-              composer: parsed.composer,
-              description: createDescriptionRichText(parsed.description),
-            },
-            locale: 'en',
-          })
-
-          recordingsCreated++
         }
 
-        console.log(`   ✅ Created ${recordingsCreated} draft recording(s)`)
+        console.log(`\n   ✅ Created ${recordingsCreated} draft recording(s)`)
         createdCount += recordingsCreated
         summary.push({ artist: artist.name, recordings: recordingsCreated })
       } catch (error) {
@@ -442,12 +424,14 @@ async function migrateDiscography() {
     console.log('2. Navigate to Recordings collection')
     console.log('3. Review each draft recording:')
     console.log('   - Verify extracted composer, title, label, and catalog number')
-    console.log('   - Adjust artist roles if needed (conductor, ensemble member, etc.)')
+    console.log('   - Verify auto-assigned roles (based on H1 headings)')
     console.log('   - Add cover art')
     console.log('   - Add recording year if known')
     console.log('   - Publish when ready')
     console.log('\n💡 Tip: This script is idempotent - it skips artists with existing recordings.')
     console.log('   To re-run for an artist, delete their recordings first, or use --force flag.')
+    console.log('\n💡 Tip: Use H1 headings in discography to specify roles (Soloist, Conductor, etc.)')
+    console.log('   Without headings, all recordings default to "soloist" role.')
 
     process.exit(0)
   } catch (error) {
