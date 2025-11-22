@@ -10,8 +10,11 @@ The following groundwork has been completed:
 The following groundwork remains:
 
 - **Posts Collection:**
-  - Ensure posts can be filtered by artist and by category ("news" and "project").
-  - Confirm the Post model has appropriate references or tags for filtering.
+  - ✅ **Decision Made:** Add an explicit `artists` relationship field (hasMany: true) to the Posts collection.
+  - This provides better data integrity, type safety, and cleaner separation of concerns compared to using category
+    slugs.
+  - Posts can be filtered by both category ("news", "projects") AND related artists.
+  - The `categories` field will contain only semantic content types (news, projects, home), not artist slugs.
 
 - **i18n Preparation:**
   - Add tab labels, placeholders, and all UI text to translation files.
@@ -99,17 +102,23 @@ users. The component is specific to the Artist detail page and is tailored to th
 
 ### News
 
-- Pulls from the Posts collection, filtered by artist and the "news" category
+- Pulls from the Posts collection, filtered by artist relationship and the "news" category
+- Query: `where: { categories: { contains: 'news' }, artists: { equals: artistId } }`
 - Uses a reusable PostList component for rendering
 - Displays posts relevant to the artist, showing title, date, excerpt, and link to full post
 - Placeholder message shown if no posts are found
+- **Note:** Posts can be associated with multiple artists; this query includes posts where the current artist is one of
+  the related artists
 
 ### Projects
 
-- Pulls from the Posts collection, filtered by artist and the "project" category
+- Pulls from the Posts collection, filtered by artist relationship and the "projects" category
+- Query: `where: { categories: { contains: 'projects' }, artists: { equals: artistId } }`
 - Uses the same reusable PostList component as News
 - Displays posts relevant to the artist and categorized as "project"
 - Placeholder message shown if no posts are found
+- **Note:** Posts can be associated with multiple artists; this query includes posts where the current artist is one of
+  the related artists
 
 ### Concert Dates
 

@@ -305,24 +305,8 @@ export interface Post {
     };
     [k: string]: unknown;
   };
-  categories?:
-    | (
-        | 'news'
-        | 'projects'
-        | 'home'
-        | 'tzimon-barto'
-        | 'marc-gruber'
-        | 'claire-huangci'
-        | 'ruth-killius'
-        | 'christian-poltéra'
-        | 'martin-stadtfeld'
-        | 'maurice-steger'
-        | 'mario-venzago'
-        | 'christian-zacharias'
-        | 'thomas-zehetmair'
-        | 'tianwa-yang'
-      )[]
-    | null;
+  categories?: ('news' | 'projects' | 'home')[] | null;
+  artists?: (number | Artist)[] | null;
   image?: (number | null) | Media;
   createdBy: number | Employee;
   updatedAt: string;
@@ -502,6 +486,7 @@ export interface PostsSelect<T extends boolean = true> {
   title?: T;
   content?: T;
   categories?: T;
+  artists?: T;
   image?: T;
   createdBy?: T;
   updatedAt?: T;

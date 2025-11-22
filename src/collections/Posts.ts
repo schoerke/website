@@ -44,6 +44,19 @@ export const Posts: CollectionConfig = {
       options: categoryOptions,
     },
     {
+      name: 'artists',
+      type: 'relationship',
+      relationTo: 'artists',
+      hasMany: true,
+      label: {
+        de: 'Verknüpfte Künstler',
+        en: 'Related Artists',
+      },
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'image',
       relationTo: 'media',
       type: 'upload',

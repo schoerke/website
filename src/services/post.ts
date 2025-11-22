@@ -59,10 +59,10 @@ export const getAllNewsPostsByArtist = async (payload: Payload, artistId: string
     collection: 'posts',
     where: {
       categories: {
-        equals: 'news',
+        contains: 'news',
       },
       artists: {
-        contains: artistId,
+        equals: artistId,
       },
       published: {
         equals: true,
@@ -77,10 +77,10 @@ export const getAllProjectPostsByArtist = async (payload: Payload, artistId: str
     collection: 'posts',
     where: {
       categories: {
-        equals: 'projects',
+        contains: 'projects',
       },
       artists: {
-        contains: artistId,
+        equals: artistId,
       },
       published: {
         equals: true,
