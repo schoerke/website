@@ -49,6 +49,31 @@ const de = {
       artist: {
         backButton: 'Zurück',
         contactPersons: 'Ansprechpartner',
+        tabs: {
+          biography: 'Biografie',
+          repertoire: 'Repertoire',
+          discography: 'Diskografie',
+          video: 'Video',
+          news: 'News',
+          projects: 'Projekte',
+          concertDates: 'Konzerttermine',
+        },
+        empty: {
+          biography: 'Keine Biografie verfügbar.',
+          repertoire: 'Keine Repertoire-Informationen verfügbar.',
+          discography: 'Keine Diskografie-Einträge verfügbar.',
+          video: 'Keine Videos verfügbar.',
+          news: 'Keine News-Artikel verfügbar.',
+          projects: 'Keine Projekte verfügbar.',
+          concertDates: 'Keine anstehenden Konzerttermine.',
+        },
+        loading: 'Laden...',
+        video: {
+          accordionTrigger: 'Video anzeigen',
+        },
+        concertDates: {
+          button: 'Konzerttermine ansehen',
+        },
       },
       contact: {
         title: 'Kontakt',

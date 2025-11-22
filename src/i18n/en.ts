@@ -46,6 +46,31 @@ const en = {
       artist: {
         backButton: 'Back to Artists',
         contactPersons: 'Contact Persons',
+        tabs: {
+          biography: 'Biography',
+          repertoire: 'Repertoire',
+          discography: 'Discography',
+          video: 'Video',
+          news: 'News',
+          projects: 'Projects',
+          concertDates: 'Concert Dates',
+        },
+        empty: {
+          biography: 'No biography available.',
+          repertoire: 'No repertoire information available.',
+          discography: 'No discography entries available.',
+          video: 'No videos available.',
+          news: 'No news articles available.',
+          projects: 'No projects available.',
+          concertDates: 'No upcoming concert dates.',
+        },
+        loading: 'Loading...',
+        video: {
+          accordionTrigger: 'Show video',
+        },
+        concertDates: {
+          button: 'View Concert Dates',
+        },
       },
       contact: {
         title: 'Contact',

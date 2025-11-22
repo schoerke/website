@@ -1,6 +1,6 @@
 'use client'
 
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import { useTranslations } from 'next-intl'
 
 type InstrumentFilterProps = {
