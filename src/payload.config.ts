@@ -14,6 +14,7 @@ import { Artists } from './collections/Artists'
 import { Employees } from './collections/Employees'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
+import { Recordings } from './collections/Recordings'
 import { Users } from './collections/Users'
 
 // v2: Newsletter Contact Management
@@ -33,7 +34,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Artists, Employees, Posts, Users, Media],
+  collections: [Artists, Employees, Posts, Recordings, Users, Media],
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URI!,

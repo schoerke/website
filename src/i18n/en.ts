@@ -36,6 +36,13 @@ const en = {
       recorder: 'Recorder',
       'chamber-music': 'Chamber Music',
     },
+    recordingRoles: {
+      soloist: 'Soloist',
+      conductor: 'Conductor',
+      ensemble_member: 'Ensemble Member',
+      chamber_musician: 'Chamber Musician',
+      accompanist: 'Accompanist',
+    },
     pages: {
       home: {
         title: 'Home',

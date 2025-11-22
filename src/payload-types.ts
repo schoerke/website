@@ -70,6 +70,7 @@ export interface Config {
     artists: Artist;
     employees: Employee;
     posts: Post;
+    recordings: Recording;
     users: User;
     media: Media;
     'payload-kv': PayloadKv;
@@ -82,6 +83,7 @@ export interface Config {
     artists: ArtistsSelect<false> | ArtistsSelect<true>;
     employees: EmployeesSelect<false> | EmployeesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    recordings: RecordingsSelect<false> | RecordingsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -315,6 +317,51 @@ export interface Post {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recordings".
+ */
+export interface Recording {
+  id: number;
+  title: string;
+  composer: string;
+  /**
+   * General information about the recording (track listings, work details, program notes). No images or embedded media allowed.
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Year of recording (not release year)
+   */
+  recordingYear?: number | null;
+  recordingLabel?: string | null;
+  catalogNumber?: string | null;
+  coverArt?: (number | null) | Media;
+  artistRoles: {
+    artist: number | Artist;
+    /**
+     * Select one or more roles for this artist
+     */
+    role: ('soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist')[];
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -374,6 +421,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'posts';
         value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'recordings';
+        value: number | Recording;
       } | null)
     | ({
         relationTo: 'users';
@@ -489,6 +540,29 @@ export interface PostsSelect<T extends boolean = true> {
   artists?: T;
   image?: T;
   createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recordings_select".
+ */
+export interface RecordingsSelect<T extends boolean = true> {
+  title?: T;
+  composer?: T;
+  description?: T;
+  recordingYear?: T;
+  recordingLabel?: T;
+  catalogNumber?: T;
+  coverArt?: T;
+  artistRoles?:
+    | T
+    | {
+        artist?: T;
+        role?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

@@ -39,6 +39,13 @@ const de = {
       recorder: 'Blockflöte',
       'chamber-music': 'Kammermusik',
     },
+    recordingRoles: {
+      soloist: 'Solist',
+      conductor: 'Dirigent',
+      ensemble_member: 'Ensemblemitglied',
+      chamber_musician: 'Kammermusiker',
+      accompanist: 'Begleiter',
+    },
     pages: {
       home: {
         title: 'Start',
