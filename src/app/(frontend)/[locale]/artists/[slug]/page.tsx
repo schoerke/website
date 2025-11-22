@@ -37,7 +37,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
   const t = await getTranslations({ locale, namespace: 'custom.pages.artist' })
   const [openQuote, closeQuote] = getQuoteMarks(locale)
 
-  const { name, image, quote, contactPersons } = artist
+  const { name, image, contactPersons } = artist
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
@@ -63,16 +63,9 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
           </div>
         )}
       </div>
-      {quote && (
-        <blockquote className="border-primary-yellow border-l-4 pl-6 text-lg italic text-gray-700 dark:text-gray-200">
-          {openQuote}
-          {quote}
-          {closeQuote}
-        </blockquote>
-      )}
 
       {/* Artist Tabs - Biography, Repertoire, Discography, Video, News, Projects, Concert Dates */}
-      <ArtistTabs artist={artist} />
+      <ArtistTabs artist={artist} locale={locale} />
 
       <div className="mt-8">
         <Link

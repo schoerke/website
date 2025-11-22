@@ -3,6 +3,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post } from '@/payload-types'
+import { getQuoteMarks } from '@/utils/content'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import {
@@ -19,15 +20,19 @@ type TabId = 'biography' | 'repertoire' | 'discography' | 'video' | 'news' | 'pr
 
 interface ArtistTabsProps {
   artist: Artist
+  locale: string
 }
 
-const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist }) => {
+const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const t = useTranslations('custom.pages.artist')
   const [activeTab, setActiveTab] = useState<TabId>('biography')
   const [newsPosts, setNewsPosts] = useState<Post[]>([])
   const [projectPosts, setProjectPosts] = useState<Post[]>([])
   const [newsLoading, setNewsLoading] = useState(false)
   const [projectsLoading, setProjectsLoading] = useState(false)
+
+  // Get quote marks for the current locale
+  const quoteMarks = getQuoteMarks(locale)
 
   // Available tabs (Concert Dates is conditional)
   const tabs: TabId[] = [
@@ -127,7 +132,9 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist }) => {
 
       {/* Tab Content */}
       <div className="rounded-lg bg-gray-50 p-6">
-        {activeTab === 'biography' && <BiographyTab content={artist.biography} />}
+        {activeTab === 'biography' && (
+          <BiographyTab content={artist.biography} quote={artist.quote} quoteMarks={quoteMarks} />
+        )}
         {activeTab === 'repertoire' && (
           <RepertoireTab content={artist.repertoire} emptyMessage={t('empty.repertoire')} />
         )}

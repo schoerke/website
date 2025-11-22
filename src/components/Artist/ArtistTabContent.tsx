@@ -7,11 +7,22 @@ import VideoAccordion from './VideoAccordion'
 // Biography Tab
 interface BiographyTabProps {
   content: Artist['biography']
+  quote?: string | null
+  quoteMarks?: [string, string]
 }
 
-export const BiographyTab: React.FC<BiographyTabProps> = ({ content }) => {
+export const BiographyTab: React.FC<BiographyTabProps> = ({ content, quote, quoteMarks }) => {
+  const [openQuote, closeQuote] = quoteMarks || ['', '']
+
   return (
     <div className="prose max-w-none">
+      {quote && (
+        <blockquote className="border-primary-yellow mb-6 border-l-4 pl-6 text-lg italic text-gray-700 dark:text-gray-200">
+          {openQuote}
+          {quote}
+          {closeQuote}
+        </blockquote>
+      )}
       <PayloadRichText content={content} />
     </div>
   )
