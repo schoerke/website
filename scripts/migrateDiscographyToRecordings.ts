@@ -59,6 +59,7 @@
  */
 
 import config from '@payload-config'
+import 'dotenv/config'
 import { getPayload } from 'payload'
 
 interface TextNode {
@@ -106,21 +107,43 @@ function parseRoleFromHeading(headingText: string): RecordingRole | null {
 }
 
 /**
- * Parse a label/catalog string like "Naxos 8.572191" or "CPO 555 123-2"
+ * Parse a label/catalog string
  * Returns { label, catalogNumber } or null if no match
+ *
+ * Handles patterns like:
+ * - "MDG 903 2280-6 SACD (2023)"
+ * - "EMI 7 41112 7 (2000)"
+ * - "MDG 940 1759-6 (2012)"
+ * - "Naxos 8.572191"
+ * - "CPO 555 123-2"
+ * - "Deutsche Grammophon 479 0563"
  */
 function parseLabelCatalog(text: string): { label: string; catalogNumber: string } | null {
-  // Common patterns:
-  // "Naxos 8.572191"
-  // "CPO 555 123-2"
-  // "Deutsche Grammophon 479 0563"
-  const match = text.match(/^([A-Za-z\s]+?)\s+([\d.\-\s]+)$/)
+  // Pattern: Label name followed by catalog number (digits, dots, dashes, spaces)
+  // May be followed by optional format/year info
+  // Examples:
+  //   "MDG 903 2280-6 SACD (2023)" → label: "MDG", catalog: "903 2280-6"
+  //   "EMI 7 41112 7 (2000)" → label: "EMI", catalog: "7 41112 7"
+  //   "MDG 340 1182-2 (2003)" → label: "MDG", catalog: "340 1182-2"
+
+  // Try pattern: "LABEL CATALOG (YEAR)" or "LABEL CATALOG FORMAT (YEAR)"
+  let match = text.match(/^([A-Z][A-Za-z\s&.]*?)\s+([\d.\-\s]+?)(?:\s+[A-Z][\w-]*)?(?:\s*\([0-9]{4}\))?$/i)
   if (match) {
     return {
       label: match[1].trim(),
       catalogNumber: match[2].trim(),
     }
   }
+
+  // Fallback: Simple pattern "LABEL CATALOG" at start of string
+  match = text.match(/^([A-Z][A-Za-z\s&.]+?)\s+([\d.\-\s]+)/)
+  if (match) {
+    return {
+      label: match[1].trim(),
+      catalogNumber: match[2].trim(),
+    }
+  }
+
   return null
 }
 
@@ -179,6 +202,19 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
       catalogNumber = parsed.catalogNumber
       // Remove from italic texts since it's now extracted
       italicTexts.pop()
+    }
+  }
+
+  // If no label found in italics, check last normal text (titleParts)
+  if (!label && titleParts.length > 0) {
+    const lastNormal = titleParts[titleParts.length - 1]
+    const parsed = parseLabelCatalog(lastNormal)
+
+    if (parsed) {
+      label = parsed.label
+      catalogNumber = parsed.catalogNumber
+      // Remove from title parts since it's now extracted
+      titleParts.pop()
     }
   }
 
