@@ -322,7 +322,10 @@ export interface Post {
 export interface Recording {
   id: number;
   title: string;
-  composer: string;
+  /**
+   * Leave blank for recordings with multiple composers or various artists
+   */
+  composer?: string | null;
   /**
    * General information about the recording (track listings, work details, program notes). No images or embedded media allowed.
    */

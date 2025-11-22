@@ -40,11 +40,17 @@ export const Recordings: CollectionConfig = {
     {
       name: 'composer',
       type: 'text',
-      required: true,
+      required: false,
       localized: true,
       label: {
         de: 'Komponist',
         en: 'Composer',
+      },
+      admin: {
+        description: {
+          en: 'Leave blank for recordings with multiple composers or various artists',
+          de: 'Leer lassen für Aufnahmen mit mehreren Komponisten oder verschiedenen Künstlern',
+        },
       },
     },
     {

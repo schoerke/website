@@ -119,7 +119,7 @@ function parseLabelCatalog(text: string): { label: string; catalogNumber: string
  * Extract recording info from a paragraph node
  */
 function parseRecordingParagraph(paragraph: ParagraphNode): {
-  composer: string
+  composer: string | null
   title: string
   description: string[]
   label: string | null
@@ -186,7 +186,7 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
   }
 
   return {
-    composer: composer || 'Unbekannter Komponist',
+    composer: composer || null, // null if no bold text found
     title: titleParts.join(' • ') || 'Ohne Titel',
     description: descriptionParts,
     label,
@@ -357,7 +357,7 @@ async function migrateDiscography() {
               collection: 'recordings',
               data: {
                 title: parsed.title,
-                composer: parsed.composer,
+                composer: parsed.composer || undefined, // Only set if present
                 description: createDescriptionRichText(parsed.description),
                 recordingLabel: parsed.label || undefined,
                 catalogNumber: parsed.catalogNumber || undefined,
@@ -378,7 +378,7 @@ async function migrateDiscography() {
               id: recording.id,
               data: {
                 title: parsed.title,
-                composer: parsed.composer,
+                composer: parsed.composer || undefined, // Only set if present
                 description: createDescriptionRichText(parsed.description),
               },
               locale: 'en',
