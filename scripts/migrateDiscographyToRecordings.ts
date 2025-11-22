@@ -181,9 +181,13 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
 
     // Normal text = title or description
     if (child.format === 0) {
-      // If starts with "Partner:" put in description
+      // If starts with "Partner:" put in description (and remove the prefix)
       if (text.startsWith('Partner:')) {
-        descriptionParts.push(text)
+        // Remove "Partner: " prefix and add to description
+        const cleanedText = text.replace(/^Partner:\s*/, '').trim()
+        if (cleanedText) {
+          descriptionParts.push(cleanedText)
+        }
       } else {
         titleParts.push(text)
       }
