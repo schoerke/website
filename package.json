@@ -14,6 +14,7 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "migrate:media": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/migrateWordpressMedia.js",
+    "migrate:discography": "tsx scripts/migrateDiscographyToRecordings.ts",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "seed:artists": "payload run ./scripts/seedArtists.ts",
