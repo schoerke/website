@@ -1,11 +1,19 @@
 // @ts-nocheck
 /**
- * Migration Script: Discography to Recordings
+ * Migration Script: Discography to Recordings (Enhanced)
  *
  * This script migrates existing discography data from the Artists collection
- * to the new Recordings collection. Since discography data is unstructured
- * richText, this migration creates draft Recordings that preserve the original
- * content in the description field for manual review and structuring.
+ * to the new Recordings collection. It parses the richText structure and
+ * intelligently extracts:
+ * - Composer (from bold text)
+ * - Title (from normal text)
+ * - Recording label and catalog number (from last italic text matching pattern)
+ * - Description (remaining content)
+ *
+ * Pattern:
+ * - Bold text (format: 1) → Composer (first bold text in paragraph)
+ * - Normal text (format: 0) → Title and description
+ * - Italic text (format: 2) → Work titles or Label/Catalog# (last italic)
  *
  * Usage: pnpm migrate:discography
  */
@@ -13,8 +21,145 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+interface TextNode {
+  type: 'text' | 'linebreak'
+  format?: number // 0=normal, 1=bold, 2=italic
+  text?: string
+}
+
+interface ParagraphNode {
+  type: 'paragraph'
+  children: TextNode[]
+}
+
+interface RichTextContent {
+  root: {
+    children: ParagraphNode[]
+  }
+}
+
+/**
+ * Parse a label/catalog string like "Naxos 8.572191" or "CPO 555 123-2"
+ * Returns { label, catalogNumber } or null if no match
+ */
+function parseLabelCatalog(text: string): { label: string; catalogNumber: string } | null {
+  // Common patterns:
+  // "Naxos 8.572191"
+  // "CPO 555 123-2"
+  // "Deutsche Grammophon 479 0563"
+  const match = text.match(/^([A-Za-z\s]+?)\s+([\d.\-\s]+)$/)
+  if (match) {
+    return {
+      label: match[1].trim(),
+      catalogNumber: match[2].trim(),
+    }
+  }
+  return null
+}
+
+/**
+ * Extract recording info from a paragraph node
+ */
+function parseRecordingParagraph(paragraph: ParagraphNode): {
+  composer: string
+  title: string
+  description: string[]
+  label: string | null
+  catalogNumber: string | null
+} {
+  let composer = ''
+  const titleParts: string[] = []
+  const descriptionParts: string[] = []
+  const italicTexts: string[] = []
+  let label: string | null = null
+  let catalogNumber: string | null = null
+
+  for (const child of paragraph.children) {
+    if (child.type === 'linebreak') continue
+    if (!child.text?.trim()) continue
+
+    const text = child.text.trim()
+
+    // Bold text = composer (take first bold)
+    if (child.format === 1 && !composer) {
+      composer = text
+      continue
+    }
+
+    // Normal text = title or description
+    if (child.format === 0) {
+      // If starts with "Partner:" put in description
+      if (text.startsWith('Partner:')) {
+        descriptionParts.push(text)
+      } else {
+        titleParts.push(text)
+      }
+      continue
+    }
+
+    // Italic text = could be work titles or label/catalog
+    if (child.format === 2) {
+      italicTexts.push(text)
+    }
+  }
+
+  // Check last italic text for label/catalog pattern
+  if (italicTexts.length > 0) {
+    const lastItalic = italicTexts[italicTexts.length - 1]
+    const parsed = parseLabelCatalog(lastItalic)
+
+    if (parsed) {
+      label = parsed.label
+      catalogNumber = parsed.catalogNumber
+      // Remove from italic texts since it's now extracted
+      italicTexts.pop()
+    }
+  }
+
+  // Remaining italic texts are work titles - add to title or description
+  if (italicTexts.length > 0) {
+    // If we have a short title (1-2 words), add italic texts to title
+    // Otherwise add to description
+    if (titleParts.join(' ').split(' ').length <= 3) {
+      titleParts.push(...italicTexts)
+    } else {
+      descriptionParts.push(...italicTexts)
+    }
+  }
+
+  return {
+    composer: composer || 'Unbekannter Komponist',
+    title: titleParts.join(' • ') || 'Ohne Titel',
+    description: descriptionParts,
+    label,
+    catalogNumber,
+  }
+}
+
+/**
+ * Convert description parts to richText format
+ */
+function createDescriptionRichText(parts: string[]) {
+  if (parts.length === 0) return null
+
+  return {
+    root: {
+      children: parts.map((part) => ({
+        type: 'paragraph',
+        children: [
+          {
+            type: 'text',
+            text: part,
+            format: 0,
+          },
+        ],
+      })),
+    },
+  }
+}
+
 async function migrateDiscography() {
-  console.log('=== Starting Discography Migration ===\n')
+  console.log('=== Starting Enhanced Discography Migration ===\n')
 
   try {
     const payload = await getPayload({ config })
@@ -29,7 +174,7 @@ async function migrateDiscography() {
         },
       },
       limit: 1000,
-      locale: 'all', // Get all locales
+      locale: 'all',
     })
 
     console.log(`Found ${artists.docs.length} artists with discography data\n`)
@@ -37,6 +182,7 @@ async function migrateDiscography() {
     let createdCount = 0
     let skippedCount = 0
     const errors: Array<{ artist: string; error: string }> = []
+    const summary: Array<{ artist: string; recordings: number }> = []
 
     // 2. Process each artist
     for (const artist of artists.docs) {
@@ -48,40 +194,68 @@ async function migrateDiscography() {
       }
 
       try {
-        console.log(`📝 Processing: ${artist.name}`)
+        console.log(`\n📝 Processing: ${artist.name}`)
 
-        // Create a draft recording with the discography content
-        // Note: We create with DE locale first (default), then update EN locale
-        const recording = await payload.create({
-          collection: 'recordings',
-          data: {
-            title: `${artist.name} - Diskographie (zur Überprüfung)`,
-            composer: 'Zu bestimmen',
-            description: artist.discography, // Preserve original richText content
-            artistRoles: [
-              {
-                artist: artist.id,
-                role: ['soloist'], // Default role
-              },
-            ],
-            _status: 'draft',
-          },
-          locale: 'de',
-        })
+        const discography = artist.discography as RichTextContent
+        const paragraphs = discography.root?.children || []
 
-        // Update with English locale
-        await payload.update({
-          collection: 'recordings',
-          id: recording.id,
-          data: {
-            title: `${artist.name} - Discography (needs review)`,
-            composer: 'To be determined',
-          },
-          locale: 'en',
-        })
+        if (paragraphs.length === 0) {
+          console.log('   ⏭️  No paragraphs found')
+          skippedCount++
+          continue
+        }
 
-        console.log(`   ✅ Created draft recording for ${artist.name}`)
-        createdCount++
+        let recordingsCreated = 0
+
+        // Process each paragraph as a separate recording
+        for (const paragraph of paragraphs) {
+          if (paragraph.type !== 'paragraph') continue
+
+          const parsed = parseRecordingParagraph(paragraph)
+
+          console.log(`   → "${parsed.composer} - ${parsed.title}"`)
+          if (parsed.label && parsed.catalogNumber) {
+            console.log(`      Label: ${parsed.label} ${parsed.catalogNumber}`)
+          }
+
+          // Create the recording in DE locale first
+          const recording = await payload.create({
+            collection: 'recordings',
+            data: {
+              title: parsed.title,
+              composer: parsed.composer,
+              description: createDescriptionRichText(parsed.description),
+              recordingLabel: parsed.label || undefined,
+              catalogNumber: parsed.catalogNumber || undefined,
+              artistRoles: [
+                {
+                  artist: artist.id,
+                  role: ['soloist'], // Default role
+                },
+              ],
+              _status: 'draft',
+            },
+            locale: 'de',
+          })
+
+          // Update EN locale (same content for now)
+          await payload.update({
+            collection: 'recordings',
+            id: recording.id,
+            data: {
+              title: parsed.title,
+              composer: parsed.composer,
+              description: createDescriptionRichText(parsed.description),
+            },
+            locale: 'en',
+          })
+
+          recordingsCreated++
+        }
+
+        console.log(`   ✅ Created ${recordingsCreated} draft recording(s)`)
+        createdCount += recordingsCreated
+        summary.push({ artist: artist.name, recordings: recordingsCreated })
       } catch (error) {
         console.error(`   ❌ Error processing ${artist.name}:`, error)
         errors.push({
@@ -96,6 +270,13 @@ async function migrateDiscography() {
     console.log(`✅ Created: ${createdCount} draft recordings`)
     console.log(`⏭️  Skipped: ${skippedCount} artists (no discography)`)
 
+    if (summary.length > 0) {
+      console.log('\n📊 Summary by Artist:')
+      summary.forEach(({ artist, recordings }) => {
+        console.log(`   - ${artist}: ${recordings} recording(s)`)
+      })
+    }
+
     if (errors.length > 0) {
       console.log(`\n❌ Errors: ${errors.length}`)
       errors.forEach(({ artist, error }) => {
@@ -107,10 +288,10 @@ async function migrateDiscography() {
     console.log('1. Log into Payload admin panel')
     console.log('2. Navigate to Recordings collection')
     console.log('3. Review each draft recording:')
-    console.log('   - Extract title, composer, year, label, catalog number from description')
-    console.log('   - Update description to only include supplementary info (tracks, notes)')
-    console.log('   - Adjust artist roles if needed')
+    console.log('   - Verify extracted composer, title, label, and catalog number')
+    console.log('   - Adjust artist roles if needed (conductor, ensemble member, etc.)')
     console.log('   - Add cover art')
+    console.log('   - Add recording year if known')
     console.log('   - Publish when ready')
 
     process.exit(0)
