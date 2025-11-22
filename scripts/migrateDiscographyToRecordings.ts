@@ -5,28 +5,37 @@
  * This script migrates existing discography data from the Artists collection
  * to the new Recordings collection. It parses the richText structure and
  * intelligently extracts:
- * - Composer (from bold text)
- * - Title (from normal text)
+ * - Title (combining bold text "Composer" with normal text "Work")
  * - Recording label and catalog number (from last italic text matching pattern)
- * - Description (remaining content)
+ * - Description (remaining content, including composers if needed)
  * - Artist role (from H1 heading elements)
  *
  * Pattern:
- * - Bold text (format: 1) → Composer (first bold text in paragraph)
- * - Normal text (format: 0) → Title and description
+ * - Bold text (format: 1) → Prepended to title as "Composer -"
+ * - Normal text (format: 0) → Work title and description
  * - Italic text (format: 2) → Work titles or Label/Catalog# (last italic)
+ * - Final title format: "Composer - Work Title"
+ *
+ * Example:
+ *   [Bold] Beethoven
+ *   [Normal] Violin Concerto
+ *   [Italic] Naxos 8.123456
+ *   → Title: "Beethoven - Violin Concerto"
+ *   → Label: "Naxos", Catalog: "8.123456"
  *
  * Role Detection:
  * The script uses H1 heading elements to group recordings by role.
  * Structure your discography like this:
  *
  *   [H1] Soloist
- *   [Paragraph] Beethoven - Violin Concerto...
- *   [Paragraph] Prokofiev - Violin Sonatas...
+ *   [Paragraph] Beethoven
+ *   [Paragraph] Violin Concerto...
+ *   [Paragraph] Prokofiev
+ *   [Paragraph] Violin Sonatas...
  *
  *   [H1] Conductor
- *   [Paragraph] Mahler - Symphony No. 5...
- *   [Paragraph] Brahms - Symphony No. 1...
+ *   [Paragraph] Mahler
+ *   [Paragraph] Symphony No. 5...
  *
  * Supported heading text (case-insensitive):
  * - "Soloist" / "Solist" → soloist
@@ -119,7 +128,6 @@ function parseLabelCatalog(text: string): { label: string; catalogNumber: string
  * Extract recording info from a paragraph node
  */
 function parseRecordingParagraph(paragraph: ParagraphNode): {
-  composer: string | null
   title: string
   description: string[]
   label: string | null
@@ -138,7 +146,7 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
 
     const text = child.text.trim()
 
-    // Bold text = composer (take first bold)
+    // Bold text = composer (take first bold, will be prepended to title)
     if (child.format === 1 && !composer) {
       composer = text
       continue
@@ -185,9 +193,20 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
     }
   }
 
+  // Build full title: "Composer - Title Parts"
+  let fullTitle = ''
+  if (composer && titleParts.length > 0) {
+    fullTitle = `${composer} - ${titleParts.join(' • ')}`
+  } else if (composer) {
+    fullTitle = composer
+  } else if (titleParts.length > 0) {
+    fullTitle = titleParts.join(' • ')
+  } else {
+    fullTitle = 'Ohne Titel'
+  }
+
   return {
-    composer: composer || null, // null if no bold text found
-    title: titleParts.join(' • ') || 'Ohne Titel',
+    title: fullTitle,
     description: descriptionParts,
     label,
     catalogNumber,
@@ -347,7 +366,7 @@ async function migrateDiscography() {
           for (const paragraph of paragraphs) {
             const parsed = parseRecordingParagraph(paragraph)
 
-            console.log(`      → "${parsed.composer} - ${parsed.title}"`)
+            console.log(`      → "${parsed.title}"`)
             if (parsed.label && parsed.catalogNumber) {
               console.log(`         Label: ${parsed.label} ${parsed.catalogNumber}`)
             }
@@ -357,7 +376,6 @@ async function migrateDiscography() {
               collection: 'recordings',
               data: {
                 title: parsed.title,
-                composer: parsed.composer || undefined, // Only set if present
                 description: createDescriptionRichText(parsed.description),
                 recordingLabel: parsed.label || undefined,
                 catalogNumber: parsed.catalogNumber || undefined,
@@ -378,7 +396,6 @@ async function migrateDiscography() {
               id: recording.id,
               data: {
                 title: parsed.title,
-                composer: parsed.composer || undefined, // Only set if present
                 description: createDescriptionRichText(parsed.description),
               },
               locale: 'en',

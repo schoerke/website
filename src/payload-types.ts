@@ -321,13 +321,12 @@ export interface Post {
  */
 export interface Recording {
   id: number;
+  /**
+   * Full title including composer and work (e.g., "Beethoven - Violin Concerto")
+   */
   title: string;
   /**
-   * Leave blank for recordings with multiple composers or various artists
-   */
-  composer?: string | null;
-  /**
-   * General information about the recording (track listings, work details, program notes). No images or embedded media allowed.
+   * General information about the recording (composers, track listings, work details, program notes). No images or embedded media allowed.
    */
   description?: {
     root: {
@@ -553,7 +552,6 @@ export interface PostsSelect<T extends boolean = true> {
  */
 export interface RecordingsSelect<T extends boolean = true> {
   title?: T;
-  composer?: T;
   description?: T;
   recordingYear?: T;
   recordingLabel?: T;

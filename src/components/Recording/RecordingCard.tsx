@@ -53,7 +53,6 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
       </div>
       <div className="p-6">
         <h3 className="font-playfair mb-2 text-xl font-bold">{recording.title}</h3>
-        {recording.composer && <p className="mb-2 text-sm font-semibold text-gray-800">{recording.composer}</p>}
         {artistsWithRoles && <p className="mb-2 text-xs text-gray-600">{artistsWithRoles}</p>}
         {recordingDetails && <p className="text-xs text-gray-500">{recordingDetails}</p>}
       </div>

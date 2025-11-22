@@ -36,20 +36,10 @@ export const Recordings: CollectionConfig = {
         de: 'Titel',
         en: 'Title',
       },
-    },
-    {
-      name: 'composer',
-      type: 'text',
-      required: false,
-      localized: true,
-      label: {
-        de: 'Komponist',
-        en: 'Composer',
-      },
       admin: {
         description: {
-          en: 'Leave blank for recordings with multiple composers or various artists',
-          de: 'Leer lassen für Aufnahmen mit mehreren Komponisten oder verschiedenen Künstlern',
+          en: 'Full title including composer and work (e.g., "Beethoven - Violin Concerto")',
+          de: 'Vollständiger Titel einschließlich Komponist und Werk (z.B. "Beethoven - Violinkonzert")',
         },
       },
     },
@@ -64,8 +54,8 @@ export const Recordings: CollectionConfig = {
       },
       admin: {
         description: {
-          en: 'General information about the recording (track listings, work details, program notes). No images or embedded media allowed.',
-          de: 'Allgemeine Informationen zur Aufnahme (Trackliste, Werkdetails, Programmnotizen). Keine Bilder oder eingebetteten Medien erlaubt.',
+          en: 'General information about the recording (composers, track listings, work details, program notes). No images or embedded media allowed.',
+          de: 'Allgemeine Informationen zur Aufnahme (Komponisten, Trackliste, Werkdetails, Programmnotizen). Keine Bilder oder eingebetteten Medien erlaubt.',
         },
       },
     },
