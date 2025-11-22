@@ -1,5 +1,5 @@
+import ArtistTabs from '@/components/Artist/ArtistTabs'
 import ContactPersons from '@/components/Artist/ContactPersons'
-import ClientRichText from '@/components/ui/ClientRichText'
 import { Link } from '@/i18n/navigation'
 import config from '@/payload.config'
 import Image from 'next/image'
@@ -37,7 +37,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
   const t = await getTranslations({ locale, namespace: 'custom.pages.artist' })
   const [openQuote, closeQuote] = getQuoteMarks(locale)
 
-  const { name, image, quote, biography, contactPersons } = artist
+  const { name, image, quote, contactPersons } = artist
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
@@ -70,11 +70,10 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
           {closeQuote}
         </blockquote>
       )}
-      {biography && (
-        <div className="bio-prose prose prose-lg max-w-none">
-          <ClientRichText content={biography} />
-        </div>
-      )}
+
+      {/* Artist Tabs - Biography, Repertoire, Discography, Video, News, Projects, Concert Dates */}
+      <ArtistTabs artist={artist} />
+
       <div className="mt-8">
         <Link
           href="/artists"
