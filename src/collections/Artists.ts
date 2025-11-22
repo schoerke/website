@@ -1,7 +1,6 @@
 import { INSTRUMENTS } from '@/constants/options'
 import { validateQuote, validateURL, validateYouTubeURL } from '@/validators/fields'
 import type { CollectionConfig } from 'payload'
-import { slugField } from 'payload'
 
 export const Artists: CollectionConfig = {
   slug: 'artists',
@@ -23,9 +22,37 @@ export const Artists: CollectionConfig = {
     group: 'Organization',
   },
   fields: [
-    slugField({
+    {
+      name: 'name',
+      required: true,
+      type: 'text',
+      unique: true,
+    },
+    {
       name: 'slug',
-    }),
+      type: 'text',
+      unique: true,
+      index: true,
+      required: true,
+      admin: {
+        position: 'sidebar',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ data, operation, value }) => {
+            if (operation === 'create' || !value) {
+              if (data?.name) {
+                return data.name
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, '-')
+                  .replace(/(^-|-$)/g, '')
+              }
+            }
+            return value
+          },
+        ],
+      },
+    },
     {
       name: 'instrument',
       type: 'select',
@@ -62,13 +89,6 @@ export const Artists: CollectionConfig = {
             en: 'General',
           },
           fields: [
-            {
-              name: 'name',
-              required: true,
-              type: 'text',
-              unique: true,
-            },
-
             {
               name: 'contactPersons',
               label: {
