@@ -286,9 +286,9 @@ async function migrateDiscography() {
   try {
     const payload = await getPayload({ config })
 
-    // 1. Fetch all artists with discography data
+    // 1. Fetch all artists with discography data (fetch DE first to check existence)
     console.log('Fetching artists with discography data...')
-    const artists = await payload.find({
+    const artistsDE = await payload.find({
       collection: 'artists',
       where: {
         discography: {
@@ -296,28 +296,21 @@ async function migrateDiscography() {
         },
       },
       limit: 1000,
-      locale: 'all',
+      locale: 'de',
     })
 
-    console.log(`Found ${artists.docs.length} artists with discography data\n`)
+    console.log(`Found ${artistsDE.docs.length} artists with DE discography data\n`)
 
     let createdCount = 0
     let skippedCount = 0
     const errors: Array<{ artist: string; error: string }> = []
     const summary: Array<{ artist: string; recordings: number }> = []
 
-    // 2. Process each artist
-    for (const artist of artists.docs) {
-      // Skip if no discography content
-      if (!artist.discography) {
-        console.log(`⏭️  Skipping ${artist.name} (no discography content)`)
-        skippedCount++
-        continue
-      }
-
+    // 2. Process each artist - handle DE and EN locales separately
+    for (const artistDE of artistsDE.docs) {
       try {
-        console.log(`\n📝 Processing: ${artist.name}`)
-        console.log(`   Instruments: ${artist.instrument?.join(', ') || 'none'}`)
+        console.log(`\n📝 Processing: ${artistDE.name}`)
+        console.log(`   Instruments: ${artistDE.instrument?.join(', ') || 'none'}`)
 
         // Check if recordings already exist for this artist (unless --force flag is used)
         if (!forceMode) {
@@ -325,53 +318,66 @@ async function migrateDiscography() {
             collection: 'recordings',
             where: {
               'artistRoles.artist': {
-                equals: artist.id,
+                equals: artistDE.id,
               },
             },
             limit: 1,
+            locale: 'de',
           })
 
-          if (existingRecordings.totalDocs > 0) {
-            console.log(`   ⏭️  Skipping - ${existingRecordings.totalDocs} recording(s) already exist`)
-            console.log(`      (Use --force flag to create anyway)`)
+          if (existingRecordings.docs.length > 0) {
+            console.log(`   ⏭️  Skipping (${existingRecordings.totalDocs} recordings already exist)`)
             skippedCount++
             continue
           }
         }
 
-        const discography = artist.discography as RichTextContent
-        const nodes = discography.root?.children || []
+        // Fetch EN locale version to get EN discography
+        const artistEN = await payload.findByID({
+          collection: 'artists',
+          id: artistDE.id,
+          locale: 'en',
+        })
 
-        if (nodes.length === 0) {
-          console.log('   ⏭️  No content found')
+        // Process DE discography
+        const discographyDE = artistDE.discography as RichTextContent | undefined
+        const nodesDE = discographyDE?.root?.children || []
+
+        // Process EN discography
+        const discographyEN = artistEN.discography as RichTextContent | undefined
+        const nodesEN = discographyEN?.root?.children || []
+
+        if (nodesDE.length === 0 && nodesEN.length === 0) {
+          console.log('   ⏭️  No content found in either locale')
           skippedCount++
           continue
         }
 
-        // Group recordings by role based on H1 headings
-        const roleGroups = groupRecordingsByRole(nodes)
+        // Group recordings by role for both locales
+        const roleGroupsDE = groupRecordingsByRole(nodesDE)
+        const roleGroupsEN = groupRecordingsByRole(nodesEN)
 
-        if (roleGroups.size === 0) {
-          console.log('   ⏭️  No recording paragraphs found')
+        if (roleGroupsDE.size === 0 && roleGroupsEN.size === 0) {
+          console.log('   ⏭️  No recording paragraphs found in either locale')
           skippedCount++
           continue
         }
 
         let recordingsCreated = 0
 
-        // Process each role group
-        for (const [role, paragraphs] of roleGroups.entries()) {
-          console.log(`\n   🎵 Processing ${paragraphs.length} recording(s) as: ${role}`)
+        // Process DE recordings - this creates the recording with non-localized fields
+        for (const [role, paragraphs] of roleGroupsDE.entries()) {
+          console.log(`\n   🎵 Processing ${paragraphs.length} DE recording(s) as: ${role}`)
 
           for (const paragraph of paragraphs) {
             const parsed = parseRecordingParagraph(paragraph)
 
-            console.log(`      → "${parsed.title}"`)
+            console.log(`      → DE: "${parsed.title}"`)
             if (parsed.label && parsed.catalogNumber) {
               console.log(`         Label: ${parsed.label} ${parsed.catalogNumber}`)
             }
 
-            // Create the recording in DE locale first
+            // Create the recording in DE locale (includes all fields)
             const recording = await payload.create({
               collection: 'recordings',
               data: {
@@ -381,7 +387,7 @@ async function migrateDiscography() {
                 catalogNumber: parsed.catalogNumber || undefined,
                 artistRoles: [
                   {
-                    artist: artist.id,
+                    artist: artistDE.id,
                     role: [role],
                   },
                 ],
@@ -390,28 +396,51 @@ async function migrateDiscography() {
               locale: 'de',
             })
 
-            // Update EN locale (same content for now)
-            await payload.update({
-              collection: 'recordings',
-              id: recording.id,
-              data: {
-                title: parsed.title,
-                description: createDescriptionRichText(parsed.description),
-              },
-              locale: 'en',
-            })
-
             recordingsCreated++
+
+            // Now process corresponding EN recording if it exists
+            // Try to find matching EN recording by checking if same role group exists
+            const enParagraphs = roleGroupsEN.get(role) || []
+            const enParagraphIndex = paragraphs.indexOf(paragraph)
+
+            if (enParagraphs[enParagraphIndex]) {
+              const parsedEN = parseRecordingParagraph(enParagraphs[enParagraphIndex])
+
+              console.log(`         EN: "${parsedEN.title}"`)
+
+              // Update EN locale with EN-specific title and description
+              await payload.update({
+                collection: 'recordings',
+                id: recording.id,
+                data: {
+                  title: parsedEN.title,
+                  description: createDescriptionRichText(parsedEN.description),
+                },
+                locale: 'en',
+              })
+            } else {
+              // No EN equivalent - copy DE content to EN
+              console.log(`         EN: (copied from DE)`)
+              await payload.update({
+                collection: 'recordings',
+                id: recording.id,
+                data: {
+                  title: parsed.title,
+                  description: createDescriptionRichText(parsed.description),
+                },
+                locale: 'en',
+              })
+            }
           }
         }
 
         console.log(`\n   ✅ Created ${recordingsCreated} draft recording(s)`)
         createdCount += recordingsCreated
-        summary.push({ artist: artist.name, recordings: recordingsCreated })
+        summary.push({ artist: artistDE.name, recordings: recordingsCreated })
       } catch (error) {
-        console.error(`   ❌ Error processing ${artist.name}:`, error)
+        console.error(`   ❌ Error processing ${artistDE.name}:`, error)
         errors.push({
-          artist: artist.name,
+          artist: artistDE.name,
           error: error instanceof Error ? error.message : String(error),
         })
       }
