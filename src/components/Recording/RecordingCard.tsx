@@ -28,16 +28,19 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
     .join(' • ')
 
   // Get artist names with roles
-  const artistsWithRoles = recording.artistRoles
-    .map((ar: any) => {
-      const artist = typeof ar.artist === 'object' ? (ar.artist as Artist) : null
-      if (!artist) return null
+  const artists = Array.isArray(recording.artists) ? recording.artists : []
+  const roles = Array.isArray(recording.roles) ? recording.roles : []
 
-      const roles = ar.role?.map((r: string) => t(r as any)).join(', ') || ''
-      return roles ? `${artist.name} (${roles})` : artist.name
+  const artistNames = artists
+    .map((a: any) => {
+      const artist = typeof a === 'object' ? (a as Artist) : null
+      return artist?.name || null
     })
     .filter(Boolean)
     .join(', ')
+
+  const roleNames = roles.map((r: string) => t(r as any)).join(', ')
+  const artistsWithRoles = roleNames ? `${artistNames} (${roleNames})` : artistNames
 
   return (
     <div className="group overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">
