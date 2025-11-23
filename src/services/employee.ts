@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 import type { Employee } from '../payload-types'
+import { getDefaultAvatar, getMediaByAlt } from './media'
 
 type LocaleCode = 'de' | 'en' | 'all'
 
@@ -32,29 +33,17 @@ export const getEmployeeByName = async (payload: Payload, name: string, locale?:
 
 export async function getEmployeeImageId(payload: Payload, employee: Employee) {
   // Try to find existing media first
-  const employeeImage = await payload.find({
-    collection: 'media',
-    where: {
-      alt: { equals: employee.name },
-    },
-    limit: 1,
-  })
+  const employeeImage = await getMediaByAlt(payload, employee.name)
 
-  if (employeeImage.totalDocs > 0) {
-    return employeeImage.docs[0].id
+  if (employeeImage) {
+    return employeeImage.id
   }
 
   // Otherwise use a default image
-  const defaultAvatar = await payload.find({
-    where: {
-      filename: { equals: 'default-avatar.webp' },
-    },
-    collection: 'media',
-    limit: 1,
-  })
+  const defaultAvatar = await getDefaultAvatar(payload)
 
-  if (defaultAvatar.totalDocs > 0) {
-    return defaultAvatar.docs[0].id
+  if (defaultAvatar) {
+    return defaultAvatar.id
   }
 
   return null
