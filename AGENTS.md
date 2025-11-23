@@ -39,3 +39,29 @@ _This file is for agentic coding agents. Update if project conventions change._
 - **ALWAYS ask for user approval before running any package manager command (e.g., pnpm, npm, yarn, pip, etc.) that
   would add, remove, or update dependencies.**
 - If a new library is required for a solution, clearly explain why and request permission before proceeding.
+
+## Script Management Policy
+
+### Temporary Scripts
+
+- **Use the `tmp/` folder** for all temporary, intermediate, or experimental scripts
+- **Clean up when finished** - Delete temporary scripts after use or when debugging is complete
+- **Never commit temporary scripts** - The `tmp/` folder (except README.md) is ignored by Git
+- If a temporary script becomes permanent, move it to `scripts/` and add comprehensive JSDoc
+
+### Permanent Scripts (in `scripts/` folder)
+
+- **Add comprehensive JSDoc** to all permanent scripts with:
+  - File-level description explaining purpose and usage
+  - Function-level documentation for all exported functions
+  - Usage examples with bash commands
+  - Environment variable requirements
+  - Cross-references to related scripts using `@see` tags
+- **Follow naming conventions**: `verbNoun.ts` (e.g., `seedArtists.ts`, `dumpCollection.ts`)
+- **Include package.json scripts** for commonly used scripts (e.g., `pnpm seed:all`)
+
+### Examples
+
+- ✅ **Temporary**: `tmp/scripts/test-artist-query.ts` - Quick debugging script
+- ✅ **Permanent**: `scripts/db/seedArtists.ts` - Well-documented seeding script with JSDoc
+- ❌ **Bad**: `scripts/temp-fix-123.ts` - Temporary script in permanent location

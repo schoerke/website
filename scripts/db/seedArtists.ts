@@ -1,6 +1,24 @@
 /**
- * This is an example of a standalone script that loads in the Payload config
- * and uses the Payload Local API to query the database.
+ * Seed Artists Collection
+ *
+ * Seeds the Artists collection with sample data from scripts/db/json/artists.json.
+ * Creates artists in both English and German locales with default avatar images.
+ *
+ * Features:
+ * - Creates artists in English locale (default)
+ * - Updates German locale with localized biographies
+ * - Automatically uploads default avatar from assets/ folder if not found
+ * - Handles localized richText content (biography field)
+ *
+ * Usage:
+ *   pnpm payload run scripts/db/seedArtists.ts
+ *   pnpm seed:all  # Part of master seed script
+ *
+ * Data Source:
+ *   scripts/db/json/artists.json
+ *
+ * @see scripts/db/seedAll.ts - Master orchestration script
+ * @see scripts/db/seedEmployees.ts - Employee seeding script
  */
 
 import config from '@payload-config'
@@ -10,6 +28,21 @@ import { getPayload } from 'payload'
 
 import artistsData from './json/artists.json'
 
+/**
+ * Get or create default avatar media
+ *
+ * Checks if default-avatar.webp exists in the media collection.
+ * If not found, uploads it from the assets/ folder.
+ *
+ * @param payload - Payload CMS instance
+ * @returns Media ID of the default avatar, or null if not found
+ *
+ * @example
+ * const defaultMediaId = await getDefaultMedia(payload)
+ * if (defaultMediaId) {
+ *   artistData.image = defaultMediaId
+ * }
+ */
 async function getDefaultMedia(payload: any) {
   // Try to find existing media first
   const existingMedia = await payload.find({
@@ -49,6 +82,16 @@ async function getDefaultMedia(payload: any) {
   return null
 }
 
+/**
+ * Main seeding function
+ *
+ * Iterates through artists.json and creates/updates artists:
+ * 1. Creates artist in English locale with biography
+ * 2. Updates German locale with localized biography (if available)
+ * 3. Assigns default avatar image to all artists
+ *
+ * @throws {Error} If artist creation fails
+ */
 async function run() {
   try {
     const payload = await getPayload({ config })
