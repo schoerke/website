@@ -1,8 +1,8 @@
 import type { Employee } from '@/payload-types'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getEmployeeById, getEmployeeByName, getEmployeeImageId, getEmployees } from '../employee'
-import * as mediaService from '../media'
+import { getEmployeeById, getEmployeeByName, getEmployeeImageId, getEmployees } from './employee'
+import * as mediaService from './media'
 
 describe('Employee Service', () => {
   let mockPayload: Payload

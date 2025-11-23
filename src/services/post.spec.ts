@@ -8,7 +8,7 @@ import {
   getAllPosts,
   getAllProjectPosts,
   getAllProjectPostsByArtist,
-} from '../post'
+} from './post'
 
 describe('Post Service', () => {
   let mockPayload: Payload

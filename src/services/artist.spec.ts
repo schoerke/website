@@ -1,7 +1,7 @@
 import type { Artist } from '@/payload-types'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getArtistById, getArtistBySlug, getArtistListData, getArtists } from '../artist'
+import { getArtistById, getArtistBySlug, getArtistListData, getArtists } from './artist'
 
 describe('Artist Service', () => {
   let mockPayload: Payload

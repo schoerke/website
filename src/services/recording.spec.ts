@@ -1,7 +1,7 @@
 import type { Recording } from '@/payload-types'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getAllRecordings, getRecordingById, getRecordingsByArtist } from '../recording'
+import { getAllRecordings, getRecordingById, getRecordingsByArtist } from './recording'
 
 describe('Recording Service', () => {
   let mockPayload: Payload

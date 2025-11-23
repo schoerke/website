@@ -1,7 +1,7 @@
 import type { Media } from '@/payload-types'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getDefaultAvatar, getLogo, getLogoIcon, getMediaByAlt, getMediaByFilename, getMediaById } from '../media'
+import { getDefaultAvatar, getLogo, getLogoIcon, getMediaByAlt, getMediaByFilename, getMediaById } from './media'
 
 describe('Media Service', () => {
   let mockPayload: Payload
