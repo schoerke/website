@@ -5,10 +5,9 @@ interface RecordingCardProps {
 }
 
 const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
-  // Format recording details
-  const recordingDetails = [recording.recordingLabel, recording.catalogNumber, recording.recordingYear?.toString()]
-    .filter(Boolean)
-    .join(' • ')
+  // Format recording details - combine label and catalog, then add year
+  const labelAndCatalog = [recording.recordingLabel, recording.catalogNumber].filter(Boolean).join(' ')
+  const recordingDetails = [labelAndCatalog, recording.recordingYear?.toString()].filter(Boolean).join(' • ')
 
   return (
     <div className="group overflow-hidden rounded-lg bg-white p-6 shadow-md transition-transform hover:scale-[1.02]">
