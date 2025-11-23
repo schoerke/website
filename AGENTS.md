@@ -1,5 +1,13 @@
 # AGENTS.md
 
+## Git Commit Policy
+
+- **NEVER commit code without explicit user confirmation.**
+- **ALWAYS wait for user testing and approval before running `git commit`.**
+- After making changes, inform the user what was changed and wait for them to test and approve.
+- Only commit when the user explicitly asks you to commit or confirms the changes work correctly.
+- If you accidentally commit without approval, immediately offer to roll back with `git reset --soft HEAD~1`.
+
 ## Build, Lint, and Format Commands
 
 - **Build:** `pnpm build`

@@ -11,7 +11,7 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
 
   return (
     <div className="group overflow-hidden rounded-lg bg-white p-6 shadow-md transition-transform hover:scale-[1.02]">
-      <h3 className="font-playfair mb-2 text-base font-bold">{recording.title}</h3>
+      <h3 className="font-playfair mb-2 line-clamp-2 text-base font-bold">{recording.title}</h3>
       {(labelAndCatalog || year) && (
         <div className="flex justify-between text-sm text-gray-500">
           <span>{labelAndCatalog}</span>

@@ -14,8 +14,18 @@ const RoleFilter: React.FC<RoleFilterProps> = ({ roles, selected, onChange }) =>
   const tCommon = useTranslations('common')
 
   const handleValueChange = (value: string) => {
-    // If clicking "all" or clicking the same value, deselect (show all)
-    onChange(value === 'all' ? null : value === selected ? null : value)
+    // If value is empty (toggle was deselected), show all
+    if (!value) {
+      onChange(null)
+      return
+    }
+    // If clicking "all", show all
+    if (value === 'all') {
+      onChange(null)
+      return
+    }
+    // Otherwise, filter by the selected role
+    onChange(value)
   }
 
   return (

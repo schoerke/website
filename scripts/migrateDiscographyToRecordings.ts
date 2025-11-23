@@ -15,6 +15,7 @@
  * - Normal text (format: 0) → Work title and description
  * - Italic text (format: 2) → Work titles or Label/Catalog# (last italic)
  * - Final title format: "Composer - Work Title"
+ * - Empty paragraphs (no extractable content) are automatically skipped
  *
  * Example:
  *   [Bold] Beethoven
@@ -248,7 +249,8 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
   } else if (titleParts.length > 0) {
     fullTitle = titleParts.join(' • ')
   } else {
-    fullTitle = 'Ohne Titel'
+    // Return null for empty paragraphs - caller should skip them
+    fullTitle = ''
   }
 
   return {
@@ -426,6 +428,12 @@ async function migrateDiscography() {
 
           for (const paragraph of paragraphs) {
             const parsed = parseRecordingParagraph(paragraph)
+
+            // Skip empty paragraphs (no title could be extracted)
+            if (!parsed.title || parsed.title.trim() === '') {
+              console.log(`      ⏭️  Skipping empty paragraph (no content)`)
+              continue
+            }
 
             console.log(`      → DE: "${parsed.title}"`)
             if (parsed.label && parsed.catalogNumber) {

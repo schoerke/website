@@ -157,7 +157,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
               key={tab}
               value={tab}
               aria-label={t(`tabs.${tab}`)}
-              className="data-[state=on]:border-primary-yellow rounded-none border-b-4 border-transparent bg-white px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-100 data-[state=on]:text-gray-900"
+              className="data-[state=on]:border-primary-yellow justify-start rounded-none border-b-4 border-transparent bg-white px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-100 data-[state=on]:text-gray-900"
             >
               {t(`tabs.${tab}`)}
             </ToggleGroupItem>
@@ -178,7 +178,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
               key={tab}
               value={tab}
               aria-label={t(`tabs.${tab}`)}
-              className="data-[state=on]:border-primary-yellow rounded-none border-b-4 border-transparent bg-white px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-100 data-[state=on]:text-gray-900"
+              className="data-[state=on]:border-primary-yellow justify-start rounded-none border-b-4 border-transparent bg-white px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-100 data-[state=on]:text-gray-900"
             >
               {t(`tabs.${tab}`)}
             </ToggleGroupItem>
