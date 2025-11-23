@@ -15,18 +15,27 @@ export const Media: CollectionConfig = {
         width: 300,
         height: 300,
         position: 'center',
+        formatOptions: {
+          format: 'webp',
+        },
       },
       {
         name: 'card',
         width: 768,
         height: 768,
         position: 'centre',
+        formatOptions: {
+          format: 'webp',
+        },
       },
       {
         name: 'hero',
         width: 1200,
         height: 800,
         position: 'centre',
+        formatOptions: {
+          format: 'webp',
+        },
       },
     ],
     mimeTypes: ['image/*'],
