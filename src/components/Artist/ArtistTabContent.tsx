@@ -212,7 +212,7 @@ export const RecordingsTab: React.FC<RecordingsTabProps> = ({
 
   return (
     <>
-      {availableRoles.length > 1 && (
+      {availableRoles.length > 0 && (
         <RoleFilter roles={availableRoles} selected={selectedRoles} onChange={onRoleFilterChange} />
       )}
       {recordings.length === 0 ? (
