@@ -28,10 +28,10 @@
     "seed:employees": "payload run ./scripts/db/seedEmployees.ts",
     "restore:artists-dump": "tsx scripts/db/restoreArtistsDump.ts",
     "restore:posts-dump": "tsx scripts/db/restorePostsDump.ts",
-    "populate:artist-slugs": "tsx scripts/db/populateArtistSlugs.ts",
     "dump": "tsx scripts/db/dumpCollection.ts",
     "dump:artists": "pnpm dump artists",
-    "dump:employees": "pnpm dump employees"
+    "dump:employees": "pnpm dump employees",
+    "dump:recordings": "pnpm dump recordings"
   },
   "packageManager": "pnpm@10.22.0",
   "dependencies": {
