@@ -261,15 +261,23 @@ function parseRecordingParagraph(paragraph: ParagraphNode): {
 }
 
 /**
- * Convert description parts to richText format
+ * Convert description parts to richText format with proper Lexical structure
  */
 function createDescriptionRichText(parts: string[]) {
   if (parts.length === 0) return null
 
   return {
     root: {
+      type: 'root',
+      direction: 'ltr' as 'ltr' | 'rtl',
+      format: '' as '',
+      indent: 0,
+      version: 1,
       children: parts.map((part) => ({
         type: 'paragraph',
+        format: '' as '',
+        indent: 0,
+        version: 1,
         children: [
           {
             type: 'text',
