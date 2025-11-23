@@ -1,6 +1,6 @@
-import type { Recording } from '@/payload-types'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMockPaginatedDocs, createMockRecording } from './__test-utils__/payloadMocks'
 import { getAllRecordings, getRecordingById, getRecordingsByArtist } from './recording'
 
 // Mock getPayload at the module level
@@ -14,17 +14,6 @@ vi.mock('payload', async (importOriginal) => {
 
 describe('Recording Service', () => {
   let mockPayload: Payload
-
-  const createMockRecording = (overrides: Partial<Recording> = {}): Recording =>
-    ({
-      id: 1,
-      title: 'Test Recording',
-      _status: 'published',
-      artists: [1] as any,
-      updatedAt: '2024-01-01T00:00:00.000Z',
-      createdAt: '2024-01-01T00:00:00.000Z',
-      ...overrides,
-    }) as Recording
 
   beforeEach(async () => {
     mockPayload = {
@@ -40,18 +29,7 @@ describe('Recording Service', () => {
   describe('getAllRecordings', () => {
     it('should fetch all published recordings with default locale and depth 2', async () => {
       const mockRecordings = [createMockRecording(), createMockRecording({ id: 2, title: 'Another Recording' })]
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: mockRecordings,
-        totalDocs: 2,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs(mockRecordings))
 
       const result = await getAllRecordings()
 
@@ -67,18 +45,7 @@ describe('Recording Service', () => {
     })
 
     it('should only return published recordings', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getAllRecordings()
 
@@ -90,18 +57,7 @@ describe('Recording Service', () => {
     })
 
     it('should populate relationships with depth 2', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getAllRecordings()
 
@@ -113,18 +69,7 @@ describe('Recording Service', () => {
     })
 
     it('should use specified locale', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getAllRecordings('en')
 
@@ -139,18 +84,7 @@ describe('Recording Service', () => {
   describe('getRecordingsByArtist', () => {
     it('should fetch published recordings by artist ID', async () => {
       const mockRecording = createMockRecording({ artists: [1] as any })
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [mockRecording],
-        totalDocs: 1,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockRecording]))
 
       const result = await getRecordingsByArtist('1')
 
@@ -167,18 +101,7 @@ describe('Recording Service', () => {
     })
 
     it('should filter by artist ID and only published status', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getRecordingsByArtist('5')
 
@@ -194,18 +117,7 @@ describe('Recording Service', () => {
     })
 
     it('should populate artist relationships and cover art with depth 2', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getRecordingsByArtist('1')
 

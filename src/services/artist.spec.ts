@@ -1,6 +1,6 @@
-import type { Artist } from '@/payload-types'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMockArtist, createMockPaginatedDocs } from './__test-utils__/payloadMocks'
 import { getArtistById, getArtistBySlug, getArtistListData, getArtists } from './artist'
 
 // Mock getPayload at the module level
@@ -14,19 +14,6 @@ vi.mock('payload', async (importOriginal) => {
 
 describe('Artist Service', () => {
   let mockPayload: Payload
-
-  const createMockArtist = (overrides: Partial<Artist> = {}): Artist =>
-    ({
-      id: 1,
-      name: 'Test Artist',
-      slug: 'test-artist',
-      instrument: ['piano'],
-      biography: 'Test biography',
-      image: 1,
-      updatedAt: '2024-01-01T00:00:00.000Z',
-      createdAt: '2024-01-01T00:00:00.000Z',
-      ...overrides,
-    }) as Artist
 
   beforeEach(async () => {
     mockPayload = {
@@ -42,18 +29,7 @@ describe('Artist Service', () => {
   describe('getArtists', () => {
     it('should fetch all artists with default locale and fallback', async () => {
       const mockArtists = [createMockArtist(), createMockArtist({ id: 2, name: 'Another Artist' })]
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: mockArtists,
-        totalDocs: 2,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs(mockArtists))
 
       const result = await getArtists()
 
@@ -66,18 +42,7 @@ describe('Artist Service', () => {
     })
 
     it('should fetch artists with specified locale', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getArtists('en')
 
@@ -123,18 +88,7 @@ describe('Artist Service', () => {
   describe('getArtistBySlug', () => {
     it('should fetch artist by slug with fallback locale', async () => {
       const mockArtist = createMockArtist()
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [mockArtist],
-        totalDocs: 1,
-        limit: 1,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockArtist]))
 
       const result = await getArtistBySlug('test-artist')
 
@@ -150,18 +104,7 @@ describe('Artist Service', () => {
 
     it('should return first matching artist when multiple found', async () => {
       const mockArtist = createMockArtist()
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [mockArtist, createMockArtist({ id: 2 })],
-        totalDocs: 2,
-        limit: 1,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockArtist, createMockArtist({ id: 2 })]))
 
       const result = await getArtistBySlug('test-artist')
 
@@ -169,18 +112,7 @@ describe('Artist Service', () => {
     })
 
     it('should return undefined when artist not found', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 1,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       const result = await getArtistBySlug('nonexistent-slug')
 
@@ -191,18 +123,7 @@ describe('Artist Service', () => {
   describe('getArtistListData', () => {
     it('should fetch only selected fields for list page', async () => {
       const mockArtist = createMockArtist()
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [mockArtist],
-        totalDocs: 1,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockArtist]))
 
       await getArtistListData()
 
@@ -221,18 +142,7 @@ describe('Artist Service', () => {
     })
 
     it('should optimize by selecting only necessary fields', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getArtistListData('en')
 

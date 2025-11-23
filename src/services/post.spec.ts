@@ -1,6 +1,6 @@
-import type { Post } from '@/payload-types'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMockPaginatedDocs, createMockPost } from './__test-utils__/payloadMocks'
 import {
   getAllHomepagePosts,
   getAllNewsPosts,
@@ -22,18 +22,6 @@ vi.mock('payload', async (importOriginal) => {
 describe('Post Service', () => {
   let mockPayload: Payload
 
-  const createMockPost = (overrides: Partial<Post> = {}): Post =>
-    ({
-      id: 1,
-      title: 'Test Post',
-      slug: 'test-post',
-      categories: ['news'],
-      published: true,
-      updatedAt: '2024-01-01T00:00:00.000Z',
-      createdAt: '2024-01-01T00:00:00.000Z',
-      ...overrides,
-    }) as Post
-
   beforeEach(async () => {
     mockPayload = {
       find: vi.fn(),
@@ -47,18 +35,7 @@ describe('Post Service', () => {
   describe('getAllPosts', () => {
     it('should fetch all posts with default locale', async () => {
       const mockPosts = [createMockPost(), createMockPost({ id: 2, title: 'Another Post' })]
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: mockPosts,
-        totalDocs: 2,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs(mockPosts))
 
       const result = await getAllPosts()
 
@@ -70,18 +47,7 @@ describe('Post Service', () => {
     })
 
     it('should fetch posts with specified locale', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getAllPosts('en')
 
@@ -95,18 +61,7 @@ describe('Post Service', () => {
   describe('getAllNewsPosts', () => {
     it('should fetch only published news posts', async () => {
       const newsPost = createMockPost({ categories: ['news'] })
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [newsPost],
-        totalDocs: 1,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([newsPost]))
 
       const result = await getAllNewsPosts()
 
@@ -125,18 +80,7 @@ describe('Post Service', () => {
   describe('getAllProjectPosts', () => {
     it('should fetch only published project posts', async () => {
       const projectPost = createMockPost({ categories: ['projects'] })
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [projectPost],
-        totalDocs: 1,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([projectPost]))
 
       await getAllProjectPosts()
 
@@ -154,18 +98,7 @@ describe('Post Service', () => {
   describe('getAllHomepagePosts', () => {
     it('should fetch only published homepage posts', async () => {
       const homePost = createMockPost({ categories: ['home'] })
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [homePost],
-        totalDocs: 1,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([homePost]))
 
       await getAllHomepagePosts()
 
@@ -183,18 +116,7 @@ describe('Post Service', () => {
   describe('getAllNewsPostsByArtist', () => {
     it('should fetch news posts filtered by artist ID', async () => {
       const newsPost = createMockPost({ categories: ['news'], artists: [1] as any })
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [newsPost],
-        totalDocs: 1,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([newsPost]))
 
       await getAllNewsPostsByArtist('1')
 
@@ -210,18 +132,7 @@ describe('Post Service', () => {
     })
 
     it('should use contains for categories to match partial arrays', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getAllNewsPostsByArtist('1')
 
@@ -238,18 +149,7 @@ describe('Post Service', () => {
   describe('getAllProjectPostsByArtist', () => {
     it('should fetch project posts filtered by artist ID', async () => {
       const projectPost = createMockPost({ categories: ['projects'], artists: [1] as any })
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [projectPost],
-        totalDocs: 1,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([projectPost]))
 
       await getAllProjectPostsByArtist('1')
 
@@ -265,18 +165,7 @@ describe('Post Service', () => {
     })
 
     it('should only return published posts', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getAllProjectPostsByArtist('1')
 

@@ -1,6 +1,6 @@
-import type { Media } from '@/payload-types'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMockMedia, createMockPaginatedDocs } from './__test-utils__/payloadMocks'
 import { getDefaultAvatar, getLogo, getLogoIcon, getMediaByAlt, getMediaByFilename, getMediaById } from './media'
 
 // Mock getPayload at the module level
@@ -14,21 +14,6 @@ vi.mock('payload', async (importOriginal) => {
 
 describe('Media Service', () => {
   let mockPayload: Payload
-
-  const createMockMedia = (overrides: Partial<Media> = {}): Media =>
-    ({
-      id: 1,
-      filename: 'logo.png',
-      alt: 'Test Logo',
-      url: 'https://example.com/logo.png',
-      mimeType: 'image/png',
-      filesize: 1024,
-      width: 100,
-      height: 100,
-      createdAt: '2024-01-01T00:00:00.000Z',
-      updatedAt: '2024-01-01T00:00:00.000Z',
-      ...overrides,
-    }) as Media
 
   beforeEach(async () => {
     mockPayload = {
@@ -44,18 +29,7 @@ describe('Media Service', () => {
   describe('getMediaByFilename', () => {
     it('should return media item when found', async () => {
       const mockMedia = createMockMedia()
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [mockMedia],
-        totalDocs: 1,
-        limit: 1,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockMedia]))
 
       const result = await getMediaByFilename('logo.png')
 
@@ -68,18 +42,7 @@ describe('Media Service', () => {
     })
 
     it('should return null when media not found', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 1,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       const result = await getMediaByFilename('nonexistent.png')
 
@@ -88,18 +51,7 @@ describe('Media Service', () => {
 
     it('should handle different file types', async () => {
       const webpMedia = createMockMedia({ filename: 'avatar.webp', mimeType: 'image/webp' })
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [webpMedia],
-        totalDocs: 1,
-        limit: 1,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([webpMedia]))
 
       const result = await getMediaByFilename('avatar.webp')
 
@@ -141,18 +93,7 @@ describe('Media Service', () => {
   describe('getMediaByAlt', () => {
     it('should return media item when found by alt text', async () => {
       const mockMedia = createMockMedia()
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [mockMedia],
-        totalDocs: 1,
-        limit: 1,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockMedia]))
 
       const result = await getMediaByAlt('Test Logo')
 
@@ -165,18 +106,7 @@ describe('Media Service', () => {
     })
 
     it('should return null when no media matches alt text', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 1,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       const result = await getMediaByAlt('Nonexistent Alt Text')
 
@@ -185,18 +115,7 @@ describe('Media Service', () => {
 
     it('should handle employee photo lookup', async () => {
       const employeePhoto = createMockMedia({ alt: 'John Doe', filename: 'john-doe.jpg' })
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [employeePhoto],
-        totalDocs: 1,
-        limit: 1,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([employeePhoto]))
 
       const result = await getMediaByAlt('John Doe')
 
@@ -208,18 +127,7 @@ describe('Media Service', () => {
     describe('getLogo', () => {
       it('should fetch logo.png', async () => {
         const logo = createMockMedia({ filename: 'logo.png' })
-        vi.mocked(mockPayload.find).mockResolvedValue({
-          docs: [logo],
-          totalDocs: 1,
-          limit: 1,
-          totalPages: 1,
-          page: 1,
-          pagingCounter: 1,
-          hasPrevPage: false,
-          hasNextPage: false,
-          prevPage: null,
-          nextPage: null,
-        })
+        vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([logo]))
 
         const result = await getLogo()
 
@@ -232,18 +140,7 @@ describe('Media Service', () => {
       })
 
       it('should return null when logo not found', async () => {
-        vi.mocked(mockPayload.find).mockResolvedValue({
-          docs: [],
-          totalDocs: 0,
-          limit: 1,
-          totalPages: 0,
-          page: 1,
-          pagingCounter: 1,
-          hasPrevPage: false,
-          hasNextPage: false,
-          prevPage: null,
-          nextPage: null,
-        })
+        vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
         const result = await getLogo()
 
@@ -254,18 +151,7 @@ describe('Media Service', () => {
     describe('getLogoIcon', () => {
       it('should fetch logo_icon.png', async () => {
         const logoIcon = createMockMedia({ filename: 'logo_icon.png' })
-        vi.mocked(mockPayload.find).mockResolvedValue({
-          docs: [logoIcon],
-          totalDocs: 1,
-          limit: 1,
-          totalPages: 1,
-          page: 1,
-          pagingCounter: 1,
-          hasPrevPage: false,
-          hasNextPage: false,
-          prevPage: null,
-          nextPage: null,
-        })
+        vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([logoIcon]))
 
         const result = await getLogoIcon()
 
@@ -281,18 +167,7 @@ describe('Media Service', () => {
     describe('getDefaultAvatar', () => {
       it('should fetch default-avatar.webp', async () => {
         const avatar = createMockMedia({ filename: 'default-avatar.webp', mimeType: 'image/webp' })
-        vi.mocked(mockPayload.find).mockResolvedValue({
-          docs: [avatar],
-          totalDocs: 1,
-          limit: 1,
-          totalPages: 1,
-          page: 1,
-          pagingCounter: 1,
-          hasPrevPage: false,
-          hasNextPage: false,
-          prevPage: null,
-          nextPage: null,
-        })
+        vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([avatar]))
 
         const result = await getDefaultAvatar()
 

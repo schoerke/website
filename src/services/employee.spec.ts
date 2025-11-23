@@ -1,6 +1,6 @@
-import type { Employee } from '@/payload-types'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMockEmployee, createMockPaginatedDocs } from './__test-utils__/payloadMocks'
 import { getEmployeeById, getEmployeeByName, getEmployeeImageId, getEmployees } from './employee'
 import * as mediaService from './media'
 
@@ -15,20 +15,6 @@ vi.mock('payload', async (importOriginal) => {
 
 describe('Employee Service', () => {
   let mockPayload: Payload
-
-  const createMockEmployee = (overrides: Partial<Employee> = {}): Employee =>
-    ({
-      id: 1,
-      name: 'John Doe',
-      title: 'Artist Manager',
-      email: 'john@example.com',
-      phone: '+1234567890',
-      order: 1,
-      image: 1,
-      updatedAt: '2024-01-01T00:00:00.000Z',
-      createdAt: '2024-01-01T00:00:00.000Z',
-      ...overrides,
-    }) as Employee
 
   beforeEach(async () => {
     mockPayload = {
@@ -46,18 +32,7 @@ describe('Employee Service', () => {
   describe('getEmployees', () => {
     it('should fetch all employees with default locale', async () => {
       const mockEmployees = [createMockEmployee(), createMockEmployee({ id: 2, name: 'Jane Smith' })]
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: mockEmployees,
-        totalDocs: 2,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs(mockEmployees))
 
       const result = await getEmployees()
 
@@ -70,18 +45,7 @@ describe('Employee Service', () => {
     })
 
     it('should fetch employees with specified locale', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 10,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getEmployees('en')
 
@@ -135,18 +99,7 @@ describe('Employee Service', () => {
   describe('getEmployeeByName', () => {
     it('should fetch employee by name with default locale', async () => {
       const mockEmployee = createMockEmployee()
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [mockEmployee],
-        totalDocs: 1,
-        limit: 1,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockEmployee]))
 
       const result = await getEmployeeByName('John Doe')
 
@@ -162,18 +115,7 @@ describe('Employee Service', () => {
     })
 
     it('should return empty result when employee not found', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue({
-        docs: [],
-        totalDocs: 0,
-        limit: 1,
-        totalPages: 0,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       const result = await getEmployeeByName('Nonexistent Person')
 
