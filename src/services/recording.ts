@@ -25,6 +25,7 @@ export const getAllRecordings = async (locale?: LocaleCode) => {
     },
     locale: locale || 'de',
     depth: 2, // Populate artist relationships and their related data
+    limit: 1000, // Return all recordings (default is 10)
   })
 }
 
@@ -55,6 +56,7 @@ export const getRecordingsByArtist = async (artistId: string, locale?: LocaleCod
     },
     locale: locale || 'de',
     depth: 2, // Populate artist relationships and cover art
+    limit: 1000, // Return all recordings for artist (default is 10)
   })
 }
 
