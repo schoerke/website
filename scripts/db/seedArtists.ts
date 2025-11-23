@@ -4,9 +4,11 @@
  */
 
 import config from '@payload-config'
+import fs from 'fs'
+import path from 'path'
 import { getPayload } from 'payload'
 
-import artistsData from './seeds/artists.json'
+import artistsData from './json/artists.json'
 
 async function getDefaultMedia(payload: any) {
   // Try to find existing media first
@@ -22,25 +24,29 @@ async function getDefaultMedia(payload: any) {
     return existingMedia.docs[0].id
   }
 
-  // Create a simple 1x1 pixel PNG as default placeholder
-  const pngData = Buffer.from(
-    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-    'base64',
-  )
+  // If not found, upload from assets folder
+  const assetsPath = path.join(process.cwd(), 'assets', 'default-avatar.webp')
 
-  const media = await payload.create({
-    collection: 'media',
-    data: {
-      alt: 'Default Artist Image',
-    },
-    file: {
-      data: pngData,
-      mimetype: 'image/png',
-      name: 'default-artist-image.png',
-    },
-  })
+  if (fs.existsSync(assetsPath)) {
+    const fileData = fs.readFileSync(assetsPath)
 
-  return media.id
+    const media = await payload.create({
+      collection: 'media',
+      data: {
+        alt: 'Default Avatar',
+      },
+      file: {
+        data: fileData,
+        mimetype: 'image/webp',
+        name: 'default-avatar.webp',
+      },
+    })
+
+    console.log('Uploaded default avatar from assets folder')
+    return media.id
+  }
+
+  return null
 }
 
 async function run() {

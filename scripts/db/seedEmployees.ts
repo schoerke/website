@@ -1,10 +1,50 @@
 import config from '@payload-config'
+import fs from 'fs'
+import path from 'path'
 import { getPayload } from 'payload'
-import type { Employee } from '../src/payload-types.ts'
-import { getEmployeeByName, getEmployeeImageId } from '../src/services/employee.ts'
-import { createDefaultImage } from './utils/createDefaultImage.ts'
+import type { Employee } from '../../src/payload-types.ts'
+import { getEmployeeByName, getEmployeeImageId } from '../../src/services/employee.ts'
 
-import employeesData from './seeds/employees.json'
+import employeesData from './json/employees.json'
+
+async function getDefaultMedia(payload: any) {
+  // Try to find existing media first
+  const existingMedia = await payload.find({
+    where: {
+      filename: { equals: 'default-avatar.webp' },
+    },
+    collection: 'media',
+    limit: 1,
+  })
+
+  if (existingMedia.totalDocs > 0) {
+    return existingMedia.docs[0].id
+  }
+
+  // If not found, upload from assets folder
+  const assetsPath = path.join(process.cwd(), 'assets', 'default-avatar.webp')
+
+  if (fs.existsSync(assetsPath)) {
+    const fileData = fs.readFileSync(assetsPath)
+
+    const media = await payload.create({
+      collection: 'media',
+      data: {
+        alt: 'Default Avatar',
+      },
+      file: {
+        data: fileData,
+        mimetype: 'image/webp',
+        name: 'default-avatar.webp',
+      },
+    })
+
+    console.log('Uploaded default avatar from assets folder')
+    return media.id
+  }
+
+  return null
+}
 
 async function getImageId(payload: any, employee: Employee) {
   // Try to find existing media first
@@ -14,9 +54,8 @@ async function getImageId(payload: any, employee: Employee) {
     return employeeImageId
   }
 
-  // If no default image exists, create one
-  const defaultMedia = await createDefaultImage(payload, 'employee')
-  return defaultMedia.id
+  // Fall back to default media
+  return await getDefaultMedia(payload)
 }
 
 async function run() {

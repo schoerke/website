@@ -4,7 +4,7 @@ import path from 'path'
 import { getPayload } from 'payload'
 
 async function getConfig() {
-  const configModule = await import('../src/payload.config')
+  const configModule = await import('../../src/payload.config')
   const configMaybePromise = configModule.default
 
   return typeof configMaybePromise.then === 'function' ? await configMaybePromise : configMaybePromise

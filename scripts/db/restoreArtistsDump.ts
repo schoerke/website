@@ -77,7 +77,7 @@ const main = async () => {
   console.log('='.repeat(60))
 
   // Load dump file
-  const dumpPath = path.resolve(__dirname, '../data/dumps/artists-dump.json')
+  const dumpPath = path.resolve(__dirname, '../../data/dumps/artists-dump.json')
   console.log(`\n📂 Loading dump from: ${dumpPath}`)
 
   const artistsData = JSON.parse(readFileSync(dumpPath, 'utf-8'))

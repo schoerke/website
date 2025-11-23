@@ -8,7 +8,7 @@ import fs from 'fs'
   // const awaitedConfig = await importConfig('./src/payload.config.ts')
   // const payload = await getPayload({ config: awaitedConfig })
 
-  const xmlData = fs.readFileSync('./media.xml', 'utf8')
+  const xmlData = fs.readFileSync('./data/media.xml', 'utf8')
 
   const parser = new XMLParser()
   const wpData = parser.parse(xmlData)

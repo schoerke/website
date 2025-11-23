@@ -8,12 +8,12 @@ import { getPayload } from 'payload'
 export const migratePosts = async () => {
   console.log('Starting migration:')
 
-  const awaitConfig = await import('../src/payload.config')
+  const awaitConfig = await import('../../src/payload.config')
   const config = awaitConfig.default
   const payload = await getPayload({ config })
 
   // Assemble the posts data
-  const xmlData = await fs.readFile('./data/posts.xml', 'utf8')
+  const xmlData = await fs.readFile('./scripts/wordpress/data/posts.xml', 'utf8')
 
   const parser = new XMLParser()
   const wpData = parser.parse(xmlData)

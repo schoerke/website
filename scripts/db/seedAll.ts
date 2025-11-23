@@ -33,7 +33,7 @@ async function runScript(scriptPath: string, description: string, useTsx = false
     const command = useTsx ? `pnpx tsx ${scriptPath}` : `pnpm payload run ${scriptPath}`
 
     const { stdout, stderr } = await execPromise(command, {
-      cwd: path.resolve(__dirname, '..'),
+      cwd: path.resolve(__dirname, '../..'),
       env,
     })
 
@@ -74,9 +74,9 @@ async function main() {
   }
 
   const scripts = [
-    { path: './scripts/seedEmployees.ts', description: 'Seeding Employees', useTsx: false },
-    { path: './scripts/seedArtists.ts', description: 'Seeding Artists', useTsx: false },
-    { path: './scripts/restoreDiscography.ts', description: 'Restoring Sample Discography', useTsx: true },
+    { path: './scripts/db/seedEmployees.ts', description: 'Seeding Employees', useTsx: false },
+    { path: './scripts/db/seedArtists.ts', description: 'Seeding Artists', useTsx: false },
+    { path: './scripts/db/restoreDiscography.ts', description: 'Restoring Sample Discography', useTsx: true },
   ]
 
   let successCount = 0
