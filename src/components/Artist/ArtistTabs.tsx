@@ -1,6 +1,5 @@
 'use client'
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post } from '@/payload-types'
 import { getQuoteMarks } from '@/utils/content'
@@ -137,19 +136,19 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   return (
     <div className="w-full">
       {/* Desktop: Horizontal Tab List (ToggleGroup) */}
-      <div className="mb-8 hidden md:block">
+      <div className="mb-8 hidden lg:block">
         <ToggleGroup
           type="single"
           value={activeTab}
           onValueChange={(value) => value && handleTabChange(value as TabId)}
-          className="inline-flex justify-start gap-0 bg-gray-100 p-1"
+          className="inline-flex justify-start gap-0"
         >
           {tabs.map((tab) => (
             <ToggleGroupItem
               key={tab}
               value={tab}
               aria-label={t(`tabs.${tab}`)}
-              className="data-[state=on]:bg-primary-yellow data-[state=on]:text-primary-black rounded-none px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-900 data-[state=on]:shadow-sm"
+              className="data-[state=on]:border-primary-yellow rounded-none border-b-4 border-transparent bg-white px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-100 data-[state=on]:text-gray-900"
             >
               {t(`tabs.${tab}`)}
             </ToggleGroupItem>
@@ -157,20 +156,25 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
         </ToggleGroup>
       </div>
 
-      {/* Mobile: Dropdown (Select) */}
-      <div className="mb-8 md:hidden">
-        <Select value={activeTab} onValueChange={(value) => handleTabChange(value as TabId)}>
-          <SelectTrigger className="bg-primary-yellow text-primary-black w-full text-lg font-medium uppercase">
-            <SelectValue placeholder={t(`tabs.${activeTab}`)} />
-          </SelectTrigger>
-          <SelectContent>
-            {tabs.map((tab) => (
-              <SelectItem key={tab} value={tab} className="uppercase">
-                {t(`tabs.${tab}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Mobile/Tablet: Wrapped Horizontal Tabs */}
+      <div className="mb-8 lg:hidden">
+        <ToggleGroup
+          type="single"
+          value={activeTab}
+          onValueChange={(value) => value && handleTabChange(value as TabId)}
+          className="flex flex-wrap justify-start gap-y-4"
+        >
+          {tabs.map((tab) => (
+            <ToggleGroupItem
+              key={tab}
+              value={tab}
+              aria-label={t(`tabs.${tab}`)}
+              className="data-[state=on]:border-primary-yellow rounded-none border-b-4 border-transparent bg-white px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-100 data-[state=on]:text-gray-900"
+            >
+              {t(`tabs.${tab}`)}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
       </div>
 
       {/* Tab Content */}
