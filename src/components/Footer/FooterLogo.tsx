@@ -2,7 +2,7 @@ import config from '@/payload.config'
 import Image from 'next/image'
 import { getPayload } from 'payload'
 
-const LOGO_FILENAME = 'schoerke_logo.png'
+const LOGO_FILENAME = 'logo_icon.png'
 
 const FooterLogo: React.FC = async () => {
   const payload = await getPayload({ config })
