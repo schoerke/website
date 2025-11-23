@@ -5,7 +5,8 @@
 - **Build:** `pnpm build`
 - **Lint:** `pnpm lint`
 - **Format:** `pnpm format`
-- **Test:** _No automated test scripts or test files present._
+- **Test:** `pnpm test` (run tests), `pnpm test:watch` (watch mode), `pnpm test:ui` (test UI), `pnpm test:coverage`
+  (coverage report)
 
 ## Code Style Guidelines
 

@@ -1,0 +1,239 @@
+import type { Artist } from '@/payload-types'
+import type { Payload } from 'payload'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { getArtistById, getArtistBySlug, getArtistListData, getArtists } from '../artist'
+
+describe('Artist Service', () => {
+  let mockPayload: Payload
+
+  const createMockArtist = (overrides: Partial<Artist> = {}): Artist =>
+    ({
+      id: 1,
+      name: 'Test Artist',
+      slug: 'test-artist',
+      instrument: ['piano'],
+      biography: 'Test biography',
+      image: 1,
+      updatedAt: '2024-01-01T00:00:00.000Z',
+      createdAt: '2024-01-01T00:00:00.000Z',
+      ...overrides,
+    }) as Artist
+
+  beforeEach(() => {
+    mockPayload = {
+      find: vi.fn(),
+      findByID: vi.fn(),
+    } as unknown as Payload
+  })
+
+  describe('getArtists', () => {
+    it('should fetch all artists with default locale and fallback', async () => {
+      const mockArtists = [createMockArtist(), createMockArtist({ id: 2, name: 'Another Artist' })]
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        docs: mockArtists,
+        totalDocs: 2,
+        limit: 10,
+        totalPages: 1,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      const result = await getArtists(mockPayload)
+
+      expect(result.docs).toEqual(mockArtists)
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'artists',
+        locale: 'de',
+        fallbackLocale: 'de',
+      })
+    })
+
+    it('should fetch artists with specified locale', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        docs: [],
+        totalDocs: 0,
+        limit: 10,
+        totalPages: 0,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      await getArtists(mockPayload, 'en')
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'artists',
+        locale: 'en',
+        fallbackLocale: 'de',
+      })
+    })
+  })
+
+  describe('getArtistById', () => {
+    it('should fetch artist by ID with fallback locale', async () => {
+      const mockArtist = createMockArtist()
+      vi.mocked(mockPayload.findByID).mockResolvedValue(mockArtist)
+
+      const result = await getArtistById(mockPayload, '1')
+
+      expect(result).toEqual(mockArtist)
+      expect(mockPayload.findByID).toHaveBeenCalledWith({
+        collection: 'artists',
+        id: '1',
+        locale: 'de',
+        fallbackLocale: 'de',
+      })
+    })
+
+    it('should use specified locale', async () => {
+      const mockArtist = createMockArtist()
+      vi.mocked(mockPayload.findByID).mockResolvedValue(mockArtist)
+
+      await getArtistById(mockPayload, '1', 'en')
+
+      expect(mockPayload.findByID).toHaveBeenCalledWith({
+        collection: 'artists',
+        id: '1',
+        locale: 'en',
+        fallbackLocale: 'de',
+      })
+    })
+  })
+
+  describe('getArtistBySlug', () => {
+    it('should fetch artist by slug with fallback locale', async () => {
+      const mockArtist = createMockArtist()
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        docs: [mockArtist],
+        totalDocs: 1,
+        limit: 1,
+        totalPages: 1,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      const result = await getArtistBySlug(mockPayload, 'test-artist')
+
+      expect(result).toEqual(mockArtist)
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'artists',
+        where: { slug: { equals: 'test-artist' } },
+        limit: 1,
+        locale: 'de',
+        fallbackLocale: 'de',
+      })
+    })
+
+    it('should return first matching artist when multiple found', async () => {
+      const mockArtist = createMockArtist()
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        docs: [mockArtist, createMockArtist({ id: 2 })],
+        totalDocs: 2,
+        limit: 1,
+        totalPages: 1,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      const result = await getArtistBySlug(mockPayload, 'test-artist')
+
+      expect(result).toEqual(mockArtist)
+    })
+
+    it('should return undefined when artist not found', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        docs: [],
+        totalDocs: 0,
+        limit: 1,
+        totalPages: 0,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      const result = await getArtistBySlug(mockPayload, 'nonexistent-slug')
+
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe('getArtistListData', () => {
+    it('should fetch only selected fields for list page', async () => {
+      const mockArtist = createMockArtist()
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        docs: [mockArtist],
+        totalDocs: 1,
+        limit: 10,
+        totalPages: 1,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      await getArtistListData(mockPayload)
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'artists',
+        select: {
+          name: true,
+          image: true,
+          instrument: true,
+          id: true,
+          slug: true,
+        },
+        locale: 'de',
+        fallbackLocale: 'de',
+      })
+    })
+
+    it('should optimize by selecting only necessary fields', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        docs: [],
+        totalDocs: 0,
+        limit: 10,
+        totalPages: 0,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      await getArtistListData(mockPayload, 'en')
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          select: expect.objectContaining({
+            name: true,
+            image: true,
+            instrument: true,
+            id: true,
+            slug: true,
+          }),
+        }),
+      )
+    })
+  })
+})
