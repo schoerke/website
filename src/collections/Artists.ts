@@ -29,6 +29,39 @@ export const Artists: CollectionConfig = {
       unique: true,
     },
     {
+      name: 'instrument',
+      type: 'select',
+      required: true,
+      hasMany: true,
+      options: INSTRUMENTS.map((opt) => ({
+        value: opt.value,
+        label: ({ t }) => (t as any)(`custom:instruments:${opt.value}`),
+      })),
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Select instrument(s) associated with this artist',
+          de: 'Wählen Sie Instrument(e) aus, die mit diesem Künstler verbunden sind',
+        },
+      },
+    },
+    {
+      name: 'image',
+      relationTo: 'media',
+      type: 'upload',
+      label: {
+        en: 'Featured Image',
+        de: 'Vorschaubild',
+      },
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Used as the primary image for the artist',
+          de: 'Wird als primäres Bild für den Künstler verwendet',
+        },
+      },
+    },
+    {
       name: 'slug',
       type: 'text',
       unique: true,
@@ -36,6 +69,11 @@ export const Artists: CollectionConfig = {
       required: true,
       admin: {
         position: 'sidebar',
+        readOnly: true,
+        description: {
+          en: 'Auto-generated from artist name',
+          de: 'Automatisch aus dem Künstlernamen generiert',
+        },
       },
       hooks: {
         beforeValidate: [
@@ -51,31 +89,6 @@ export const Artists: CollectionConfig = {
             return value
           },
         ],
-      },
-    },
-    {
-      name: 'instrument',
-      type: 'select',
-      required: true,
-      hasMany: true,
-      options: INSTRUMENTS.map((opt) => ({
-        value: opt.value,
-        label: ({ t }) => (t as any)(`custom:instruments:${opt.value}`),
-      })),
-      admin: {
-        position: 'sidebar',
-      },
-    },
-    {
-      name: 'image',
-      relationTo: 'media',
-      type: 'upload',
-      label: {
-        en: 'Featured Image',
-        de: 'Vorschaubild',
-      },
-      admin: {
-        position: 'sidebar',
       },
     },
 
@@ -94,6 +107,12 @@ export const Artists: CollectionConfig = {
               label: {
                 de: 'Schoerke Kontakte',
                 en: 'Schoerke Contacts',
+              },
+              admin: {
+                description: {
+                  en: 'Max. 2 contact persons from the employees directory',
+                  de: 'Max. 2 Kontaktpersonen aus dem Mitarbeiterverzeichnis',
+                },
               },
               type: 'relationship',
               relationTo: 'employees',
@@ -117,7 +136,7 @@ export const Artists: CollectionConfig = {
             {
               name: 'quote',
               label: {
-                en: 'Highlight Quote',
+                en: 'Featured Quote',
                 de: 'Hervorgehobenes Zitat',
               },
               type: 'text',

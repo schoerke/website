@@ -130,7 +130,9 @@ export interface UserAuthOperations {
 export interface Artist {
   id: number;
   name: string;
-  slug: string;
+  /**
+   * Select instrument(s) associated with this artist
+   */
   instrument: (
     | 'piano'
     | 'piano-forte'
@@ -144,7 +146,17 @@ export interface Artist {
     | 'recorder'
     | 'chamber-music'
   )[];
+  /**
+   * Used as the primary image for the artist
+   */
   image?: (number | null) | Media;
+  /**
+   * Auto-generated from artist name
+   */
+  slug: string;
+  /**
+   * Max. 2 contact persons from the employees directory
+   */
   contactPersons?: (number | Employee)[] | null;
   quote?: string | null;
   biography: {
@@ -480,9 +492,9 @@ export interface PayloadMigration {
  */
 export interface ArtistsSelect<T extends boolean = true> {
   name?: T;
-  slug?: T;
   instrument?: T;
   image?: T;
+  slug?: T;
   contactPersons?: T;
   quote?: T;
   biography?: T;
