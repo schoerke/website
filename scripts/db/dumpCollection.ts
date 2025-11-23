@@ -1,8 +1,42 @@
+/**
+ * Collection Dump Utility
+ *
+ * Exports an entire Payload CMS collection to a JSON file for backup or migration purposes.
+ *
+ * @example
+ * ```bash
+ * # Export all artists
+ * pnpm dump artists
+ *
+ * # Export all posts
+ * pnpm dump posts
+ *
+ * # Export media files metadata
+ * pnpm dump media
+ * ```
+ *
+ * Output: Writes to `data/dumps/{collection}-dump.json`
+ */
+
 import 'dotenv/config'
 import { writeFile } from 'fs/promises'
 import path from 'path'
 import { getPayload } from 'payload'
 
+/**
+ * Dynamically imports and resolves the Payload configuration.
+ *
+ * Handles both synchronous config exports and async config promises.
+ *
+ * @returns The resolved Payload configuration object
+ * @throws Will throw if the config file cannot be imported or resolved
+ *
+ * @example
+ * ```ts
+ * const config = await getConfig()
+ * console.log(config.collections) // Array of collection configurations
+ * ```
+ */
 async function getConfig() {
   const configModule = await import('../../src/payload.config')
   const configMaybePromise = configModule.default
@@ -10,10 +44,39 @@ async function getConfig() {
   return typeof configMaybePromise.then === 'function' ? await configMaybePromise : configMaybePromise
 }
 
+/**
+ * Extracts the slugs of all registered collections from the Payload config.
+ *
+ * @param config - The Payload configuration object
+ * @returns Array of collection slug strings (e.g., ['artists', 'posts', 'media'])
+ *
+ * @example
+ * ```ts
+ * const config = await getConfig()
+ * const collections = getValidCollections(config)
+ * // ['artists', 'employees', 'media', 'posts', 'recordings', 'users']
+ * ```
+ */
 function getValidCollections(config: any): string[] {
   return (config.collections || []).map((c: any) => c.slug)
 }
 
+/**
+ * Exports all documents from a Payload collection to a JSON file.
+ *
+ * The export file is saved to `data/dumps/{collection}-dump.json` with pretty-printed formatting.
+ *
+ * @param payload - The initialized Payload instance
+ * @param collection - The collection slug to export (e.g., 'artists', 'posts')
+ * @returns A promise that resolves when the export is complete
+ * @throws Will throw if the collection doesn't exist or file write fails
+ *
+ * @example
+ * ```ts
+ * await exportCollection(payload, 'artists')
+ * // Exported 15 docs to /path/to/data/dumps/artists-dump.json
+ * ```
+ */
 async function exportCollection(payload: any, collection: string) {
   const result = await payload.find({ collection })
   const outFile = `${collection}-dump.json`
@@ -24,6 +87,23 @@ async function exportCollection(payload: any, collection: string) {
   console.log(`Exported ${result.docs.length} docs to ${outPath}`)
 }
 
+/**
+ * Gracefully closes the database connection based on the database adapter.
+ *
+ * Supports MongoDB (mongoClient.close) and Prisma/Postgres/SQLite (db.$disconnect).
+ * Logs appropriate messages for each connection type.
+ *
+ * @param payload - The initialized Payload instance
+ * @returns A promise that resolves when the connection is closed
+ *
+ * @example
+ * ```ts
+ * const payload = await getPayload({ config })
+ * // ... perform operations ...
+ * await closePayloadConnection(payload)
+ * // Closed MongoDB connection.
+ * ```
+ */
 async function closePayloadConnection(payload: any) {
   if (payload?.mongoClient && typeof payload.mongoClient.close === 'function') {
     console.log('Attempting to close MongoDB connection...')
@@ -38,6 +118,34 @@ async function closePayloadConnection(payload: any) {
   }
 }
 
+/**
+ * Main entry point for the collection dump script.
+ *
+ * Workflow:
+ * 1. Parse collection slug from command line arguments
+ * 2. Validate the collection exists in the Payload config
+ * 3. Initialize Payload and connect to database
+ * 4. Export all documents from the collection to JSON
+ * 5. Close database connection and exit
+ *
+ * @returns A promise that resolves when the dump is complete
+ * @throws Will exit with code 1 if collection is invalid or export fails
+ *
+ * @example
+ * ```bash
+ * # Valid usage
+ * pnpm dump artists
+ *
+ * # Invalid - missing collection argument
+ * pnpm dump
+ * # Error: Usage: pnpm dump <collection>
+ *
+ * # Invalid - unknown collection
+ * pnpm dump foo
+ * # Error: Unknown collection: foo
+ * # Valid collections: artists, employees, media, posts, recordings, users
+ * ```
+ */
 async function main() {
   const collection = process.argv[2]
   if (!collection) {
