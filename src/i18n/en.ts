@@ -22,6 +22,9 @@ import { en as defaultEN } from '@payloadcms/translations/languages/en'
 
 const en = {
   ...defaultEN,
+  common: {
+    all: 'All',
+  },
   custom: {
     instruments: {
       piano: 'Piano',

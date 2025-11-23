@@ -25,6 +25,9 @@ import { de as defaultDE } from '@payloadcms/translations/languages/de'
 
 const de = {
   ...defaultDE,
+  common: {
+    all: 'Alle',
+  },
   custom: {
     instruments: {
       piano: 'Klavier',

@@ -34,7 +34,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const [newsFetched, setNewsFetched] = useState(false)
   const [projectsFetched, setProjectsFetched] = useState(false)
   const [recordingsFetched, setRecordingsFetched] = useState(false)
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([])
+  const [selectedRole, setSelectedRole] = useState<string | null>(null)
 
   // Get quote marks for the current locale
   const quoteMarks = getQuoteMarks(locale)
@@ -44,7 +44,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     setNewsFetched(false)
     setProjectsFetched(false)
     setRecordingsFetched(false)
-    setSelectedRoles([])
+    setSelectedRole(null)
   }, [locale])
 
   // Available tabs (Concert Dates is conditional)
@@ -138,11 +138,9 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   // Extract unique roles from recordings
   const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort()
 
-  // Filter recordings by selected roles
+  // Filter recordings by selected role
   const filteredRecordings =
-    selectedRoles.length === 0
-      ? recordings
-      : recordings.filter((recording) => recording.roles?.some((role: string) => selectedRoles.includes(role)))
+    selectedRole === null ? recordings : recordings.filter((recording) => recording.roles?.includes(selectedRole))
 
   return (
     <div className="w-full">
@@ -202,8 +200,8 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
             loading={recordingsLoading}
             emptyMessage={t('empty.discography')}
             availableRoles={availableRoles}
-            selectedRoles={selectedRoles}
-            onRoleFilterChange={setSelectedRoles}
+            selectedRole={selectedRole}
+            onRoleFilterChange={setSelectedRole}
           />
         )}
         {activeTab === 'video' && <VideoTab videos={artist.youtubeLinks} emptyMessage={t('empty.video')} />}

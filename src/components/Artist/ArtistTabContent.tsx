@@ -176,8 +176,8 @@ interface RecordingsTabProps {
   loading?: boolean
   emptyMessage: string
   availableRoles: string[]
-  selectedRoles: string[]
-  onRoleFilterChange: (roles: string[]) => void
+  selectedRole: string | null
+  onRoleFilterChange: (role: string | null) => void
 }
 
 export const RecordingsTab: React.FC<RecordingsTabProps> = ({
@@ -185,7 +185,7 @@ export const RecordingsTab: React.FC<RecordingsTabProps> = ({
   loading,
   emptyMessage,
   availableRoles,
-  selectedRoles,
+  selectedRole,
   onRoleFilterChange,
 }) => {
   if (loading) {
@@ -206,14 +206,14 @@ export const RecordingsTab: React.FC<RecordingsTabProps> = ({
     )
   }
 
-  if (recordings.length === 0 && selectedRoles.length === 0) {
+  if (recordings.length === 0 && selectedRole === null) {
     return <EmptyRecordings />
   }
 
   return (
     <>
       {availableRoles.length > 0 && (
-        <RoleFilter roles={availableRoles} selected={selectedRoles} onChange={onRoleFilterChange} />
+        <RoleFilter roles={availableRoles} selected={selectedRole} onChange={onRoleFilterChange} />
       )}
       {recordings.length === 0 ? (
         <div className="py-12 text-center text-gray-500">
