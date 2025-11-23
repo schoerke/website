@@ -3,6 +3,15 @@ import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getAllRecordings, getRecordingById, getRecordingsByArtist } from './recording'
 
+// Mock getPayload at the module level
+vi.mock('payload', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('payload')>()
+  return {
+    ...actual,
+    getPayload: vi.fn(),
+  }
+})
+
 describe('Recording Service', () => {
   let mockPayload: Payload
 
@@ -17,11 +26,15 @@ describe('Recording Service', () => {
       ...overrides,
     }) as Recording
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockPayload = {
       find: vi.fn(),
       findByID: vi.fn(),
     } as unknown as Payload
+
+    // Mock getPayload to return our mock payload instance
+    const { getPayload } = await import('payload')
+    vi.mocked(getPayload).mockResolvedValue(mockPayload)
   })
 
   describe('getAllRecordings', () => {
@@ -40,7 +53,7 @@ describe('Recording Service', () => {
         nextPage: null,
       })
 
-      const result = await getAllRecordings(mockPayload)
+      const result = await getAllRecordings()
 
       expect(result.docs).toEqual(mockRecordings)
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -67,7 +80,7 @@ describe('Recording Service', () => {
         nextPage: null,
       })
 
-      await getAllRecordings(mockPayload)
+      await getAllRecordings()
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -90,7 +103,7 @@ describe('Recording Service', () => {
         nextPage: null,
       })
 
-      await getAllRecordings(mockPayload)
+      await getAllRecordings()
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -113,7 +126,7 @@ describe('Recording Service', () => {
         nextPage: null,
       })
 
-      await getAllRecordings(mockPayload, 'en')
+      await getAllRecordings('en')
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -139,7 +152,7 @@ describe('Recording Service', () => {
         nextPage: null,
       })
 
-      const result = await getRecordingsByArtist(mockPayload, '1')
+      const result = await getRecordingsByArtist('1')
 
       expect(result.docs).toEqual([mockRecording])
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -167,7 +180,7 @@ describe('Recording Service', () => {
         nextPage: null,
       })
 
-      await getRecordingsByArtist(mockPayload, '5')
+      await getRecordingsByArtist('5')
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'recordings',
@@ -194,7 +207,7 @@ describe('Recording Service', () => {
         nextPage: null,
       })
 
-      await getRecordingsByArtist(mockPayload, '1')
+      await getRecordingsByArtist('1')
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -209,7 +222,7 @@ describe('Recording Service', () => {
       const mockRecording = createMockRecording()
       vi.mocked(mockPayload.findByID).mockResolvedValue(mockRecording)
 
-      const result = await getRecordingById(mockPayload, '1')
+      const result = await getRecordingById('1')
 
       expect(result).toEqual(mockRecording)
       expect(mockPayload.findByID).toHaveBeenCalledWith({
@@ -224,7 +237,7 @@ describe('Recording Service', () => {
       const mockRecording = createMockRecording()
       vi.mocked(mockPayload.findByID).mockResolvedValue(mockRecording)
 
-      await getRecordingById(mockPayload, '1', 'en')
+      await getRecordingById('1', 'en')
 
       expect(mockPayload.findByID).toHaveBeenCalledWith({
         collection: 'recordings',
@@ -238,7 +251,7 @@ describe('Recording Service', () => {
       const mockRecording = createMockRecording()
       vi.mocked(mockPayload.findByID).mockResolvedValue(mockRecording)
 
-      await getRecordingById(mockPayload, '1')
+      await getRecordingById('1')
 
       expect(mockPayload.findByID).toHaveBeenCalledWith(
         expect.objectContaining({

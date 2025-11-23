@@ -48,7 +48,7 @@ async function getDefaultMedia(payload: any) {
 
 async function getImageId(payload: any, employee: Employee) {
   // Try to find existing media first
-  const employeeImageId = await getEmployeeImageId(payload, employee)
+  const employeeImageId = await getEmployeeImageId(employee)
 
   if (employeeImageId) {
     return employeeImageId
@@ -66,7 +66,7 @@ async function run() {
       const imageId = await getImageId(payload, employeeData as Employee)
 
       // Check if employee already exists
-      const existingEmployee = await getEmployeeByName(payload, employeeData.name)
+      const existingEmployee = await getEmployeeByName(employeeData.name)
 
       if (existingEmployee.totalDocs > 0) {
         console.log(`Employee already exists: ${employeeData.name}`)

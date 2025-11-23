@@ -3,6 +3,15 @@ import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getArtistById, getArtistBySlug, getArtistListData, getArtists } from './artist'
 
+// Mock getPayload at the module level
+vi.mock('payload', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('payload')>()
+  return {
+    ...actual,
+    getPayload: vi.fn(),
+  }
+})
+
 describe('Artist Service', () => {
   let mockPayload: Payload
 
@@ -19,11 +28,15 @@ describe('Artist Service', () => {
       ...overrides,
     }) as Artist
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockPayload = {
       find: vi.fn(),
       findByID: vi.fn(),
     } as unknown as Payload
+
+    // Mock getPayload to return our mock payload instance
+    const { getPayload } = await import('payload')
+    vi.mocked(getPayload).mockResolvedValue(mockPayload)
   })
 
   describe('getArtists', () => {
@@ -42,7 +55,7 @@ describe('Artist Service', () => {
         nextPage: null,
       })
 
-      const result = await getArtists(mockPayload)
+      const result = await getArtists()
 
       expect(result.docs).toEqual(mockArtists)
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -66,7 +79,7 @@ describe('Artist Service', () => {
         nextPage: null,
       })
 
-      await getArtists(mockPayload, 'en')
+      await getArtists('en')
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'artists',
@@ -81,7 +94,7 @@ describe('Artist Service', () => {
       const mockArtist = createMockArtist()
       vi.mocked(mockPayload.findByID).mockResolvedValue(mockArtist)
 
-      const result = await getArtistById(mockPayload, '1')
+      const result = await getArtistById('1')
 
       expect(result).toEqual(mockArtist)
       expect(mockPayload.findByID).toHaveBeenCalledWith({
@@ -96,7 +109,7 @@ describe('Artist Service', () => {
       const mockArtist = createMockArtist()
       vi.mocked(mockPayload.findByID).mockResolvedValue(mockArtist)
 
-      await getArtistById(mockPayload, '1', 'en')
+      await getArtistById('1', 'en')
 
       expect(mockPayload.findByID).toHaveBeenCalledWith({
         collection: 'artists',
@@ -123,7 +136,7 @@ describe('Artist Service', () => {
         nextPage: null,
       })
 
-      const result = await getArtistBySlug(mockPayload, 'test-artist')
+      const result = await getArtistBySlug('test-artist')
 
       expect(result).toEqual(mockArtist)
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -150,7 +163,7 @@ describe('Artist Service', () => {
         nextPage: null,
       })
 
-      const result = await getArtistBySlug(mockPayload, 'test-artist')
+      const result = await getArtistBySlug('test-artist')
 
       expect(result).toEqual(mockArtist)
     })
@@ -169,7 +182,7 @@ describe('Artist Service', () => {
         nextPage: null,
       })
 
-      const result = await getArtistBySlug(mockPayload, 'nonexistent-slug')
+      const result = await getArtistBySlug('nonexistent-slug')
 
       expect(result).toBeUndefined()
     })
@@ -191,7 +204,7 @@ describe('Artist Service', () => {
         nextPage: null,
       })
 
-      await getArtistListData(mockPayload)
+      await getArtistListData()
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'artists',
@@ -221,7 +234,7 @@ describe('Artist Service', () => {
         nextPage: null,
       })
 
-      await getArtistListData(mockPayload, 'en')
+      await getArtistListData('en')
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({

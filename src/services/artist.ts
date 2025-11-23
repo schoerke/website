@@ -1,19 +1,20 @@
-import type { Payload } from 'payload'
+import config from '@/payload.config'
+import { getPayload } from 'payload'
 
 type LocaleCode = 'de' | 'en' | 'all'
 
 /**
  * Retrieves all artists from the database.
  *
- * @param payload - The Payload CMS instance
  * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de' with 'de' fallback
  * @returns A promise resolving to all artists with full field data
  *
  * @example
- * const artists = await getArtists(payload, 'en')
+ * const artists = await getArtists('en')
  * console.log(artists.docs) // Array of artist documents
  */
-export const getArtists = async (payload: Payload, locale?: LocaleCode) => {
+export const getArtists = async (locale?: LocaleCode) => {
+  const payload = await getPayload({ config })
   return await payload.find({
     collection: 'artists',
     locale: locale || 'de',
@@ -24,16 +25,16 @@ export const getArtists = async (payload: Payload, locale?: LocaleCode) => {
 /**
  * Retrieves a single artist by their unique ID.
  *
- * @param payload - The Payload CMS instance
  * @param id - The artist's unique identifier
  * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de' with 'de' fallback
  * @returns A promise resolving to the artist document, or throws if not found
  *
  * @example
- * const artist = await getArtistById(payload, '123', 'en')
+ * const artist = await getArtistById('123', 'en')
  * console.log(artist.name) // "John Doe"
  */
-export const getArtistById = async (payload: Payload, id: string, locale?: LocaleCode) => {
+export const getArtistById = async (id: string, locale?: LocaleCode) => {
+  const payload = await getPayload({ config })
   return await payload.findByID({
     collection: 'artists',
     id: id,
@@ -45,18 +46,18 @@ export const getArtistById = async (payload: Payload, id: string, locale?: Local
 /**
  * Retrieves a single artist by their URL slug.
  *
- * @param payload - The Payload CMS instance
  * @param slug - The artist's URL-friendly slug
  * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de' with 'de' fallback
  * @returns A promise resolving to the first matching artist document, or undefined if not found
  *
  * @example
- * const artist = await getArtistBySlug(payload, 'john-doe', 'en')
+ * const artist = await getArtistBySlug('john-doe', 'en')
  * if (artist) {
  *   console.log(artist.name) // "John Doe"
  * }
  */
-export const getArtistBySlug = async (payload: Payload, slug: string, locale?: LocaleCode) => {
+export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
+  const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'artists',
     where: { slug: { equals: slug } },
@@ -71,17 +72,17 @@ export const getArtistBySlug = async (payload: Payload, slug: string, locale?: L
  * Retrieves optimized artist data for list/grid views.
  * Only fetches essential fields (name, image, instrument, id, slug) to improve performance.
  *
- * @param payload - The Payload CMS instance
  * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de' with 'de' fallback
  * @returns A promise resolving to artists with minimal field selection
  *
  * @example
- * const artistList = await getArtistListData(payload, 'en')
+ * const artistList = await getArtistListData('en')
  * artistList.docs.forEach(artist => {
  *   console.log(artist.name, artist.instrument) // Only selected fields available
  * })
  */
-export const getArtistListData = async (payload: Payload, locale?: LocaleCode) => {
+export const getArtistListData = async (locale?: LocaleCode) => {
+  const payload = await getPayload({ config })
   return await payload.find({
     collection: 'artists',
     select: {

@@ -116,9 +116,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   useEffect(() => {
     if (activeTab === 'discography' && !recordingsFetched && !recordingsLoading) {
       setRecordingsLoading(true)
-      fetch(
-        `/api/recordings?where[artistRoles.artist][equals]=${artist.id}&where[_status][equals]=published&locale=${locale}`,
-      )
+      fetch(`/api/recordings?where[artists][equals]=${artist.id}&where[_status][equals]=published&locale=${locale}`)
         .then((res) => res.json())
         .then((data) => {
           setRecordings(data.docs || [])

@@ -3,6 +3,15 @@ import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getDefaultAvatar, getLogo, getLogoIcon, getMediaByAlt, getMediaByFilename, getMediaById } from './media'
 
+// Mock getPayload at the module level
+vi.mock('payload', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('payload')>()
+  return {
+    ...actual,
+    getPayload: vi.fn(),
+  }
+})
+
 describe('Media Service', () => {
   let mockPayload: Payload
 
@@ -21,11 +30,15 @@ describe('Media Service', () => {
       ...overrides,
     }) as Media
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockPayload = {
       find: vi.fn(),
       findByID: vi.fn(),
     } as unknown as Payload
+
+    // Mock getPayload to return our mock payload instance
+    const { getPayload } = await import('payload')
+    vi.mocked(getPayload).mockResolvedValue(mockPayload)
   })
 
   describe('getMediaByFilename', () => {
@@ -44,7 +57,7 @@ describe('Media Service', () => {
         nextPage: null,
       })
 
-      const result = await getMediaByFilename(mockPayload, 'logo.png')
+      const result = await getMediaByFilename('logo.png')
 
       expect(result).toEqual(mockMedia)
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -68,7 +81,7 @@ describe('Media Service', () => {
         nextPage: null,
       })
 
-      const result = await getMediaByFilename(mockPayload, 'nonexistent.png')
+      const result = await getMediaByFilename('nonexistent.png')
 
       expect(result).toBeNull()
     })
@@ -88,7 +101,7 @@ describe('Media Service', () => {
         nextPage: null,
       })
 
-      const result = await getMediaByFilename(mockPayload, 'avatar.webp')
+      const result = await getMediaByFilename('avatar.webp')
 
       expect(result).toEqual(webpMedia)
     })
@@ -99,7 +112,7 @@ describe('Media Service', () => {
       const mockMedia = createMockMedia()
       vi.mocked(mockPayload.findByID).mockResolvedValue(mockMedia)
 
-      const result = await getMediaById(mockPayload, '1')
+      const result = await getMediaById('1')
 
       expect(result).toEqual(mockMedia)
       expect(mockPayload.findByID).toHaveBeenCalledWith({
@@ -111,7 +124,7 @@ describe('Media Service', () => {
     it('should return null when media not found', async () => {
       vi.mocked(mockPayload.findByID).mockRejectedValue(new Error('Not found'))
 
-      const result = await getMediaById(mockPayload, 'nonexistent-id')
+      const result = await getMediaById('nonexistent-id')
 
       expect(result).toBeNull()
     })
@@ -119,7 +132,7 @@ describe('Media Service', () => {
     it('should handle database errors gracefully', async () => {
       vi.mocked(mockPayload.findByID).mockRejectedValue(new Error('Database connection failed'))
 
-      const result = await getMediaById(mockPayload, '1')
+      const result = await getMediaById('1')
 
       expect(result).toBeNull()
     })
@@ -141,7 +154,7 @@ describe('Media Service', () => {
         nextPage: null,
       })
 
-      const result = await getMediaByAlt(mockPayload, 'Test Logo')
+      const result = await getMediaByAlt('Test Logo')
 
       expect(result).toEqual(mockMedia)
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -165,7 +178,7 @@ describe('Media Service', () => {
         nextPage: null,
       })
 
-      const result = await getMediaByAlt(mockPayload, 'Nonexistent Alt Text')
+      const result = await getMediaByAlt('Nonexistent Alt Text')
 
       expect(result).toBeNull()
     })
@@ -185,7 +198,7 @@ describe('Media Service', () => {
         nextPage: null,
       })
 
-      const result = await getMediaByAlt(mockPayload, 'John Doe')
+      const result = await getMediaByAlt('John Doe')
 
       expect(result).toEqual(employeePhoto)
     })
@@ -208,7 +221,7 @@ describe('Media Service', () => {
           nextPage: null,
         })
 
-        const result = await getLogo(mockPayload)
+        const result = await getLogo()
 
         expect(result?.filename).toBe('logo.png')
         expect(mockPayload.find).toHaveBeenCalledWith({
@@ -232,7 +245,7 @@ describe('Media Service', () => {
           nextPage: null,
         })
 
-        const result = await getLogo(mockPayload)
+        const result = await getLogo()
 
         expect(result).toBeNull()
       })
@@ -254,7 +267,7 @@ describe('Media Service', () => {
           nextPage: null,
         })
 
-        const result = await getLogoIcon(mockPayload)
+        const result = await getLogoIcon()
 
         expect(result?.filename).toBe('logo_icon.png')
         expect(mockPayload.find).toHaveBeenCalledWith({
@@ -281,7 +294,7 @@ describe('Media Service', () => {
           nextPage: null,
         })
 
-        const result = await getDefaultAvatar(mockPayload)
+        const result = await getDefaultAvatar()
 
         expect(result?.filename).toBe('default-avatar.webp')
         expect(result?.mimeType).toBe('image/webp')

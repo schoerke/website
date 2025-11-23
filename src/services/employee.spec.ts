@@ -4,6 +4,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getEmployeeById, getEmployeeByName, getEmployeeImageId, getEmployees } from './employee'
 import * as mediaService from './media'
 
+// Mock getPayload at the module level
+vi.mock('payload', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('payload')>()
+  return {
+    ...actual,
+    getPayload: vi.fn(),
+  }
+})
+
 describe('Employee Service', () => {
   let mockPayload: Payload
 
@@ -21,11 +30,16 @@ describe('Employee Service', () => {
       ...overrides,
     }) as Employee
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockPayload = {
       find: vi.fn(),
       findByID: vi.fn(),
     } as unknown as Payload
+
+    // Mock getPayload to return our mock payload instance
+    const { getPayload } = await import('payload')
+    vi.mocked(getPayload).mockResolvedValue(mockPayload)
+
     vi.clearAllMocks()
   })
 
@@ -45,7 +59,7 @@ describe('Employee Service', () => {
         nextPage: null,
       })
 
-      const result = await getEmployees(mockPayload)
+      const result = await getEmployees()
 
       expect(result.docs).toEqual(mockEmployees)
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -69,7 +83,7 @@ describe('Employee Service', () => {
         nextPage: null,
       })
 
-      await getEmployees(mockPayload, 'en')
+      await getEmployees('en')
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'employees',
@@ -79,7 +93,7 @@ describe('Employee Service', () => {
     })
 
     it('should sort employees by order field', async () => {
-      await getEmployees(mockPayload)
+      await getEmployees()
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -94,7 +108,7 @@ describe('Employee Service', () => {
       const mockEmployee = createMockEmployee()
       vi.mocked(mockPayload.findByID).mockResolvedValue(mockEmployee)
 
-      const result = await getEmployeeById(mockPayload, '1')
+      const result = await getEmployeeById('1')
 
       expect(result).toEqual(mockEmployee)
       expect(mockPayload.findByID).toHaveBeenCalledWith({
@@ -108,7 +122,7 @@ describe('Employee Service', () => {
       const mockEmployee = createMockEmployee()
       vi.mocked(mockPayload.findByID).mockResolvedValue(mockEmployee)
 
-      await getEmployeeById(mockPayload, '1', 'en')
+      await getEmployeeById('1', 'en')
 
       expect(mockPayload.findByID).toHaveBeenCalledWith({
         collection: 'artists',
@@ -134,7 +148,7 @@ describe('Employee Service', () => {
         nextPage: null,
       })
 
-      const result = await getEmployeeByName(mockPayload, 'John Doe')
+      const result = await getEmployeeByName('John Doe')
 
       expect(result.docs[0]).toEqual(mockEmployee)
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -161,7 +175,7 @@ describe('Employee Service', () => {
         nextPage: null,
       })
 
-      const result = await getEmployeeByName(mockPayload, 'Nonexistent Person')
+      const result = await getEmployeeByName('Nonexistent Person')
 
       expect(result.docs).toHaveLength(0)
     })
@@ -176,10 +190,10 @@ describe('Employee Service', () => {
         filename: 'john-doe.jpg',
       } as any)
 
-      const result = await getEmployeeImageId(mockPayload, mockEmployee)
+      const result = await getEmployeeImageId(mockEmployee)
 
       expect(result).toBe(5)
-      expect(mediaService.getMediaByAlt).toHaveBeenCalledWith(mockPayload, 'John Doe')
+      expect(mediaService.getMediaByAlt).toHaveBeenCalledWith('John Doe')
     })
 
     it('should return default avatar ID when employee image not found', async () => {
@@ -191,11 +205,11 @@ describe('Employee Service', () => {
         filename: 'default-avatar.webp',
       } as any)
 
-      const result = await getEmployeeImageId(mockPayload, mockEmployee)
+      const result = await getEmployeeImageId(mockEmployee)
 
       expect(result).toBe(10)
-      expect(mediaService.getMediaByAlt).toHaveBeenCalledWith(mockPayload, 'John Doe')
-      expect(mediaService.getDefaultAvatar).toHaveBeenCalledWith(mockPayload)
+      expect(mediaService.getMediaByAlt).toHaveBeenCalledWith('John Doe')
+      expect(mediaService.getDefaultAvatar).toHaveBeenCalledWith()
     })
 
     it('should return null when neither employee image nor default avatar found', async () => {
@@ -203,7 +217,7 @@ describe('Employee Service', () => {
       vi.spyOn(mediaService, 'getMediaByAlt').mockResolvedValue(null)
       vi.spyOn(mediaService, 'getDefaultAvatar').mockResolvedValue(null)
 
-      const result = await getEmployeeImageId(mockPayload, mockEmployee)
+      const result = await getEmployeeImageId(mockEmployee)
 
       expect(result).toBeNull()
     })

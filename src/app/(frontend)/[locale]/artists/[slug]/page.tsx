@@ -1,14 +1,12 @@
 import ArtistTabs from '@/components/Artist/ArtistTabs'
 import ContactPersons from '@/components/Artist/ContactPersons'
 import { Link } from '@/i18n/navigation'
-import config from '@/payload.config'
 import { getArtistBySlug } from '@/services/artist'
 import { isEmployee } from '@/utils/collection'
 import { getQuoteMarks } from '@/utils/content'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
 
 function isMedia(obj: unknown): obj is { url: string } {
   return typeof obj === 'object' && obj !== null && 'url' in obj && typeof (obj as any).url === 'string'
@@ -20,8 +18,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
   // Enable static rendering
   setRequestLocale(locale)
 
-  const payload = await getPayload({ config })
-  const artist = await getArtistBySlug(payload, slug, locale as 'de' | 'en')
+  const artist = await getArtistBySlug(slug, locale as 'de' | 'en')
 
   if (!artist) return notFound()
 

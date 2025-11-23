@@ -10,6 +10,15 @@ import {
   getAllProjectPostsByArtist,
 } from './post'
 
+// Mock getPayload at the module level
+vi.mock('payload', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('payload')>()
+  return {
+    ...actual,
+    getPayload: vi.fn(),
+  }
+})
+
 describe('Post Service', () => {
   let mockPayload: Payload
 
@@ -25,10 +34,14 @@ describe('Post Service', () => {
       ...overrides,
     }) as Post
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockPayload = {
       find: vi.fn(),
     } as unknown as Payload
+
+    // Mock getPayload to return our mock payload instance
+    const { getPayload } = await import('payload')
+    vi.mocked(getPayload).mockResolvedValue(mockPayload)
   })
 
   describe('getAllPosts', () => {
@@ -47,7 +60,7 @@ describe('Post Service', () => {
         nextPage: null,
       })
 
-      const result = await getAllPosts(mockPayload)
+      const result = await getAllPosts()
 
       expect(result.docs).toEqual(mockPosts)
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -70,7 +83,7 @@ describe('Post Service', () => {
         nextPage: null,
       })
 
-      await getAllPosts(mockPayload, 'en')
+      await getAllPosts('en')
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
@@ -95,7 +108,7 @@ describe('Post Service', () => {
         nextPage: null,
       })
 
-      const result = await getAllNewsPosts(mockPayload)
+      const result = await getAllNewsPosts()
 
       expect(result.docs[0].categories).toContain('news')
       expect(mockPayload.find).toHaveBeenCalledWith({
@@ -125,7 +138,7 @@ describe('Post Service', () => {
         nextPage: null,
       })
 
-      await getAllProjectPosts(mockPayload)
+      await getAllProjectPosts()
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
@@ -154,7 +167,7 @@ describe('Post Service', () => {
         nextPage: null,
       })
 
-      await getAllHomepagePosts(mockPayload)
+      await getAllHomepagePosts()
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
@@ -183,7 +196,7 @@ describe('Post Service', () => {
         nextPage: null,
       })
 
-      await getAllNewsPostsByArtist(mockPayload, '1')
+      await getAllNewsPostsByArtist('1')
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
@@ -210,7 +223,7 @@ describe('Post Service', () => {
         nextPage: null,
       })
 
-      await getAllNewsPostsByArtist(mockPayload, '1')
+      await getAllNewsPostsByArtist('1')
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -238,7 +251,7 @@ describe('Post Service', () => {
         nextPage: null,
       })
 
-      await getAllProjectPostsByArtist(mockPayload, '1')
+      await getAllProjectPostsByArtist('1')
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
@@ -265,7 +278,7 @@ describe('Post Service', () => {
         nextPage: null,
       })
 
-      await getAllProjectPostsByArtist(mockPayload, '1')
+      await getAllProjectPostsByArtist('1')
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({

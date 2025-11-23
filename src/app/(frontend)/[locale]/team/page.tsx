@@ -1,10 +1,8 @@
 import { publicEnv } from '@/config/env'
 import { Employee, Media } from '@/payload-types'
 import { getEmployees } from '@/services/employee'
-import config from '@payload-config'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
-import { getPayload } from 'payload'
 
 // This page will be dynamically rendered
 export const dynamic = 'force-dynamic'
@@ -57,8 +55,7 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.team' })
 
-  const payload = await getPayload({ config })
-  const { docs: employees } = await getEmployees(payload, locale as 'de' | 'en')
+  const { docs: employees } = await getEmployees(locale as 'de' | 'en')
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">

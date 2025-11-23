@@ -1,9 +1,7 @@
 import ArtistGrid from '@/components/Artist/ArtistGrid'
 import ImageSlider from '@/components/ui/ImageSlider'
-import config from '@/payload.config'
 import { getArtistListData } from '@/services/artist'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import { getPayload } from 'payload'
 
 const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) => {
   const { locale } = await params
@@ -17,8 +15,7 @@ const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) 
   let error = null
 
   try {
-    const payload = await getPayload({ config })
-    const result = await getArtistListData(payload, locale as 'de' | 'en')
+    const result = await getArtistListData(locale as 'de' | 'en')
     artists = result?.docs || []
   } catch (e) {
     console.error('Error loading artists:', e)
