@@ -1,5 +1,6 @@
 import EmptyRecordings from '@/components/Recording/EmptyRecordings'
 import RecordingGrid from '@/components/Recording/RecordingGrid'
+import RoleFilter from '@/components/Recording/RoleFilter'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Skeleton } from '@/components/ui/Skeleton'
 import type { Artist, Post } from '@/payload-types'
@@ -174,9 +175,19 @@ interface RecordingsTabProps {
   recordings: any[] // Recording[] from payload-types
   loading?: boolean
   emptyMessage: string
+  availableRoles: string[]
+  selectedRoles: string[]
+  onRoleFilterChange: (roles: string[]) => void
 }
 
-export const RecordingsTab: React.FC<RecordingsTabProps> = ({ recordings, loading, emptyMessage }) => {
+export const RecordingsTab: React.FC<RecordingsTabProps> = ({
+  recordings,
+  loading,
+  emptyMessage,
+  availableRoles,
+  selectedRoles,
+  onRoleFilterChange,
+}) => {
   if (loading) {
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -195,9 +206,22 @@ export const RecordingsTab: React.FC<RecordingsTabProps> = ({ recordings, loadin
     )
   }
 
-  if (recordings.length === 0) {
+  if (recordings.length === 0 && selectedRoles.length === 0) {
     return <EmptyRecordings />
   }
 
-  return <RecordingGrid recordings={recordings} />
+  return (
+    <>
+      {availableRoles.length > 1 && (
+        <RoleFilter roles={availableRoles} selected={selectedRoles} onChange={onRoleFilterChange} />
+      )}
+      {recordings.length === 0 ? (
+        <div className="py-12 text-center text-gray-500">
+          <p>{emptyMessage}</p>
+        </div>
+      ) : (
+        <RecordingGrid recordings={recordings} />
+      )}
+    </>
+  )
 }

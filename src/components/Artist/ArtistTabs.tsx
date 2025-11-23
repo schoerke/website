@@ -34,6 +34,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const [newsFetched, setNewsFetched] = useState(false)
   const [projectsFetched, setProjectsFetched] = useState(false)
   const [recordingsFetched, setRecordingsFetched] = useState(false)
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([])
 
   // Get quote marks for the current locale
   const quoteMarks = getQuoteMarks(locale)
@@ -43,6 +44,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     setNewsFetched(false)
     setProjectsFetched(false)
     setRecordingsFetched(false)
+    setSelectedRoles([])
   }, [locale])
 
   // Available tabs (Concert Dates is conditional)
@@ -133,6 +135,15 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     }
   }, [activeTab, artist.id, recordingsFetched, recordingsLoading, locale])
 
+  // Extract unique roles from recordings
+  const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort()
+
+  // Filter recordings by selected roles
+  const filteredRecordings =
+    selectedRoles.length === 0
+      ? recordings
+      : recordings.filter((recording) => recording.roles?.some((role: string) => selectedRoles.includes(role)))
+
   return (
     <div className="w-full">
       {/* Desktop: Horizontal Tab List (ToggleGroup) */}
@@ -186,7 +197,14 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           <RepertoireTab content={artist.repertoire} emptyMessage={t('empty.repertoire')} />
         )}
         {activeTab === 'discography' && (
-          <RecordingsTab recordings={recordings} loading={recordingsLoading} emptyMessage={t('empty.discography')} />
+          <RecordingsTab
+            recordings={filteredRecordings}
+            loading={recordingsLoading}
+            emptyMessage={t('empty.discography')}
+            availableRoles={availableRoles}
+            selectedRoles={selectedRoles}
+            onRoleFilterChange={setSelectedRoles}
+          />
         )}
         {activeTab === 'video' && <VideoTab videos={artist.youtubeLinks} emptyMessage={t('empty.video')} />}
         {activeTab === 'news' && <NewsTab posts={newsPosts} loading={newsLoading} emptyMessage={t('empty.news')} />}
