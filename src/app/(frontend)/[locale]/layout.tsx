@@ -1,5 +1,6 @@
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
+import ScreenWidthIndicator from '@/components/utils/ScreenWidthIndicator'
 import { routing } from '@/i18n/routing'
 import { hasLocale, NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
@@ -33,6 +34,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale}>
       <body className="font-inter text-primary-black flex min-h-screen flex-col antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <ScreenWidthIndicator />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer locale={locale} />
