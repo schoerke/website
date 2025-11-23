@@ -53,7 +53,7 @@ const PostList: React.FC<PostListProps> = ({ posts, emptyMessage }) => {
                 {formatDate(post.createdAt, 'en')}
               </time>
               {/* TODO: Add excerpt field to Post model for better preview */}
-              <Link href={`/news/${post.id}`} className="mt-auto text-sm font-medium text-blue-600 hover:underline">
+              <Link href={`/news/${post.slug}`} className="mt-auto text-sm font-medium text-blue-600 hover:underline">
                 Read more →
               </Link>
             </div>

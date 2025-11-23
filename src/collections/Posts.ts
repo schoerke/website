@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { categoryOptions } from '@/data/options'
+import { createSlugHook } from '@/utils/slug'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -23,6 +24,25 @@ export const Posts: CollectionConfig = {
       type: 'text',
       localized: true,
       required: true,
+    },
+    {
+      name: 'slug',
+      type: 'text',
+      localized: true,
+      required: true,
+      unique: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: {
+          de: 'Automatisch aus dem Titel generiert',
+          en: 'Auto-generated from title',
+        },
+      },
+      hooks: {
+        beforeValidate: [createSlugHook('title')],
+      },
     },
     {
       name: 'content',

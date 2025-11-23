@@ -58,6 +58,7 @@ export default buildConfig({
       },
     ],
     defaultLocale: 'de',
+    fallback: false,
   },
   plugins: [
     // Cloudflare R2

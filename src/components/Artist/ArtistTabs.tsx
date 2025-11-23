@@ -39,6 +39,13 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   // Get quote marks for the current locale
   const quoteMarks = getQuoteMarks(locale)
 
+  // Reset fetched flags when locale changes
+  useEffect(() => {
+    setNewsFetched(false)
+    setProjectsFetched(false)
+    setRecordingsFetched(false)
+  }, [locale])
+
   // Available tabs (Concert Dates is conditional)
   const tabs: TabId[] = [
     'biography',
@@ -69,7 +76,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     if (activeTab === 'news' && !newsFetched && !newsLoading) {
       setNewsLoading(true)
       fetch(
-        `/api/posts?where[categories][contains]=news&where[artists][equals]=${artist.id}&where[_status][equals]=published`,
+        `/api/posts?where[categories][contains]=news&where[artists][equals]=${artist.id}&where[_status][equals]=published&locale=${locale}`,
       )
         .then((res) => res.json())
         .then((data) => {
@@ -83,14 +90,14 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           setNewsFetched(true)
         })
     }
-  }, [activeTab, artist.id, newsFetched, newsLoading])
+  }, [activeTab, artist.id, newsFetched, newsLoading, locale])
 
   // Fetch project posts when projects tab is selected
   useEffect(() => {
     if (activeTab === 'projects' && !projectsFetched && !projectsLoading) {
       setProjectsLoading(true)
       fetch(
-        `/api/posts?where[categories][contains]=projects&where[artists][equals]=${artist.id}&where[_status][equals]=published`,
+        `/api/posts?where[categories][contains]=projects&where[artists][equals]=${artist.id}&where[_status][equals]=published&locale=${locale}`,
       )
         .then((res) => res.json())
         .then((data) => {
@@ -104,13 +111,15 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           setProjectsFetched(true)
         })
     }
-  }, [activeTab, artist.id, projectsFetched, projectsLoading])
+  }, [activeTab, artist.id, projectsFetched, projectsLoading, locale])
 
   // Fetch recordings when discography tab is selected
   useEffect(() => {
     if (activeTab === 'discography' && !recordingsFetched && !recordingsLoading) {
       setRecordingsLoading(true)
-      fetch(`/api/recordings?where[artistRoles.artist][equals]=${artist.id}&where[_status][equals]=published`)
+      fetch(
+        `/api/recordings?where[artistRoles.artist][equals]=${artist.id}&where[_status][equals]=published&locale=${locale}`,
+      )
         .then((res) => res.json())
         .then((data) => {
           setRecordings(data.docs || [])
@@ -123,7 +132,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           setRecordingsFetched(true)
         })
     }
-  }, [activeTab, artist.id, recordingsFetched, recordingsLoading])
+  }, [activeTab, artist.id, recordingsFetched, recordingsLoading, locale])
 
   return (
     <div className="w-full">

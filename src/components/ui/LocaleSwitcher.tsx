@@ -14,7 +14,9 @@ const LocaleSwitcher: React.FC = () => {
   const currentLocale = useLocale()
 
   const handleLocaleChange = (locale: string) => {
-    router.replace(pathname, { locale })
+    // Preserve hash fragment when switching locales
+    const hash = window.location.hash
+    router.replace(pathname + hash, { locale, scroll: false })
   }
 
   return (

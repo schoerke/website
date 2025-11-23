@@ -1,4 +1,5 @@
 import { INSTRUMENTS } from '@/constants/options'
+import { createSlugHook } from '@/utils/slug'
 import { validateQuote, validateURL, validateYouTubeURL } from '@/validators/fields'
 import type { CollectionConfig } from 'payload'
 
@@ -76,19 +77,7 @@ export const Artists: CollectionConfig = {
         },
       },
       hooks: {
-        beforeValidate: [
-          ({ data, operation, value }) => {
-            if (operation === 'create' || !value) {
-              if (data?.name) {
-                return data.name
-                  .toLowerCase()
-                  .replace(/[^a-z0-9]+/g, '-')
-                  .replace(/(^-|-$)/g, '')
-              }
-            }
-            return value
-          },
-        ],
+        beforeValidate: [createSlugHook('name')],
       },
     },
 

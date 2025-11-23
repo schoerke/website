@@ -300,6 +300,10 @@ export interface Employee {
 export interface Post {
   id: number;
   title: string;
+  /**
+   * Auto-generated from title
+   */
+  slug: string;
   content: {
     root: {
       type: string;
@@ -544,6 +548,7 @@ export interface EmployeesSelect<T extends boolean = true> {
  */
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
+  slug?: T;
   content?: T;
   categories?: T;
   artists?: T;
