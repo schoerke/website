@@ -41,6 +41,6 @@ We will use [next-intl](https://amannn.github.io/next-intl/) as the primary i18n
 ## References
 
 - [next-intl Documentation](https://amannn.github.io/next-intl/)
-- [Project i18n Design Doc](../plans/2025-11-16-i18n-design.md)
+- [Project i18n Design Doc](../plans/implemented/2025-11-16-i18n-design.md)
 - [Payload CMS Localization](https://payloadcms.com/docs/localization/overview)
 - [Next.js App Router Internationalization](https://nextjs.org/docs/app/guides/internationalization)
