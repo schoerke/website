@@ -24,16 +24,16 @@
  *   → Label: "Naxos", Catalog: "8.123456"
  *
  * Role Detection:
- * The script uses H1 heading elements to group recordings by role.
+ * The script uses H1 or H2 heading elements to group recordings by role.
  * Structure your discography like this:
  *
- *   [H1] Soloist
+ *   [H1 or H2] Soloist
  *   [Paragraph] Beethoven
  *   [Paragraph] Violin Concerto...
  *   [Paragraph] Prokofiev
  *   [Paragraph] Violin Sonatas...
  *
- *   [H1] Conductor
+ *   [H1 or H2] Conductor
  *   [Paragraph] Mahler
  *   [Paragraph] Symphony No. 5...
  *
@@ -298,8 +298,8 @@ function groupRecordingsByRole(nodes: ParagraphNode[]): Map<RecordingRole, Parag
   let currentRole: RecordingRole = 'soloist' // Default role
 
   for (const node of nodes) {
-    // Check if this is an H1 heading
-    if (node.type === 'heading' && node.tag === 'h1') {
+    // Check if this is an H1 or H2 heading
+    if (node.type === 'heading' && (node.tag === 'h1' || node.tag === 'h2')) {
       // Extract text from heading
       const headingText = node.children
         .filter((child) => child.type === 'text' && child.text)
