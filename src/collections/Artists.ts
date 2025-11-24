@@ -234,7 +234,6 @@ export const Artists: CollectionConfig = {
               name: 'discography',
               type: 'array',
               required: false,
-              localized: true,
               label: {
                 en: 'Discography',
                 de: 'Diskographie',
@@ -253,6 +252,10 @@ export const Artists: CollectionConfig = {
                 description: {
                   en: 'Group recordings by role. Add a role section for each role the artist performs.',
                   de: 'Aufnahmen nach Rolle gruppieren. Fügen Sie für jede Rolle, die der Künstler ausübt, einen Rollenabschnitt hinzu.',
+                },
+                initCollapsed: true,
+                components: {
+                  RowLabel: './collections/components/DiscographyRowLabel',
                 },
               },
               fields: [
