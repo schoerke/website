@@ -26,6 +26,7 @@
     "seed:all": "tsx scripts/db/seedAll.ts",
     "seed:artists": "payload run ./scripts/db/seedArtists.ts",
     "seed:employees": "payload run ./scripts/db/seedEmployees.ts",
+    "seed:media": "payload run ./scripts/db/seedMedia.ts",
     "seed:static-pages": "tsx scripts/db/seedStaticPages.ts",
     "restore:artists-dump": "tsx scripts/db/restoreArtistsDump.ts",
     "restore:posts-dump": "tsx scripts/db/restorePostsDump.ts",
