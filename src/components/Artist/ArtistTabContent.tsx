@@ -1,5 +1,5 @@
 import EmptyRecordings from '@/components/Recording/EmptyRecordings'
-import RecordingGrid from '@/components/Recording/RecordingGrid'
+import RecordingList from '@/components/Recording/RecordingList'
 import RoleFilter from '@/components/Recording/RoleFilter'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -190,16 +190,11 @@ export const RecordingsTab: React.FC<RecordingsTabProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="space-y-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="overflow-hidden rounded-lg bg-white shadow-md">
-            <Skeleton className="h-72 w-full" />
-            <div className="space-y-3 p-6">
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-3 w-2/3" />
-            </div>
+          <div key={i} className="border-b border-gray-200 py-4">
+            <Skeleton className="mb-2 h-6 w-3/4" />
+            <Skeleton className="h-4 w-1/3" />
           </div>
         ))}
       </div>
@@ -220,7 +215,7 @@ export const RecordingsTab: React.FC<RecordingsTabProps> = ({
           <p>{emptyMessage}</p>
         </div>
       ) : (
-        <RecordingGrid recordings={recordings} filterKey={selectedRole} />
+        <RecordingList recordings={recordings} filterKey={selectedRole} />
       )}
     </>
   )
