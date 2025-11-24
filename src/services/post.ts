@@ -159,3 +159,95 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
     locale: locale || 'de',
   })
 }
+/**
+ * Retrieves posts with flexible filtering options.
+ * This is the recommended function for fetching posts with custom criteria.
+ *
+ * @param options - Query options
+ * @param options.category - Filter by category (single string or array of strings)
+ * @param options.artistId - Filter by artist ID
+ * @param options.limit - Maximum number of posts to return (default: 100)
+ * @param options.locale - Locale code ('de', 'en', or 'all'). Defaults to 'de'
+ * @param options.publishedOnly - Whether to only return published posts (default: true)
+ * @returns A promise resolving to filtered posts
+ *
+ * @example
+ * // Get news posts
+ * const news = await getFilteredPosts({ category: 'news' })
+ *
+ * @example
+ * // Get news posts for specific artist
+ * const artistNews = await getFilteredPosts({
+ *   category: 'news',
+ *   artistId: '123',
+ *   locale: 'en'
+ * })
+ *
+ * @example
+ * // Get multiple categories
+ * const posts = await getFilteredPosts({
+ *   category: ['news', 'home'],
+ *   limit: 5
+ * })
+ */
+export const getFilteredPosts = async (options: {
+  category?: string | string[]
+  artistId?: string
+  limit?: number
+  locale?: LocaleCode
+  publishedOnly?: boolean
+}) => {
+  const payload = await getPayload({ config })
+
+  const where: any = {}
+
+  // Filter by published status (default: true)
+  if (options.publishedOnly !== false) {
+    where._status = { equals: 'published' }
+  }
+
+  // Filter by category
+  if (options.category) {
+    where.categories = Array.isArray(options.category) ? { in: options.category } : { contains: options.category }
+  }
+
+  // Filter by artist
+  if (options.artistId) {
+    where.artists = { equals: options.artistId }
+  }
+
+  return await payload.find({
+    collection: 'posts',
+    where,
+    limit: options.limit || 100,
+    locale: options.locale || 'de',
+    sort: '-createdAt', // Most recent first
+  })
+}
+
+/**
+ * Retrieves a single post by its slug.
+ *
+ * @param slug - The post's URL slug
+ * @param locale - Locale code ('de' or 'en'). Defaults to 'de'
+ * @returns A promise resolving to the post, or null if not found
+ *
+ * @example
+ * const post = await getPostBySlug('my-article', 'en')
+ * if (post) {
+ *   console.log(post.title)
+ * }
+ */
+export const getPostBySlug = async (slug: string, locale: LocaleCode = 'de') => {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'posts',
+    where: {
+      slug: { equals: slug },
+    },
+    limit: 1,
+    locale,
+  })
+
+  return result.docs.length > 0 ? result.docs[0] : null
+}

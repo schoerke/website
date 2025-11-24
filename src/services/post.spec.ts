@@ -8,6 +8,7 @@ import {
   getAllPosts,
   getAllProjectPosts,
   getAllProjectPostsByArtist,
+  getFilteredPosts,
 } from './post'
 
 // Mock getPayload at the module level
@@ -174,6 +175,141 @@ describe('Post Service', () => {
           where: expect.objectContaining({
             published: { equals: true },
           }),
+        }),
+      )
+    })
+  })
+  describe('getFilteredPosts', () => {
+    it('should fetch published posts by default', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({})
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: { _status: { equals: 'published' } },
+        limit: 100,
+        locale: 'de',
+        sort: '-createdAt',
+      })
+    })
+
+    it('should filter by single category', async () => {
+      const newsPost = createMockPost({ categories: ['news'] })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([newsPost]))
+
+      await getFilteredPosts({ category: 'news' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: {
+          _status: { equals: 'published' },
+          categories: { contains: 'news' },
+        },
+        limit: 100,
+        locale: 'de',
+        sort: '-createdAt',
+      })
+    })
+
+    it('should filter by multiple categories', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ category: ['news', 'projects'] })
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: {
+          _status: { equals: 'published' },
+          categories: { in: ['news', 'projects'] },
+        },
+        limit: 100,
+        locale: 'de',
+        sort: '-createdAt',
+      })
+    })
+
+    it('should filter by artist ID', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ artistId: '123' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: {
+          _status: { equals: 'published' },
+          artists: { equals: '123' },
+        },
+        limit: 100,
+        locale: 'de',
+        sort: '-createdAt',
+      })
+    })
+
+    it('should combine category and artist filters', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ category: 'news', artistId: '123' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: {
+          _status: { equals: 'published' },
+          categories: { contains: 'news' },
+          artists: { equals: '123' },
+        },
+        limit: 100,
+        locale: 'de',
+        sort: '-createdAt',
+      })
+    })
+
+    it('should respect custom limit', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ limit: 5 })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          limit: 5,
+        }),
+      )
+    })
+
+    it('should respect custom locale', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ locale: 'en' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          locale: 'en',
+        }),
+      )
+    })
+
+    it('should include unpublished posts when publishedOnly is false', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ publishedOnly: false })
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: {},
+        limit: 100,
+        locale: 'de',
+        sort: '-createdAt',
+      })
+    })
+
+    it('should sort by createdAt descending', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({})
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sort: '-createdAt',
         }),
       )
     })
