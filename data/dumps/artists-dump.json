@@ -2,10 +2,7 @@
   {
     "id": 1,
     "name": "Christian Zacharias",
-    "instrument": [
-      "piano",
-      "conductor"
-    ],
+    "instrument": ["piano", "conductor"],
     "image": {
       "id": 2,
       "alt": "Christian Zacharias",
