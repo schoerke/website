@@ -175,23 +175,35 @@ export interface Artist {
     [k: string]: unknown;
   };
   /**
-   * Artist repertoire. No images or embedded media allowed.
+   * Organize repertoire into sections. Add a section for each category (e.g., Solo, Chamber Music, Orchestral). Max. 5 sections.
    */
-  repertoire?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  repertoire?:
+    | {
+        /**
+         * Title for this repertoire section (e.g., "Solo Repertoire", "Chamber Music")
+         */
+        title: string;
+        /**
+         * List of works in this repertoire section. No images or embedded media allowed.
+         */
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Group recordings by role. Add a role section for each role the artist performs.
    */
@@ -514,7 +526,13 @@ export interface ArtistsSelect<T extends boolean = true> {
   contactPersons?: T;
   quote?: T;
   biography?: T;
-  repertoire?: T;
+  repertoire?:
+    | T
+    | {
+        title?: T;
+        content?: T;
+        id?: T;
+      };
   discography?:
     | T
     | {
