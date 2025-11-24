@@ -6,9 +6,8 @@ import RoleFilter from '@/components/Recording/RoleFilter'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
-import type { Artist, Post } from '@/payload-types'
+import type { Artist } from '@/payload-types'
 import React from 'react'
-import PostList from './PostList'
 import VideoAccordion from './VideoAccordion'
 
 // Biography Tab
@@ -122,62 +121,6 @@ interface VideoTabProps {
 
 export const VideoTab: React.FC<VideoTabProps> = ({ videos, emptyMessage }) => {
   return <VideoAccordion videos={videos || []} emptyMessage={emptyMessage} />
-}
-
-// News Tab
-interface NewsTabProps {
-  posts: Post[]
-  loading?: boolean
-  emptyMessage: string
-}
-
-export const NewsTab: React.FC<NewsTabProps> = ({ posts, loading, emptyMessage }) => {
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex gap-6">
-            <Skeleton className="h-32 w-32 flex-shrink-0 rounded-lg" />
-            <div className="flex-1 space-y-3">
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-4 w-1/4" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  return <PostList posts={posts} emptyMessage={emptyMessage} />
-}
-
-// Projects Tab
-interface ProjectsTabProps {
-  posts: Post[]
-  loading?: boolean
-  emptyMessage: string
-}
-
-export const ProjectsTab: React.FC<ProjectsTabProps> = ({ posts, loading, emptyMessage }) => {
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex gap-6">
-            <Skeleton className="h-32 w-32 flex-shrink-0 rounded-lg" />
-            <div className="flex-1 space-y-3">
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-4 w-1/4" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  return <PostList posts={posts} emptyMessage={emptyMessage} />
 }
 
 // Concert Dates Tab

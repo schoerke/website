@@ -1,19 +1,12 @@
 'use client'
 
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
-import type { Artist, Post } from '@/payload-types'
+import type { Artist } from '@/payload-types'
 import { getQuoteMarks } from '@/utils/content'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
-import {
-  BiographyTab,
-  ConcertDatesTab,
-  NewsTab,
-  ProjectsTab,
-  RecordingsTab,
-  RepertoireTab,
-  VideoTab,
-} from './ArtistTabContent'
+import NewsFeedClient from '../NewsFeed/NewsFeedClient'
+import { BiographyTab, ConcertDatesTab, RecordingsTab, RepertoireTab, VideoTab } from './ArtistTabContent'
 
 type TabId = 'biography' | 'repertoire' | 'discography' | 'video' | 'news' | 'projects' | 'concertDates'
 
@@ -25,14 +18,8 @@ interface ArtistTabsProps {
 const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const t = useTranslations('custom.pages.artist')
   const [activeTab, setActiveTab] = useState<TabId>('biography')
-  const [newsPosts, setNewsPosts] = useState<Post[]>([])
-  const [projectPosts, setProjectPosts] = useState<Post[]>([])
   const [recordings, setRecordings] = useState<any[]>([])
-  const [newsLoading, setNewsLoading] = useState(false)
-  const [projectsLoading, setProjectsLoading] = useState(false)
   const [recordingsLoading, setRecordingsLoading] = useState(false)
-  const [newsFetched, setNewsFetched] = useState(false)
-  const [projectsFetched, setProjectsFetched] = useState(false)
   const [recordingsFetched, setRecordingsFetched] = useState(false)
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
 
@@ -41,8 +28,6 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
 
   // Reset fetched flags when locale changes
   useEffect(() => {
-    setNewsFetched(false)
-    setProjectsFetched(false)
     setRecordingsFetched(false)
     setSelectedRole(null)
   }, [locale])
@@ -71,48 +56,6 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     setActiveTab(tab)
     window.history.pushState(null, '', `#${tab}`)
   }
-
-  // Fetch news posts when news tab is selected
-  useEffect(() => {
-    if (activeTab === 'news' && !newsFetched && !newsLoading) {
-      setNewsLoading(true)
-      fetch(
-        `/api/posts?where[categories][contains]=news&where[artists][equals]=${artist.id}&where[_status][equals]=published&locale=${locale}`,
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setNewsPosts(data.docs || [])
-          setNewsLoading(false)
-          setNewsFetched(true)
-        })
-        .catch((err) => {
-          console.error('Failed to fetch news posts:', err)
-          setNewsLoading(false)
-          setNewsFetched(true)
-        })
-    }
-  }, [activeTab, artist.id, newsFetched, newsLoading, locale])
-
-  // Fetch project posts when projects tab is selected
-  useEffect(() => {
-    if (activeTab === 'projects' && !projectsFetched && !projectsLoading) {
-      setProjectsLoading(true)
-      fetch(
-        `/api/posts?where[categories][contains]=projects&where[artists][equals]=${artist.id}&where[_status][equals]=published&locale=${locale}`,
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setProjectPosts(data.docs || [])
-          setProjectsLoading(false)
-          setProjectsFetched(true)
-        })
-        .catch((err) => {
-          console.error('Failed to fetch project posts:', err)
-          setProjectsLoading(false)
-          setProjectsFetched(true)
-        })
-    }
-  }, [activeTab, artist.id, projectsFetched, projectsLoading, locale])
 
   // Fetch recordings when discography tab is selected
   useEffect(() => {
@@ -205,9 +148,9 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           />
         )}
         {activeTab === 'video' && <VideoTab videos={artist.youtubeLinks} emptyMessage={t('empty.video')} />}
-        {activeTab === 'news' && <NewsTab posts={newsPosts} loading={newsLoading} emptyMessage={t('empty.news')} />}
+        {activeTab === 'news' && <NewsFeedClient category="news" artistId={artist.id} emptyMessage={t('empty.news')} />}
         {activeTab === 'projects' && (
-          <ProjectsTab posts={projectPosts} loading={projectsLoading} emptyMessage={t('empty.projects')} />
+          <NewsFeedClient category="projects" artistId={artist.id} emptyMessage={t('empty.projects')} />
         )}
         {activeTab === 'concertDates' && artist.externalCalendarURL && (
           <ConcertDatesTab externalCalendarURL={artist.externalCalendarURL} buttonText={t('concertDates.button')} />

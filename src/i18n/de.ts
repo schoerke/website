@@ -89,10 +89,16 @@ const de = {
         title: 'Kontakt',
       },
       news: {
+        learnMore: 'Mehr erfahren',
         title: 'News',
+        goBack: 'Zurück',
+        allNews: 'Alle News',
       },
       projects: {
+        learnMore: 'Mehr erfahren',
         title: 'Projekte',
+        goBack: 'Zurück',
+        allProjects: 'Alle Projekte',
       },
       team: {
         title: 'Team',

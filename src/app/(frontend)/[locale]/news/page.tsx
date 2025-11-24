@@ -1,3 +1,4 @@
+import { NewsFeed } from '@/components/NewsFeed'
 import { getTranslations } from 'next-intl/server'
 
 type NewsPageProps = {
@@ -11,6 +12,7 @@ const NewsPage = async ({ params }: NewsPageProps) => {
   return (
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
       <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">{t('title')}</h1>
+      <NewsFeed.Server category="news" locale={locale} />
     </main>
   )
 }

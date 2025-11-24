@@ -86,10 +86,16 @@ const en = {
         title: 'Contact',
       },
       news: {
+        learnMore: 'Learn more',
         title: 'News',
+        goBack: 'Go back',
+        allNews: 'All News',
       },
       projects: {
+        learnMore: 'Learn more',
         title: 'Projects',
+        goBack: 'Go back',
+        allProjects: 'All Projects',
       },
       team: {
         title: 'Team',
