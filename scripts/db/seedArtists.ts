@@ -18,7 +18,7 @@
  *   scripts/db/json/artists.json
  *
  * @see scripts/db/seedAll.ts - Master orchestration script
- * @see scripts/db/seedEmployees.ts - Employee seeding script
+ * @see scripts/wordpress/migrateEmployees.ts - Employee migration script
  */
 
 import config from '@payload-config'

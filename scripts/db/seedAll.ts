@@ -2,9 +2,10 @@
  * Master Seed Script
  *
  * Re-seeds the entire database with all seed data:
- * - Employees
  * - Artists (with sample discography)
  * - Posts (news, projects, home, and artist-specific)
+ *
+ * Note: Employees are managed via WordPress migration script (pnpm migrate:employees)
  *
  * Usage:
  *   pnpm seed:all
@@ -77,7 +78,6 @@ async function main() {
   }
 
   const scripts = [
-    { path: './scripts/db/seedEmployees.ts', description: 'Seeding Employees', useTsx: false },
     { path: './scripts/db/seedArtists.ts', description: 'Seeding Artists', useTsx: false },
     { path: './scripts/db/restoreDiscography.ts', description: 'Restoring Sample Discography', useTsx: true },
     { path: './scripts/db/seedPosts.ts', description: 'Seeding Posts', useTsx: false },
@@ -109,8 +109,9 @@ async function main() {
   } else {
     console.log('\n🎉 All seed data loaded successfully!')
     console.log('\nNext steps:')
-    console.log('  1. Run migration: pnpm migrate:discography')
-    console.log('  2. Start dev server: pnpm dev')
+    console.log('  1. Migrate employees: pnpm migrate:employees')
+    console.log('  2. Run migration: pnpm migrate:discography')
+    console.log('  3. Start dev server: pnpm dev')
   }
 
   process.exit(0)

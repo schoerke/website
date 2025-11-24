@@ -25,7 +25,6 @@
     "test:coverage": "vitest run --coverage",
     "seed:all": "tsx scripts/db/seedAll.ts",
     "seed:artists": "payload run ./scripts/db/seedArtists.ts",
-    "seed:employees": "payload run ./scripts/db/seedEmployees.ts",
     "seed:media": "payload run ./scripts/db/seedMedia.ts",
     "seed:static-pages": "tsx scripts/db/seedStaticPages.ts",
     "restore:artists-dump": "tsx scripts/db/restoreArtistsDump.ts",
@@ -33,7 +32,8 @@
     "dump": "tsx scripts/db/dumpCollection.ts",
     "dump:artists": "pnpm dump artists",
     "dump:employees": "pnpm dump employees",
-    "dump:recordings": "pnpm dump recordings"
+    "dump:recordings": "pnpm dump recordings",
+    "migrate:employees": "payload run scripts/wordpress/migrateEmployees.ts"
   },
   "packageManager": "pnpm@10.22.0",
   "dependencies": {
