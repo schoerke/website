@@ -6,16 +6,20 @@
 
 ## Overview
 
-Refactor the footer into two distinct sections using a composite component pattern to improve usability and maintainability. Split into **FooterNavigation** (logo and site links) and **FooterInfo** (copyright, legal links, and social media).
+Refactor the footer into two distinct sections using a composite component pattern to improve usability and
+maintainability. Split into **FooterNavigation** (logo and site links) and **FooterInfo** (copyright, legal links, and
+social media).
 
 ## Context
 
 The current footer combines all elements in a single component. This refactoring separates concerns and improves:
+
 - **Usability**: Clear visual hierarchy between navigation and informational content
 - **Maintainability**: Easier to test and modify individual sections
 - **Future extensibility**: Social media and other info elements can be managed separately
 
-The company address block will be moved to the artist list page (separate task) to align with the contact persons pattern on artist detail pages.
+The company address block will be moved to the artist list page (separate task) to align with the contact persons
+pattern on artist detail pages.
 
 ## Architecture
 
@@ -32,6 +36,7 @@ src/components/Footer/
 ```
 
 **Export pattern:**
+
 ```tsx
 // Footer.tsx
 export default Footer
@@ -46,6 +51,7 @@ import { Navigation, Info } from '@/components/Footer/Footer'
 ### Component Responsibilities
 
 **Footer.tsx** (Main Component)
+
 - Orchestrates layout and stacking
 - Accepts `locale: string` prop
 - Maintains `bg-primary-platinum` background
@@ -53,6 +59,7 @@ import { Navigation, Info } from '@/components/Footer/Footer'
 - Async server component
 
 **FooterNavigation.tsx**
+
 - Renders FooterLogo
 - Site navigation links: Home, Artists, News, Projects, Team
 - Uses i18n Link component for locale awareness
@@ -61,6 +68,7 @@ import { Navigation, Info } from '@/components/Footer/Footer'
 - Async server component (for translations)
 
 **FooterInfo.tsx**
+
 - Copyright text with dynamic year
 - Legal/privacy links: Contact, Legal Notice, Privacy Policy, Branding
 - Social media icons: Facebook, Instagram, Twitter/X, YouTube
@@ -73,10 +81,12 @@ import { Navigation, Info } from '@/components/Footer/Footer'
 ### Translations
 
 **Existing keys (reused):**
+
 - `custom.pages.home.title`, `custom.pages.artists.title`, etc. - Page titles
 - `custom.footer.copyright` - Copyright text
 
 **New keys (to add):**
+
 ```typescript
 // en.ts and de.ts
 custom: {
@@ -121,7 +131,8 @@ export const SOCIAL_MEDIA_LINKS = [
 ] as const
 ```
 
-**Future migration path:** These URLs can later be moved to a CMS Global collection for editor management without changing component structure.
+**Future migration path:** These URLs can later be moved to a CMS Global collection for editor management without
+changing component structure.
 
 ### Link Handling
 
@@ -152,6 +163,7 @@ All components fetch their own translations using `getTranslations` and remain a
 ### FooterNavigation Styling
 
 **Layout:**
+
 ```tsx
 <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-4">
   {/* Logo section */}
@@ -160,20 +172,23 @@ All components fetch their own translations using `getTranslations` and remain a
 ```
 
 **Link styles:**
+
 - Base: `text-gray-600`
 - Hover: `hover:text-gray-800`
 - Transition: `transition duration-150 ease-in-out`
 
 **Spacing:**
+
 - Container: `px-4 py-12 sm:px-6 lg:px-8 lg:py-16`
 - List items: `space-y-3`
 
 ### FooterInfo Styling
 
 **Layout:**
+
 ```tsx
 <div className="mt-8 border-t border-gray-200 pt-8">
-  <div className="flex flex-wrap justify-between items-center gap-4">
+  <div className="flex flex-wrap items-center justify-between gap-4">
     {/* Copyright */}
     {/* Legal links */}
     {/* Social media icons */}
@@ -182,6 +197,7 @@ All components fetch their own translations using `getTranslations` and remain a
 ```
 
 **Elements:**
+
 - Copyright: `text-sm text-gray-500`
 - Legal links: Same style as navigation links
 - Social icons: `w-6 h-6 text-gray-600 hover:text-gray-800`
@@ -199,13 +215,14 @@ import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
 ```
 
 **Usage pattern:**
+
 ```tsx
-<a 
-  href={url} 
+<a
+  href={url}
   aria-label={t('custom.footer.socialMedia.visitFacebook')}
   target="_blank"
   rel="noopener noreferrer"
-  className="text-gray-600 hover:text-gray-800 transition duration-150 ease-in-out"
+  className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-800"
 >
   <Facebook size={24} aria-hidden="true" />
 </a>
@@ -246,12 +263,14 @@ import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
 ## Error Handling
 
 **Graceful degradation:**
+
 - FooterLogo: Already handles missing logo (returns "Logo not found" span)
 - Translations: Handled by next-intl error boundaries
 - Social media: Skip rendering icon if URL is empty/undefined
 - No blocking errors: Footer always renders even if parts fail
 
 **Defensive checks:**
+
 ```typescript
 {SOCIAL_MEDIA_LINKS.filter(link => link.url).map(link => ...)}
 ```
@@ -259,6 +278,7 @@ import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
 ## Migration Path
 
 ### Phase 1: Component Refactoring (This Design)
+
 1. Create FooterNavigation.tsx with logo and site links
 2. Create FooterInfo.tsx with copyright, legal, and social media
 3. Create src/constants/socialMedia.ts
@@ -268,11 +288,13 @@ import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
 7. Verify no visual or functional regressions
 
 ### Phase 2: Address Block Migration (Separate Task)
+
 - Remove address block from footer
 - Add address block to artist list page
 - Align with contactPersons component pattern
 
 ### Phase 3: CMS Integration (Future)
+
 - Create GlobalSettings collection for social media URLs
 - Update socialMedia.ts to fetch from CMS
 - Add admin UI for managing social links
@@ -281,11 +303,13 @@ import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
 ## Future Considerations
 
 **Extensibility:**
+
 - Newsletter signup: Add as `Footer.Newsletter` following same pattern
 - Additional sections: Easy to add new composite components
 - CMS-managed content: Structure supports gradual CMS migration
 
 **Potential enhancements:**
+
 - Animated icon hover effects
 - Social media icon color customization
 - Footer theme variants (light/dark)
@@ -294,19 +318,23 @@ import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
 ## Dependencies
 
 **Required:**
+
 - lucide-react (already installed)
 - next-intl (already installed)
 - @/i18n/navigation (already exists)
 
 **New files:**
+
 - `src/constants/socialMedia.ts`
 
 **Modified files:**
+
 - `src/components/Footer/Footer.tsx`
 - `src/i18n/en.ts`
 - `src/i18n/de.ts`
 
 **New components:**
+
 - `src/components/Footer/FooterNavigation.tsx`
 - `src/components/Footer/FooterInfo.tsx`
 

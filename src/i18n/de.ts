@@ -109,6 +109,14 @@ const de = {
     },
     footer: {
       copyright: 'Alle Rechte vorbehalten.',
+      navigationLabel: 'Footer-Navigation',
+      legalNavigationLabel: 'Rechtliche Navigation',
+      socialMedia: {
+        visitFacebook: 'Besuchen Sie uns auf Facebook',
+        visitInstagram: 'Besuchen Sie uns auf Instagram',
+        visitTwitter: 'Besuchen Sie uns auf Twitter',
+        visitYouTube: 'Besuchen Sie uns auf YouTube',
+      },
     },
   },
 }

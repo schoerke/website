@@ -41,6 +41,7 @@ describe('Recording Service', () => {
         },
         locale: 'de',
         depth: 2,
+        limit: 1000,
       })
     })
 
@@ -97,6 +98,7 @@ describe('Recording Service', () => {
         },
         locale: 'de',
         depth: 2,
+        limit: 1000,
       })
     })
 
@@ -113,6 +115,7 @@ describe('Recording Service', () => {
         },
         locale: 'de',
         depth: 2,
+        limit: 1000,
       })
     })
 

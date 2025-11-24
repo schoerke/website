@@ -106,6 +106,14 @@ const en = {
     },
     footer: {
       copyright: 'All rights reserved.',
+      navigationLabel: 'Footer navigation',
+      legalNavigationLabel: 'Legal navigation',
+      socialMedia: {
+        visitFacebook: 'Visit us on Facebook',
+        visitInstagram: 'Visit us on Instagram',
+        visitTwitter: 'Visit us on Twitter',
+        visitYouTube: 'Visit us on YouTube',
+      },
     },
   },
 }
