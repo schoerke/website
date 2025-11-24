@@ -85,6 +85,45 @@ This includes:
 
 _This file is for agentic coding agents. Update if project conventions change._
 
+## Library-Specific Knowledge
+
+### Payload CMS Search Plugin with Localization
+
+**Critical Understanding:** When using `@payloadcms/plugin-search` with localized collections:
+
+1. **How it works:**
+   - Setting `localize: true` makes the SEARCH collection itself localized (not the source collections)
+   - The plugin's `afterChange` hook fires once per API request, using `req.locale`
+   - Each search record is created with a specific `locale` parameter
+   - To index content in multiple locales, you need separate API calls for each locale
+
+2. **Correct implementation:**
+
+   ```typescript
+   // Create English version
+   const doc = await payload.create({
+     collection: 'artists',
+     data: artistData,
+     locale: 'en', // Explicitly set locale
+   })
+
+   // Update German version (adds second locale to same document)
+   await payload.update({
+     collection: 'artists',
+     id: doc.id,
+     data: { biography: germanBiography },
+     locale: 'de', // Explicitly set different locale
+   })
+
+   // This creates TWO search records: one for EN, one for DE
+   ```
+
+3. **When confused about plugin behavior:**
+   - DO NOT guess or experiment with config options
+   - Check the plugin's source code on GitHub: `packages/plugin-search/src/`
+   - Look for official template examples that use the plugin
+   - Read the actual implementation, not just type definitions
+
 ## Library Installation Policy
 
 - **NEVER install new libraries or dependencies without explicit user confirmation.**
