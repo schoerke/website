@@ -25,6 +25,9 @@ import { Users } from './collections/Users'
 import de from './i18n/de'
 import en from './i18n/en'
 
+// Search utilities
+import { beforeSyncHook } from './utils/search/beforeSyncHook'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -65,6 +68,7 @@ export default buildConfig({
     // Search Plugin
     searchPlugin({
       collections: ['artists', 'employees', 'recordings', 'posts'],
+      beforeSync: beforeSyncHook,
       defaultPriorities: {
         artists: 50,
         recordings: 40,
