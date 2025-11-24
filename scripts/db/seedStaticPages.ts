@@ -12,6 +12,7 @@
  *   - DATABASE_AUTH_TOKEN: Database authentication token
  */
 
+import 'dotenv/config'
 import { getPayload } from 'payload'
 import config from '../../src/payload.config'
 
@@ -42,20 +43,18 @@ async function seedStaticPages() {
   try {
     const payload = await getPayload({ config })
 
-    // Clear existing static-pages search records
+    // Find all existing search records (we'll filter client-side)
     const existingRecords = await payload.find({
       collection: 'search' as any,
-      where: {
-        'doc.relationTo': {
-          equals: 'static-pages',
-        },
-      },
-      limit: 100,
+      limit: 1000,
     })
 
-    if (existingRecords.docs.length > 0) {
-      console.log(`🗑️  Deleting ${existingRecords.docs.length} existing static page records...`)
-      for (const doc of existingRecords.docs) {
+    // Filter for static-pages records
+    const staticPageRecords = existingRecords.docs.filter((doc: any) => doc.doc?.relationTo === 'static-pages')
+
+    if (staticPageRecords.length > 0) {
+      console.log(`🗑️  Deleting ${staticPageRecords.length} existing static page records...`)
+      for (const doc of staticPageRecords) {
         await payload.delete({
           collection: 'search' as any,
           id: doc.id,
