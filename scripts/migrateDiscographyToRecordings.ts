@@ -1,16 +1,23 @@
 // @ts-nocheck
 /**
- * Migration Script: Discography to Recordings (Enhanced)
+ * Migration Script: Discography to Recordings (Array Structure)
  *
  * This script migrates existing discography data from the Artists collection
- * to the new Recordings collection. It parses the richText structure and
- * intelligently extracts:
+ * to the new Recordings collection. It reads the array-based discography structure
+ * and intelligently extracts:
  * - Title (combining bold text "Composer" with normal text "Work")
  * - Recording label and catalog number (from last italic text matching pattern)
  * - Description (remaining content, including composers if needed)
- * - Artist role (from H1 heading elements)
+ * - Artist role (from array entry's role field)
  *
- * Pattern:
+ * Array Structure:
+ * The discography field is now an array of role sections:
+ *   discography: [
+ *     { role: 'soloist', recordings: { root: { children: [...] } } },
+ *     { role: 'conductor', recordings: { root: { children: [...] } } }
+ *   ]
+ *
+ * Text Formatting Pattern (within recordings richText):
  * - Bold text (format: 1) → Prepended to title as "Composer -"
  * - Normal text (format: 0) → Work title and description
  * - Italic text (format: 2) → Work titles or Label/Catalog# (last italic)
@@ -25,27 +32,15 @@
  *   → Label: "Naxos", Catalog: "8.123456"
  *
  * Role Detection:
- * The script uses H1 or H2 heading elements to group recordings by role.
- * Structure your discography like this:
+ * Roles are now explicitly defined in the array structure via dropdown selection.
+ * No heading parsing is required - each array entry has a role field.
  *
- *   [H1 or H2] Soloist
- *   [Paragraph] Beethoven
- *   [Paragraph] Violin Concerto...
- *   [Paragraph] Prokofiev
- *   [Paragraph] Violin Sonatas...
- *
- *   [H1 or H2] Conductor
- *   [Paragraph] Mahler
- *   [Paragraph] Symphony No. 5...
- *
- * Supported heading text (case-insensitive):
- * - "Soloist" / "Solist" → soloist
- * - "Conductor" / "Dirigent" → conductor
- * - "Accompanist" / "Begleiter" → accompanist
- * - "Chamber Musician" / "Kammermusiker" → chamber_musician
- * - "Ensemble Member" / "Ensemblemitglied" → ensemble_member
- *
- * If no headings are found, defaults to 'soloist' for all recordings.
+ * Supported roles:
+ * - soloist
+ * - conductor
+ * - accompanist
+ * - chamber_musician
+ * - ensemble_member
  *
  * Idempotency:
  * The script is safe to run multiple times. It checks if recordings already exist
@@ -84,7 +79,7 @@ interface RichTextContent {
 type RecordingRole = 'soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist'
 
 /**
- * Map heading text to recording role
+ * Convert description parts to richText format with proper Lexical structure
  */
 function parseRoleFromHeading(headingText: string): RecordingRole | null {
   const text = headingText.toLowerCase().trim()
@@ -332,7 +327,7 @@ function groupRecordingsByRole(nodes: ParagraphNode[]): Map<RecordingRole, Parag
 }
 
 async function migrateDiscography() {
-  console.log('=== Starting Enhanced Discography Migration ===\n')
+  console.log('=== Discography to Recordings Migration (Array Structure) ===\n')
 
   // Check for --force flag to skip duplicate check
   const forceMode = process.argv.includes('--force')
@@ -343,20 +338,21 @@ async function migrateDiscography() {
   try {
     const payload = await getPayload({ config })
 
-    // 1. Fetch all artists with discography data (fetch DE first to check existence)
-    console.log('Fetching artists with discography data...')
+    // 1. Fetch all artists (filter for discography in code)
+    console.log('Fetching artists...')
     const artistsDE = await payload.find({
       collection: 'artists',
-      where: {
-        discography: {
-          exists: true,
-        },
-      },
-      limit: 1000,
+      limit: 10000,
       locale: 'de',
     })
 
-    console.log(`Found ${artistsDE.docs.length} artists with DE discography data\n`)
+    // Filter for artists with discography data
+    const artistsWithDiscography = artistsDE.docs.filter((artist) => {
+      const discography = artist.discography as any
+      return Array.isArray(discography) && discography.length > 0
+    })
+
+    console.log(`Found ${artistsWithDiscography.length} artists with DE discography data\n`)
 
     let createdCount = 0
     let skippedCount = 0
@@ -364,7 +360,7 @@ async function migrateDiscography() {
     const summary: Array<{ artist: string; recordings: number }> = []
 
     // 2. Process each artist - handle DE and EN locales separately
-    for (const artistDE of artistsDE.docs) {
+    for (const artistDE of artistsWithDiscography) {
       try {
         console.log(`\n📝 Processing: ${artistDE.name}`)
         console.log(`   Instruments: ${artistDE.instrument?.join(', ') || 'none'}`)
@@ -396,37 +392,37 @@ async function migrateDiscography() {
           locale: 'en',
         })
 
-        // Process DE discography
-        const discographyDE = artistDE.discography as RichTextContent | undefined
-        const nodesDE = discographyDE?.root?.children || []
+        // Process DE discography (new array structure)
+        const discographyDE = (artistDE.discography as any) || []
+        const roleEntriesDE = Array.isArray(discographyDE) ? discographyDE : []
 
-        // Process EN discography
-        const discographyEN = artistEN.discography as RichTextContent | undefined
-        const nodesEN = discographyEN?.root?.children || []
+        // Process EN discography (new array structure)
+        const discographyEN = (artistEN.discography as any) || []
+        const roleEntriesEN = Array.isArray(discographyEN) ? discographyEN : []
 
-        if (nodesDE.length === 0 && nodesEN.length === 0) {
-          console.log('   ⏭️  No content found in either locale')
-          skippedCount++
-          continue
-        }
-
-        // Group recordings by role for both locales
-        const roleGroupsDE = groupRecordingsByRole(nodesDE)
-        const roleGroupsEN = groupRecordingsByRole(nodesEN)
-
-        if (roleGroupsDE.size === 0 && roleGroupsEN.size === 0) {
-          console.log('   ⏭️  No recording paragraphs found in either locale')
+        if (roleEntriesDE.length === 0 && roleEntriesEN.length === 0) {
+          console.log('   ⏭️  No discography entries found in either locale')
           skippedCount++
           continue
         }
 
         let recordingsCreated = 0
 
-        // Process DE recordings - this creates the recording with non-localized fields
-        for (const [role, paragraphs] of roleGroupsDE.entries()) {
+        // Process DE recordings - iterate through role entries
+        for (let i = 0; i < roleEntriesDE.length; i++) {
+          const roleEntry = roleEntriesDE[i]
+          const role = roleEntry.role as RecordingRole
+          const recordingsRichText = roleEntry.recordings
+          const paragraphs = recordingsRichText?.root?.children || []
+
           console.log(`\n   🎵 Processing ${paragraphs.length} DE recording(s) as: ${role}`)
 
-          for (const paragraph of paragraphs) {
+          for (let j = 0; j < paragraphs.length; j++) {
+            const paragraph = paragraphs[j]
+
+            // Skip non-paragraph nodes
+            if (paragraph.type !== 'paragraph') continue
+
             const parsed = parseRecordingParagraph(paragraph)
 
             // Skip empty paragraphs (no title could be extracted)
@@ -462,12 +458,13 @@ async function migrateDiscography() {
             recordingsCreated++
 
             // Now process corresponding EN recording if it exists
-            // Try to find matching EN recording by checking if same role group exists
-            const enParagraphs = roleGroupsEN.get(role) || []
-            const enParagraphIndex = paragraphs.indexOf(paragraph)
+            // Try to find matching EN entry with same role
+            const enRoleEntry = roleEntriesEN.find((entry: any) => entry.role === role)
+            const enParagraphs = enRoleEntry?.recordings?.root?.children || []
+            const enParagraph = enParagraphs[j]
 
-            if (enParagraphs[enParagraphIndex]) {
-              const parsedEN = parseRecordingParagraph(enParagraphs[enParagraphIndex])
+            if (enParagraph && enParagraph.type === 'paragraph') {
+              const parsedEN = parseRecordingParagraph(enParagraph)
 
               console.log(`         EN: "${parsedEN.title}"`)
 
@@ -533,14 +530,14 @@ async function migrateDiscography() {
     console.log('2. Navigate to Recordings collection')
     console.log('3. Review each draft recording:')
     console.log('   - Verify extracted composer, title, label, and catalog number')
-    console.log('   - Verify auto-assigned roles (based on H1 headings)')
+    console.log('   - Verify auto-assigned roles (from discography array entries)')
     console.log('   - Add cover art')
     console.log('   - Add recording year if known')
     console.log('   - Publish when ready')
     console.log('\n💡 Tip: This script is idempotent - it skips artists with existing recordings.')
     console.log('   To re-run for an artist, delete their recordings first, or use --force flag.')
-    console.log('\n💡 Tip: Use H1 headings in discography to specify roles (Soloist, Conductor, etc.)')
-    console.log('   Without headings, all recordings default to "soloist" role.')
+    console.log('\n💡 Tip: Roles are now explicitly selected in the discography array structure.')
+    console.log('   Each role section contains its associated recordings in a richText field.')
 
     process.exit(0)
   } catch (error) {

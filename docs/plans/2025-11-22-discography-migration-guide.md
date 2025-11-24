@@ -1,36 +1,41 @@
 # Discography to Recordings Migration Guide
 
 **Date:** 2025-11-22  
-**Status:** Ready for Migration  
+**Status:** Updated for Array Structure  
+**Last Updated:** 2025-11-24  
 **Related ADRs:** [2025-11-22-recording-collection-design.md](2025-11-22-recording-collection-design.md)
 
 ## Overview
 
-This guide outlines how to format the Artist Collection's "Discography" field to ensure successful migration to the new
-Recordings collection.
+This guide outlines how to use the Artist Collection's "Discography" field to ensure successful migration to the new
+Recordings collection. The discography field now uses an **array structure** with explicit role selection.
 
 ## Discography Field Format Requirements
 
 ### Basic Structure
 
-The discography field uses **Rich Text** format with the following structure:
+The discography field is now an **Array** type where each entry contains:
+
+1. **Role** (Select dropdown) - Choose the artist's role for this group
+2. **Recordings** (Rich Text field) - List of recordings for that role
+
+**Structure in Payload CMS:**
 
 ```
-[H1 Heading] Role Name
-[Paragraph] Recording 1
-[Paragraph] Recording 2
-...
-
-[H1 Heading] Another Role Name
-[Paragraph] Recording 1
-[Paragraph] Recording 2
+Discography (Array)
+├─ Role Section 1
+│  ├─ Role: [Dropdown: Soloist]
+│  └─ Recordings: [Rich Text with paragraphs]
+├─ Role Section 2
+│  ├─ Role: [Dropdown: Conductor]
+│  └─ Recordings: [Rich Text with paragraphs]
 ```
 
-### 1. Role Headings (H1)
+### 1. Role Selection
 
-**Purpose:** Group recordings by the artist's role
+**How to add:** Click "Add Role Section" and select from dropdown
 
-**Supported roles (case-insensitive, bilingual):**
+**Supported roles:**
 
 | English          | German           | Role Value         |
 | ---------------- | ---------------- | ------------------ |
@@ -42,13 +47,8 @@ The discography field uses **Rich Text** format with the following structure:
 
 **Example:**
 
-```
-# Soloist
-[recordings...]
-
-# Conductor
-[recordings...]
-```
+- Add a "Soloist" role section for solo recordings
+- Add a "Conductor" role section for conducting recordings
 
 ### 2. Recording Paragraphs
 
@@ -89,9 +89,15 @@ Each paragraph represents one recording and should contain:
 
 #### Example 1: Solo Recording (German)
 
-```
-# Solist
+**In Payload CMS:**
 
+- Role Section 1:
+  - Role: **Solist** (selected from dropdown)
+  - Recordings: (Rich Text field)
+
+**Rich Text Content:**
+
+```
 **Bach** - Partita in a-moll, Französische Suiten BWV 813, 814 & 816
 _MDG 903 2280-6 SACD (2023)_
 ```
@@ -106,9 +112,15 @@ _MDG 903 2280-6 SACD (2023)_
 
 #### Example 2: Concerto with Orchestra (English)
 
-```
-# Soloist
+**In Payload CMS:**
 
+- Role Section 1:
+  - Role: **Soloist** (selected from dropdown)
+  - Recordings: (Rich Text field)
+
+**Rich Text Content:**
+
+```
 **Mozart** Vol. 9 - Piano Concertos A major K 414 and D major K 537
 Partner: Orchestre de Chambre de Lausanne
 _MDG 940 1759-6 (2012)_
@@ -125,9 +137,15 @@ _MDG 940 1759-6 (2012)_
 
 #### Example 3: Conductor Role (German)
 
-```
-# Dirigent
+**In Payload CMS:**
 
+- Role Section 1:
+  - Role: **Dirigent** (selected from dropdown)
+  - Recordings: (Rich Text field)
+
+**Rich Text Content:**
+
+```
 **Schumann** - Sinfonie Nr. 1 B-Dur op. 38
 Sinfonie Nr. 3 Es-Dur op. 97 "Rheinische"
 Partner: Orchestre de Chambre de Lausanne
@@ -145,9 +163,15 @@ _MDG 940 1772-6 (2012)_
 
 #### Example 4: Chamber Music
 
-```
-# Chamber Musician
+**In Payload CMS:**
 
+- Role Section 1:
+  - Role: **Chamber Musician** (selected from dropdown)
+  - Recordings: (Rich Text field)
+
+**Rich Text Content:**
+
+```
 **Schubert** - Piano Quintet A major D 667 (Trout Quintet)
 Partner: Leipzig String Quartet
 _MDG 307 0625-2 (1998)_
@@ -182,28 +206,32 @@ text).
 
 Artists with discography in **both German and English** locales:
 
-1. Each locale is processed independently
-2. Recordings are matched by position within role groups
+1. Each locale has its own array of role sections
+2. Recordings are matched by position within role sections
 3. DE and EN titles/descriptions are stored separately
 4. Label, catalog, year, and artist roles are non-localized (same in both)
 
 **Example:**
 
-**German Discography:**
+**German Discography (DE locale):**
 
-```
-# Solist
-**Bach** - Partita in a-moll
-_MDG 903 2280-6 (2023)_
-```
+- Role Section 1:
+  - Role: **Solist**
+  - Recordings:
+    ```
+    **Bach** - Partita in a-moll
+    _MDG 903 2280-6 (2023)_
+    ```
 
-**English Discography:**
+**English Discography (EN locale):**
 
-```
-# Soloist
-**Bach** - Partita in A minor
-_MDG 903 2280-6 (2023)_
-```
+- Role Section 1:
+  - Role: **Soloist**
+  - Recordings:
+    ```
+    **Bach** - Partita in A minor
+    _MDG 903 2280-6 (2023)_
+    ```
 
 **Result:** One recording with:
 
@@ -290,13 +318,13 @@ The migration script logs:
 
 Before running the migration, verify:
 
-- [ ] All role headings use H1 format
-- [ ] Role names match supported values (case-insensitive)
-- [ ] Each recording is in a separate paragraph
+- [ ] Each role has its own array entry (Role Section)
+- [ ] Role is selected from dropdown for each section
+- [ ] Each recording is in a separate paragraph within the Recordings richText field
 - [ ] Label/catalog info is at the end of each paragraph
 - [ ] "Partner:" text is used consistently (will be auto-removed)
 - [ ] Year is in parentheses: `(YYYY)`
-- [ ] Both DE and EN locales are formatted consistently (if both exist)
+- [ ] Both DE and EN locales have consistent role sections (if both exist)
 
 ## Troubleshooting
 
@@ -304,9 +332,9 @@ Before running the migration, verify:
 
 **Check:**
 
-- Is there an H1 heading with a valid role name above the paragraph?
-- Does the paragraph contain actual text content?
-- Is the artist already processed? (remove `--force` to bypass)
+- Is there a role section with a selected role from the dropdown?
+- Does the recordings richText field contain actual paragraph content?
+- Is the artist already processed? (use `--force` flag to bypass)
 
 ### Label/catalog not extracted
 
@@ -329,9 +357,9 @@ Before running the migration, verify:
 
 **Check:**
 
-- Is there an H1 heading above the recordings?
-- Does it match one of the supported role names exactly? (case-insensitive)
-- Role headings must use **H1** format (not H2, H3, etc.)
+- Is the role correctly selected from the dropdown in the array entry?
+- Each role section should have an explicit role selection
+- Roles are no longer parsed from headings - they come from the dropdown
 
 ### "Partner:" still appears in description
 

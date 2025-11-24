@@ -193,23 +193,35 @@ export interface Artist {
     [k: string]: unknown;
   } | null;
   /**
-   * Artist discography. No images or embedded media allowed.
+   * Group recordings by role. Add a role section for each role the artist performs.
    */
-  discography?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  discography?:
+    | {
+        /**
+         * Select the role for this group of recordings
+         */
+        role: 'soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist';
+        /**
+         * List of recordings for this role. Each paragraph represents one recording. No images or embedded media allowed.
+         */
+        recordings: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
   downloads?: {
     biographyPDF?: (number | null) | Media;
     galleryZIP?: (number | null) | Media;
@@ -503,7 +515,13 @@ export interface ArtistsSelect<T extends boolean = true> {
   quote?: T;
   biography?: T;
   repertoire?: T;
-  discography?: T;
+  discography?:
+    | T
+    | {
+        role?: T;
+        recordings?: T;
+        id?: T;
+      };
   downloads?:
     | T
     | {

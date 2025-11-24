@@ -87,6 +87,7 @@ async function exportCollection(payload: any, collection: string) {
     collection,
     locale: 'all', // Include all localized field data
     fallbackLocale: false, // Don't use fallback locales
+    limit: 10000, // Ensure we get all documents (default is only 10)
   })
   const outFile = `${collection}-dump.json`
   const outPath = path.join(process.cwd(), 'data', 'dumps', outFile)
