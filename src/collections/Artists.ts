@@ -342,6 +342,12 @@ export const Artists: CollectionConfig = {
                   de: 'YouTube-Videos',
                 },
               },
+              admin: {
+                initCollapsed: true,
+                components: {
+                  RowLabel: './collections/components/YouTubeLinkRowLabel',
+                },
+              },
               fields: [
                 {
                   name: 'label',
