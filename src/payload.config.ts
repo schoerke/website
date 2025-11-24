@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url'
 
 // Adapters & Plugins
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { searchPlugin } from '@payloadcms/plugin-search'
 import { s3Storage } from '@payloadcms/storage-s3'
 
 // Collections
@@ -61,6 +62,41 @@ export default buildConfig({
     fallback: false,
   },
   plugins: [
+    // Search Plugin
+    searchPlugin({
+      collections: ['artists', 'employees', 'recordings', 'posts'],
+      defaultPriorities: {
+        artists: 50,
+        recordings: 40,
+        posts: ({ doc }) => {
+          // Higher priority for news posts
+          if (doc.categories && Array.isArray(doc.categories) && doc.categories.includes('news')) {
+            return 30
+          }
+          // Lower priority for project posts
+          return 20
+        },
+        employees: 15,
+      },
+      searchOverrides: {
+        fields: ({ defaultFields }) => [
+          ...defaultFields,
+          {
+            name: 'locale',
+            type: 'select',
+            options: [
+              { label: 'German', value: 'de' },
+              { label: 'English', value: 'en' },
+            ],
+            index: true,
+            admin: {
+              description: 'Locale of the search record for filtering results',
+            },
+          },
+        ],
+      },
+    }),
+
     // Cloudflare R2
     s3Storage({
       bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
