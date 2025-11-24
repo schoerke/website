@@ -45,3 +45,4 @@ next-env.d.ts
 # temporary scripts and files
 /tmp/*
 !/tmp/README.md
+*.db

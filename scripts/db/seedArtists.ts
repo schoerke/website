@@ -120,6 +120,7 @@ async function run() {
       const created = await payload.create({
         collection: 'artists',
         data: artistEn,
+        locale: 'en', // Explicitly set English locale
       })
 
       console.log(`Created artist: ${artistData.name} (en)`)

@@ -69,6 +69,7 @@ export default buildConfig({
     searchPlugin({
       collections: ['artists', 'employees', 'recordings', 'posts'],
       beforeSync: beforeSyncHook,
+      localize: true, // Localizes the 'title' field in search collection
       defaultPriorities: {
         artists: 50,
         recordings: 40,

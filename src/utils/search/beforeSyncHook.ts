@@ -30,52 +30,58 @@ type BeforeSync = (args: {
  * 2. **Stopword Filtering**: Removes common words (based on locale) to improve search quality
  * 3. **Relationship Denormalization**: Includes related entity names (e.g., artist names in posts)
  *
+ * Note: The search plugin calls this hook once per locale for localized collections.
+ * The `originalDoc` is already fetched with the correct locale by the plugin.
+ *
  * @param args - The beforeSync hook arguments
  * @returns Modified search data with enhanced searchableContent and locale
  */
 export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, payload }) => {
-  // Determine the locale from the document
-  // For localized collections, use the document's locale context
-  // For non-localized collections like artists, use default 'de'
-  const locale = (originalDoc as any).locale || 'de'
+  const doc = originalDoc as any
 
+  // The plugin passes the document with locale already resolved
+  // For localized collections, doc contains the localized content
+  // For non-localized collections, we default to 'de'
+  const locale = doc.locale || 'de'
+
+  let documentTitle = ''
   let additionalContent = ''
 
   // Extract and process content based on collection type
   switch (searchDoc.doc.relationTo) {
     case 'artists': {
-      // Artists: Extract from biography and repertoire
-      const artist = originalDoc as any
+      // Get artist name (non-localized)
+      documentTitle = doc.name || ''
 
       // Biography (localized richText)
-      if (artist.biography) {
-        const biographyText = extractLexicalText(artist.biography[locale] || artist.biography)
+      if (doc.biography) {
+        const biographyText = extractLexicalText(doc.biography)
         additionalContent += ` ${biographyText}`
       }
 
       // Quote (localized text)
-      if (artist.quote && artist.quote[locale]) {
-        additionalContent += ` ${artist.quote[locale]}`
+      if (doc.quote) {
+        additionalContent += ` ${doc.quote}`
       }
 
       // Repertoire sections (localized richText)
-      if (Array.isArray(artist.repertoire)) {
-        artist.repertoire.forEach((section: any) => {
-          if (section.title && section.title[locale]) {
-            additionalContent += ` ${section.title[locale]}`
+      if (Array.isArray(doc.repertoire)) {
+        doc.repertoire.forEach((section: any) => {
+          if (section.title) {
+            additionalContent += ` ${section.title}`
           }
           if (section.content) {
-            const contentText = extractLexicalText(section.content[locale] || section.content)
+            const contentText = extractLexicalText(section.content)
             additionalContent += ` ${contentText}`
           }
         })
       }
 
       // Discography sections (localized richText)
-      if (Array.isArray(artist.discography)) {
-        artist.discography.forEach((section: any) => {
+      if (Array.isArray(doc.discography)) {
+        doc.discography.forEach((section: any) => {
           if (section.recordings) {
-            const recordingsText = extractLexicalText(section.recordings[locale] || section.recordings)
+            const recordingsText = extractLexicalText(section.recordings)
             additionalContent += ` ${recordingsText}`
           }
         })
@@ -85,18 +91,18 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
     }
 
     case 'posts': {
-      // Posts: Extract from content and denormalize artist names
-      const post = originalDoc as any
+      // Get post title (localized)
+      documentTitle = doc.title || ''
 
       // Content (localized richText)
-      if (post.content) {
-        const contentText = extractLexicalText(post.content[locale] || post.content)
+      if (doc.content) {
+        const contentText = extractLexicalText(doc.content)
         additionalContent += ` ${contentText}`
       }
 
       // Denormalize related artist names
-      if (Array.isArray(post.artists) && post.artists.length > 0) {
-        const artistIds = post.artists.map((artist: any) => (typeof artist === 'object' ? artist.id : artist))
+      if (Array.isArray(doc.artists) && doc.artists.length > 0) {
+        const artistIds = doc.artists.map((artist: any) => (typeof artist === 'object' ? artist.id : artist))
 
         // Fetch artist names
         const artistsData = await payload.find({
@@ -117,12 +123,12 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
     }
 
     case 'recordings': {
-      // Recordings: Extract from description
-      const recording = originalDoc as any
+      // Get recording title (localized)
+      documentTitle = doc.title || ''
 
       // Description (localized richText)
-      if (recording.description) {
-        const descriptionText = extractLexicalText(recording.description[locale] || recording.description)
+      if (doc.description) {
+        const descriptionText = extractLexicalText(doc.description)
         additionalContent += ` ${descriptionText}`
       }
 
@@ -130,12 +136,14 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
     }
 
     case 'employees': {
-      // Employees: Extract from bio
-      const employee = originalDoc as any
+      // Get employee name (construct from first + last name, non-localized)
+      const firstName = doc.firstName || ''
+      const lastName = doc.lastName || ''
+      documentTitle = `${firstName} ${lastName}`.trim()
 
       // Bio (localized richText)
-      if (employee.bio) {
-        const bioText = extractLexicalText(employee.bio[locale] || employee.bio)
+      if (doc.bio) {
+        const bioText = extractLexicalText(doc.bio)
         additionalContent += ` ${bioText}`
       }
 
@@ -143,8 +151,8 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
     }
   }
 
-  // Combine the default title with additional extracted content
-  const fullContent = `${searchDoc.title} ${additionalContent}`.trim()
+  // Combine the document title with additional extracted content
+  const fullContent = `${documentTitle} ${additionalContent}`.trim()
 
   // Filter stopwords based on locale
   const filteredContent = filterStopwords(fullContent, locale as 'de' | 'en')

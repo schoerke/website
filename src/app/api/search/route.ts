@@ -46,19 +46,11 @@ export async function GET(request: Request) {
     // Search the search collection
     const results = await payload.find({
       collection: 'search' as any,
+      locale, // Pass locale to get localized 'title' field
       where: {
-        and: [
-          {
-            locale: {
-              equals: locale,
-            },
-          },
-          {
-            title: {
-              contains: query.trim(),
-            },
-          },
-        ],
+        title: {
+          contains: query.trim(),
+        },
       },
       limit,
       page: Math.floor(offset / limit) + 1,
