@@ -46,3 +46,6 @@ next-env.d.ts
 /tmp/*
 !/tmp/README.md
 *.db
+
+# generated search index files
+/public/search-index-*.json
