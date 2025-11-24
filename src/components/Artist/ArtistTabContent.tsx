@@ -1,9 +1,13 @@
+'use client'
+
 import EmptyRecordings from '@/components/Recording/EmptyRecordings'
 import RecordingList from '@/components/Recording/RecordingList'
 import RoleFilter from '@/components/Recording/RoleFilter'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post } from '@/payload-types'
+import React from 'react'
 import PostList from './PostList'
 import VideoAccordion from './VideoAccordion'
 
@@ -38,7 +42,9 @@ interface RepertoireTabProps {
 }
 
 export const RepertoireTab: React.FC<RepertoireTabProps> = ({ content, emptyMessage }) => {
-  if (!content) {
+  const [selectedSection, setSelectedSection] = React.useState<number>(0)
+
+  if (!content || !Array.isArray(content) || content.length === 0) {
     return (
       <div className="py-12 text-center text-gray-500">
         <p>{emptyMessage}</p>
@@ -46,9 +52,42 @@ export const RepertoireTab: React.FC<RepertoireTabProps> = ({ content, emptyMess
     )
   }
 
+  const hasMultipleSections = content.length > 1
+
+  const handleValueChange = (value: string) => {
+    if (value) {
+      setSelectedSection(parseInt(value, 10))
+    }
+  }
+
   return (
-    <div className="prose max-w-none">
-      <PayloadRichText content={content} />
+    <div className="space-y-6">
+      {/* Toggle group for section selection - only show if multiple sections */}
+      {hasMultipleSections && (
+        <ToggleGroup
+          type="single"
+          value={selectedSection.toString()}
+          onValueChange={handleValueChange}
+          className="mb-6 flex flex-wrap justify-start gap-2"
+          aria-label="Filter repertoire by section"
+        >
+          {content.map((section, index) => (
+            <ToggleGroupItem
+              key={section.id || index}
+              value={index.toString()}
+              aria-label={section.title || `Section ${index + 1}`}
+              className="capitalize"
+            >
+              {section.title}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      )}
+
+      {/* Selected section content */}
+      <div className="prose max-w-none">
+        <PayloadRichText content={content[selectedSection]?.content} />
+      </div>
     </div>
   )
 }
