@@ -4,6 +4,7 @@
  * Re-seeds the entire database with all seed data:
  * - Employees
  * - Artists (with sample discography)
+ * - Posts (news, projects, home, and artist-specific)
  *
  * Usage:
  *   pnpm seed:all
@@ -62,12 +63,14 @@ async function main() {
   const employeesCount = (await payload.count({ collection: 'employees' as any })).totalDocs
   const artistsCount = (await payload.count({ collection: 'artists' as any })).totalDocs
   const recordingsCount = (await payload.count({ collection: 'recordings' as any })).totalDocs
+  const postsCount = (await payload.count({ collection: 'posts' as any })).totalDocs
 
   console.log(`   Employees: ${employeesCount}`)
   console.log(`   Artists: ${artistsCount}`)
   console.log(`   Recordings: ${recordingsCount}`)
+  console.log(`   Posts: ${postsCount}`)
 
-  if (employeesCount > 0 || artistsCount > 0 || recordingsCount > 0) {
+  if (employeesCount > 0 || artistsCount > 0 || recordingsCount > 0 || postsCount > 0) {
     console.log('\n⚠️  Warning: Database contains existing data!')
     console.log('   This script will skip seeding if data conflicts occur.')
     console.log('   To start fresh, use: PAYLOAD_DROP_DATABASE=true pnpm seed:all')
@@ -77,6 +80,7 @@ async function main() {
     { path: './scripts/db/seedEmployees.ts', description: 'Seeding Employees', useTsx: false },
     { path: './scripts/db/seedArtists.ts', description: 'Seeding Artists', useTsx: false },
     { path: './scripts/db/restoreDiscography.ts', description: 'Restoring Sample Discography', useTsx: true },
+    { path: './scripts/db/seedPosts.ts', description: 'Seeding Posts', useTsx: false },
   ]
 
   let successCount = 0

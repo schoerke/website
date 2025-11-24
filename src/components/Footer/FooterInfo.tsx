@@ -37,7 +37,7 @@ const FooterInfo: React.FC<FooterInfoProps> = async ({ locale }) => {
         <p className="text-sm text-gray-500">&copy; Künstlersekretariat Astrid Schoerke GmbH.</p>
 
         {/* Legal Links */}
-        <nav aria-label={tFooter('legalNavigationLabel')} className="hidden sm:block">
+        <nav aria-label={tFooter('legalNavigationLabel')} className="hidden md:block">
           <ul className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
             {legalLinks.map((link) => (
               <li key={link.href}>
