@@ -5,6 +5,10 @@
  * This script restores artist data from data/dumps/artists-dump.json
  * This dump contains the ACTUAL production discography data.
  *
+ * Handles localized fields automatically - when the dump contains localized data
+ * in the format { de: "German", en: "English" }, Payload will properly store
+ * it in the correct locale-specific database columns/tables.
+ *
  * Usage:
  *   pnpm restore:artists-dump
  */

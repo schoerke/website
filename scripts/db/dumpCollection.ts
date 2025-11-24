@@ -65,6 +65,7 @@ function getValidCollections(config: any): string[] {
  * Exports all documents from a Payload collection to a JSON file.
  *
  * The export file is saved to `data/dumps/{collection}-dump.json` with pretty-printed formatting.
+ * Includes all localized field data by setting locale: 'all'.
  *
  * @param payload - The initialized Payload instance
  * @param collection - The collection slug to export (e.g., 'artists', 'posts')
@@ -76,9 +77,17 @@ function getValidCollections(config: any): string[] {
  * await exportCollection(payload, 'artists')
  * // Exported 15 docs to /path/to/data/dumps/artists-dump.json
  * ```
+ *
+ * @remarks
+ * For collections with localized fields (e.g., employees.title), the dump will include
+ * all locale data in the format: { de: "German value", en: "English value" }
  */
 async function exportCollection(payload: any, collection: string) {
-  const result = await payload.find({ collection })
+  const result = await payload.find({
+    collection,
+    locale: 'all', // Include all localized field data
+    fallbackLocale: false, // Don't use fallback locales
+  })
   const outFile = `${collection}-dump.json`
   const outPath = path.join(process.cwd(), 'data', 'dumps', outFile)
 

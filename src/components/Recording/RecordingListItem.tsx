@@ -5,10 +5,11 @@ interface RecordingListItemProps {
 }
 
 const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
-  // Format label number • year
-  const labelNumber = recording.catalogNumber
+  // Format label • catalog number • year
+  const label = recording.recordingLabel
+  const catalogNumber = recording.catalogNumber
   const year = recording.recordingYear?.toString()
-  const subtitle = [labelNumber, year].filter(Boolean).join(' • ')
+  const subtitle = [label, catalogNumber, year].filter(Boolean).join(' • ')
 
   return (
     <li className="border-b border-gray-200 py-4 last:border-b-0">
