@@ -1,5 +1,49 @@
 # AGENTS.md
 
+## CRITICAL: Database Protection Policy
+
+**RULE: NEVER MODIFY THE DATABASE WITHOUT EXPLICIT USER CONFIRMATION**
+
+This includes:
+
+- **Schema changes** (migrations, field additions/removals, type changes)
+- **Data modifications** (updates, deletes, bulk operations)
+- **Running migration scripts** (even with backups)
+- **Restoring data** from backups
+- **Seeding or importing** data
+- **Accepting schema push prompts** from Payload CMS or any ORM
+
+### Required Process for ANY Database Operation:
+
+1. **STOP** - Do NOT run the command yet
+2. **EXPLAIN** exactly what will change in the database
+3. **SHOW** the specific command/script you want to run
+4. **LIST** any data that will be deleted, modified, or migrated
+5. **WAIT** for explicit user response: "yes, go ahead" or "proceed"
+6. Only after receiving explicit approval, execute the operation
+
+### Examples of Operations That Require Approval:
+
+- ❌ Running `pnpm payload migrate` or accepting schema push prompts
+- ❌ Running any script in `scripts/db/` (seed, restore, migrate, etc.)
+- ❌ Executing `payload.update()`, `payload.delete()`, or bulk operations
+- ❌ Running SQL queries that modify data
+- ❌ Changing schema in collection config files and restarting the server (triggers migrations)
+
+### What You CAN Do Without Approval:
+
+- ✅ Read operations (dumps, queries, API calls that only read)
+- ✅ Creating backup files
+- ✅ Writing migration scripts without executing them
+- ✅ Analyzing data structure
+
+**If you violate this policy and cause data loss, immediately:**
+
+1. Acknowledge the mistake
+2. Explain what data was lost
+3. Check if recovery is possible from backups
+4. Update these instructions to prevent recurrence
+
 ## Git Commit Policy
 
 - **NEVER commit code without explicit user confirmation.**
