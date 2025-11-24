@@ -87,6 +87,14 @@ export default buildConfig({
         fields: ({ defaultFields }) => [
           ...defaultFields,
           {
+            name: 'displayTitle',
+            type: 'text',
+            index: true,
+            admin: {
+              description: 'Clean display title for search results (e.g., artist name, post title)',
+            },
+          },
+          {
             name: 'locale',
             type: 'select',
             options: [

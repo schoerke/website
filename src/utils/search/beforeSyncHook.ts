@@ -157,9 +157,18 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
   // Filter stopwords based on locale
   const filteredContent = filterStopwords(fullContent, locale as 'de' | 'en')
 
+  console.log('beforeSyncHook:', {
+    collection: searchDoc.doc.relationTo,
+    docId: searchDoc.doc.value,
+    displayTitle: documentTitle,
+    locale,
+  })
+
   return {
     ...searchDoc,
-    // Override the default title with our enhanced, filtered content
+    // Store the clean document title for display
+    displayTitle: documentTitle,
+    // Store the full searchable content in title field
     title: filteredContent,
     // Store the locale for filtering search results
     locale,

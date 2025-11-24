@@ -454,6 +454,10 @@ export interface Search {
         value: number | Post;
       };
   /**
+   * Clean display title for search results (e.g., artist name, post title)
+   */
+  displayTitle?: string | null;
+  /**
    * Locale of the search record for filtering results
    */
   locale?: ('de' | 'en') | null;
@@ -736,6 +740,7 @@ export interface SearchSelect<T extends boolean = true> {
   title?: T;
   priority?: T;
   doc?: T;
+  displayTitle?: T;
   locale?: T;
   updatedAt?: T;
   createdAt?: T;

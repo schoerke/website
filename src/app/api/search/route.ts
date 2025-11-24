@@ -13,7 +13,7 @@
  * {
  *   results: Array<{
  *     id: string
- *     title: string
+ *     title: string (clean display title from displayTitle field)
  *     relationTo: string (collection name)
  *     relationId: string (doc ID)
  *     priority: number
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       results: results.docs.map((doc: any) => ({
         id: doc.id,
-        title: doc.title,
+        title: doc.displayTitle || doc.title, // Use displayTitle if available
         relationTo: doc.doc.relationTo,
         relationId: doc.doc.value,
         priority: doc.priority,

@@ -1,8 +1,69 @@
 # Project-Wide Search - Refined Design
 
-**Date:** 2025-11-24
-**Status:** Design Complete
-**Architecture:** Hybrid - Payload Search Plugin + Static JSON Backup
+**Date:** 2025-11-24 **Status:** ✅ Implemented (KBar Phase Complete) **Architecture:** Hybrid - Payload Search Plugin +
+Static JSON Backup
+
+## Current Implementation Status
+
+### ✅ What's Working (Phase 1-4 Complete)
+
+**KBar Command Palette:**
+
+- Opens with `cmd+k` (Mac) or `ctrl+k` (Windows/Linux)
+- 6 static navigation actions always visible
+- Dynamic search results appear as you type (3+ character minimum)
+- Clean display titles: "Mario Venzago" instead of full biography text
+- Locale-aware: English content when searching in English, German when in German
+- Proper keyboard navigation with arrow keys and Enter to select
+
+**Backend:**
+
+- Payload Search Plugin configured and operational
+- Search collection with `displayTitle` field for clean UI display
+- `beforeSyncHook` extracts text, filters stopwords, and populates both:
+  - `title`: Full searchable content (biography, etc.)
+  - `displayTitle`: Clean document name for display
+- Search API endpoint: `GET /api/search?q=<query>&locale=<locale>`
+- Locale filtering works via `search_locales` table
+
+**Search Service:**
+
+- Client-side service handles API calls
+- 150ms debouncing for snappy keyboard-driven experience
+- Returns clean titles for display in KBar
+
+### 🔄 What's Next (Phase 5+)
+
+- Static JSON backup for offline resilience
+- Dedicated search page (`/[locale]/search`)
+- First-time tutorial overlay
+- Header search icon/trigger
+- Session-based caching to prevent duplicate API calls
+- Mobile optimizations
+- Search analytics
+
+### 📋 Files Modified/Created
+
+**Configuration:**
+
+- `src/payload.config.ts` - Added `displayTitle` field to search plugin
+
+**Backend:**
+
+- `src/utils/search/beforeSyncHook.ts` - Populates displayTitle + searchable content
+- `src/app/api/search/route.ts` - Search API endpoint returning displayTitle
+
+**Frontend:**
+
+- `src/components/Search/SearchProvider.tsx` - KBar provider and dynamic actions
+- `src/services/search.ts` - Search service layer
+
+**Utilities:**
+
+- `src/utils/search/extractLexicalText.ts` - Extract text from Lexical richText
+- `src/utils/search/filterStopwords.ts` - Remove stopwords by locale
+- `src/utils/stopwords/de.ts` - German stopword list
+- `src/utils/stopwords/en.ts` - English stopword list
 
 ## Overview
 
@@ -77,6 +138,16 @@ plugins: [
 
 The `beforeSync` hook processes each document before indexing:
 
+**Display Title Field:**
+
+- **`displayTitle`**: Clean document name for display purposes
+  - Artists: `doc.name` (e.g., "Mario Venzago")
+  - Posts: `doc.title`
+  - Recordings: `doc.title`
+  - Employees: `"${firstName} ${lastName}"`
+- **`title`**: Full searchable content (biography, post content, etc.) with stopwords filtered
+- This separation ensures clean UI display while maintaining comprehensive search functionality
+
 **Text Extraction:**
 
 - Extract plain text from Lexical richText fields (Posts.content, Recordings.description, Artists.biography)
@@ -102,10 +173,10 @@ The `beforeSync` hook processes each document before indexing:
   - Impressum (German only)
   - Datenschutz (German only)
 
-**Minimal Data Storage:**
+**Data Storage:**
 
-- Only store: `title`, `slug`, `doc` (ID), `locale`, `priority`
-- No images, no full content, no metadata
+- Store: `title` (searchable content), `displayTitle` (clean name), `doc` (ID), `locale`, `priority`
+- No images, no full content, no unnecessary metadata
 - Keeps search collection small and queries fast
 
 ### 3. API Endpoint
@@ -413,62 +484,92 @@ Add search trigger to site header:
 
 ### Dependencies
 
-- [ ] Install `@payloadcms/plugin-search`
-- [ ] Install `kbar`
-- [ ] Install/create German and English stopword lists
+- [x] Install `@payloadcms/plugin-search`
+- [x] Install `kbar`
+- [x] Install/create German and English stopword lists
 
-### Backend
+### Backend (Phase 1-3: Complete ✅)
 
-- [ ] Add search plugin to `payload.config.ts`
-- [ ] Implement `beforeSync` hook (text extraction, stopwords, relationships)
-- [ ] Create `/api/search` endpoint
-- [ ] Create `/api/search/generate-index` endpoint
-- [ ] Create `/api/analytics/search` endpoint
-- [ ] Seed static pages into search collection
-- [ ] Test plugin access control (published only)
+- [x] Add search plugin to `payload.config.ts`
+- [x] Implement `beforeSync` hook (text extraction, stopwords, displayTitle field)
+- [x] Create `/api/search` endpoint
+- [ ] Create `/api/search/generate-index` endpoint (deferred to Phase 5)
+- [ ] Create `/api/analytics/search` endpoint (future)
+- [ ] Seed static pages into search collection (future)
+- [x] Test plugin access control (published only)
 
-### Frontend
+### Frontend (Phase 1-3: Complete ✅)
 
-- [ ] Create `src/services/search.ts` with caching/fallback
-- [ ] Add KBar provider to root layout
-- [ ] Implement KBar actions (navigation + search)
-- [ ] Create first-time tutorial overlay
-- [ ] Create `/[locale]/search/page.tsx`
-- [ ] Add search icon/trigger to header
-- [ ] Implement session storage for cache
-- [ ] Implement localStorage for tutorial state
+- [x] Create `src/services/search.ts` with API calls
+- [x] Add KBar provider to root layout
+- [x] Implement KBar actions (6 static navigation + dynamic search)
+- [ ] Create first-time tutorial overlay (deferred to Phase 5)
+- [ ] Create `/[locale]/search/page.tsx` (deferred to Phase 5)
+- [ ] Add search icon/trigger to header (deferred to Phase 5)
+- [x] Implement search result debouncing (150ms)
+- [x] Implement keyboard shortcuts (cmd+k / ctrl+k)
 
-### Testing
+### Testing (Phase 1-4: Complete ✅)
 
-- [ ] Search returns correct results per locale
-- [ ] Static pages appear in results
-- [ ] Relationship denormalization works
-- [ ] Stopword filtering reduces noise
-- [ ] Cache prevents duplicate API calls
-- [ ] Fallback activates when API fails
-- [ ] KBar tutorial shows once
-- [ ] Mobile experience is smooth
-- [ ] Accessibility features work
-- [ ] Analytics logging works
+- [x] Search returns correct results per locale
+- [x] displayTitle field shows clean names (not full content)
+- [ ] Static pages appear in results (deferred)
+- [ ] Relationship denormalization works (to be tested with posts)
+- [x] Stopword filtering reduces noise
+- [ ] Cache prevents duplicate API calls (to be implemented)
+- [ ] Fallback activates when API fails (to be implemented)
+- [ ] KBar tutorial shows once (to be implemented)
+- [ ] Mobile experience is smooth (to be tested)
+- [ ] Accessibility features work (to be tested)
+- [ ] Analytics logging works (to be implemented)
 
 ### Documentation
 
+- [x] Update implementation plan with displayTitle field
 - [ ] Update Datenschutz page with analytics disclosure
 - [ ] Add search feature to user documentation
 - [ ] Document reindexing procedure for admins
 
 ## Migration & Rollout
 
-**Strategy:** Big bang release (all features at once)
+**Strategy:** Phased implementation
 
-**Steps:**
+**Completed Phases:**
 
-1. Implement and test all features in development
-2. Run full QA pass (functionality, performance, accessibility)
-3. Deploy to production
-4. Monitor analytics and error logs closely for first week
-5. Collect user feedback
-6. Iterate on improvements
+1. ✅ **Phase 1-3: Backend & KBar Setup**
+   - Payload Search Plugin configured with `displayTitle` field
+   - Search API endpoint (`/api/search`) with locale filtering
+   - Search service layer with API integration
+   - KBar command palette with keyboard shortcuts
+   - 6 static navigation actions (Artists, Projects, News, Contact, Team, Locale Switch)
+   - Dynamic search results showing clean display titles
+2. ✅ **Phase 4: Display Title Fix**
+   - Added `displayTitle` field to search collection schema
+   - Updated `beforeSyncHook` to populate displayTitle with clean document names
+   - Modified search API to return displayTitle instead of full content
+   - Manually synced all artists to search index
+   - Verified locale filtering works correctly
+
+**Remaining Phases:**
+
+3. **Phase 5: Polish & Enhancement** (future)
+   - Static JSON backup for offline resilience
+   - Search page (`/[locale]/search`)
+   - First-time tutorial overlay
+   - Header search trigger
+   - Session-based caching
+   - Mobile optimizations
+
+4. **Phase 6: Analytics & Monitoring** (future)
+   - Privacy-friendly search analytics
+   - Performance monitoring
+   - Zero-result tracking
+
+**Known Behavior:**
+
+- Search index `locale` field in parent table shows `'de'` for all records (cosmetic issue)
+- Actual locale filtering works correctly via `search_locales` table
+- `beforeSyncHook` console logs show `locale: 'de'` but content is properly separated by locale
 
 ## Success Criteria
 
