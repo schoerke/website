@@ -10179,7 +10179,72 @@
       "biographyPDF": null,
       "galleryZIP": null
     },
-    "youtubeLinks": [],
+    "youtubeLinks": [
+      {
+        "id": "69241a62cf834d6aa0019e6f",
+        "url": "https://www.youtube.com/watch?v=XNvdaBBBNK0",
+        "label": {
+          "de": "Mozart: Klavierkonzert Nr. 24, K491 – Mit dem Kammerorchester Basel",
+          "en": "Mozart: Piano Concerto No. 24, K491 – With the Basel Chamber Orchestra"
+        }
+      },
+      {
+        "id": "69241a62cf834d6aa0019e70",
+        "url": "https://www.youtube.com/watch?v=WOnHM82vo8s",
+        "label": {
+          "de": "W. A. Mozart: Le nozze di Figaro – overture – Christian Zacharias – Sinfónica de Galicia",
+          "en": "W. A. Mozart: Le nozze di Figaro – overture – Christian Zacharias – Sinfónica de Galicia"
+        }
+      },
+      {
+        "id": "69241a62cf834d6aa0019e71",
+        "url": "https://www.youtube.com/watch?v=H-TK0c2YxLM",
+        "label": {
+          "de": "Christian Zacharias – Orchestre de Paris",
+          "en": "Christian Zacharias – Orchestre de Paris"
+        }
+      },
+      {
+        "id": "69241a62cf834d6aa0019e72",
+        "url": "https://www.youtube.com/watch?v=DZpcI6hmM0A",
+        "label": {
+          "de": "Christian Zacharias – Chopin Klavierkonzert Nr. 2",
+          "en": "Christian Zacharias – Chopin Piano Concerto No. 2"
+        }
+      },
+      {
+        "id": "69241a62cf834d6aa0019e73",
+        "url": "https://www.youtube.com/watch?v=BI29VLBY0Wo",
+        "label": {
+          "de": "Christian Zacharias – Tchaikovsky: The Seasons",
+          "en": "Christian Zacharias – Tchaikovsky: The Seasons"
+        }
+      },
+      {
+        "id": "69241a62cf834d6aa0019e74",
+        "url": "https://www.youtube.com/watch?v=vwJPntgJF2E",
+        "label": {
+          "de": "Franz Schubert: Sonate Nr. 18 in G-Dur D 894",
+          "en": "Franz Schubert: Sonata No. 18 in G major D 894"
+        }
+      },
+      {
+        "id": "69241a62cf834d6aa0019e75",
+        "url": "https://www.youtube.com/watch?v=SQDA2ykJBac",
+        "label": {
+          "de": "Beethoven: \"Das Waldmädchen\" op. 182",
+          "en": "Beethoven: \"Das Waldmädchen\" op. 182"
+        }
+      },
+      {
+        "id": "69241a62cf834d6aa0019e76",
+        "url": "https://www.youtube.com/watch?v=s6Kn_iEbXLA",
+        "label": {
+          "de": "Christian Zacharias Lecture-Recital: Why does Schubert sound like Schubert?",
+          "en": "Christian Zacharias Lecture-Recital: Why does Schubert sound like Schubert?"
+        }
+      }
+    ],
     "homepageURL": "https://christian-zacharias.com",
     "externalCalendarURL": "https://christian-zacharias.com/concerts/",
     "facebookURL": null,
@@ -10187,7 +10252,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": null,
-    "updatedAt": "2025-11-24T08:13:27.500Z",
+    "updatedAt": "2025-11-24T08:43:51.794Z",
     "createdAt": "2025-11-23T10:46:39.431Z"
   }
 ]
