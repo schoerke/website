@@ -20,13 +20,16 @@ export const routing = defineRouting({
     '/': '/',
     '/artists': '/artists',
     '/artists/[slug]': '/artists/[slug]',
-    '/contact': '/contact',
     '/team': '/team',
     '/news': '/news',
     '/news/[slug]': '/news/[slug]',
     '/projects': '/projects',
     '/projects/[slug]': '/projects/[slug]',
-    // Legal pages with different slugs per locale
+    // Pages with different slugs per locale
+    '/kontakt': {
+      de: '/kontakt',
+      en: '/contact',
+    },
     '/impressum': {
       de: '/impressum',
       en: '/imprint',
