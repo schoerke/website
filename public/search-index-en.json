@@ -1,0 +1,35 @@
+{
+  "version": "2025-11-24",
+  "locale": "en",
+  "updated": "2025-11-24T16:17:13.618Z",
+  "results": {
+    "artists": [
+      {
+        "id": 3,
+        "title": "tianwa yang with great sovereignty, uncompromising musical understanding and ravishing interpretations, tianwa yang has earned a place among the ranks of the leading violinists. the works of wolfgang rihm and jörg widmann as well as her work with contemporary composers are as close to her heart as the “classics” of j. s. bach, beethoven, brahms, prokofiev, r. schumann and tchaikovsky. her profound preoccupation with music and her authentic playing, which is both at ease and electrifying, have been honored with numerous prizes. 2022 she received the opus klassik as “instrumentalist of the year”.",
+        "relationTo": "artists",
+        "relationId": 3,
+        "priority": 50
+      },
+      {
+        "id": 2,
+        "title": "mario venzago conducting is the greatest fulfillment of mario venzago’s life – he has wanted to do it from early age on. imagination and a willingness to take risks characterize his very own style and have allowed him to conduct concerts, recordings, operas and increasingly his own compositions around the world for some years now.",
+        "relationTo": "artists",
+        "relationId": 2,
+        "priority": 50
+      },
+      {
+        "id": 1,
+        "title": "christian zacharias zacharias is a narrator among the conductors and pianists of his generation. each of his elaborate, detailed and clearly articulated interpretations, it’s clear what is important to him: zacharias is interested what lies behind the notes.",
+        "relationTo": "artists",
+        "relationId": 1,
+        "priority": 50
+      }
+    ],
+    "projects": [],
+    "news": [],
+    "recordings": [],
+    "employees": [],
+    "pages": []
+  }
+}

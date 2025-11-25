@@ -1,0 +1,35 @@
+{
+  "version": "2025-11-24",
+  "locale": "de",
+  "updated": "2025-11-24T16:17:13.615Z",
+  "results": {
+    "artists": [
+      {
+        "id": 3,
+        "title": "tianwa yang großer souveränität, kompromisslosem musikverstand hinreißenden interpretationen tianwa yang platz riege maßgeblichen geiger:innen erspielt. werke wolfgang rihm jörg widmann arbeit zeitgenössischen komponist:innen liegen ebenso am herzen “klassiker” j. s. bach, beethoven, brahms, prokofjew, r. schumann tschaikowski. ihre tiefgründige beschäftigung musik authentisches, gleichermaßen ruhendes elektrisierendes spiel, wurde zahlreichen preisen ausgezeichnet, u.a. opus klassik “instrumentalistin jahres” 2022.",
+        "relationTo": "artists",
+        "relationId": 3,
+        "priority": 50
+      },
+      {
+        "id": 2,
+        "title": "mario venzago dirigieren mario venzago lebenserfüllung – wollte klein fantasie risikobereitschaft zeichnen seinen ganz eigenen stil jahren rund welt konzert, aufnahmen, opern jahren verstärkt seine eigenen kompositionen gestalten.",
+        "relationTo": "artists",
+        "relationId": 2,
+        "priority": 50
+      },
+      {
+        "id": 1,
+        "title": "christian zacharias christian zacharias erzähler dirigenten pianisten seiner generation. jeder seiner durchdachten, detailgenauen klar artikulierten interpretationen wird deutlich: zacharias interessiert, noten steckt.",
+        "relationTo": "artists",
+        "relationId": 1,
+        "priority": 50
+      }
+    ],
+    "projects": [],
+    "news": [],
+    "recordings": [],
+    "employees": [],
+    "pages": []
+  }
+}
