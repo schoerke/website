@@ -5,6 +5,7 @@ This guide explains how to add new static pages (like legal pages, about pages, 
 ## Overview
 
 Static pages are managed through the **Pages collection** in Payload CMS. They support:
+
 - Localized content (German and English)
 - Rich text content (Lexical editor)
 - Full-text search integration
@@ -101,6 +102,7 @@ export default AboutPage
 ```
 
 **Key Points:**
+
 - Use the **same slug** (`'about'`) in both files
 - Change the **locale** parameter (`'de'` vs `'en'`)
 - Route folder names must match the pathname mappings
@@ -119,11 +121,13 @@ If you want to add the page to navigation, update the relevant components:
 The Pages collection uses the Lexical rich text editor. When adding content:
 
 #### ✅ DO:
+
 - Use the editor's formatting toolbar for headings, lists, bold, etc.
 - Paste content as **plain text first**, then format using the toolbar
 - Use consistent heading hierarchy (h1 → h2 → h3)
 
 #### ❌ DON'T:
+
 - Copy/paste directly from HTML pages (preserves inline styles)
 - Use inline styles or custom HTML
 - Add images or embedded media (not currently supported)
@@ -178,11 +182,11 @@ searchPlugin({
 
 Current pages in the system:
 
-| Page | German Slug | English Slug | German URL | English URL |
-|------|-------------|--------------|------------|-------------|
-| Impressum/Imprint | `impressum` | `imprint` | `/impressum` | `/imprint` |
+| Page                | German Slug   | English Slug     | German URL     | English URL       |
+| ------------------- | ------------- | ---------------- | -------------- | ----------------- |
+| Impressum/Imprint   | `impressum`   | `imprint`        | `/impressum`   | `/imprint`        |
 | Datenschutz/Privacy | `datenschutz` | `privacy-policy` | `/datenschutz` | `/privacy-policy` |
-| Contact | `contact` | `contact` | `/contact` | `/contact` |
+| Contact             | `contact`     | `contact`        | `/contact`     | `/contact`        |
 
 ## Related Files
 
@@ -258,3 +262,23 @@ pathnames: {
 ```
 
 When the URL is the same for both languages, you extract the `locale` from `params` and pass it to `getPageBySlug()`.
+
+## Contact Page Setup
+
+The contact page has locale-specific routes:
+
+- German: `/de/kontakt`
+- English: `/en/contact`
+
+To set up the contact page:
+
+1. Create TWO separate pages in the CMS (`/admin/collections/pages`):
+   - One with slug `kontakt` (German locale)
+   - One with slug `contact` (English locale)
+
+2. Add title and content for each locale
+
+3. The routing is already configured in `src/i18n/routing.ts` to map:
+   - `/kontakt` → `/de/kontakt` and `/en/contact`
+
+This follows the same pattern as the legal pages (impressum/imprint, datenschutz/privacy-policy).
