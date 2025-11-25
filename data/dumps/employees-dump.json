@@ -11,9 +11,9 @@
     "mobile": "+49 (0)162 98 99 741",
     "image": {
       "id": 75,
-      "alt": "employees - image - Foto-Justine-scaled.jpg",
+      "alt": "Justine Stemmelin",
       "credit": null,
-      "updatedAt": "2025-11-25T08:31:10.510Z",
+      "updatedAt": "2025-11-25T08:43:33.782Z",
       "createdAt": "2025-11-25T08:31:10.509Z",
       "url": "/api/media/file/Foto-Justine-scaled.jpg",
       "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
@@ -52,7 +52,7 @@
       }
     },
     "order": 4,
-    "updatedAt": "2025-11-25T08:31:28.863Z",
+    "updatedAt": "2025-11-25T10:13:52.196Z",
     "createdAt": "2025-11-24T21:58:10.988Z"
   },
   {
@@ -67,9 +67,9 @@
     "mobile": "+49 (0)162 9657346",
     "image": {
       "id": 74,
-      "alt": "employees - image - V.Fischer-sw.jpg",
+      "alt": "Veronika Fischer",
       "credit": null,
-      "updatedAt": "2025-11-25T08:31:10.190Z",
+      "updatedAt": "2025-11-25T08:43:33.946Z",
       "createdAt": "2025-11-25T08:31:10.190Z",
       "url": "/api/media/file/V.Fischer-sw.jpg",
       "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
@@ -108,7 +108,7 @@
       }
     },
     "order": 3,
-    "updatedAt": "2025-11-25T08:31:27.043Z",
+    "updatedAt": "2025-11-25T10:13:53.234Z",
     "createdAt": "2025-11-24T21:58:09.448Z"
   },
   {
@@ -123,9 +123,9 @@
     "mobile": "+49 (0)172 821 33 68",
     "image": {
       "id": 73,
-      "alt": "employees - image - Tina.png",
+      "alt": "Tina Nurnus",
       "credit": null,
-      "updatedAt": "2025-11-25T08:31:09.905Z",
+      "updatedAt": "2025-11-25T08:43:34.119Z",
       "createdAt": "2025-11-25T08:31:09.905Z",
       "url": "/api/media/file/Tina.png",
       "thumbnailURL": "/api/media/file/Tina-300x300.webp",
@@ -164,7 +164,7 @@
       }
     },
     "order": 2,
-    "updatedAt": "2025-11-25T08:31:25.175Z",
+    "updatedAt": "2025-11-25T10:13:54.211Z",
     "createdAt": "2025-11-24T21:58:07.818Z"
   },
   {
@@ -179,9 +179,9 @@
     "mobile": "+49(0)172 821 32 58",
     "image": {
       "id": 72,
-      "alt": "employees - image - IMG_2578-squashed.jpg",
+      "alt": "Eva Wagner",
       "credit": null,
-      "updatedAt": "2025-11-25T08:31:09.577Z",
+      "updatedAt": "2025-11-25T08:43:34.324Z",
       "createdAt": "2025-11-25T08:31:09.576Z",
       "url": "/api/media/file/IMG_2578-squashed.jpg",
       "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
@@ -220,7 +220,7 @@
       }
     },
     "order": 1,
-    "updatedAt": "2025-11-25T08:31:23.328Z",
+    "updatedAt": "2025-11-25T10:13:55.318Z",
     "createdAt": "2025-11-24T21:58:06.217Z"
   }
 ]

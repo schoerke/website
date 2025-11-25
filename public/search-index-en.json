@@ -1,35 +1,227 @@
 {
   "version": "2025-11-24",
   "locale": "en",
-  "updated": "2025-11-24T16:17:13.618Z",
+  "updated": "2025-11-25T16:09:40.689Z",
   "results": {
     "artists": [
       {
-        "id": 3,
-        "title": "tianwa yang with great sovereignty, uncompromising musical understanding and ravishing interpretations, tianwa yang has earned a place among the ranks of the leading violinists. the works of wolfgang rihm and jörg widmann as well as her work with contemporary composers are as close to her heart as the “classics” of j. s. bach, beethoven, brahms, prokofiev, r. schumann and tchaikovsky. her profound preoccupation with music and her authentic playing, which is both at ease and electrifying, have been honored with numerous prizes. 2022 she received the opus klassik as “instrumentalist of the year”.",
+        "id": 27,
+        "title": "Claire Huangci",
+        "relationTo": "artists",
+        "relationId": 23,
+        "slug": "claire-huangci",
+        "priority": 50
+      },
+      {
+        "id": 26,
+        "title": "Mario Venzago",
+        "relationTo": "artists",
+        "relationId": 22,
+        "slug": "mario-venzago",
+        "priority": 50
+      },
+      {
+        "id": 25,
+        "title": "Maurice Steger",
+        "relationTo": "artists",
+        "relationId": 21,
+        "slug": "maurice-steger",
+        "priority": 50
+      },
+      {
+        "id": 24,
+        "title": "Christian Zacharias",
+        "relationTo": "artists",
+        "relationId": 20,
+        "slug": "christian-zacharias",
+        "priority": 50
+      },
+      {
+        "id": 23,
+        "title": "Tianwa Yang",
+        "relationTo": "artists",
+        "relationId": 19,
+        "slug": "tianwa-yang",
+        "priority": 50
+      },
+      {
+        "id": 22,
+        "title": "Monet Quintett",
+        "relationTo": "artists",
+        "relationId": 18,
+        "slug": "monet-quintett",
+        "priority": 50
+      },
+      {
+        "id": 21,
+        "title": "Trio Gaspard",
+        "relationTo": "artists",
+        "relationId": 17,
+        "slug": "trio-gaspard",
+        "priority": 50
+      },
+      {
+        "id": 20,
+        "title": "Zehetmair Quartett",
+        "relationTo": "artists",
+        "relationId": 16,
+        "slug": "zehetmair-quartett",
+        "priority": 50
+      },
+      {
+        "id": 19,
+        "title": "Cuarteto SolTango",
+        "relationTo": "artists",
+        "relationId": 15,
+        "slug": "cuarteto-soltango",
+        "priority": 50
+      },
+      {
+        "id": 18,
+        "title": "Dominik Wagner",
+        "relationTo": "artists",
+        "relationId": 14,
+        "slug": "dominik-wagner",
+        "priority": 50
+      },
+      {
+        "id": 17,
+        "title": "Thomas Zehetmair",
+        "relationTo": "artists",
+        "relationId": 13,
+        "slug": "thomas-zehetmair",
+        "priority": 50
+      },
+      {
+        "id": 16,
+        "title": "Jonian Ilias Kadesha",
+        "relationTo": "artists",
+        "relationId": 12,
+        "slug": "jonian-ilias-kadesha",
+        "priority": 50
+      },
+      {
+        "id": 15,
+        "title": "Marc Gruber",
+        "relationTo": "artists",
+        "relationId": 11,
+        "slug": "marc-gruber",
+        "priority": 50
+      },
+      {
+        "id": 14,
+        "title": "Christian Poltéra",
+        "relationTo": "artists",
+        "relationId": 10,
+        "slug": "christian-poltera",
+        "priority": 50
+      },
+      {
+        "id": 13,
+        "title": "Jean-Paul Gasparian",
+        "relationTo": "artists",
+        "relationId": 9,
+        "slug": "jean-paul-gasparian",
+        "priority": 50
+      },
+      {
+        "id": 12,
+        "title": "Trio Jean Paul",
+        "relationTo": "artists",
+        "relationId": 8,
+        "slug": "trio-jean-paul",
+        "priority": 50
+      },
+      {
+        "id": 11,
+        "title": "Andreas Staier",
+        "relationTo": "artists",
+        "relationId": 7,
+        "slug": "andreas-staier",
+        "priority": 50
+      },
+      {
+        "id": 10,
+        "title": "Martin Stadtfeld",
+        "relationTo": "artists",
+        "relationId": 6,
+        "slug": "martin-stadtfeld",
+        "priority": 50
+      },
+      {
+        "id": 9,
+        "title": "Till Fellner",
+        "relationTo": "artists",
+        "relationId": 5,
+        "slug": "till-fellner",
+        "priority": 50
+      },
+      {
+        "id": 8,
+        "title": "Tzimon Barto",
+        "relationTo": "artists",
+        "relationId": 4,
+        "slug": "tzimon-barto",
+        "priority": 50
+      },
+      {
+        "id": 7,
+        "title": "Marie-Luise Neunecker",
         "relationTo": "artists",
         "relationId": 3,
+        "slug": "marie-luise-neunecker",
         "priority": 50
       },
       {
-        "id": 2,
-        "title": "mario venzago conducting is the greatest fulfillment of mario venzago’s life – he has wanted to do it from early age on. imagination and a willingness to take risks characterize his very own style and have allowed him to conduct concerts, recordings, operas and increasingly his own compositions around the world for some years now.",
+        "id": 6,
+        "title": "Gustav Rivinius",
         "relationTo": "artists",
         "relationId": 2,
+        "slug": "gustav-rivinius",
         "priority": 50
       },
       {
-        "id": 1,
-        "title": "christian zacharias zacharias is a narrator among the conductors and pianists of his generation. each of his elaborate, detailed and clearly articulated interpretations, it’s clear what is important to him: zacharias is interested what lies behind the notes.",
+        "id": 5,
+        "title": "Ruth Killius",
         "relationTo": "artists",
         "relationId": 1,
+        "slug": "ruth-killius",
         "priority": 50
       }
     ],
     "projects": [],
     "news": [],
     "recordings": [],
-    "employees": [],
+    "employees": [
+      {
+        "id": 4,
+        "title": "Justine Stemmelin",
+        "relationTo": "employees",
+        "relationId": 4,
+        "priority": 15
+      },
+      {
+        "id": 3,
+        "title": "Veronika Fischer",
+        "relationTo": "employees",
+        "relationId": 3,
+        "priority": 15
+      },
+      {
+        "id": 2,
+        "title": "Tina Nurnus",
+        "relationTo": "employees",
+        "relationId": 2,
+        "priority": 15
+      },
+      {
+        "id": 1,
+        "title": "Eva Wagner",
+        "relationTo": "employees",
+        "relationId": 1,
+        "priority": 15
+      }
+    ],
     "pages": []
   }
 }

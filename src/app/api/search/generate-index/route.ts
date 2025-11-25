@@ -32,6 +32,7 @@ interface SearchDoc {
   title: string
   relationTo: string
   relationId: string
+  slug?: string
   priority: number
 }
 
@@ -85,9 +86,10 @@ export async function GET() {
       for (const doc of results.docs as any[]) {
         const searchDoc: SearchDoc = {
           id: doc.id,
-          title: doc.title,
+          title: doc.displayTitle || doc.title, // Use displayTitle for proper case
           relationTo: doc.doc.relationTo,
           relationId: doc.doc.value,
+          slug: doc.slug || undefined,
           priority: doc.priority,
         }
 
