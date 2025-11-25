@@ -183,6 +183,38 @@ designated shortcut. For example:
 - [ ] Index posts, recordings, and employees collections
 - [ ] Seed static pages (Contact, Team, etc.)
 
+## Incident Log
+
+### 2025-11-24: Remote Database Modified Without Verification
+
+**What happened:**
+
+- During biography bug investigation, ran media seeding and database restore scripts without verifying database
+  configuration
+- Made changes to remote Turso development database instead of agreed-upon local SQLite database
+- Changes included: 2 media files uploaded, artist biography data modified
+
+**Root cause:**
+
+- Failed to check `.env` DATABASE_URI before running database operations
+- Assumed we were on local database from earlier agreement
+- No verification step in agent workflow to confirm database environment
+
+**Recovery:**
+
+1. Documented incident in `AGENTS.md` with new mandatory verification step
+2. Rewrote `restoreArtistsDump.ts` to properly handle localized data
+3. Successfully restored artist data from backup
+4. Cleared entire remote database to reset to clean state
+
+**Prevention measures implemented:**
+
+- Added mandatory database environment check to `AGENTS.md` and global `~/.config/opencode/AGENTS.md`
+- Required explicit database confirmation before ANY database operation
+- Added incident log section to track policy violations
+
+**Impact:** Minimal - development database only, successfully recovered
+
 ## Success Metrics
 
 - ✅ Search returns relevant results
@@ -192,6 +224,8 @@ designated shortcut. For example:
 - ✅ No private content exposed in search
 
 ## Lessons Learned
+
+### Implementation Successes
 
 1. **Display Title Separation Critical**: Separating `displayTitle` (UI) from `title` (searchable content) was essential
    for good UX. Initial implementation showed full biography text instead of clean names.
@@ -213,6 +247,26 @@ designated shortcut. For example:
 
 7. **Keyboard Shortcut Conflicts**: Single-letter shortcuts conflict with KBar's fuzzy text matching. Priority system
    helps but doesn't fully solve the UX issue. Consider modifier keys or disabling text matching in future iterations.
+
+### Critical Mistakes & Process Improvements
+
+8. **Database Environment Verification MANDATORY**: Failed to verify database configuration (`.env` DATABASE_URI) before
+   running database operations. Made changes to remote Turso database instead of local SQLite as originally agreed.
+   **Prevention**: Updated AGENTS.md to require checking database environment BEFORE any database operation.
+
+9. **Restore Script for Localized Data**: Original `restoreArtistsDump.ts` was fundamentally broken for localized data.
+   It tried to pass entire localized objects `{de: {...}, en: {...}}` to Payload's update API, which expects
+   locale-specific updates. **Solution**: Completely rewrote script to:
+   - Separate localized vs non-localized fields
+   - Update non-localized fields first
+   - Update each locale separately with proper data extraction
+   - Handle localized arrays (repertoire, discography, YouTube links)
+10. **Schema Compatibility vs API Compatibility**: Learned distinction between "data structure matches schema" and "data
+    format matches API expectations". Dump data was schema-compatible but not API-compatible due to localization format
+    differences. This caused confusion when trying to restore.
+
+11. **Test Data vs Production**: Biography "unknown node" issue was with test data and corrupted Lexical format. Lesson:
+    Don't spend excessive time debugging test data issues - verify it's worth fixing first.
 
 ## References
 

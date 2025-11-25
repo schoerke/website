@@ -14,6 +14,8 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
+    "migrate:artists": "payload run scripts/wordpress/migrateArtists.ts",
+    "migrate:employees": "payload run scripts/wordpress/migrateEmployees.ts",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
     "migrate:media": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/wordpress/migrateMedia.js",
     "migrate:discography": "tsx scripts/migrateDiscographyToRecordings.ts",
@@ -32,8 +34,7 @@
     "dump": "tsx scripts/db/dumpCollection.ts",
     "dump:artists": "pnpm dump artists",
     "dump:employees": "pnpm dump employees",
-    "dump:recordings": "pnpm dump recordings",
-    "migrate:employees": "payload run scripts/wordpress/migrateEmployees.ts"
+    "dump:recordings": "pnpm dump recordings"
   },
   "packageManager": "pnpm@10.22.0",
   "dependencies": {
