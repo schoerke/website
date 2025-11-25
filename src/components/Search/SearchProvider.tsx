@@ -13,6 +13,7 @@
 
 'use client'
 
+import { useRouter } from '@/i18n/navigation'
 import { searchContent, SearchDoc } from '@/services/search'
 import {
   KBarAnimator,
@@ -26,7 +27,6 @@ import {
   useRegisterActions,
 } from 'kbar'
 import { useLocale } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { KBarTutorial } from './KBarTutorial'
 
@@ -46,21 +46,21 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         name: locale === 'de' ? 'Künstler' : 'Artists',
         shortcut: locale === 'de' ? ['k'] : ['a'],
         keywords: 'artists musicians künstler musiker',
-        perform: () => router.push(`/${locale}/artists`),
+        perform: () => router.push('/artists'),
       },
       {
         id: 'projects',
         name: locale === 'de' ? 'Projekte' : 'Projects',
         shortcut: ['p'],
         keywords: 'projects projekte',
-        perform: () => router.push(`/${locale}/projects`),
+        perform: () => router.push('/projects'),
       },
       {
         id: 'news',
         name: locale === 'de' ? 'Neuigkeiten' : 'News',
         shortcut: ['n'],
         keywords: 'news neuigkeiten',
-        perform: () => router.push(`/${locale}/news`),
+        perform: () => router.push('/news'),
       },
       {
         id: 'contact',
@@ -68,14 +68,14 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         shortcut: locale === 'de' ? ['t'] : ['c'],
         keywords: 'contact kontakt',
         priority: 1, // Higher priority for contact
-        perform: () => router.push(`/${locale}/contact`),
+        perform: () => router.push('/contact'),
       },
       {
         id: 'team',
         name: 'Team',
         shortcut: locale === 'de' ? ['m'] : ['t'],
         keywords: 'team',
-        perform: () => router.push(`/${locale}/team`),
+        perform: () => router.push('/team'),
       },
       {
         id: 'locale-switch',
@@ -86,7 +86,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         perform: () => {
           const newLocale = locale === 'de' ? 'en' : 'de'
           const currentPath = window.location.pathname.replace(`/${locale}`, '')
-          router.push(`/${newLocale}${currentPath}`)
+          router.push(currentPath, { locale: newLocale })
         },
       },
     ]
@@ -166,8 +166,8 @@ function DynamicSearchActions() {
       name: doc.title.substring(0, 100), // Truncate long titles
       section: getSection(doc.relationTo),
       perform: () => {
-        const path = getDocumentPath(doc, locale)
-        router.push(path)
+        const path = getDocumentPath(doc)
+        router.push(path as any)
       },
     })),
     [searchResults, router, locale],
@@ -228,23 +228,23 @@ function getSection(relationTo: string): string {
 }
 
 /**
- * Get document URL path
+ * Get document URL path (locale-agnostic, router will add locale prefix)
  */
-function getDocumentPath(doc: SearchDoc, locale: string): string {
+function getDocumentPath(doc: SearchDoc): string {
   switch (doc.relationTo) {
     case 'artists':
       // Use slug if available, otherwise fall back to ID
-      return `/${locale}/artists/${doc.slug || doc.relationId}`
+      return `/artists/${doc.slug || doc.relationId}`
     case 'recordings':
-      return `/${locale}/recordings/${doc.relationId}`
+      return `/recordings/${doc.relationId}`
     case 'posts':
       // Use slug if available, otherwise fall back to ID
-      return `/${locale}/news/${doc.slug || doc.relationId}` // TODO: Detect news vs projects
+      return `/news/${doc.slug || doc.relationId}` // TODO: Detect news vs projects
     case 'employees':
-      return `/${locale}/team`
+      return '/team'
     case 'pages':
-      return `/${locale}/${doc.relationId}`
+      return `/${doc.relationId}`
     default:
-      return `/${locale}`
+      return '/'
   }
 }
