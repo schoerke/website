@@ -17,7 +17,8 @@ interface ImageSlideProps {
 const ImageSlide: React.FC<ImageSlideProps> = ({ image, isActive }) => {
   return (
     <div
-      className={`relative h-64 w-full transition-opacity duration-300 sm:h-80 md:h-96 ${isActive ? 'opacity-100' : 'opacity-60'}`}
+      className={`relative w-full transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-60'}`}
+      style={{ aspectRatio: '4 / 3' }}
     >
       <Image
         src={image.src}

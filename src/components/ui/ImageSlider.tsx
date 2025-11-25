@@ -54,7 +54,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
       <div className="overflow-hidden rounded-lg" ref={emblaRef}>
         <div className="flex">
           {images.map((img, idx) => (
-            <div className="min-w-0 flex-[0_0_100%]" key={img.src + idx}>
+            <div className="min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] sm:px-2" key={img.src + idx}>
               {img.link ? (
                 <Link href={img.link} tabIndex={-1} aria-label={img.bannerText || img.alt}>
                   <ImageSlide image={img} isActive={selectedIndex === idx} />

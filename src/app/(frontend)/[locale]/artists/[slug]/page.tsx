@@ -33,7 +33,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
       <div className="mb-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
         {isMedia(image) && (
           <div className="mb-0 lg:mb-0 lg:w-3/4">
-            <div className="relative aspect-square w-full lg:aspect-video">
+            <div className="relative w-full" style={{ aspectRatio: '4 / 3' }}>
               <Image
                 src={image.url}
                 alt={name}

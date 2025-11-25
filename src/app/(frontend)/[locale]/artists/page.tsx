@@ -44,7 +44,7 @@ const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) 
         alt: artist.name,
         bannerText: artist.name,
         link: artist.slug ? `/artists/${artist.slug}` : undefined,
-        sizesAttr: '(max-width: 768px) 100vw, 1200px',
+        sizesAttr: '(max-width: 768px) 100vw, 50vw',
       }
     }),
   )
@@ -53,14 +53,15 @@ const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) 
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
       <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">{t('title')}</h1>
       {error && <div className="text-red-600">{error}</div>}
-      {!error && artists && artists.length > 0 && (
-        <div className="mb-12">
-          <ImageSlider images={sliderImages} autoAdvance interval={6000} showArrows={false} showDots />
-        </div>
-      )}
       {!error && artists && artists.length === 0 && <div className="text-gray-500">No artists found.</div>}
       {!error && artists && artists.length > 0 && (
-        <ArtistGrid artists={artists.map((a: any) => ({ ...a, id: String(a.id) }))} instruments={instruments} />
+        <>
+          <ArtistGrid artists={artists.map((a: any) => ({ ...a, id: String(a.id) }))} instruments={instruments} />
+          <div className="mt-16">
+            <h2 className="font-playfair mb-6 text-3xl font-bold">Discover More Artists</h2>
+            <ImageSlider images={sliderImages} autoAdvance interval={6000} showArrows={false} showDots />
+          </div>
+        </>
       )}
     </main>
   )
