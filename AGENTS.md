@@ -147,6 +147,25 @@ _This file is for agentic coding agents. Update if project conventions change._
    - Look for official template examples that use the plugin
    - Read the actual implementation, not just type definitions
 
+### WordPress Migration Data Integrity
+
+**Critical Rule:** When migrating data from WordPress, **preserve the original data structure** unless explicitly
+instructed otherwise.
+
+**Example incident (2025-11-25):**
+
+- Jonian Ilias Kadesha had `['Violin', 'Chamber Music']` in WordPress
+- Agent attempted to filter out "Chamber Music" globally, affecting ALL artists
+- **Correct approach:** Only apply fixes to specific artists when explicitly requested
+- **Never make broad assumptions** about data cleanup during migrations
+
+**Guidelines:**
+
+1. **Migrate data as-is** - Don't assume certain values are "wrong" or should be filtered
+2. **Fix specific records** - If one artist needs correction, create a targeted fix script
+3. **Ask before cleanup** - If you think data should be transformed, ask the user first
+4. **Document exceptions** - If an artist needs special handling, document why in the migration script
+
 ## Library Installation Policy
 
 - **NEVER install new libraries or dependencies without explicit user confirmation.**
