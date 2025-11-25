@@ -7,6 +7,7 @@ settings:
 overrides:
   '@types/react': npm:types-react@19.0.0-rc.1
   '@types/react-dom': npm:types-react-dom@19.0.0-rc.1
+  dompurify: '>=3.2.4'
 
 importers:
 
@@ -2695,6 +2696,9 @@ packages:
     peerDependencies:
       '@types/react': '*'
 
+  '@types/trusted-types@2.0.7':
+    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
 
@@ -3368,8 +3372,8 @@ packages:
   dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
 
-  dompurify@3.1.7:
-    resolution: {integrity: sha512-VaTstWtsneJY8xzy7DekmYWEOZcmzIe3Qb3zPd4STve1OBTa+e+WmS1ITQec1fZYXI3HCsOZZiSMpG6oxoWMWQ==}
+  dompurify@3.3.0:
+    resolution: {integrity: sha512-r+f6MYR1gGN1eJv0TVQbhA7if/U7P87cdPl3HN5rikqaBSBxLiCb/b9O+2eG0cxz0ghyU+mU1QkbsOwERMYlWQ==}
 
   dotenv@17.2.3:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
@@ -9195,6 +9199,9 @@ snapshots:
     dependencies:
       '@types/react': types-react@19.0.0-rc.1
 
+  '@types/trusted-types@2.0.7':
+    optional: true
+
   '@types/unist@2.0.11': {}
 
   '@types/unist@3.0.3': {}
@@ -9903,7 +9910,9 @@ snapshots:
       '@babel/runtime': 7.28.4
       csstype: 3.1.3
 
-  dompurify@3.1.7: {}
+  dompurify@3.3.0:
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
 
   dotenv@17.2.3: {}
 
@@ -11335,7 +11344,7 @@ snapshots:
 
   monaco-editor@0.54.0:
     dependencies:
-      dompurify: 3.1.7
+      dompurify: 3.3.0
       marked: 14.0.0
 
   mrmime@2.0.1: {}
