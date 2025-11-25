@@ -1,4 +1,3 @@
-import { publicEnv } from '@/config/env'
 import { Employee, Media } from '@/payload-types'
 import { getEmployees } from '@/services/employee'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -12,8 +11,10 @@ const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, 
 
   const getImageUrl = (img: Media | undefined) => {
     if (!img) return '/placeholder.jpg'
-    if (img.url && img.url.startsWith('http')) return img.url
-    if (img.filename) return `${publicEnv.r2PublicEndpoint}/${img.filename}`
+    // Use the url field directly (local or remote)
+    if (img.url) return img.url
+    // Fallback to filename with local API endpoint
+    if (img.filename) return `/api/media/file/${img.filename}`
     return '/placeholder.jpg'
   }
 

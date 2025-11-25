@@ -1,6 +1,5 @@
 import BackButton from '@/components/ui/BackButton'
 import PayloadRichText from '@/components/ui/PayloadRichText'
-import { publicEnv } from '@/config/env'
 import { Link } from '@/i18n/navigation'
 import type { Employee, Media } from '@/payload-types'
 import { getDefaultAvatar } from '@/services/media'
@@ -17,11 +16,13 @@ function isMedia(obj: unknown): obj is Media {
 
 function getImageUrl(img: Media | null | undefined): string {
   if (!img) return ''
-  if (img.url && img.url.startsWith('http')) return img.url
+  // Use the url field directly (local or remote)
+  if (img.url) return img.url
+  // Fallback to filename with local API endpoint
   if (img.filename) {
     // Sanitize filename to prevent path traversal
     const sanitized = img.filename.replace(/\.\./g, '').replace(/^\/+/, '')
-    return `${publicEnv.r2PublicEndpoint}/${sanitized}`
+    return `/api/media/file/${sanitized}`
   }
   return ''
 }
