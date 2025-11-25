@@ -1,5 +1,11 @@
 # Ideas for Future Features
 
+## Idea: Media Naming Convention
+
+- photos should follow strict naming convention
+- content creators add credit and identifier
+- Payload enforces/generates name on creation
+
 ## Idea: Fixture Management
 
 - add Collection callback to create/update fixtures for easy seeding and testing
