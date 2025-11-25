@@ -1,5 +1,7 @@
+import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Employee, Media } from '@/payload-types'
 import { getEmployees } from '@/services/employee'
+import { getPageBySlug } from '@/services/page'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 
@@ -56,11 +58,30 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.team' })
 
-  const { docs: employees } = await getEmployees(locale as 'de' | 'en')
+  // Fetch both page content and employees in parallel
+  const [page, employeesResult] = await Promise.all([
+    getPageBySlug('team', locale as 'de' | 'en'),
+    getEmployees(locale as 'de' | 'en'),
+  ])
+
+  const employees = employeesResult.docs
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
-      <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">{t('title')}</h1>
+      {/* CMS-editable content at the top */}
+      {page && (
+        <div className="mb-12">
+          <h1 className="font-playfair mb-6 mt-4 text-5xl font-bold">{page.title}</h1>
+          <div className="prose mb-12 max-w-none">
+            <PayloadRichText content={page.content} />
+          </div>
+        </div>
+      )}
+
+      {/* Fallback title if no page exists */}
+      {!page && <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">{t('title')}</h1>}
+
+      {/* Employee list */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {employees.map((employee: Employee) => (
           <TeamMemberCard key={employee.name} {...employee} />
