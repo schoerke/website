@@ -2,9 +2,7 @@
   {
     "id": 23,
     "name": "Claire Huangci",
-    "instrument": [
-      "piano"
-    ],
+    "instrument": ["piano"],
     "image": {
       "id": 59,
       "alt": "Claire Huangci",
@@ -632,9 +630,7 @@
   {
     "id": 22,
     "name": "Mario Venzago",
-    "instrument": [
-      "conductor"
-    ],
+    "instrument": ["conductor"],
     "image": {
       "id": 68,
       "alt": "Mario Venzago",
@@ -1164,10 +1160,7 @@
   {
     "id": 21,
     "name": "Maurice Steger",
-    "instrument": [
-      "recorder",
-      "conductor"
-    ],
+    "instrument": ["recorder", "conductor"],
     "image": {
       "id": 65,
       "alt": "Maurice Steger",
@@ -2083,10 +2076,7 @@
   {
     "id": 20,
     "name": "Christian Zacharias",
-    "instrument": [
-      "conductor",
-      "piano"
-    ],
+    "instrument": ["conductor", "piano"],
     "image": {
       "id": 62,
       "alt": "Christian Zacharias",
@@ -2794,9 +2784,7 @@
   {
     "id": 19,
     "name": "Tianwa Yang",
-    "instrument": [
-      "violin"
-    ],
+    "instrument": ["violin"],
     "image": {
       "id": 71,
       "alt": "Tianwa Yang",
@@ -3436,9 +3424,7 @@
   {
     "id": 18,
     "name": "Monet Quintett",
-    "instrument": [
-      "chamber-music"
-    ],
+    "instrument": ["chamber-music"],
     "image": {
       "id": 54,
       "alt": "Monet Quintett",
@@ -4583,9 +4569,7 @@
   {
     "id": 17,
     "name": "Trio Gaspard",
-    "instrument": [
-      "chamber-music"
-    ],
+    "instrument": ["chamber-music"],
     "image": {
       "id": 51,
       "alt": "Trio Gaspard",
@@ -6017,9 +6001,7 @@
   {
     "id": 16,
     "name": "Zehetmair Quartett",
-    "instrument": [
-      "chamber-music"
-    ],
+    "instrument": ["chamber-music"],
     "image": {
       "id": 48,
       "alt": "Zehetmair Quartett",
@@ -6978,9 +6960,7 @@
   {
     "id": 15,
     "name": "Cuarteto SolTango",
-    "instrument": [
-      "chamber-music"
-    ],
+    "instrument": ["chamber-music"],
     "image": {
       "id": 42,
       "alt": "Cuarteto SolTango",
@@ -8087,9 +8067,7 @@
   {
     "id": 14,
     "name": "Dominik Wagner",
-    "instrument": [
-      "bass"
-    ],
+    "instrument": ["bass"],
     "image": {
       "id": 39,
       "alt": "Dominik Wagner",
@@ -9116,10 +9094,7 @@
   {
     "id": 13,
     "name": "Thomas Zehetmair",
-    "instrument": [
-      "conductor",
-      "violin"
-    ],
+    "instrument": ["conductor", "violin"],
     "image": {
       "id": 36,
       "alt": "Thomas Zehetmair",
@@ -10125,9 +10100,7 @@
   {
     "id": 12,
     "name": "Jonian Ilias Kadesha",
-    "instrument": [
-      "violin"
-    ],
+    "instrument": ["violin"],
     "image": {
       "id": 33,
       "alt": "Jonian Ilias Kadesha",
@@ -10947,9 +10920,7 @@
   {
     "id": 11,
     "name": "Marc Gruber",
-    "instrument": [
-      "horn"
-    ],
+    "instrument": ["horn"],
     "image": {
       "id": 30,
       "alt": "Marc Gruber",
@@ -11609,9 +11580,7 @@
   {
     "id": 10,
     "name": "Christian Poltéra",
-    "instrument": [
-      "cello"
-    ],
+    "instrument": ["cello"],
     "image": {
       "id": 27,
       "alt": "Christian Poltéra",
@@ -12533,9 +12502,7 @@
   {
     "id": 9,
     "name": "Jean-Paul Gasparian",
-    "instrument": [
-      "piano"
-    ],
+    "instrument": ["piano"],
     "image": {
       "id": 24,
       "alt": "Jean-Paul Gasparian",
@@ -13451,9 +13418,7 @@
   {
     "id": 8,
     "name": "Trio Jean Paul",
-    "instrument": [
-      "chamber-music"
-    ],
+    "instrument": ["chamber-music"],
     "image": {
       "id": 21,
       "alt": "Trio Jean Paul",
@@ -13777,10 +13742,7 @@
   {
     "id": 7,
     "name": "Andreas Staier",
-    "instrument": [
-      "harpsichord",
-      "piano"
-    ],
+    "instrument": ["harpsichord", "piano"],
     "image": {
       "id": 18,
       "alt": "Andreas Staier",
@@ -14967,9 +14929,7 @@
   {
     "id": 6,
     "name": "Martin Stadtfeld",
-    "instrument": [
-      "piano"
-    ],
+    "instrument": ["piano"],
     "image": {
       "id": 15,
       "alt": "Martin Stadtfeld",
@@ -15603,9 +15563,7 @@
   {
     "id": 5,
     "name": "Till Fellner",
-    "instrument": [
-      "piano"
-    ],
+    "instrument": ["piano"],
     "image": {
       "id": 12,
       "alt": "Till Fellner",
@@ -16503,9 +16461,7 @@
   {
     "id": 4,
     "name": "Tzimon Barto",
-    "instrument": [
-      "piano"
-    ],
+    "instrument": ["piano"],
     "image": {
       "id": 9,
       "alt": "Tzimon Barto",
@@ -17361,9 +17317,7 @@
   {
     "id": 3,
     "name": "Marie-Luise Neunecker",
-    "instrument": [
-      "horn"
-    ],
+    "instrument": ["horn"],
     "image": {
       "id": 6,
       "alt": "Marie-Luise Neunecker",
@@ -18241,9 +18195,7 @@
   {
     "id": 2,
     "name": "Gustav Rivinius",
-    "instrument": [
-      "cello"
-    ],
+    "instrument": ["cello"],
     "image": {
       "id": 4,
       "alt": "Gustav Rivinius",
@@ -18964,9 +18916,7 @@
   {
     "id": 1,
     "name": "Ruth Killius",
-    "instrument": [
-      "viola"
-    ],
+    "instrument": ["viola"],
     "image": {
       "id": 1,
       "alt": "Ruth Killius",

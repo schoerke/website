@@ -9,10 +9,7 @@
       {
         "id": 13,
         "name": "Thomas Zehetmair",
-        "instrument": [
-          "conductor",
-          "violin"
-        ],
+        "instrument": ["conductor", "violin"],
         "image": {
           "id": 36,
           "alt": "Thomas Zehetmair",
@@ -2720,9 +2717,7 @@
         }
       }
     },
-    "roles": [
-      "conductor"
-    ],
+    "roles": ["conductor"],
     "updatedAt": "2025-11-25T14:50:34.122Z",
     "createdAt": "2025-11-25T14:50:34.122Z"
   },
@@ -2736,10 +2731,7 @@
       {
         "id": 20,
         "name": "Christian Zacharias",
-        "instrument": [
-          "conductor",
-          "piano"
-        ],
+        "instrument": ["conductor", "piano"],
         "image": {
           "id": 62,
           "alt": "Christian Zacharias",
@@ -4971,9 +4963,7 @@
       {
         "id": 12,
         "name": "Jonian Ilias Kadesha",
-        "instrument": [
-          "violin"
-        ],
+        "instrument": ["violin"],
         "image": {
           "id": 33,
           "alt": "Jonian Ilias Kadesha",
@@ -7321,10 +7311,7 @@
         }
       }
     },
-    "roles": [
-      "solo",
-      "conductor"
-    ],
+    "roles": ["solo", "conductor"],
     "updatedAt": "2025-11-25T14:50:29.915Z",
     "createdAt": "2025-11-25T14:50:29.915Z"
   },
@@ -7338,9 +7325,7 @@
       {
         "id": 23,
         "name": "Claire Huangci",
-        "instrument": [
-          "piano"
-        ],
+        "instrument": ["piano"],
         "image": {
           "id": 59,
           "alt": "Claire Huangci",
@@ -9357,9 +9342,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:50:27.719Z",
     "createdAt": "2025-11-25T14:50:27.719Z"
   },
@@ -9373,9 +9356,7 @@
       {
         "id": 23,
         "name": "Claire Huangci",
-        "instrument": [
-          "piano"
-        ],
+        "instrument": ["piano"],
         "image": {
           "id": 59,
           "alt": "Claire Huangci",
@@ -14099,9 +14080,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:50:25.841Z",
     "createdAt": "2025-11-25T14:50:25.841Z"
   },
@@ -14115,9 +14094,7 @@
       {
         "id": 19,
         "name": "Tianwa Yang",
-        "instrument": [
-          "violin"
-        ],
+        "instrument": ["violin"],
         "image": {
           "id": 71,
           "alt": "Tianwa Yang",
@@ -19018,9 +18995,7 @@
       {
         "id": 22,
         "name": "Mario Venzago",
-        "instrument": [
-          "conductor"
-        ],
+        "instrument": ["conductor"],
         "image": {
           "id": 68,
           "alt": "Mario Venzago",
@@ -20707,9 +20682,7 @@
       {
         "id": 12,
         "name": "Jonian Ilias Kadesha",
-        "instrument": [
-          "violin"
-        ],
+        "instrument": ["violin"],
         "image": {
           "id": 33,
           "alt": "Jonian Ilias Kadesha",
@@ -25407,9 +25380,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:50:19.714Z",
     "createdAt": "2025-11-25T14:50:19.714Z"
   },
@@ -25423,9 +25394,7 @@
       {
         "id": 12,
         "name": "Jonian Ilias Kadesha",
-        "instrument": [
-          "violin"
-        ],
+        "instrument": ["violin"],
         "image": {
           "id": 33,
           "alt": "Jonian Ilias Kadesha",
@@ -28336,10 +28305,7 @@
         }
       }
     },
-    "roles": [
-      "solo",
-      "conductor"
-    ],
+    "roles": ["solo", "conductor"],
     "updatedAt": "2025-11-25T14:50:17.240Z",
     "createdAt": "2025-11-25T14:50:17.240Z"
   },
@@ -28353,9 +28319,7 @@
       {
         "id": 14,
         "name": "Dominik Wagner",
-        "instrument": [
-          "bass"
-        ],
+        "instrument": ["bass"],
         "image": {
           "id": 39,
           "alt": "Dominik Wagner",
@@ -30606,10 +30570,7 @@
       {
         "id": 20,
         "name": "Christian Zacharias",
-        "instrument": [
-          "conductor",
-          "piano"
-        ],
+        "instrument": ["conductor", "piano"],
         "image": {
           "id": 62,
           "alt": "Christian Zacharias",
@@ -32595,9 +32556,7 @@
         }
       }
     },
-    "roles": [
-      "conductor"
-    ],
+    "roles": ["conductor"],
     "updatedAt": "2025-11-25T14:50:13.151Z",
     "createdAt": "2025-11-25T14:50:13.151Z"
   },
@@ -32611,10 +32570,7 @@
       {
         "id": 20,
         "name": "Christian Zacharias",
-        "instrument": [
-          "conductor",
-          "piano"
-        ],
+        "instrument": ["conductor", "piano"],
         "image": {
           "id": 62,
           "alt": "Christian Zacharias",
@@ -38950,9 +38906,7 @@
         }
       }
     },
-    "roles": [
-      "conductor"
-    ],
+    "roles": ["conductor"],
     "updatedAt": "2025-11-25T14:50:10.224Z",
     "createdAt": "2025-11-25T14:50:10.224Z"
   },
@@ -38966,9 +38920,7 @@
       {
         "id": 11,
         "name": "Marc Gruber",
-        "instrument": [
-          "horn"
-        ],
+        "instrument": ["horn"],
         "image": {
           "id": 30,
           "alt": "Marc Gruber",
@@ -41167,9 +41119,7 @@
       {
         "id": 10,
         "name": "Christian Poltéra",
-        "instrument": [
-          "cello"
-        ],
+        "instrument": ["cello"],
         "image": {
           "id": 27,
           "alt": "Christian Poltéra",
@@ -44927,9 +44877,7 @@
       {
         "id": 9,
         "name": "Jean-Paul Gasparian",
-        "instrument": [
-          "piano"
-        ],
+        "instrument": ["piano"],
         "image": {
           "id": 24,
           "alt": "Jean-Paul Gasparian",
@@ -47779,9 +47727,7 @@
       {
         "id": 8,
         "name": "Trio Jean Paul",
-        "instrument": [
-          "chamber-music"
-        ],
+        "instrument": ["chamber-music"],
         "image": {
           "id": 21,
           "alt": "Trio Jean Paul",
@@ -52188,9 +52134,7 @@
         }
       }
     },
-    "roles": [
-      "chamber"
-    ],
+    "roles": ["chamber"],
     "updatedAt": "2025-11-25T14:49:59.889Z",
     "createdAt": "2025-11-25T14:49:59.889Z"
   },
@@ -52204,10 +52148,7 @@
       {
         "id": 20,
         "name": "Christian Zacharias",
-        "instrument": [
-          "conductor",
-          "piano"
-        ],
+        "instrument": ["conductor", "piano"],
         "image": {
           "id": 62,
           "alt": "Christian Zacharias",
@@ -53587,10 +53528,7 @@
       {
         "id": 20,
         "name": "Christian Zacharias",
-        "instrument": [
-          "conductor",
-          "piano"
-        ],
+        "instrument": ["conductor", "piano"],
         "image": {
           "id": 62,
           "alt": "Christian Zacharias",
@@ -54796,10 +54734,7 @@
       {
         "id": 13,
         "name": "Thomas Zehetmair",
-        "instrument": [
-          "conductor",
-          "violin"
-        ],
+        "instrument": ["conductor", "violin"],
         "image": {
           "id": 36,
           "alt": "Thomas Zehetmair",
@@ -55723,9 +55658,7 @@
       {
         "id": 1,
         "name": "Ruth Killius",
-        "instrument": [
-          "viola"
-        ],
+        "instrument": ["viola"],
         "image": {
           "id": 1,
           "alt": "Ruth Killius",
@@ -57469,9 +57402,7 @@
         }
       }
     },
-    "roles": [
-      "chamber"
-    ],
+    "roles": ["chamber"],
     "updatedAt": "2025-11-25T14:49:53.372Z",
     "createdAt": "2025-11-25T14:49:53.371Z"
   },
@@ -57485,9 +57416,7 @@
       {
         "id": 6,
         "name": "Martin Stadtfeld",
-        "instrument": [
-          "piano"
-        ],
+        "instrument": ["piano"],
         "image": {
           "id": 15,
           "alt": "Martin Stadtfeld",
@@ -60389,10 +60318,7 @@
       {
         "id": 7,
         "name": "Andreas Staier",
-        "instrument": [
-          "harpsichord",
-          "piano"
-        ],
+        "instrument": ["harpsichord", "piano"],
         "image": {
           "id": 18,
           "alt": "Andreas Staier",
@@ -63183,10 +63109,7 @@
       {
         "id": 21,
         "name": "Maurice Steger",
-        "instrument": [
-          "recorder",
-          "conductor"
-        ],
+        "instrument": ["recorder", "conductor"],
         "image": {
           "id": 65,
           "alt": "Maurice Steger",
@@ -68296,9 +68219,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:49:46.897Z",
     "createdAt": "2025-11-25T14:49:46.897Z"
   },
@@ -68312,10 +68233,7 @@
       {
         "id": 21,
         "name": "Maurice Steger",
-        "instrument": [
-          "recorder",
-          "conductor"
-        ],
+        "instrument": ["recorder", "conductor"],
         "image": {
           "id": 65,
           "alt": "Maurice Steger",
@@ -71293,10 +71211,7 @@
         }
       }
     },
-    "roles": [
-      "solo",
-      "conductor"
-    ],
+    "roles": ["solo", "conductor"],
     "updatedAt": "2025-11-25T14:49:44.573Z",
     "createdAt": "2025-11-25T14:49:44.573Z"
   },
@@ -71310,9 +71225,7 @@
       {
         "id": 5,
         "name": "Till Fellner",
-        "instrument": [
-          "piano"
-        ],
+        "instrument": ["piano"],
         "image": {
           "id": 12,
           "alt": "Till Fellner",
@@ -73622,9 +73535,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:49:42.286Z",
     "createdAt": "2025-11-25T14:49:42.286Z"
   },
@@ -73638,9 +73549,7 @@
       {
         "id": 4,
         "name": "Tzimon Barto",
-        "instrument": [
-          "piano"
-        ],
+        "instrument": ["piano"],
         "image": {
           "id": 9,
           "alt": "Tzimon Barto",
@@ -76898,9 +76807,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:49:40.130Z",
     "createdAt": "2025-11-25T14:49:40.129Z"
   },
@@ -76914,9 +76821,7 @@
       {
         "id": 3,
         "name": "Marie-Luise Neunecker",
-        "instrument": [
-          "horn"
-        ],
+        "instrument": ["horn"],
         "image": {
           "id": 6,
           "alt": "Marie-Luise Neunecker",
@@ -79372,9 +79277,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:49:38.111Z",
     "createdAt": "2025-11-25T14:49:38.111Z"
   },
@@ -79388,9 +79291,7 @@
       {
         "id": 2,
         "name": "Gustav Rivinius",
-        "instrument": [
-          "cello"
-        ],
+        "instrument": ["cello"],
         "image": {
           "id": 4,
           "alt": "Gustav Rivinius",
@@ -82999,9 +82900,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:49:36.074Z",
     "createdAt": "2025-11-25T14:49:36.074Z"
   },
@@ -83015,9 +82914,7 @@
       {
         "id": 1,
         "name": "Ruth Killius",
-        "instrument": [
-          "viola"
-        ],
+        "instrument": ["viola"],
         "image": {
           "id": 1,
           "alt": "Ruth Killius",
@@ -85968,9 +85865,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:49:33.622Z",
     "createdAt": "2025-11-25T14:49:33.622Z"
   },
@@ -85984,10 +85879,7 @@
       {
         "id": 13,
         "name": "Thomas Zehetmair",
-        "instrument": [
-          "conductor",
-          "violin"
-        ],
+        "instrument": ["conductor", "violin"],
         "image": {
           "id": 36,
           "alt": "Thomas Zehetmair",
@@ -90417,9 +90309,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:49:31.348Z",
     "createdAt": "2025-11-25T14:49:31.348Z"
   },
@@ -90433,9 +90323,7 @@
       {
         "id": 18,
         "name": "Monet Quintett",
-        "instrument": [
-          "chamber-music"
-        ],
+        "instrument": ["chamber-music"],
         "image": {
           "id": 54,
           "alt": "Monet Quintett",
@@ -92928,9 +92816,7 @@
         }
       }
     },
-    "roles": [
-      "chamber"
-    ],
+    "roles": ["chamber"],
     "updatedAt": "2025-11-25T14:49:28.894Z",
     "createdAt": "2025-11-25T14:49:28.894Z"
   },
@@ -92944,10 +92830,7 @@
       {
         "id": 20,
         "name": "Christian Zacharias",
-        "instrument": [
-          "conductor",
-          "piano"
-        ],
+        "instrument": ["conductor", "piano"],
         "image": {
           "id": 62,
           "alt": "Christian Zacharias",
@@ -94931,9 +94814,7 @@
         }
       }
     },
-    "roles": [
-      "solo"
-    ],
+    "roles": ["solo"],
     "updatedAt": "2025-11-25T14:49:26.847Z",
     "createdAt": "2025-11-25T14:49:26.847Z"
   },
@@ -94947,10 +94828,7 @@
       {
         "id": 20,
         "name": "Christian Zacharias",
-        "instrument": [
-          "conductor",
-          "piano"
-        ],
+        "instrument": ["conductor", "piano"],
         "image": {
           "id": 62,
           "alt": "Christian Zacharias",
@@ -98462,9 +98340,7 @@
         }
       }
     },
-    "roles": [
-      "conductor"
-    ],
+    "roles": ["conductor"],
     "updatedAt": "2025-11-25T14:49:24.721Z",
     "createdAt": "2025-11-25T14:49:24.719Z"
   }
