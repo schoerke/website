@@ -1,9 +1,13 @@
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { getPageBySlug } from '@/services/page'
+import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 
 const ContactPage = async ({ params }: { params: Promise<{ locale: string }> }) => {
   const { locale } = await params
+
+  // Enable static rendering
+  setRequestLocale(locale)
 
   const page = await getPageBySlug('contact', locale as 'de' | 'en')
 
