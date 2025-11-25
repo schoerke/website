@@ -1,5 +1,457 @@
 [
   {
+    "id": 23,
+    "name": "Claire Huangci",
+    "instrument": [
+      "piano"
+    ],
+    "image": {
+      "id": 59,
+      "alt": "Claire Huangci",
+      "credit": null,
+      "updatedAt": "2025-11-25T12:10:35.803Z",
+      "createdAt": "2025-11-25T08:03:59.577Z",
+      "url": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370.jpg",
+      "thumbnailURL": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-300x300.webp",
+      "filename": "Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370.jpg",
+      "mimeType": "image/jpeg",
+      "filesize": 239203,
+      "width": 1465,
+      "height": 1331,
+      "focalX": 50,
+      "focalY": 50,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-300x300.webp",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/webp",
+          "filesize": 10832,
+          "filename": "Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-300x300.webp"
+        },
+        "card": {
+          "url": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-768x768.webp",
+          "width": 768,
+          "height": 768,
+          "mimeType": "image/webp",
+          "filesize": 49740,
+          "filename": "Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-768x768.webp"
+        },
+        "hero": {
+          "url": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-1200x800.webp",
+          "width": 1200,
+          "height": 800,
+          "mimeType": "image/webp",
+          "filesize": 70172,
+          "filename": "Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-1200x800.webp"
+        }
+      }
+    },
+    "slug": "claire-huangci",
+    "contactPersons": [
+      {
+        "id": 2,
+        "name": "Tina Nurnus",
+        "title": {
+          "de": "Artist Manager",
+          "en": "Artist Manager"
+        },
+        "email": "t.nurnus@ks-schoerke.de",
+        "phone": "+49 (0)611-50 58 90 52",
+        "mobile": "+49 (0)172 821 33 68",
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
+        "order": 2,
+        "updatedAt": "2025-11-25T10:13:54.211Z",
+        "createdAt": "2025-11-24T21:58:07.818Z"
+      },
+      {
+        "id": 4,
+        "name": "Justine Stemmelin",
+        "title": {
+          "de": "Assistant Artist Manager",
+          "en": "Assistant Artist Manager"
+        },
+        "email": "j.stemmelin@ks-schoerke.de",
+        "phone": "+49 (0)611-50 58 90 53",
+        "mobile": "+49 (0)162 98 99 741",
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
+        "order": 4,
+        "updatedAt": "2025-11-25T10:13:52.196Z",
+        "createdAt": "2025-11-24T21:58:10.988Z"
+      }
+    ],
+    "quote": {
+      "de": "Die amerikanische Pianistin Claire Huangci erlangte internationale Bekanntheit durch den Gewinn des ersten Preises sowie des Mozartpreises beim Concours Géza Anda 2018 und Auszeichnungen bei anderen bedeutenden Wettbewerben, darunter Chopin-Wettbewerbe in Europa und den USA, dem ARD-Musikwettbewerb und dem Grand Prix der Orchestre Chambre de Paris Play-Direct Academy.",
+      "en": null
+    },
+    "biography": {
+      "de": {
+        "root": {
+          "type": "root",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "children": [
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "version": 1,
+                  "text": "„Meisterhaft interpretiert“ – Claire Huangci begeistert mit technischer Brillanz und stilistischer Sicherheit.\n\n \n ",
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "detail": 0
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "version": 1,
+                  "text": "Die amerikanische Pianistin Claire Huangci erlangte internationale Bekanntheit durch den Gewinn des ersten Preises sowie des Mozartpreises beim Concours Géza Anda 2018 und Auszeichnungen bei anderen bedeutenden Wettbewerben, darunter Chopin-Wettbewerbe in Europa und den USA, dem ARD-Musikwettbewerb und dem Grand Prix der Orchestre Chambre de Paris Play-Direct Academy.",
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "detail": 0
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "version": 1,
+                  "text": "Ihr Spiel überzeugt durch souveräne und aufgeweckte Interpretationen, atemberaubende Virtuosität, sowie durch eine intelligente und durchdachte Klanggestaltung. Von einem unbändigen Entdeckergeist beseelt, beweist sie ihre Wandlungsfähigkeit mit einem ungewöhnlich breiten Repertoire von Bach und Scarlatti über die deutsche und russische Romantik bis hin zu Bernstein, Barber und Florence Price.",
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "detail": 0
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "version": 1,
+                  "text": "Seit der Saison 24/25 arbeitet Claire Huangci zusammen mit Alpha Classics. Einer hochgelobten Aufnahme mit dem Mozarteumorchester Salzburg und Klavierkonzerten von Mozart, folgte die Veröffentlichung ihres Soloalbums Made in USA mit Werken der amerikanischen Komponisten Gershwin, Beach, Barber und Wild. Für 2026 ist ein weiteres Rezitalalbum mit einem Fokus auf deutsche und amerikanische Komponistinnen geplant.",
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "detail": 0
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "version": 1,
+                  "text": "Als Auftakt einer Reihe internationaler Orchesterengagements wird Claire Huangci in 25/26 neben Debüts bei den Symphonieorchestern in Baltimore, Bratislava, beim Thailand Philharmonic Orchestra, der Rheinischen Philharmonie, der Santa Rosa Symphony und der North Carolina Symphony zu Gast sein. Sie wird eine umfangreiche Debüt-Rezitaltournee in Südamerika spielen, die nach Auftritten in Lima, Kolumbien und Brasilien im Teatro Colón in Buenos Aires ihren Abschluss findet. Ein Highlight bildete außerdem der Auftritt beim Abschlusskonzert des Carinthischen Sommers mit Gershwins Klavierkonzert in F zusammen mit dem ORF Radio-Symphonieorchester Wien unter der Leitung von Marin Alsop.\nClare Huangci ist inzwischen vermehrt mit diversem Repertoire vom Klavier aus leitend zu erleben, so auch vergangene Saison mit dem Recreation Orchester der Styriate Graz und den Klavierkonzerten von Clara und Robert Schumann.",
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "detail": 0
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "version": 1,
+                  "text": "In Solorezitalen und als Partnerin internationaler Orchester konzertierte Claire Huangci bereits in bedeutenden Konzertsälen wie der Carnegie Hall New York, der Suntory Hall Tokio, der Philharmonie de Paris, der Alten Oper Frankfurt, dem Konzerthaus Dortmund, dem Prinzregententheater München, der Elbphilharmonie Hamburg, der Philharmonie Berlin, dem Wiener Konzerthaus und dem Festspielhaus Salzburg. Sie ist gern gesehener Gast bei renommierten Festivals wie dem Lucerne Festival, dem Rheingau Musik Festival oder dem Klavierfestival Ruhr. Zu ihren geschätzten musikalischen Partnern zählen und zählten das Tonhalle-Orchester Zürich, das Iceland Symphony Orchestra, die Pacific Symphony, das Musikkollegium Winterthur, das Münchener und Basler Kammerorchester sowie die Dirigenten Carl St. Clair, Elim Chan, Michael Francis, Howard Griffiths, Pietari Inkinen, Jun Märkl, Cornelius Meister, Sir Roger Norrington, Eva Ollikainen, Alexander Shelley, Mario Venzago, Markus Stern, David Danzmayr und Thomas Guggeis.",
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "detail": 0
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "version": 1,
+                  "text": "Geboren in Rochester, New York, zeigte Claire früh eine Vorliebe für das Klavier und wurde 1999 mit neun Jahren in das Weiße Haus eingeladen. Sie studierte bei Gary Graffman und Eleanor Sokoloff am Curtis Institute of Music, bevor sie für weiterführende Studien zu Arie Vardi nach Hannover wechselte. Claire ist stolze Botschafterin des Henle Verlagshauses und künstlerische Leiterin der Erbacher Kammerkonzerte.",
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "detail": 0
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "version": 1,
+                  "text": "Saison 2025/2026 | Foto: Mateusz Zahora| Anfangszitat: Klassik.com, 21. April 2025\nÄnderungen und Kürzungen bedürfen der Absprache mit der Künstlersekretariat Astrid Schoerke GmbH",
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "detail": 0
+                }
+              ],
+              "direction": "ltr"
+            }
+          ],
+          "direction": "ltr"
+        }
+      },
+      "en": {
+        "root": {
+          "type": "root",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "children": [
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "type": "text",
+                  "version": 1,
+                  "text": "'Masterfully interpreted' - Claire Huangci captivates with her technical brilliance and stylistic certainty.\n\n \n \n\nThe American pianist Claire Huangci gained international acclaim by winning first prize as well as the Mozart Prize at the 2018 Concours Géza Anda, as well as receiving accolades in other prestigious competitions, including both Chopin competitions in Europe and the USA, the ARD International Music Competition, and the Grand Prix of the Orchestre Chambre de Paris Play-Direct Academy.\n\nShe continuously captivates audiences with her confident and bright interpretations, breathtaking virtuosity and an intelligent and well-thought-out sound palette. Driven by an irrepressible curiosity and penchant for unusual repertoire, she proves her versatility with a broad range of repertoire spanning from Bach and Scarlatti via German and Russian Romanticism to Bernstein, Barber and Florence Price.\n\nSince the 24/25 season Claire Huangci has been working with Alpha Classics. Following a highly acclaimed Mozart concerto album with the Mozarteum Orchestra Salzburg, she released an all-American solo disc titled Made in USA featuring works by Gershwin, Beach, Barber and Wild. In 2026, another recital album focusing on German and American female composers will be released.\n\nKicking off a series of international orchestra engagements in 2025/26, Claire will make her debut with the Baltimore Symphony Orchestra and will also perform with the Bratislava Symphony Orchestra, the Thailand Philharmonic, the Rheinische Philharmonie, the Santa Rosa Symphony and the North Carolina Symphony. She will give an extensive debut recital tour in South America, with performances in Lima, Colombia and Brazil, culminating in Buenos Aires Teatro Colon. Another highlight of the new season was playing the closing concert of the Carinthian Summer. She convinced with her interpretation of Gershwin’s Concerto in F with the Austrian Radio Television Orchestra Vienna under the baton of Marin Alsop.\nClaire Huangci is increasingly directing various concertos from the piano in the play-direct tradition, e.g. past season with the Recreation Orchestra of the Styriarte Graz, featuring piano concertos by Clara and Robert Schumann.\n\nAs a solo recitalist and partner to international orchestras, Claire Huangci has performed in prestigious concert halls such as Carnegie Hall in New York, Suntory Hall in Tokyo, the Philharmonie de Paris, Alte Oper Frankfurt, Konzerthaus Dortmund, Prinzregententheater Munich, Elbphilharmonie Hamburg, Philharmonie Berlin, Wiener Konzerthaus, and Festspielhaus Salzburg. She is a welcome guest at renowned festivals, including the Lucerne Festival, the Rheingau Music Festival, and the Ruhr Piano Festival.\nHer esteemed musical partners include the Tonhalle Orchestra Zurich, the Musikkollegium Winterthur, the Iceland Symphony Orchestra, the Pacific Symphony, the Munich and Basel Chamber Orchestras, and conductors such as Carl St. Clair, Elim Chan, Michael Francis, Howard Griffiths, Pietari Inkinen, Jun Märkl, Cornelius Meister, Sir Roger Norrington, Eva Ollikainen, Alexander Shelley, Mario Venzago, Markus Stern, David Danzmayr and Thomas Guggeis.\n\nBorn in Rochester, New York, Claire showed an early affinity for the piano and was invited to the White House in 1999 at the age of nine. She studied with Gary Graffman and Eleanor Sokoloff at the Curtis Institute of Music before continuing her studies with Arie Vardi in Hannover where she graduated with honors in 2016. Claire is a proud ambassador for the Henle publishing house and serves as the artistic director of the Erbach Chamber Concerts.\n\nSaison 2025/2026 | Photo: Mateusz Zahora| Quote: klassik.com, April 21st, 2025\nAmendments or edits need the consent of Künstlersekretariat Astrid Schoerke GmbH",
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "detail": 0
+                }
+              ],
+              "direction": "ltr"
+            }
+          ],
+          "direction": "ltr"
+        }
+      }
+    },
+    "repertoire": [],
+    "discography": [],
+    "downloads": {
+      "biographyPDF": {
+        "id": 60,
+        "alt": "Claire Huangci - Biography",
+        "credit": null,
+        "updatedAt": "2025-11-25T12:10:35.971Z",
+        "createdAt": "2025-11-25T08:03:59.768Z",
+        "url": "/api/media/file/CH_Bio_e-1.pdf",
+        "thumbnailURL": null,
+        "filename": "CH_Bio_e-1.pdf",
+        "mimeType": "application/pdf",
+        "filesize": 149012,
+        "width": null,
+        "height": null,
+        "focalX": null,
+        "focalY": null,
+        "sizes": {
+          "thumbnail": {
+            "url": null,
+            "width": null,
+            "height": null,
+            "mimeType": null,
+            "filesize": null,
+            "filename": null
+          },
+          "card": {
+            "url": null,
+            "width": null,
+            "height": null,
+            "mimeType": null,
+            "filesize": null,
+            "filename": null
+          },
+          "hero": {
+            "url": null,
+            "width": null,
+            "height": null,
+            "mimeType": null,
+            "filesize": null,
+            "filename": null
+          }
+        }
+      },
+      "galleryZIP": {
+        "id": 61,
+        "alt": "Claire Huangci - Gallery",
+        "credit": null,
+        "updatedAt": "2025-11-25T12:10:36.134Z",
+        "createdAt": "2025-11-25T08:04:00.195Z",
+        "url": "/api/media/file/Claire-Huangci-C-Mateusz-Zahora_MG_3302-2.zip",
+        "thumbnailURL": null,
+        "filename": "Claire-Huangci-C-Mateusz-Zahora_MG_3302-2.zip",
+        "mimeType": "application/zip",
+        "filesize": 36809129,
+        "width": null,
+        "height": null,
+        "focalX": null,
+        "focalY": null,
+        "sizes": {
+          "thumbnail": {
+            "url": null,
+            "width": null,
+            "height": null,
+            "mimeType": null,
+            "filesize": null,
+            "filename": null
+          },
+          "card": {
+            "url": null,
+            "width": null,
+            "height": null,
+            "mimeType": null,
+            "filesize": null,
+            "filename": null
+          },
+          "hero": {
+            "url": null,
+            "width": null,
+            "height": null,
+            "mimeType": null,
+            "filesize": null,
+            "filename": null
+          }
+        }
+      }
+    },
+    "youtubeLinks": [],
+    "homepageURL": "https://clairehuangci.com/en/",
+    "externalCalendarURL": "https://clairehuangci.com/en/schedule/",
+    "facebookURL": "https://www.facebook.com/clairehuangci/",
+    "instagramURL": "https://www.instagram.com/clairehuangci/",
+    "twitterURL": null,
+    "youtubeURL": "https://www.youtube.com/channel/UCH9S12lwH2exemrPCvnn1Gw",
+    "spotifyURL": "https://open.spotify.com/artist/6iFs9LvpM2UzZPmRtOrkLf",
+    "updatedAt": "2025-11-25T12:10:34.039Z",
+    "createdAt": "2025-11-25T12:02:19.183Z"
+  },
+  {
     "id": 22,
     "name": "Mario Venzago",
     "instrument": [
@@ -7,9 +459,9 @@
     ],
     "image": {
       "id": 68,
-      "alt": "artists - image - Mario-Venzago-1_c-Alberto-Venzago-e1762933634869.jpg",
+      "alt": "Mario Venzago",
       "credit": null,
-      "updatedAt": "2025-11-25T08:04:02.111Z",
+      "updatedAt": "2025-11-25T12:10:46.825Z",
       "createdAt": "2025-11-25T08:04:02.111Z",
       "url": "/api/media/file/Mario-Venzago-1_c-Alberto-Venzago-e1762933634869.jpg",
       "thumbnailURL": "/api/media/file/Mario-Venzago-1_c-Alberto-Venzago-e1762933634869-300x300.webp",
@@ -59,9 +511,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -74,9 +567,50 @@
         "email": "j.stemmelin@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 53",
         "mobile": "+49 (0)162 98 99 741",
-        "image": null,
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
         "order": 4,
-        "updatedAt": "2025-11-24T21:58:11.573Z",
+        "updatedAt": "2025-11-25T10:13:52.196Z",
         "createdAt": "2025-11-24T21:58:10.988Z"
       }
     ],
@@ -149,9 +683,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 69,
-        "alt": "artists - biographyPDF - MV_Bio_e.pdf",
+        "alt": "Mario Venzago - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:04:02.318Z",
+        "updatedAt": "2025-11-25T12:10:46.980Z",
         "createdAt": "2025-11-25T08:04:02.318Z",
         "url": "/api/media/file/MV_Bio_e.pdf",
         "thumbnailURL": null,
@@ -191,9 +725,9 @@
       },
       "galleryZIP": {
         "id": 70,
-        "alt": "artists - galleryZIP - Mario-Venzago-_c-Alberto-Venzago.zip",
+        "alt": "Mario Venzago - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:04:02.527Z",
+        "updatedAt": "2025-11-25T12:10:47.143Z",
         "createdAt": "2025-11-25T08:04:02.527Z",
         "url": "/api/media/file/Mario-Venzago-_c-Alberto-Venzago.zip",
         "thumbnailURL": null,
@@ -240,7 +774,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": null,
-    "updatedAt": "2025-11-25T08:06:06.359Z",
+    "updatedAt": "2025-11-25T12:10:45.049Z",
     "createdAt": "2025-11-24T22:19:20.495Z"
   },
   {
@@ -252,9 +786,9 @@
     ],
     "image": {
       "id": 65,
-      "alt": "artists - image - Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486.jpg",
+      "alt": "Maurice Steger",
       "credit": null,
-      "updatedAt": "2025-11-25T08:04:01.291Z",
+      "updatedAt": "2025-11-25T12:10:43.001Z",
       "createdAt": "2025-11-25T08:04:01.291Z",
       "url": "/api/media/file/Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486.jpg",
       "thumbnailURL": "/api/media/file/Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486-300x300.webp",
@@ -304,9 +838,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -319,9 +894,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       }
     ],
@@ -394,9 +1010,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 66,
-        "alt": "artists - biographyPDF - MS_Bio_e-2.pdf",
+        "alt": "Maurice Steger - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:04:01.526Z",
+        "updatedAt": "2025-11-25T12:10:43.161Z",
         "createdAt": "2025-11-25T08:04:01.526Z",
         "url": "/api/media/file/MS_Bio_e-2.pdf",
         "thumbnailURL": null,
@@ -436,9 +1052,9 @@
       },
       "galleryZIP": {
         "id": 67,
-        "alt": "artists - galleryZIP - Maurice-Steger_zip.zip",
+        "alt": "Maurice Steger - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:04:01.781Z",
+        "updatedAt": "2025-11-25T12:10:43.330Z",
         "createdAt": "2025-11-25T08:04:01.781Z",
         "url": "/api/media/file/Maurice-Steger_zip.zip",
         "thumbnailURL": null,
@@ -485,7 +1101,7 @@
     "twitterURL": "https://twitter.com/maurice_steger",
     "youtubeURL": "https://www.youtube.com/channel/UChdQnQKz31H0QRPfJOOKsyg",
     "spotifyURL": "https://open.spotify.com/artist/5DrqjTCNJIPHE5jMMWfZfl",
-    "updatedAt": "2025-11-25T08:06:03.536Z",
+    "updatedAt": "2025-11-25T12:10:41.709Z",
     "createdAt": "2025-11-24T22:19:18.313Z"
   },
   {
@@ -497,9 +1113,9 @@
     ],
     "image": {
       "id": 62,
-      "alt": "artists - image - CZ01©Constanze-Zacharias-e1522062645520.jpg",
+      "alt": "Christian Zacharias",
       "credit": null,
-      "updatedAt": "2025-11-25T08:04:00.456Z",
+      "updatedAt": "2025-11-25T12:10:39.265Z",
       "createdAt": "2025-11-25T08:04:00.456Z",
       "url": "/api/media/file/CZ01%C2%A9Constanze-Zacharias-e1522062645520.jpg",
       "thumbnailURL": "/api/media/file/CZ01%C2%A9Constanze-Zacharias-e1522062645520-300x300.webp",
@@ -549,9 +1165,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -564,9 +1221,50 @@
         "email": "j.stemmelin@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 53",
         "mobile": "+49 (0)162 98 99 741",
-        "image": null,
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
         "order": 4,
-        "updatedAt": "2025-11-24T21:58:11.573Z",
+        "updatedAt": "2025-11-25T10:13:52.196Z",
         "createdAt": "2025-11-24T21:58:10.988Z"
       }
     ],
@@ -639,9 +1337,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 63,
-        "alt": "artists - biographyPDF - CZ_Bio_e.pdf",
+        "alt": "Christian Zacharias - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:04:00.643Z",
+        "updatedAt": "2025-11-25T12:10:39.444Z",
         "createdAt": "2025-11-25T08:04:00.643Z",
         "url": "/api/media/file/CZ_Bio_e.pdf",
         "thumbnailURL": null,
@@ -681,9 +1379,9 @@
       },
       "galleryZIP": {
         "id": 64,
-        "alt": "artists - galleryZIP - CZ_13©Constanze-Zacharias.zip",
+        "alt": "Christian Zacharias - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:04:00.989Z",
+        "updatedAt": "2025-11-25T12:10:39.610Z",
         "createdAt": "2025-11-25T08:04:00.988Z",
         "url": "/api/media/file/CZ_13%C2%A9Constanze-Zacharias.zip",
         "thumbnailURL": null,
@@ -730,7 +1428,7 @@
     "twitterURL": null,
     "youtubeURL": "https://www.youtube.com/channel/UCCvPXIAfKLIDentI62rawdA",
     "spotifyURL": null,
-    "updatedAt": "2025-11-25T08:06:00.749Z",
+    "updatedAt": "2025-11-25T12:10:37.901Z",
     "createdAt": "2025-11-24T22:19:16.022Z"
   },
   {
@@ -739,7 +1437,48 @@
     "instrument": [
       "violin"
     ],
-    "image": null,
+    "image": {
+      "id": 71,
+      "alt": "Tianwa Yang",
+      "credit": null,
+      "updatedAt": "2025-11-25T08:45:04.785Z",
+      "createdAt": "2025-11-25T08:11:35.055Z",
+      "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618.jpg",
+      "thumbnailURL": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-300x300.webp",
+      "filename": "K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618.jpg",
+      "mimeType": "image/jpeg",
+      "filesize": 137092,
+      "width": 1800,
+      "height": 976,
+      "focalX": 78,
+      "focalY": 37,
+      "sizes": {
+        "thumbnail": {
+          "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-300x300.webp",
+          "width": 300,
+          "height": 300,
+          "mimeType": "image/webp",
+          "filesize": 10098,
+          "filename": "K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-300x300.webp"
+        },
+        "card": {
+          "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-768x768.webp",
+          "width": 768,
+          "height": 768,
+          "mimeType": "image/webp",
+          "filesize": 33998,
+          "filename": "K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-768x768.webp"
+        },
+        "hero": {
+          "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-1200x800.webp",
+          "width": 1200,
+          "height": 800,
+          "mimeType": "image/webp",
+          "filesize": 42368,
+          "filename": "K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-1200x800.webp"
+        }
+      }
+    },
     "slug": "tianwa-yang",
     "contactPersons": [
       {
@@ -752,9 +1491,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -767,9 +1547,50 @@
         "email": "j.stemmelin@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 53",
         "mobile": "+49 (0)162 98 99 741",
-        "image": null,
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
         "order": 4,
-        "updatedAt": "2025-11-24T21:58:11.573Z",
+        "updatedAt": "2025-11-25T10:13:52.196Z",
         "createdAt": "2025-11-24T21:58:10.988Z"
       }
     ],
@@ -842,9 +1663,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 57,
-        "alt": "artists - biographyPDF - TY_Bio_e.pdf",
+        "alt": "Tianwa Yang - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:58.951Z",
+        "updatedAt": "2025-11-25T12:10:32.028Z",
         "createdAt": "2025-11-25T08:03:58.951Z",
         "url": "/api/media/file/TY_Bio_e.pdf",
         "thumbnailURL": null,
@@ -884,9 +1705,9 @@
       },
       "galleryZIP": {
         "id": 58,
-        "alt": "artists - galleryZIP - Tianwa-Yang-Zip.zip",
+        "alt": "Tianwa Yang - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:59.206Z",
+        "updatedAt": "2025-11-25T12:10:32.206Z",
         "createdAt": "2025-11-25T08:03:59.206Z",
         "url": "/api/media/file/Tianwa-Yang-Zip.zip",
         "thumbnailURL": null,
@@ -933,7 +1754,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": "https://open.spotify.com/intl-de/artist/2yZ6PpNTnlmRGbbZd6pWpI?si=WM2hVekBRRqoqGiXb4DwjQ",
-    "updatedAt": "2025-11-25T08:05:57.830Z",
+    "updatedAt": "2025-11-25T12:10:30.632Z",
     "createdAt": "2025-11-24T22:19:13.627Z"
   },
   {
@@ -944,9 +1765,9 @@
     ],
     "image": {
       "id": 54,
-      "alt": "artists - image - c-Studioline-e1717143348821.jpg",
+      "alt": "Monet Quintett",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:58.117Z",
+      "updatedAt": "2025-11-25T12:10:28.074Z",
       "createdAt": "2025-11-25T08:03:58.117Z",
       "url": "/api/media/file/c-Studioline-e1717143348821.jpg",
       "thumbnailURL": "/api/media/file/c-Studioline-e1717143348821-300x300.webp",
@@ -996,9 +1817,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -1011,9 +1873,50 @@
         "email": "j.stemmelin@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 53",
         "mobile": "+49 (0)162 98 99 741",
-        "image": null,
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
         "order": 4,
-        "updatedAt": "2025-11-24T21:58:11.573Z",
+        "updatedAt": "2025-11-25T10:13:52.196Z",
         "createdAt": "2025-11-24T21:58:10.988Z"
       }
     ],
@@ -1086,9 +1989,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 55,
-        "alt": "artists - biographyPDF - MQ_Bio_e.pdf",
+        "alt": "Monet Quintett - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:58.318Z",
+        "updatedAt": "2025-11-25T12:10:28.253Z",
         "createdAt": "2025-11-25T08:03:58.318Z",
         "url": "/api/media/file/MQ_Bio_e.pdf",
         "thumbnailURL": null,
@@ -1128,9 +2031,9 @@
       },
       "galleryZIP": {
         "id": 56,
-        "alt": "artists - galleryZIP - Monet-Quintett.zip",
+        "alt": "Monet Quintett - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:58.687Z",
+        "updatedAt": "2025-11-25T12:10:28.521Z",
         "createdAt": "2025-11-25T08:03:58.687Z",
         "url": "/api/media/file/Monet-Quintett.zip",
         "thumbnailURL": null,
@@ -1177,7 +2080,7 @@
     "twitterURL": null,
     "youtubeURL": "https://www.youtube.com/channel/UCAKuntCvteo2il8dtgzt6ug/featured",
     "spotifyURL": "https://open.spotify.com/artist/4mEHtiIzslJLiZcVmYAg3U",
-    "updatedAt": "2025-11-25T08:05:55.014Z",
+    "updatedAt": "2025-11-25T12:10:26.741Z",
     "createdAt": "2025-11-24T22:19:11.144Z"
   },
   {
@@ -1188,9 +2091,9 @@
     ],
     "image": {
       "id": 51,
-      "alt": "artists - image - 23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893.jpg",
+      "alt": "Trio Gaspard",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:57.265Z",
+      "updatedAt": "2025-11-25T12:10:24.504Z",
       "createdAt": "2025-11-25T08:03:57.265Z",
       "url": "/api/media/file/23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893.jpg",
       "thumbnailURL": "/api/media/file/23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893-300x300.webp",
@@ -1240,9 +2143,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       },
       {
@@ -1255,9 +2199,50 @@
         "email": "v.fischer@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 54",
         "mobile": "+49 (0)162 9657346",
-        "image": null,
+        "image": {
+          "id": 74,
+          "alt": "Veronika Fischer",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.946Z",
+          "createdAt": "2025-11-25T08:31:10.190Z",
+          "url": "/api/media/file/V.Fischer-sw.jpg",
+          "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+          "filename": "V.Fischer-sw.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 99291,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4204,
+              "filename": "V.Fischer-sw-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 16668,
+              "filename": "V.Fischer-sw-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 21126,
+              "filename": "V.Fischer-sw-1200x800.webp"
+            }
+          }
+        },
         "order": 3,
-        "updatedAt": "2025-11-24T21:58:10.035Z",
+        "updatedAt": "2025-11-25T10:13:53.234Z",
         "createdAt": "2025-11-24T21:58:09.448Z"
       }
     ],
@@ -1330,9 +2315,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 52,
-        "alt": "artists - biographyPDF - TG_Bio_e.pdf",
+        "alt": "Trio Gaspard - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:57.539Z",
+        "updatedAt": "2025-11-25T12:10:24.670Z",
         "createdAt": "2025-11-25T08:03:57.538Z",
         "url": "/api/media/file/TG_Bio_e.pdf",
         "thumbnailURL": null,
@@ -1372,9 +2357,9 @@
       },
       "galleryZIP": {
         "id": 53,
-        "alt": "artists - galleryZIP - Trio-Gaspard-©-Andrej-Grilc.zip",
+        "alt": "Trio Gaspard - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:57.844Z",
+        "updatedAt": "2025-11-25T12:10:24.840Z",
         "createdAt": "2025-11-25T08:03:57.844Z",
         "url": "/api/media/file/Trio-Gaspard-%C2%A9-Andrej-Grilc.zip",
         "thumbnailURL": null,
@@ -1421,7 +2406,7 @@
     "twitterURL": null,
     "youtubeURL": "https://www.youtube.com/triogaspard",
     "spotifyURL": "https://open.spotify.com/artist/0uq8O8713svA6zUJC982Vs",
-    "updatedAt": "2025-11-25T08:05:52.285Z",
+    "updatedAt": "2025-11-25T12:10:22.803Z",
     "createdAt": "2025-11-24T22:19:08.517Z"
   },
   {
@@ -1432,9 +2417,9 @@
     ],
     "image": {
       "id": 48,
-      "alt": "artists - image - 2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567.jpg",
+      "alt": "Zehetmair Quartett",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:56.426Z",
+      "updatedAt": "2025-11-25T12:10:20.740Z",
       "createdAt": "2025-11-25T08:03:56.426Z",
       "url": "/api/media/file/2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567.jpg",
       "thumbnailURL": "/api/media/file/2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567-300x300.webp",
@@ -1484,9 +2469,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       },
       {
@@ -1499,9 +2525,50 @@
         "email": "v.fischer@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 54",
         "mobile": "+49 (0)162 9657346",
-        "image": null,
+        "image": {
+          "id": 74,
+          "alt": "Veronika Fischer",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.946Z",
+          "createdAt": "2025-11-25T08:31:10.190Z",
+          "url": "/api/media/file/V.Fischer-sw.jpg",
+          "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+          "filename": "V.Fischer-sw.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 99291,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4204,
+              "filename": "V.Fischer-sw-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 16668,
+              "filename": "V.Fischer-sw-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 21126,
+              "filename": "V.Fischer-sw-1200x800.webp"
+            }
+          }
+        },
         "order": 3,
-        "updatedAt": "2025-11-24T21:58:10.035Z",
+        "updatedAt": "2025-11-25T10:13:53.234Z",
         "createdAt": "2025-11-24T21:58:09.448Z"
       }
     ],
@@ -1574,9 +2641,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 49,
-        "alt": "artists - biographyPDF - ZQ_Bio_e.pdf",
+        "alt": "Zehetmair Quartett - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:56.721Z",
+        "updatedAt": "2025-11-25T12:10:20.928Z",
         "createdAt": "2025-11-25T08:03:56.721Z",
         "url": "/api/media/file/ZQ_Bio_e.pdf",
         "thumbnailURL": null,
@@ -1616,9 +2683,9 @@
       },
       "galleryZIP": {
         "id": 50,
-        "alt": "artists - galleryZIP - 2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567.zip",
+        "alt": "Zehetmair Quartett - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:56.989Z",
+        "updatedAt": "2025-11-25T12:10:21.094Z",
         "createdAt": "2025-11-25T08:03:56.989Z",
         "url": "/api/media/file/2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567.zip",
         "thumbnailURL": null,
@@ -1665,7 +2732,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": "https://open.spotify.com/artist/3lFOTPCL2Vc41CtVrdhMqp",
-    "updatedAt": "2025-11-25T08:05:49.449Z",
+    "updatedAt": "2025-11-25T12:10:19.315Z",
     "createdAt": "2025-11-24T22:19:06.157Z"
   },
   {
@@ -1676,9 +2743,9 @@
     ],
     "image": {
       "id": 42,
-      "alt": "artists - image - c-Andrej-Grilc-01599-scaled-e1663140372301.jpg",
+      "alt": "Cuarteto SolTango",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:38.330Z",
+      "updatedAt": "2025-11-25T12:10:16.602Z",
       "createdAt": "2025-11-25T08:03:38.330Z",
       "url": "/api/media/file/c-Andrej-Grilc-01599-scaled-e1663140372301.jpg",
       "thumbnailURL": "/api/media/file/c-Andrej-Grilc-01599-scaled-e1663140372301-300x300.webp",
@@ -1728,9 +2795,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       },
       {
@@ -1743,9 +2851,50 @@
         "email": "v.fischer@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 54",
         "mobile": "+49 (0)162 9657346",
-        "image": null,
+        "image": {
+          "id": 74,
+          "alt": "Veronika Fischer",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.946Z",
+          "createdAt": "2025-11-25T08:31:10.190Z",
+          "url": "/api/media/file/V.Fischer-sw.jpg",
+          "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+          "filename": "V.Fischer-sw.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 99291,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4204,
+              "filename": "V.Fischer-sw-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 16668,
+              "filename": "V.Fischer-sw-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 21126,
+              "filename": "V.Fischer-sw-1200x800.webp"
+            }
+          }
+        },
         "order": 3,
-        "updatedAt": "2025-11-24T21:58:10.035Z",
+        "updatedAt": "2025-11-25T10:13:53.234Z",
         "createdAt": "2025-11-24T21:58:09.448Z"
       }
     ],
@@ -1816,12 +2965,53 @@
     "repertoire": [],
     "discography": [],
     "downloads": {
-      "biographyPDF": null,
+      "biographyPDF": {
+        "id": 43,
+        "alt": "Cuarteto SolTango - Biography",
+        "credit": null,
+        "updatedAt": "2025-11-25T12:10:16.812Z",
+        "createdAt": "2025-11-25T08:03:38.541Z",
+        "url": "/api/media/file/ST_Bio_e.pdf",
+        "thumbnailURL": null,
+        "filename": "ST_Bio_e.pdf",
+        "mimeType": "application/pdf",
+        "filesize": 140010,
+        "width": null,
+        "height": null,
+        "focalX": null,
+        "focalY": null,
+        "sizes": {
+          "thumbnail": {
+            "url": null,
+            "width": null,
+            "height": null,
+            "mimeType": null,
+            "filesize": null,
+            "filename": null
+          },
+          "card": {
+            "url": null,
+            "width": null,
+            "height": null,
+            "mimeType": null,
+            "filesize": null,
+            "filename": null
+          },
+          "hero": {
+            "url": null,
+            "width": null,
+            "height": null,
+            "mimeType": null,
+            "filesize": null,
+            "filename": null
+          }
+        }
+      },
       "galleryZIP": {
         "id": 47,
-        "alt": "artists - galleryZIP - Cuarteto-SolTango-zip.zip",
+        "alt": "Cuarteto SolTango - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:55.878Z",
+        "updatedAt": "2025-11-25T12:10:17.160Z",
         "createdAt": "2025-11-25T08:03:55.877Z",
         "url": "/api/media/file/Cuarteto-SolTango-zip.zip",
         "thumbnailURL": null,
@@ -1868,7 +3058,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": "https://open.spotify.com/artist/2nAI0fe0pCeiovwQUDB6Rg?si=g5yJeA4rSoKQAzlfYxAM2A&nd=1",
-    "updatedAt": "2025-11-25T08:05:46.649Z",
+    "updatedAt": "2025-11-25T12:10:15.046Z",
     "createdAt": "2025-11-24T22:19:03.656Z"
   },
   {
@@ -1879,9 +3069,9 @@
     ],
     "image": {
       "id": 39,
-      "alt": "artists - image - K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950.jpg",
+      "alt": "Dominik Wagner",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:37.593Z",
+      "updatedAt": "2025-11-25T12:10:12.974Z",
       "createdAt": "2025-11-25T08:03:37.593Z",
       "url": "/api/media/file/K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950.jpg",
       "thumbnailURL": "/api/media/file/K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950-300x300.webp",
@@ -1931,9 +3121,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -1946,9 +3177,50 @@
         "email": "v.fischer@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 54",
         "mobile": "+49 (0)162 9657346",
-        "image": null,
+        "image": {
+          "id": 74,
+          "alt": "Veronika Fischer",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.946Z",
+          "createdAt": "2025-11-25T08:31:10.190Z",
+          "url": "/api/media/file/V.Fischer-sw.jpg",
+          "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+          "filename": "V.Fischer-sw.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 99291,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4204,
+              "filename": "V.Fischer-sw-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 16668,
+              "filename": "V.Fischer-sw-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 21126,
+              "filename": "V.Fischer-sw-1200x800.webp"
+            }
+          }
+        },
         "order": 3,
-        "updatedAt": "2025-11-24T21:58:10.035Z",
+        "updatedAt": "2025-11-25T10:13:53.234Z",
         "createdAt": "2025-11-24T21:58:09.448Z"
       }
     ],
@@ -2021,9 +3293,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 40,
-        "alt": "artists - biographyPDF - DW_Bio_e.pdf",
+        "alt": "Dominik Wagner - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:37.778Z",
+        "updatedAt": "2025-11-25T12:10:13.152Z",
         "createdAt": "2025-11-25T08:03:37.778Z",
         "url": "/api/media/file/DW_Bio_e.pdf",
         "thumbnailURL": null,
@@ -2063,9 +3335,9 @@
       },
       "galleryZIP": {
         "id": 41,
-        "alt": "artists - galleryZIP - Dominik-Wagner-wegen-Grose-nicht-alle-Grilc-Bilder.zip",
+        "alt": "Dominik Wagner - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:38.047Z",
+        "updatedAt": "2025-11-25T12:10:13.321Z",
         "createdAt": "2025-11-25T08:03:38.047Z",
         "url": "/api/media/file/Dominik-Wagner-wegen-Grose-nicht-alle-Grilc-Bilder.zip",
         "thumbnailURL": null,
@@ -2112,7 +3384,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": "https://open.spotify.com/artist/1gMBiZa4QSTydHdnVWJBp5",
-    "updatedAt": "2025-11-25T08:05:43.649Z",
+    "updatedAt": "2025-11-25T12:10:11.248Z",
     "createdAt": "2025-11-24T22:19:01.215Z"
   },
   {
@@ -2124,9 +3396,9 @@
     ],
     "image": {
       "id": 36,
-      "alt": "artists - image - THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein.jpg",
+      "alt": "Thomas Zehetmair",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:36.922Z",
+      "updatedAt": "2025-11-25T12:10:09.089Z",
       "createdAt": "2025-11-25T08:03:36.922Z",
       "url": "/api/media/file/THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein.jpg",
       "thumbnailURL": "/api/media/file/THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein-300x300.webp",
@@ -2176,9 +3448,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -2191,9 +3504,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       }
     ],
@@ -2266,9 +3620,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 37,
-        "alt": "artists - biographyPDF - TZ_Bio_e-1.pdf",
+        "alt": "Thomas Zehetmair - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:37.119Z",
+        "updatedAt": "2025-11-25T12:10:09.255Z",
         "createdAt": "2025-11-25T08:03:37.119Z",
         "url": "/api/media/file/TZ_Bio_e-1.pdf",
         "thumbnailURL": null,
@@ -2308,9 +3662,9 @@
       },
       "galleryZIP": {
         "id": 38,
-        "alt": "artists - galleryZIP - THOMAS-ZEHETMAIR-Download.zip",
+        "alt": "Thomas Zehetmair - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:37.334Z",
+        "updatedAt": "2025-11-25T12:10:09.434Z",
         "createdAt": "2025-11-25T08:03:37.334Z",
         "url": "/api/media/file/THOMAS-ZEHETMAIR-Download.zip",
         "thumbnailURL": null,
@@ -2357,7 +3711,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": "https://open.spotify.com/artist/3GOKMr4QNbiYzvNjjupsuW",
-    "updatedAt": "2025-11-25T08:05:40.917Z",
+    "updatedAt": "2025-11-25T12:10:07.645Z",
     "createdAt": "2025-11-24T22:18:58.846Z"
   },
   {
@@ -2368,9 +3722,9 @@
     ],
     "image": {
       "id": 33,
-      "alt": "artists - image - Jonian-3-credit-Kaupo-Kikkas-e1575468874437.jpg",
+      "alt": "Jonian Ilias Kadesha",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:36.169Z",
+      "updatedAt": "2025-11-25T12:10:05.536Z",
       "createdAt": "2025-11-25T08:03:36.169Z",
       "url": "/api/media/file/Jonian-3-credit-Kaupo-Kikkas-e1575468874437.jpg",
       "thumbnailURL": "/api/media/file/Jonian-3-credit-Kaupo-Kikkas-e1575468874437-300x300.webp",
@@ -2420,9 +3774,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       },
       {
@@ -2435,9 +3830,50 @@
         "email": "v.fischer@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 54",
         "mobile": "+49 (0)162 9657346",
-        "image": null,
+        "image": {
+          "id": 74,
+          "alt": "Veronika Fischer",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.946Z",
+          "createdAt": "2025-11-25T08:31:10.190Z",
+          "url": "/api/media/file/V.Fischer-sw.jpg",
+          "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+          "filename": "V.Fischer-sw.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 99291,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4204,
+              "filename": "V.Fischer-sw-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 16668,
+              "filename": "V.Fischer-sw-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 21126,
+              "filename": "V.Fischer-sw-1200x800.webp"
+            }
+          }
+        },
         "order": 3,
-        "updatedAt": "2025-11-24T21:58:10.035Z",
+        "updatedAt": "2025-11-25T10:13:53.234Z",
         "createdAt": "2025-11-24T21:58:09.448Z"
       }
     ],
@@ -2510,9 +3946,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 34,
-        "alt": "artists - biographyPDF - JIK_Bio_e.pdf",
+        "alt": "Jonian Ilias Kadesha - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:36.386Z",
+        "updatedAt": "2025-11-25T12:10:05.695Z",
         "createdAt": "2025-11-25T08:03:36.386Z",
         "url": "/api/media/file/JIK_Bio_e.pdf",
         "thumbnailURL": null,
@@ -2552,9 +3988,9 @@
       },
       "galleryZIP": {
         "id": 35,
-        "alt": "artists - galleryZIP - JIK-Zip-credit-Kaupo-Kikkas.zip",
+        "alt": "Jonian Ilias Kadesha - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:36.611Z",
+        "updatedAt": "2025-11-25T12:10:05.874Z",
         "createdAt": "2025-11-25T08:03:36.611Z",
         "url": "/api/media/file/JIK-Zip-credit-Kaupo-Kikkas.zip",
         "thumbnailURL": null,
@@ -2601,7 +4037,7 @@
     "twitterURL": null,
     "youtubeURL": "https://www.youtube.com/channel/UCAZUW1UYQ4Eo-PvGRcPMKgA",
     "spotifyURL": "https://open.spotify.com/artist/6Mx6MayZCn4QMmTRrlYGgP",
-    "updatedAt": "2025-11-25T08:05:38.010Z",
+    "updatedAt": "2025-11-25T12:10:04.132Z",
     "createdAt": "2025-11-24T22:18:56.496Z"
   },
   {
@@ -2612,9 +4048,9 @@
     ],
     "image": {
       "id": 30,
-      "alt": "artists - image - Grubi_slide-1-e1535704350486.jpg",
+      "alt": "Marc Gruber",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:35.438Z",
+      "updatedAt": "2025-11-25T12:10:01.952Z",
       "createdAt": "2025-11-25T08:03:35.438Z",
       "url": "/api/media/file/Grubi_slide-1-e1535704350486.jpg",
       "thumbnailURL": "/api/media/file/Grubi_slide-1-e1535704350486-300x300.webp",
@@ -2664,9 +4100,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -2679,9 +4156,50 @@
         "email": "j.stemmelin@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 53",
         "mobile": "+49 (0)162 98 99 741",
-        "image": null,
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
         "order": 4,
-        "updatedAt": "2025-11-24T21:58:11.573Z",
+        "updatedAt": "2025-11-25T10:13:52.196Z",
         "createdAt": "2025-11-24T21:58:10.988Z"
       }
     ],
@@ -2754,9 +4272,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 31,
-        "alt": "artists - biographyPDF - MG_Bio_e.pdf",
+        "alt": "Marc Gruber - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:35.658Z",
+        "updatedAt": "2025-11-25T12:10:02.118Z",
         "createdAt": "2025-11-25T08:03:35.658Z",
         "url": "/api/media/file/MG_Bio_e.pdf",
         "thumbnailURL": null,
@@ -2796,9 +4314,9 @@
       },
       "galleryZIP": {
         "id": 32,
-        "alt": "artists - galleryZIP - Marc-Gruber-zip.zip",
+        "alt": "Marc Gruber - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:35.870Z",
+        "updatedAt": "2025-11-25T12:10:02.288Z",
         "createdAt": "2025-11-25T08:03:35.870Z",
         "url": "/api/media/file/Marc-Gruber-zip.zip",
         "thumbnailURL": null,
@@ -2845,7 +4363,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": "https://open.spotify.com/artist/3s5FCfOSWzgiFHFpc8tY3a",
-    "updatedAt": "2025-11-25T08:05:35.356Z",
+    "updatedAt": "2025-11-25T12:10:00.053Z",
     "createdAt": "2025-11-24T22:18:54.232Z"
   },
   {
@@ -2856,9 +4374,9 @@
     ],
     "image": {
       "id": 27,
-      "alt": "artists - image - 11c-Nikolaj-Lund-Banner-e1535620202340.jpg",
+      "alt": "Christian Poltéra",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:34.709Z",
+      "updatedAt": "2025-11-25T12:09:57.827Z",
       "createdAt": "2025-11-25T08:03:34.709Z",
       "url": "/api/media/file/11c-Nikolaj-Lund-Banner-e1535620202340.jpg",
       "thumbnailURL": "/api/media/file/11c-Nikolaj-Lund-Banner-e1535620202340-300x300.webp",
@@ -2908,9 +4426,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       },
       {
@@ -2923,9 +4482,50 @@
         "email": "v.fischer@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 54",
         "mobile": "+49 (0)162 9657346",
-        "image": null,
+        "image": {
+          "id": 74,
+          "alt": "Veronika Fischer",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.946Z",
+          "createdAt": "2025-11-25T08:31:10.190Z",
+          "url": "/api/media/file/V.Fischer-sw.jpg",
+          "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+          "filename": "V.Fischer-sw.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 99291,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4204,
+              "filename": "V.Fischer-sw-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 16668,
+              "filename": "V.Fischer-sw-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 21126,
+              "filename": "V.Fischer-sw-1200x800.webp"
+            }
+          }
+        },
         "order": 3,
-        "updatedAt": "2025-11-24T21:58:10.035Z",
+        "updatedAt": "2025-11-25T10:13:53.234Z",
         "createdAt": "2025-11-24T21:58:09.448Z"
       }
     ],
@@ -2998,9 +4598,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 28,
-        "alt": "artists - biographyPDF - CP_Bio_e.pdf",
+        "alt": "Christian Poltéra - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:34.908Z",
+        "updatedAt": "2025-11-25T12:09:57.999Z",
         "createdAt": "2025-11-25T08:03:34.908Z",
         "url": "/api/media/file/CP_Bio_e.pdf",
         "thumbnailURL": null,
@@ -3040,9 +4640,9 @@
       },
       "galleryZIP": {
         "id": 29,
-        "alt": "artists - galleryZIP - Christian-Poltera.zip",
+        "alt": "Christian Poltéra - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:35.152Z",
+        "updatedAt": "2025-11-25T12:09:58.163Z",
         "createdAt": "2025-11-25T08:03:35.152Z",
         "url": "/api/media/file/Christian-Poltera.zip",
         "thumbnailURL": null,
@@ -3089,7 +4689,7 @@
     "twitterURL": null,
     "youtubeURL": "https://www.youtube.com/channel/UCOxVm033zCi6ZSaCVLqQSrw",
     "spotifyURL": "https://open.spotify.com/artist/5FWi6V1af7luTXsANm1Jb3",
-    "updatedAt": "2025-11-25T08:05:32.526Z",
+    "updatedAt": "2025-11-25T12:09:56.437Z",
     "createdAt": "2025-11-24T22:18:51.815Z"
   },
   {
@@ -3100,9 +4700,9 @@
     ],
     "image": {
       "id": 24,
-      "alt": "artists - image - K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697.jpg",
+      "alt": "Jean-Paul Gasparian",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:33.872Z",
+      "updatedAt": "2025-11-25T12:09:54.267Z",
       "createdAt": "2025-11-25T08:03:33.872Z",
       "url": "/api/media/file/K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697.jpg",
       "thumbnailURL": "/api/media/file/K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697-300x300.webp",
@@ -3152,9 +4752,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -3167,9 +4808,50 @@
         "email": "j.stemmelin@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 53",
         "mobile": "+49 (0)162 98 99 741",
-        "image": null,
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
         "order": 4,
-        "updatedAt": "2025-11-24T21:58:11.573Z",
+        "updatedAt": "2025-11-25T10:13:52.196Z",
         "createdAt": "2025-11-24T21:58:10.988Z"
       }
     ],
@@ -3242,9 +4924,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 25,
-        "alt": "artists - biographyPDF - JPG_Bio_e.pdf",
+        "alt": "Jean-Paul Gasparian - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:34.070Z",
+        "updatedAt": "2025-11-25T12:09:54.453Z",
         "createdAt": "2025-11-25T08:03:34.070Z",
         "url": "/api/media/file/JPG_Bio_e.pdf",
         "thumbnailURL": null,
@@ -3284,9 +4966,9 @@
       },
       "galleryZIP": {
         "id": 26,
-        "alt": "artists - galleryZIP - Jean-Paul-Gasparian-C-Bernard-Martinez.zip",
+        "alt": "Jean-Paul Gasparian - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:34.479Z",
+        "updatedAt": "2025-11-25T12:09:54.651Z",
         "createdAt": "2025-11-25T08:03:34.479Z",
         "url": "/api/media/file/Jean-Paul-Gasparian-C-Bernard-Martinez.zip",
         "thumbnailURL": null,
@@ -3333,7 +5015,7 @@
     "twitterURL": "https://twitter.com/search?src=typd&q=Jean-Paul%20Gasparian",
     "youtubeURL": "https://www.youtube.com/channel/UCyunqrofR1scqQ6W7PX4bHQ",
     "spotifyURL": "https://open.spotify.com/artist/1KAYt5PzgkE6W3ExmqoNPn",
-    "updatedAt": "2025-11-25T08:05:29.660Z",
+    "updatedAt": "2025-11-25T12:09:52.836Z",
     "createdAt": "2025-11-24T22:18:49.624Z"
   },
   {
@@ -3344,9 +5026,9 @@
     ],
     "image": {
       "id": 21,
-      "alt": "artists - image - trio_jeanpaul_slide.jpg",
+      "alt": "Trio Jean Paul",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:33.069Z",
+      "updatedAt": "2025-11-25T12:09:50.596Z",
       "createdAt": "2025-11-25T08:03:33.069Z",
       "url": "/api/media/file/trio_jeanpaul_slide.jpg",
       "thumbnailURL": "/api/media/file/trio_jeanpaul_slide-300x300.webp",
@@ -3396,9 +5078,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -3411,9 +5134,50 @@
         "email": "j.stemmelin@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 53",
         "mobile": "+49 (0)162 98 99 741",
-        "image": null,
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
         "order": 4,
-        "updatedAt": "2025-11-24T21:58:11.573Z",
+        "updatedAt": "2025-11-25T10:13:52.196Z",
         "createdAt": "2025-11-24T21:58:10.988Z"
       }
     ],
@@ -3486,9 +5250,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 22,
-        "alt": "artists - biographyPDF - TJP_Bio_e.pdf",
+        "alt": "Trio Jean Paul - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:33.273Z",
+        "updatedAt": "2025-11-25T12:09:50.767Z",
         "createdAt": "2025-11-25T08:03:33.273Z",
         "url": "/api/media/file/TJP_Bio_e.pdf",
         "thumbnailURL": null,
@@ -3528,9 +5292,9 @@
       },
       "galleryZIP": {
         "id": 23,
-        "alt": "artists - galleryZIP - Trio-Jean-Paul_Galerie-Download.zip",
+        "alt": "Trio Jean Paul - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:33.568Z",
+        "updatedAt": "2025-11-25T12:09:50.929Z",
         "createdAt": "2025-11-25T08:03:33.568Z",
         "url": "/api/media/file/Trio-Jean-Paul_Galerie-Download.zip",
         "thumbnailURL": null,
@@ -3577,7 +5341,7 @@
     "twitterURL": "https://twitter.com/search?q=Trio%20Jean%20Paul&src=typd&lang=de",
     "youtubeURL": "https://www.youtube.com/channel/UCGBcKVcKnM5R6fg4yNUKtnQ",
     "spotifyURL": "https://open.spotify.com/artist/04brqSOyqKNtQuBEGoSjxJ",
-    "updatedAt": "2025-11-25T08:05:26.825Z",
+    "updatedAt": "2025-11-25T12:09:49.087Z",
     "createdAt": "2025-11-24T22:18:46.875Z"
   },
   {
@@ -3589,9 +5353,9 @@
     ],
     "image": {
       "id": 18,
-      "alt": "artists - image - Andreas_Staier_photo_Andrej-Grilc-04482.jpg",
+      "alt": "Andreas Staier",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:32.356Z",
+      "updatedAt": "2025-11-25T12:09:47.004Z",
       "createdAt": "2025-11-25T08:03:32.355Z",
       "url": "/api/media/file/Andreas_Staier_photo_Andrej-Grilc-04482.jpg",
       "thumbnailURL": "/api/media/file/Andreas_Staier_photo_Andrej-Grilc-04482-300x300.webp",
@@ -3641,9 +5405,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -3656,9 +5461,50 @@
         "email": "v.fischer@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 54",
         "mobile": "+49 (0)162 9657346",
-        "image": null,
+        "image": {
+          "id": 74,
+          "alt": "Veronika Fischer",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.946Z",
+          "createdAt": "2025-11-25T08:31:10.190Z",
+          "url": "/api/media/file/V.Fischer-sw.jpg",
+          "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+          "filename": "V.Fischer-sw.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 99291,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4204,
+              "filename": "V.Fischer-sw-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 16668,
+              "filename": "V.Fischer-sw-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 21126,
+              "filename": "V.Fischer-sw-1200x800.webp"
+            }
+          }
+        },
         "order": 3,
-        "updatedAt": "2025-11-24T21:58:10.035Z",
+        "updatedAt": "2025-11-25T10:13:53.234Z",
         "createdAt": "2025-11-24T21:58:09.448Z"
       }
     ],
@@ -3731,9 +5577,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 19,
-        "alt": "artists - biographyPDF - AS_Bio_e.pdf",
+        "alt": "Andreas Staier - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:32.569Z",
+        "updatedAt": "2025-11-25T12:09:47.177Z",
         "createdAt": "2025-11-25T08:03:32.569Z",
         "url": "/api/media/file/AS_Bio_e.pdf",
         "thumbnailURL": null,
@@ -3773,9 +5619,9 @@
       },
       "galleryZIP": {
         "id": 20,
-        "alt": "artists - galleryZIP - Andreas-Staier_zip.zip",
+        "alt": "Andreas Staier - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:32.847Z",
+        "updatedAt": "2025-11-25T12:09:47.383Z",
         "createdAt": "2025-11-25T08:03:32.847Z",
         "url": "/api/media/file/Andreas-Staier_zip.zip",
         "thumbnailURL": null,
@@ -3822,7 +5668,7 @@
     "twitterURL": "https://twitter.com/search?q=Andreas%20Staier&src=tyah",
     "youtubeURL": "https://www.youtube.com/channel/UCLyXyQCxVmIuiGIFsULn5IA",
     "spotifyURL": "https://open.spotify.com/artist/3IOUX2zimWLnlS0kRyJQJq",
-    "updatedAt": "2025-11-25T08:05:24.125Z",
+    "updatedAt": "2025-11-25T12:09:45.513Z",
     "createdAt": "2025-11-24T22:18:44.734Z"
   },
   {
@@ -3833,9 +5679,9 @@
     ],
     "image": {
       "id": 15,
-      "alt": "artists - image - Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-®-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940.jpg",
+      "alt": "Martin Stadtfeld",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:31.644Z",
+      "updatedAt": "2025-11-25T12:09:43.342Z",
       "createdAt": "2025-11-25T08:03:31.644Z",
       "url": "/api/media/file/Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-%C2%AE-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940.jpg",
       "thumbnailURL": "/api/media/file/Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-%C2%AE-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940-300x300.webp",
@@ -3885,9 +5731,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -3900,9 +5787,50 @@
         "email": "j.stemmelin@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 53",
         "mobile": "+49 (0)162 98 99 741",
-        "image": null,
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
         "order": 4,
-        "updatedAt": "2025-11-24T21:58:11.573Z",
+        "updatedAt": "2025-11-25T10:13:52.196Z",
         "createdAt": "2025-11-24T21:58:10.988Z"
       }
     ],
@@ -3975,9 +5903,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 16,
-        "alt": "artists - biographyPDF - MST_Bio_e.pdf",
+        "alt": "Martin Stadtfeld - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:31.839Z",
+        "updatedAt": "2025-11-25T12:09:43.553Z",
         "createdAt": "2025-11-25T08:03:31.839Z",
         "url": "/api/media/file/MST_Bio_e.pdf",
         "thumbnailURL": null,
@@ -4017,9 +5945,9 @@
       },
       "galleryZIP": {
         "id": 17,
-        "alt": "artists - galleryZIP - Martin-Stadtfeld_Galerie-Download-2023-2.zip",
+        "alt": "Martin Stadtfeld - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:32.084Z",
+        "updatedAt": "2025-11-25T12:09:43.731Z",
         "createdAt": "2025-11-25T08:03:32.084Z",
         "url": "/api/media/file/Martin-Stadtfeld_Galerie-Download-2023-2.zip",
         "thumbnailURL": null,
@@ -4066,7 +5994,7 @@
     "twitterURL": "https://twitter.com/search?q=Martin%20Stadtfeld&src=tyah",
     "youtubeURL": "https://www.youtube.com/channel/UCkOiBISqFLaiuHXGJ5Mf86Q",
     "spotifyURL": "https://open.spotify.com/artist/2Habwewg0ZpMr2YWSTANE9",
-    "updatedAt": "2025-11-25T08:05:21.493Z",
+    "updatedAt": "2025-11-25T12:09:41.839Z",
     "createdAt": "2025-11-24T22:18:42.491Z"
   },
   {
@@ -4077,9 +6005,9 @@
     ],
     "image": {
       "id": 12,
-      "alt": "artists - image - till_fellner_slide.jpg",
+      "alt": "Till Fellner",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:30.833Z",
+      "updatedAt": "2025-11-25T12:09:39.809Z",
       "createdAt": "2025-11-25T08:03:30.833Z",
       "url": "/api/media/file/till_fellner_slide.jpg",
       "thumbnailURL": "/api/media/file/till_fellner_slide-300x300.webp",
@@ -4129,9 +6057,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -4144,9 +6113,50 @@
         "email": "v.fischer@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 54",
         "mobile": "+49 (0)162 9657346",
-        "image": null,
+        "image": {
+          "id": 74,
+          "alt": "Veronika Fischer",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.946Z",
+          "createdAt": "2025-11-25T08:31:10.190Z",
+          "url": "/api/media/file/V.Fischer-sw.jpg",
+          "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+          "filename": "V.Fischer-sw.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 99291,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4204,
+              "filename": "V.Fischer-sw-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 16668,
+              "filename": "V.Fischer-sw-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 21126,
+              "filename": "V.Fischer-sw-1200x800.webp"
+            }
+          }
+        },
         "order": 3,
-        "updatedAt": "2025-11-24T21:58:10.035Z",
+        "updatedAt": "2025-11-25T10:13:53.234Z",
         "createdAt": "2025-11-24T21:58:09.448Z"
       }
     ],
@@ -4219,9 +6229,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 13,
-        "alt": "artists - biographyPDF - TF_Bio_e.pdf",
+        "alt": "Till Fellner - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:31.047Z",
+        "updatedAt": "2025-11-25T12:09:39.971Z",
         "createdAt": "2025-11-25T08:03:31.047Z",
         "url": "/api/media/file/TF_Bio_e.pdf",
         "thumbnailURL": null,
@@ -4261,9 +6271,9 @@
       },
       "galleryZIP": {
         "id": 14,
-        "alt": "artists - galleryZIP - Till-Fellner-Fotos-download.zip",
+        "alt": "Till Fellner - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:31.286Z",
+        "updatedAt": "2025-11-25T12:09:40.134Z",
         "createdAt": "2025-11-25T08:03:31.286Z",
         "url": "/api/media/file/Till-Fellner-Fotos-download.zip",
         "thumbnailURL": null,
@@ -4310,7 +6320,7 @@
     "twitterURL": null,
     "youtubeURL": "https://www.youtube.com/channel/UCL9Mqit0Zvf6UU7dOzSOLPg",
     "spotifyURL": "https://open.spotify.com/artist/2jvnRRcqUcbBaIFTUajl9V",
-    "updatedAt": "2025-11-25T08:05:18.591Z",
+    "updatedAt": "2025-11-25T12:09:38.514Z",
     "createdAt": "2025-11-24T22:18:39.958Z"
   },
   {
@@ -4321,9 +6331,9 @@
     ],
     "image": {
       "id": 9,
-      "alt": "artists - image - C-Nancy-Horowitz-2-e1634724249818.jpg",
+      "alt": "Tzimon Barto",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:30.085Z",
+      "updatedAt": "2025-11-25T12:09:36.244Z",
       "createdAt": "2025-11-25T08:03:30.085Z",
       "url": "/api/media/file/C-Nancy-Horowitz-2-e1634724249818.jpg",
       "thumbnailURL": "/api/media/file/C-Nancy-Horowitz-2-e1634724249818-300x300.webp",
@@ -4332,15 +6342,15 @@
       "filesize": 24514,
       "width": 1019,
       "height": 489,
-      "focalX": 50,
-      "focalY": 50,
+      "focalX": 49,
+      "focalY": 26,
       "sizes": {
         "thumbnail": {
           "url": "/api/media/file/C-Nancy-Horowitz-2-e1634724249818-300x300.webp",
           "width": 300,
           "height": 300,
           "mimeType": "image/webp",
-          "filesize": 3502,
+          "filesize": 3482,
           "filename": "C-Nancy-Horowitz-2-e1634724249818-300x300.webp"
         },
         "card": {
@@ -4348,7 +6358,7 @@
           "width": 768,
           "height": 768,
           "mimeType": "image/webp",
-          "filesize": 11186,
+          "filesize": 11234,
           "filename": "C-Nancy-Horowitz-2-e1634724249818-768x768.webp"
         },
         "hero": {
@@ -4373,9 +6383,50 @@
         "email": "e.wagner@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 51",
         "mobile": "+49(0)172 821 32 58",
-        "image": null,
+        "image": {
+          "id": 72,
+          "alt": "Eva Wagner",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.324Z",
+          "createdAt": "2025-11-25T08:31:09.576Z",
+          "url": "/api/media/file/IMG_2578-squashed.jpg",
+          "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+          "filename": "IMG_2578-squashed.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 75388,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 5102,
+              "filename": "IMG_2578-squashed-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 21758,
+              "filename": "IMG_2578-squashed-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 27314,
+              "filename": "IMG_2578-squashed-1200x800.webp"
+            }
+          }
+        },
         "order": 1,
-        "updatedAt": "2025-11-24T21:58:06.842Z",
+        "updatedAt": "2025-11-25T10:13:55.318Z",
         "createdAt": "2025-11-24T21:58:06.217Z"
       },
       {
@@ -4388,9 +6439,50 @@
         "email": "j.stemmelin@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 53",
         "mobile": "+49 (0)162 98 99 741",
-        "image": null,
+        "image": {
+          "id": 75,
+          "alt": "Justine Stemmelin",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.782Z",
+          "createdAt": "2025-11-25T08:31:10.509Z",
+          "url": "/api/media/file/Foto-Justine-scaled.jpg",
+          "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+          "filename": "Foto-Justine-scaled.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 449181,
+          "width": 2560,
+          "height": 2560,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 7238,
+              "filename": "Foto-Justine-scaled-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 26352,
+              "filename": "Foto-Justine-scaled-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 37828,
+              "filename": "Foto-Justine-scaled-1200x800.webp"
+            }
+          }
+        },
         "order": 4,
-        "updatedAt": "2025-11-24T21:58:11.573Z",
+        "updatedAt": "2025-11-25T10:13:52.196Z",
         "createdAt": "2025-11-24T21:58:10.988Z"
       }
     ],
@@ -4463,9 +6555,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 10,
-        "alt": "artists - biographyPDF - TB_Bio_e-1.pdf",
+        "alt": "Tzimon Barto - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:30.295Z",
+        "updatedAt": "2025-11-25T12:09:36.437Z",
         "createdAt": "2025-11-25T08:03:30.295Z",
         "url": "/api/media/file/TB_Bio_e-1.pdf",
         "thumbnailURL": null,
@@ -4505,9 +6597,9 @@
       },
       "galleryZIP": {
         "id": 11,
-        "alt": "artists - galleryZIP - Tzimon-Barto-zip.zip",
+        "alt": "Tzimon Barto - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:30.601Z",
+        "updatedAt": "2025-11-25T12:09:36.596Z",
         "createdAt": "2025-11-25T08:03:30.600Z",
         "url": "/api/media/file/Tzimon-Barto-zip.zip",
         "thumbnailURL": null,
@@ -4554,7 +6646,7 @@
     "twitterURL": null,
     "youtubeURL": "https://www.youtube.com/channel/UCraUCk3Ssnn87smggEhiKww",
     "spotifyURL": "https://open.spotify.com/artist/2EoHvHnD9aXsvsLQurIyS2",
-    "updatedAt": "2025-11-25T08:05:15.833Z",
+    "updatedAt": "2025-11-25T12:09:34.831Z",
     "createdAt": "2025-11-24T22:18:37.775Z"
   },
   {
@@ -4565,9 +6657,9 @@
     ],
     "image": {
       "id": 6,
-      "alt": "artists - image - marie-luise_neunecker-slide.jpg",
+      "alt": "Marie-Luise Neunecker",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:29.274Z",
+      "updatedAt": "2025-11-25T12:09:32.686Z",
       "createdAt": "2025-11-25T08:03:29.274Z",
       "url": "/api/media/file/marie-luise_neunecker-slide.jpg",
       "thumbnailURL": "/api/media/file/marie-luise_neunecker-slide-300x300.webp",
@@ -4617,9 +6709,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       }
     ],
@@ -4692,9 +6825,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 7,
-        "alt": "artists - biographyPDF - MLN_Bio_e-1.pdf",
+        "alt": "Marie-Luise Neunecker - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:29.555Z",
+        "updatedAt": "2025-11-25T12:09:32.861Z",
         "createdAt": "2025-11-25T08:03:29.555Z",
         "url": "/api/media/file/MLN_Bio_e-1.pdf",
         "thumbnailURL": null,
@@ -4734,9 +6867,9 @@
       },
       "galleryZIP": {
         "id": 8,
-        "alt": "artists - galleryZIP - Galerie-MLN.zip",
+        "alt": "Marie-Luise Neunecker - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:29.784Z",
+        "updatedAt": "2025-11-25T12:09:33.069Z",
         "createdAt": "2025-11-25T08:03:29.784Z",
         "url": "/api/media/file/Galerie-MLN.zip",
         "thumbnailURL": null,
@@ -4783,7 +6916,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": "https://open.spotify.com/artist/3ShVJJWVRhmIeHbBXHAfH0",
-    "updatedAt": "2025-11-25T08:05:12.836Z",
+    "updatedAt": "2025-11-25T12:09:30.952Z",
     "createdAt": "2025-11-24T22:18:35.212Z"
   },
   {
@@ -4794,9 +6927,9 @@
     ],
     "image": {
       "id": 4,
-      "alt": "artists - image - Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133.jpg",
+      "alt": "Gustav Rivinius",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:28.731Z",
+      "updatedAt": "2025-11-25T12:09:28.880Z",
       "createdAt": "2025-11-25T08:03:28.731Z",
       "url": "/api/media/file/Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133.jpg",
       "thumbnailURL": "/api/media/file/Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133-300x300.webp",
@@ -4846,9 +6979,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       }
     ],
@@ -4921,9 +7095,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 5,
-        "alt": "artists - biographyPDF - GR_Bio_e-1.pdf",
+        "alt": "Gustav Rivinius - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:28.933Z",
+        "updatedAt": "2025-11-25T12:09:29.076Z",
         "createdAt": "2025-11-25T08:03:28.933Z",
         "url": "/api/media/file/GR_Bio_e-1.pdf",
         "thumbnailURL": null,
@@ -4971,7 +7145,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": "https://open.spotify.com/artist/6VJhgsizVAiclgYQEf1qUm",
-    "updatedAt": "2025-11-25T08:05:09.858Z",
+    "updatedAt": "2025-11-25T12:09:27.297Z",
     "createdAt": "2025-11-24T22:18:32.720Z"
   },
   {
@@ -4982,9 +7156,9 @@
     ],
     "image": {
       "id": 1,
-      "alt": "artists - image - Ruth-Killius_Jean-François-Mariotti-e1568814418126.jpg",
+      "alt": "Ruth Killius",
       "credit": null,
-      "updatedAt": "2025-11-25T08:03:27.989Z",
+      "updatedAt": "2025-11-25T12:09:25.041Z",
       "createdAt": "2025-11-25T08:03:27.988Z",
       "url": "/api/media/file/Ruth-Killius_Jean-Fran%C3%A7ois-Mariotti-e1568814418126.jpg",
       "thumbnailURL": "/api/media/file/Ruth-Killius_Jean-Fran%C3%A7ois-Mariotti-e1568814418126-300x300.webp",
@@ -5034,9 +7208,50 @@
         "email": "t.nurnus@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 52",
         "mobile": "+49 (0)172 821 33 68",
-        "image": null,
+        "image": {
+          "id": 73,
+          "alt": "Tina Nurnus",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:34.119Z",
+          "createdAt": "2025-11-25T08:31:09.905Z",
+          "url": "/api/media/file/Tina.png",
+          "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+          "filename": "Tina.png",
+          "mimeType": "image/png",
+          "filesize": 474072,
+          "width": 1000,
+          "height": 1000,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/Tina-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4070,
+              "filename": "Tina-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/Tina-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 12702,
+              "filename": "Tina-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/Tina-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 16206,
+              "filename": "Tina-1200x800.webp"
+            }
+          }
+        },
         "order": 2,
-        "updatedAt": "2025-11-24T21:58:08.370Z",
+        "updatedAt": "2025-11-25T10:13:54.211Z",
         "createdAt": "2025-11-24T21:58:07.818Z"
       },
       {
@@ -5049,9 +7264,50 @@
         "email": "v.fischer@ks-schoerke.de",
         "phone": "+49 (0)611-50 58 90 54",
         "mobile": "+49 (0)162 9657346",
-        "image": null,
+        "image": {
+          "id": 74,
+          "alt": "Veronika Fischer",
+          "credit": null,
+          "updatedAt": "2025-11-25T08:43:33.946Z",
+          "createdAt": "2025-11-25T08:31:10.190Z",
+          "url": "/api/media/file/V.Fischer-sw.jpg",
+          "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+          "filename": "V.Fischer-sw.jpg",
+          "mimeType": "image/jpeg",
+          "filesize": 99291,
+          "width": 1024,
+          "height": 1024,
+          "focalX": 50,
+          "focalY": 50,
+          "sizes": {
+            "thumbnail": {
+              "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+              "width": 300,
+              "height": 300,
+              "mimeType": "image/webp",
+              "filesize": 4204,
+              "filename": "V.Fischer-sw-300x300.webp"
+            },
+            "card": {
+              "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+              "width": 768,
+              "height": 768,
+              "mimeType": "image/webp",
+              "filesize": 16668,
+              "filename": "V.Fischer-sw-768x768.webp"
+            },
+            "hero": {
+              "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+              "width": 1200,
+              "height": 800,
+              "mimeType": "image/webp",
+              "filesize": 21126,
+              "filename": "V.Fischer-sw-1200x800.webp"
+            }
+          }
+        },
         "order": 3,
-        "updatedAt": "2025-11-24T21:58:10.035Z",
+        "updatedAt": "2025-11-25T10:13:53.234Z",
         "createdAt": "2025-11-24T21:58:09.448Z"
       }
     ],
@@ -5124,9 +7380,9 @@
     "downloads": {
       "biographyPDF": {
         "id": 2,
-        "alt": "artists - biographyPDF - RK_Bio_e-1.pdf",
+        "alt": "Ruth Killius - Biography",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:28.189Z",
+        "updatedAt": "2025-11-25T12:09:25.209Z",
         "createdAt": "2025-11-25T08:03:28.189Z",
         "url": "/api/media/file/RK_Bio_e-1.pdf",
         "thumbnailURL": null,
@@ -5166,9 +7422,9 @@
       },
       "galleryZIP": {
         "id": 3,
-        "alt": "artists - galleryZIP - Download-Zip_RK.zip",
+        "alt": "Ruth Killius - Gallery",
         "credit": null,
-        "updatedAt": "2025-11-25T08:03:28.470Z",
+        "updatedAt": "2025-11-25T12:09:25.415Z",
         "createdAt": "2025-11-25T08:03:28.470Z",
         "url": "/api/media/file/Download-Zip_RK.zip",
         "thumbnailURL": null,
@@ -5215,7 +7471,7 @@
     "twitterURL": null,
     "youtubeURL": null,
     "spotifyURL": null,
-    "updatedAt": "2025-11-25T08:05:06.419Z",
+    "updatedAt": "2025-11-25T12:09:23.688Z",
     "createdAt": "2025-11-24T22:18:30.558Z"
   }
 ]
