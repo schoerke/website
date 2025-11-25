@@ -16,7 +16,7 @@
 - schedule campaigns for future sending
 - track campaign performance metrics (open rates, click rates, etc.)
 
-## Cmd-K: Advanced Search
+## Cmd-K: Advanced Search (implemented)
 
 - implement Cmd-K style search for quick navigation
 - search across collections, media, and pages

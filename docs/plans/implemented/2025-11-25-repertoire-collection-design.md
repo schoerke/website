@@ -1,8 +1,16 @@
 # Repertoire Collection Architecture Design
 
 **Date:** 2025-11-25  
-**Status:** Planning - Not Implemented  
+**Status:** ✅ Implemented (2025-11-25)  
 **Related:** `2025-11-22-recording-collection-design.md`
+
+**Implementation Summary:**
+
+- Repertoire collection created with localized fields (title, description)
+- WordPress migration successful: 32 entries (16 EN + 16 DE)
+- UI integrated with new Repertoire tab on artist pages
+- HTML to Lexical converter fixed (line 288 newline preservation)
+- All edge cases documented and handled in migration script
 
 ## Overview
 

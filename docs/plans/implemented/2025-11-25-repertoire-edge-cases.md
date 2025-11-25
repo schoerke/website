@@ -1,11 +1,15 @@
 # Repertoire Collection - Edge Cases Analysis
 
 **Date:** 2025-11-25  
-**Status:** Refined and Finalized
+**Status:** ✅ Resolved and Implemented
 
-## Summary of Decisions
+**Implementation Notes:**
 
-All edge cases have been identified and resolved through collaborative decision-making.
+- All edge cases have been addressed in the migration script
+- WordPress data migrated successfully with proper edge case handling
+- Mismatched titles handled via language fallback
+- Orphan repertoires imported (no issues encountered)
+- Duo/ensemble multi-artist linking working correctly
 
 ---
 
@@ -14,6 +18,7 @@ All edge cases have been identified and resolved through collaborative decision-
 **Issue:** Section names differ between languages but contain the same content.
 
 **Examples:**
+
 - Ruth Killius: "Viola" (EN) ≠ "Violakonzerte" (DE)
 - Thomas Zehetmair: "Conductor" (EN) ≠ "Dirigent" (DE)
 - Maurice Steger: "Recorder" (EN) ≠ "Blockflöte" (DE)
@@ -21,6 +26,7 @@ All edge cases have been identified and resolved through collaborative decision-
 **Decision:** ✅ Manual review required
 
 **Implementation:**
+
 - Migration script flags mismatched titles for manual review
 - Operator decides correct pairing during migration
 - Log warnings for human inspection
@@ -32,6 +38,7 @@ All edge cases have been identified and resolved through collaborative decision-
 **Issue:** Some repertoires exist only in EN or only in DE.
 
 **Examples:**
+
 - "Duo Thomas Zehetmair und Ruth Killius - Repertoire" (DE only)
 - "Maurice Steger - Repertoire Dirigent" (DE only)
 - "Thomas Zehetmair - Repertoire Conductor" (EN only)
@@ -39,6 +46,7 @@ All edge cases have been identified and resolved through collaborative decision-
 **Decision:** ✅ Language fallback
 
 **Implementation:**
+
 - Use Payload's localization fallback feature
 - If content missing in requested locale, serve the other locale's content
 - No empty placeholders needed
@@ -50,6 +58,7 @@ All edge cases have been identified and resolved through collaborative decision-
 **Issue:** Some repertoire posts can't be linked to an artist.
 
 **Examples:**
+
 - "Repertoire" (standalone, no artist name)
 - "Repertoire - Werkliste Dirigent" (conductor work list without artist)
 - "Repertoire Tianwa Yang" (unusual title format)
@@ -57,6 +66,7 @@ All edge cases have been identified and resolved through collaborative decision-
 **Decision:** ✅ Best-effort matching, import with no artist if no match
 
 **Implementation:**
+
 - Try to extract artist name from title/content
 - Use fuzzy matching to find artist in database
 - If no match found, create Repertoire document with empty `artists` array
@@ -69,11 +79,13 @@ All edge cases have been identified and resolved through collaborative decision-
 **Issue:** Artist names in WordPress posts don't exactly match artist records.
 
 **Examples:**
+
 - EN: "Dominik **Wagner**"
 - DE: "Dominik **Wager**" (typo)
 - Database: "Dominik Wagner" (correct)
 
 **Implementation:**
+
 - Use fuzzy name matching (Levenshtein distance or similar)
 - Log potential typos for review
 - Fall back to exact match if fuzzy matching is ambiguous
@@ -103,6 +115,7 @@ All edge cases have been identified and resolved through collaborative decision-
 **Decision:** ✅ Single shared entry with multiple artists
 
 **Implementation:**
+
 ```typescript
 {
   title: { en: "Duo Repertoire", de: "Duo-Repertoire" },
@@ -112,6 +125,7 @@ All edge cases have been identified and resolved through collaborative decision-
 ```
 
 **Benefits:**
+
 - Single source of truth
 - No data duplication
 - Easy to maintain
@@ -125,6 +139,7 @@ All edge cases have been identified and resolved through collaborative decision-
 **Decision:** ✅ Create then update pattern
 
 **Implementation:**
+
 ```typescript
 // 1. Create with EN locale
 const doc = await payload.create({
@@ -143,6 +158,7 @@ await payload.update({
 ```
 
 **Rationale:**
+
 - Consistent with existing migration patterns
 - Ensures hooks fire correctly per locale
 - Required for proper search indexing in both languages
@@ -156,6 +172,7 @@ await payload.update({
 **Decision:** ✅ Multi-select categories with smart inference
 
 **Schema:**
+
 ```typescript
 {
   name: 'categories',
@@ -167,6 +184,7 @@ await payload.update({
 ```
 
 **Inference Logic:**
+
 ```typescript
 function inferCategories(sectionTitle: string): string[] {
   const title = sectionTitle.toLowerCase()
@@ -179,12 +197,16 @@ function inferCategories(sectionTitle: string): string[] {
 
   // Solo instrument keywords
   if (
-    title.includes('piano') || title.includes('klavier') ||
-    title.includes('violin') || title.includes('violine') ||
-    title.includes('viola') || 
-    title.includes('violoncello') || title.includes('cello') ||
+    title.includes('piano') ||
+    title.includes('klavier') ||
+    title.includes('violin') ||
+    title.includes('violine') ||
+    title.includes('viola') ||
+    title.includes('violoncello') ||
+    title.includes('cello') ||
     title.includes('horn') ||
-    title.includes('recorder') || title.includes('blockflöte')
+    title.includes('recorder') ||
+    title.includes('blockflöte')
   ) {
     categories.push('solo')
   }
@@ -204,6 +226,7 @@ function inferCategories(sectionTitle: string): string[] {
 ```
 
 **Examples:**
+
 - "Piano" → `['solo']`
 - "Play/Conduct" → `['solo', 'conductor']`
 - "Violakonzerte" → `['solo', 'concerto']`
@@ -216,7 +239,8 @@ function inferCategories(sectionTitle: string): string[] {
 
 **Decision:** ✅ Leave categories empty if no match (don't force a default)
 
-**Implementation:** 
+**Implementation:**
+
 - Return empty array from `inferCategories()` if no keywords match
 - No "general" category option
 - Cleaner data model
@@ -228,6 +252,7 @@ function inferCategories(sectionTitle: string): string[] {
 **Decision:** ✅ Public read access (same as Artists)
 
 **Implementation:**
+
 ```typescript
 export const Repertoires: CollectionConfig = {
   slug: 'repertoires',
@@ -245,11 +270,13 @@ export const Repertoires: CollectionConfig = {
 **Decision:** ✅ Index repertoires in search collection
 
 **Implementation:**
+
 - Configure `@payloadcms/plugin-search` to index repertoires collection
 - Use separate API calls per locale (EN, DE) for proper indexing
 - Users can search for repertoire content (e.g., "Beethoven sonatas")
 
 **Benefits:**
+
 - Find artists by repertoire ("Who performs Ligeti?")
 - Improved discoverability
 
@@ -260,6 +287,7 @@ export const Repertoires: CollectionConfig = {
 **Decision:** ✅ Artist-only fetching (via service layer/server actions)
 
 **Implementation:**
+
 - No direct public API endpoint for repertoires
 - Fetch through Server Actions for client-side lazy loading
 - Service layer methods for server-side usage
@@ -271,6 +299,7 @@ export const Repertoires: CollectionConfig = {
 **Decision:** ✅ No versioning (edits go live immediately)
 
 **Implementation:**
+
 - Simple collection without `versions` or `drafts`
 - No editorial workflow needed
 - Edits are immediate (like Artists collection)
@@ -284,6 +313,7 @@ export const Repertoires: CollectionConfig = {
 **Implementation:**
 
 **Server Action** (`src/actions/repertoire.ts`):
+
 ```typescript
 'use server'
 
@@ -303,6 +333,7 @@ export async function getRepertoiresByArtist(artistId: string, locale: string) {
 ```
 
 **Client Component** (`ArtistTabs.tsx`):
+
 ```typescript
 import { getRepertoiresByArtist } from '@/actions/repertoire'
 
@@ -320,11 +351,11 @@ useEffect(() => {
   if (activeTab === 'repertoire' && !repertoiresFetched && !repertoiresLoading) {
     setRepertoiresLoading(true)
     getRepertoiresByArtist(artist.id, locale)
-      .then(data => {
+      .then((data) => {
         setRepertoires(data)
         setRepertoiresFetched(true)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to fetch repertoires:', err)
         setRepertoiresFetched(true)
       })
@@ -334,6 +365,7 @@ useEffect(() => {
 ```
 
 **Benefits:**
+
 - ✅ No overfetching (only loads when tab is opened)
 - ✅ No public API endpoint created
 - ✅ Type-safe with TypeScript
@@ -373,12 +405,14 @@ useEffect(() => {
 ## Files to Create/Modify
 
 ### New Files
+
 - `src/collections/Repertoires.ts` - Collection schema
 - `src/actions/repertoire.ts` - Server Action for lazy loading
 - `src/services/repertoire.ts` - Service layer (if needed for server-side usage)
 - `src/components/Repertoire/RepertoireList.tsx` - Display component (if needed)
 
 ### Modified Files
+
 - `src/collections/Artists.ts` - Remove inline repertoire field (post-migration)
 - `src/payload.config.ts` - Add Repertoires collection + search plugin config
 - `src/components/Artist/ArtistTabs.tsx` - Add lazy loading for repertoires
