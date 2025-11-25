@@ -18,7 +18,7 @@
  *   scripts/db/json/artists.json
  *
  * @see scripts/db/seedAll.ts - Master orchestration script
- * @see scripts/db/seedEmployees.ts - Employee seeding script
+ * @see scripts/wordpress/migrateEmployees.ts - Employee migration script
  */
 
 import config from '@payload-config'
@@ -120,6 +120,7 @@ async function run() {
       const created = await payload.create({
         collection: 'artists',
         data: artistEn,
+        locale: 'en', // Explicitly set English locale
       })
 
       console.log(`Created artist: ${artistData.name} (en)`)

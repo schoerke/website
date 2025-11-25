@@ -1,6 +1,5 @@
 'use client'
 
-import { publicEnv } from '@/config/env'
 import { Link } from '@/i18n/navigation'
 import type { Media, Post } from '@/payload-types'
 import { useTranslations } from 'next-intl'
@@ -16,14 +15,14 @@ interface NewsFeedListProps {
 function getImageUrl(img: Media | null | undefined, defaultImg: Media | null | undefined): string {
   // Use post's image if available
   if (img) {
-    if (img.url && img.url.startsWith('http')) return img.url
-    if (img.filename) return `${publicEnv.r2PublicEndpoint}/${img.filename}`
+    if (img.url) return img.url
+    if (img.filename) return `/api/media/file/${img.filename}`
   }
 
   // Fall back to default image
   if (defaultImg) {
-    if (defaultImg.url && defaultImg.url.startsWith('http')) return defaultImg.url
-    if (defaultImg.filename) return `${publicEnv.r2PublicEndpoint}/${defaultImg.filename}`
+    if (defaultImg.url) return defaultImg.url
+    if (defaultImg.filename) return `/api/media/file/${defaultImg.filename}`
   }
 
   // Final fallback to placeholder

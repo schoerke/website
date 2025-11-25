@@ -10,50 +10,50 @@
     "phone": "+49 (0)611-50 58 90 53",
     "mobile": "+49 (0)162 98 99 741",
     "image": {
-      "id": 1,
-      "alt": "Default User Avatar",
+      "id": 75,
+      "alt": "employees - image - Foto-Justine-scaled.jpg",
       "credit": null,
-      "updatedAt": "2025-11-22T16:23:32.203Z",
-      "createdAt": "2025-11-22T16:23:32.203Z",
-      "url": "/api/media/file/default-avatar.webp",
-      "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
-      "filename": "default-avatar.webp",
-      "mimeType": "image/webp",
-      "filesize": 872,
-      "width": 300,
-      "height": 300,
+      "updatedAt": "2025-11-25T08:31:10.510Z",
+      "createdAt": "2025-11-25T08:31:10.509Z",
+      "url": "/api/media/file/Foto-Justine-scaled.jpg",
+      "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+      "filename": "Foto-Justine-scaled.jpg",
+      "mimeType": "image/jpeg",
+      "filesize": 449181,
+      "width": 2560,
+      "height": 2560,
       "focalX": 50,
       "focalY": 50,
       "sizes": {
         "thumbnail": {
-          "url": "/api/media/file/default-avatar-300x300.webp",
+          "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
           "width": 300,
           "height": 300,
           "mimeType": "image/webp",
-          "filesize": 872,
-          "filename": "default-avatar-300x300.webp"
+          "filesize": 7238,
+          "filename": "Foto-Justine-scaled-300x300.webp"
         },
         "card": {
-          "url": null,
-          "width": null,
-          "height": null,
-          "mimeType": null,
-          "filesize": null,
-          "filename": null
+          "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+          "width": 768,
+          "height": 768,
+          "mimeType": "image/webp",
+          "filesize": 26352,
+          "filename": "Foto-Justine-scaled-768x768.webp"
         },
         "hero": {
-          "url": null,
-          "width": null,
-          "height": null,
-          "mimeType": null,
-          "filesize": null,
-          "filename": null
+          "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+          "width": 1200,
+          "height": 800,
+          "mimeType": "image/webp",
+          "filesize": 37828,
+          "filename": "Foto-Justine-scaled-1200x800.webp"
         }
       }
     },
     "order": 4,
-    "updatedAt": "2025-11-24T07:51:38.029Z",
-    "createdAt": "2025-11-22T16:24:07.779Z"
+    "updatedAt": "2025-11-25T08:31:28.863Z",
+    "createdAt": "2025-11-24T21:58:10.988Z"
   },
   {
     "id": 3,
@@ -62,54 +62,54 @@
       "de": "Assistant Artist Manager",
       "en": "Assistant Artist Manager"
     },
-    "email": "t.fischer@ks-schoerke.de",
+    "email": "v.fischer@ks-schoerke.de",
     "phone": "+49 (0)611-50 58 90 54",
-    "mobile": "+49 (0)162 965 73 46",
+    "mobile": "+49 (0)162 9657346",
     "image": {
-      "id": 1,
-      "alt": "Default User Avatar",
+      "id": 74,
+      "alt": "employees - image - V.Fischer-sw.jpg",
       "credit": null,
-      "updatedAt": "2025-11-22T16:23:32.203Z",
-      "createdAt": "2025-11-22T16:23:32.203Z",
-      "url": "/api/media/file/default-avatar.webp",
-      "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
-      "filename": "default-avatar.webp",
-      "mimeType": "image/webp",
-      "filesize": 872,
-      "width": 300,
-      "height": 300,
+      "updatedAt": "2025-11-25T08:31:10.190Z",
+      "createdAt": "2025-11-25T08:31:10.190Z",
+      "url": "/api/media/file/V.Fischer-sw.jpg",
+      "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+      "filename": "V.Fischer-sw.jpg",
+      "mimeType": "image/jpeg",
+      "filesize": 99291,
+      "width": 1024,
+      "height": 1024,
       "focalX": 50,
       "focalY": 50,
       "sizes": {
         "thumbnail": {
-          "url": "/api/media/file/default-avatar-300x300.webp",
+          "url": "/api/media/file/V.Fischer-sw-300x300.webp",
           "width": 300,
           "height": 300,
           "mimeType": "image/webp",
-          "filesize": 872,
-          "filename": "default-avatar-300x300.webp"
+          "filesize": 4204,
+          "filename": "V.Fischer-sw-300x300.webp"
         },
         "card": {
-          "url": null,
-          "width": null,
-          "height": null,
-          "mimeType": null,
-          "filesize": null,
-          "filename": null
+          "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+          "width": 768,
+          "height": 768,
+          "mimeType": "image/webp",
+          "filesize": 16668,
+          "filename": "V.Fischer-sw-768x768.webp"
         },
         "hero": {
-          "url": null,
-          "width": null,
-          "height": null,
-          "mimeType": null,
-          "filesize": null,
-          "filename": null
+          "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+          "width": 1200,
+          "height": 800,
+          "mimeType": "image/webp",
+          "filesize": 21126,
+          "filename": "V.Fischer-sw-1200x800.webp"
         }
       }
     },
     "order": 3,
-    "updatedAt": "2025-11-24T07:51:23.800Z",
-    "createdAt": "2025-11-22T16:24:07.367Z"
+    "updatedAt": "2025-11-25T08:31:27.043Z",
+    "createdAt": "2025-11-24T21:58:09.448Z"
   },
   {
     "id": 2,
@@ -120,52 +120,52 @@
     },
     "email": "t.nurnus@ks-schoerke.de",
     "phone": "+49 (0)611-50 58 90 52",
-    "mobile": "+49 (0)172 821 32 59",
+    "mobile": "+49 (0)172 821 33 68",
     "image": {
-      "id": 1,
-      "alt": "Default User Avatar",
+      "id": 73,
+      "alt": "employees - image - Tina.png",
       "credit": null,
-      "updatedAt": "2025-11-22T16:23:32.203Z",
-      "createdAt": "2025-11-22T16:23:32.203Z",
-      "url": "/api/media/file/default-avatar.webp",
-      "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
-      "filename": "default-avatar.webp",
-      "mimeType": "image/webp",
-      "filesize": 872,
-      "width": 300,
-      "height": 300,
+      "updatedAt": "2025-11-25T08:31:09.905Z",
+      "createdAt": "2025-11-25T08:31:09.905Z",
+      "url": "/api/media/file/Tina.png",
+      "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+      "filename": "Tina.png",
+      "mimeType": "image/png",
+      "filesize": 474072,
+      "width": 1000,
+      "height": 1000,
       "focalX": 50,
       "focalY": 50,
       "sizes": {
         "thumbnail": {
-          "url": "/api/media/file/default-avatar-300x300.webp",
+          "url": "/api/media/file/Tina-300x300.webp",
           "width": 300,
           "height": 300,
           "mimeType": "image/webp",
-          "filesize": 872,
-          "filename": "default-avatar-300x300.webp"
+          "filesize": 4070,
+          "filename": "Tina-300x300.webp"
         },
         "card": {
-          "url": null,
-          "width": null,
-          "height": null,
-          "mimeType": null,
-          "filesize": null,
-          "filename": null
+          "url": "/api/media/file/Tina-768x768.webp",
+          "width": 768,
+          "height": 768,
+          "mimeType": "image/webp",
+          "filesize": 12702,
+          "filename": "Tina-768x768.webp"
         },
         "hero": {
-          "url": null,
-          "width": null,
-          "height": null,
-          "mimeType": null,
-          "filesize": null,
-          "filename": null
+          "url": "/api/media/file/Tina-1200x800.webp",
+          "width": 1200,
+          "height": 800,
+          "mimeType": "image/webp",
+          "filesize": 16206,
+          "filename": "Tina-1200x800.webp"
         }
       }
     },
     "order": 2,
-    "updatedAt": "2025-11-24T07:51:11.944Z",
-    "createdAt": "2025-11-22T16:24:06.925Z"
+    "updatedAt": "2025-11-25T08:31:25.175Z",
+    "createdAt": "2025-11-24T21:58:07.818Z"
   },
   {
     "id": 1,
@@ -176,51 +176,51 @@
     },
     "email": "e.wagner@ks-schoerke.de",
     "phone": "+49 (0)611-50 58 90 51",
-    "mobile": "+49 (0)172 821 32 58",
+    "mobile": "+49(0)172 821 32 58",
     "image": {
-      "id": 1,
-      "alt": "Default User Avatar",
+      "id": 72,
+      "alt": "employees - image - IMG_2578-squashed.jpg",
       "credit": null,
-      "updatedAt": "2025-11-22T16:23:32.203Z",
-      "createdAt": "2025-11-22T16:23:32.203Z",
-      "url": "/api/media/file/default-avatar.webp",
-      "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
-      "filename": "default-avatar.webp",
-      "mimeType": "image/webp",
-      "filesize": 872,
-      "width": 300,
-      "height": 300,
+      "updatedAt": "2025-11-25T08:31:09.577Z",
+      "createdAt": "2025-11-25T08:31:09.576Z",
+      "url": "/api/media/file/IMG_2578-squashed.jpg",
+      "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+      "filename": "IMG_2578-squashed.jpg",
+      "mimeType": "image/jpeg",
+      "filesize": 75388,
+      "width": 1024,
+      "height": 1024,
       "focalX": 50,
       "focalY": 50,
       "sizes": {
         "thumbnail": {
-          "url": "/api/media/file/default-avatar-300x300.webp",
+          "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
           "width": 300,
           "height": 300,
           "mimeType": "image/webp",
-          "filesize": 872,
-          "filename": "default-avatar-300x300.webp"
+          "filesize": 5102,
+          "filename": "IMG_2578-squashed-300x300.webp"
         },
         "card": {
-          "url": null,
-          "width": null,
-          "height": null,
-          "mimeType": null,
-          "filesize": null,
-          "filename": null
+          "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+          "width": 768,
+          "height": 768,
+          "mimeType": "image/webp",
+          "filesize": 21758,
+          "filename": "IMG_2578-squashed-768x768.webp"
         },
         "hero": {
-          "url": null,
-          "width": null,
-          "height": null,
-          "mimeType": null,
-          "filesize": null,
-          "filename": null
+          "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+          "width": 1200,
+          "height": 800,
+          "mimeType": "image/webp",
+          "filesize": 27314,
+          "filename": "IMG_2578-squashed-1200x800.webp"
         }
       }
     },
     "order": 1,
-    "updatedAt": "2025-11-24T07:50:59.365Z",
-    "createdAt": "2025-11-22T16:24:06.520Z"
+    "updatedAt": "2025-11-25T08:31:23.328Z",
+    "createdAt": "2025-11-24T21:58:06.217Z"
   }
 ]

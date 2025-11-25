@@ -1,6 +1,5 @@
 'use client'
 
-import { publicEnv } from '@/config/env'
 import { Link } from '@/i18n/navigation'
 import type { Media } from '@/payload-types'
 import { useTranslations } from 'next-intl'
@@ -16,8 +15,10 @@ interface ArtistCardProps {
 
 function getImageUrl(img: Media | null | undefined): string {
   if (!img) return '/placeholder.jpg'
-  if (img.url && img.url.startsWith('http')) return img.url
-  if (img.filename) return `${publicEnv.r2PublicEndpoint}/${img.filename}`
+  // Use the url field directly (local or remote)
+  if (img.url) return img.url
+  // Fallback to filename with local API endpoint
+  if (img.filename) return `/api/media/file/${img.filename}`
   return '/placeholder.jpg'
 }
 

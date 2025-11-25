@@ -24,7 +24,8 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { default as default_eaeae66fcecd563981ed301fc2cbced3 } from '../../../collections/components/RepertoireRowLabel'
 import { default as default_928531666893cf88abf7ab97274178fa } from '../../../collections/components/DiscographyRowLabel'
 import { default as default_070c4ea0e52f4d5bcdbcd141ace9ea9e } from '../../../collections/components/YouTubeLinkRowLabel'
-import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
+import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
+import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 
 export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -53,5 +54,6 @@ export const importMap = {
   "./collections/components/RepertoireRowLabel#default": default_eaeae66fcecd563981ed301fc2cbced3,
   "./collections/components/DiscographyRowLabel#default": default_928531666893cf88abf7ab97274178fa,
   "./collections/components/YouTubeLinkRowLabel#default": default_070c4ea0e52f4d5bcdbcd141ace9ea9e,
-  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
+  "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
+  "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634
 }

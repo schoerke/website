@@ -13,14 +13,27 @@ This includes:
 - **Seeding or importing** data
 - **Accepting schema push prompts** from Payload CMS or any ORM
 
+### MANDATORY: Database Environment Verification
+
+**BEFORE ANY DATABASE OPERATION (including read operations for context):**
+
+1. **CHECK** the current database configuration in `.env`:
+   - Run `cat .env | grep DATABASE_URI`
+   - Identify if it's local (file:// or local.db) or remote (libsql://, postgres://, etc.)
+2. **VERIFY** with the user which database should be used for the current task
+3. **CONFIRM** the database environment before proceeding
+
+**NEVER ASSUME** the database configuration. Always verify first.
+
 ### Required Process for ANY Database Operation:
 
-1. **STOP** - Do NOT run the command yet
-2. **EXPLAIN** exactly what will change in the database
-3. **SHOW** the specific command/script you want to run
-4. **LIST** any data that will be deleted, modified, or migrated
-5. **WAIT** for explicit user response: "yes, go ahead" or "proceed"
-6. Only after receiving explicit approval, execute the operation
+1. **VERIFY DATABASE** - Check `.env` and confirm with user which database to use
+2. **STOP** - Do NOT run the command yet
+3. **EXPLAIN** exactly what will change in the database AND which database (local vs remote)
+4. **SHOW** the specific command/script you want to run
+5. **LIST** any data that will be deleted, modified, or migrated
+6. **WAIT** for explicit user response: "yes, go ahead" or "proceed"
+7. Only after receiving explicit approval, execute the operation
 
 ### Examples of Operations That Require Approval:
 
@@ -40,9 +53,19 @@ This includes:
 **If you violate this policy and cause data loss, immediately:**
 
 1. Acknowledge the mistake
-2. Explain what data was lost
+2. Explain what data was affected and on which database (local vs remote)
 3. Check if recovery is possible from backups
 4. Update these instructions to prevent recurrence
+
+### Incident Log
+
+**2025-11-24: Remote Database Modified Without Verification**
+
+- **What happened:** Made database changes (media seeding, biography updates) on remote Turso database without verifying
+  configuration
+- **Root cause:** Failed to check `.env` DATABASE_URI before running database operations
+- **Impact:** 2 media files uploaded, artist biography data modified on remote development database
+- **Prevention:** Added mandatory database environment verification step above
 
 ## Git Commit Policy
 

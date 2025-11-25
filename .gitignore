@@ -45,3 +45,15 @@ next-env.d.ts
 # temporary scripts and files
 /tmp/*
 !/tmp/README.md
+*.db
+
+# generated search index files
+/public/search-index-*.json
+
+# WordPress migration - downloaded media files (already uploaded to Payload)
+/scripts/wordpress/data/downloaded-media
+
+# WordPress migration - old individual exports (replaced by all-en.xml and all-de.xml)
+/scripts/wordpress/data/posts-*.xml
+/scripts/wordpress/data/artist-*.xml
+/scripts/wordpress/data/employee*.xml

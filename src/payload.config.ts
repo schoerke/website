@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url'
 
 // Adapters & Plugins
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
-import { s3Storage } from '@payloadcms/storage-s3'
+import { searchPlugin } from '@payloadcms/plugin-search'
 
 // Collections
 import { Artists } from './collections/Artists'
@@ -23,6 +23,9 @@ import { Users } from './collections/Users'
 // Translations
 import de from './i18n/de'
 import en from './i18n/en'
+
+// Search utilities
+import { beforeSyncHook } from './utils/search/beforeSyncHook'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -61,21 +64,73 @@ export default buildConfig({
     fallback: false,
   },
   plugins: [
-    // Cloudflare R2
-    s3Storage({
-      bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
-      collections: {
-        media: true,
-      },
-      config: {
-        credentials: {
-          accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
-          secretAccessKey: process.env.CLOUDFLARE_SECRET ?? '',
+    // Search
+    searchPlugin({
+      collections: ['artists', 'employees', 'recordings', 'posts'],
+      beforeSync: beforeSyncHook,
+      localize: true, // Localizes the 'title' field in search collection
+      defaultPriorities: {
+        artists: 50,
+        recordings: 40,
+        posts: ({ doc }) => {
+          // Higher priority for news posts
+          if (doc.categories && Array.isArray(doc.categories) && doc.categories.includes('news')) {
+            return 30
+          }
+          // Lower priority for project posts
+          return 20
         },
-        region: 'auto',
-        endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
+        employees: 15,
+      },
+      searchOverrides: {
+        admin: {
+          group: 'System',
+        },
+        fields: ({ defaultFields }) => [
+          ...defaultFields,
+          {
+            name: 'displayTitle',
+            type: 'text',
+            index: true,
+            admin: {
+              description: 'Clean display title for search results (e.g., artist name, post title)',
+            },
+          },
+          {
+            name: 'locale',
+            type: 'select',
+            options: [
+              { label: 'German', value: 'de' },
+              { label: 'English', value: 'en' },
+            ],
+            index: true,
+            admin: {
+              description: 'Locale of the search record for filtering results',
+            },
+          },
+        ],
       },
     }),
+
+    // Cloudflare R2 via S3 API
+    // TEMPORARILY DISABLED FOR MIGRATION - SSL/TLS issues with AWS SDK + R2
+    // Files will be stored locally, then manually synced to R2 after migration
+    // TODO: Re-enable after migration is complete
+    // s3Storage({
+    //   bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
+    //   collections: {
+    //     media: true,
+    //   },
+    //   config: {
+    //     credentials: {
+    //       accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
+    //       secretAccessKey: process.env.CLOUDFLARE_SECRET ?? '',
+    //     },
+    //     region: 'auto',
+    //     endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
+    //     forcePathStyle: true, // Required for R2
+    //   },
+    // }),
 
     payloadCloudPlugin(),
   ],
@@ -83,7 +138,7 @@ export default buildConfig({
   sharp,
   upload: {
     limits: {
-      fileSize: 5_000_000, // 5 MB in bytes
+      fileSize: 60_000_000, // 60 MB in bytes (temporarily increased for migration)
     },
   },
   typescript: {
