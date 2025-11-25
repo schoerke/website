@@ -8,19 +8,19 @@ This toolkit provides everything you need to migrate artist data safely and reli
 
 ### Core Scripts
 
-| Script | Purpose | Usage |
-|--------|---------|-------|
-| **`migrateArtists.ts`** | Main migration engine | `pnpm exec tsx tmp/migrateArtists.ts` |
+| Script                       | Purpose                | Usage                                                 |
+| ---------------------------- | ---------------------- | ----------------------------------------------------- |
+| **`migrateArtists.ts`**      | Main migration engine  | `pnpm exec tsx tmp/migrateArtists.ts`                 |
 | **`inspectWordPressXML.ts`** | XML structure analyzer | `pnpm exec tsx tmp/inspectWordPressXML.ts <file.xml>` |
-| **`generateSampleXML.ts`** | Test data generator | `pnpm exec tsx tmp/generateSampleXML.ts` |
+| **`generateSampleXML.ts`**   | Test data generator    | `pnpm exec tsx tmp/generateSampleXML.ts`              |
 
 ### Documentation
 
-| Document | Description |
-|----------|-------------|
-| **`QUICKSTART.md`** | 5-minute quick start guide |
+| Document                  | Description                           |
+| ------------------------- | ------------------------------------- |
+| **`QUICKSTART.md`**       | 5-minute quick start guide            |
 | **`MIGRATION_README.md`** | Comprehensive migration documentation |
-| **`README.md`** | This file (overview) |
+| **`README.md`**           | This file (overview)                  |
 
 ## ✨ Features
 
@@ -49,17 +49,20 @@ This toolkit provides everything you need to migrate artist data safely and reli
 ## 🚀 Quick Start
 
 **1. Generate sample data and test:**
+
 ```bash
 pnpm exec tsx tmp/generateSampleXML.ts
 pnpm exec tsx tmp/migrateArtists.ts --file=tmp/sample-artists.xml --dry-run
 ```
 
 **2. Analyze your WordPress export:**
+
 ```bash
 pnpm exec tsx tmp/inspectWordPressXML.ts scripts/wordpress/data/artists.xml
 ```
 
 **3. Run migration:**
+
 ```bash
 # Dry run first!
 pnpm exec tsx tmp/migrateArtists.ts --dry-run --verbose
@@ -154,17 +157,17 @@ Failed:  0
 
 How WordPress fields map to Payload CMS:
 
-| WordPress | Payload | Transform |
-|-----------|---------|-----------|
-| `title` | `name` | Direct |
-| `wp:post_name` | `slug` | Direct |
-| `content:encoded` | `biography` | HTML → Lexical |
-| `_thumbnail_id` | `image` | Media lookup |
-| `artist_instruments` | `instrument` | Array mapping |
-| `quote` | `quote` | Direct |
-| `homepage_url` | `homepageURL` | Validation |
-| `facebook_url` | `facebookURL` | Validation |
-| `instagram_url` | `instagramURL` | Validation |
+| WordPress            | Payload        | Transform      |
+| -------------------- | -------------- | -------------- |
+| `title`              | `name`         | Direct         |
+| `wp:post_name`       | `slug`         | Direct         |
+| `content:encoded`    | `biography`    | HTML → Lexical |
+| `_thumbnail_id`      | `image`        | Media lookup   |
+| `artist_instruments` | `instrument`   | Array mapping  |
+| `quote`              | `quote`        | Direct         |
+| `homepage_url`       | `homepageURL`  | Validation     |
+| `facebook_url`       | `facebookURL`  | Validation     |
+| `instagram_url`      | `instagramURL` | Validation     |
 
 **Note:** Field names may differ in your WordPress setup. Use the inspector tool to verify.
 
@@ -175,6 +178,7 @@ How WordPress fields map to Payload CMS:
 If your WordPress uses different field names:
 
 1. Run inspector to identify field names:
+
    ```bash
    pnpm exec tsx tmp/inspectWordPressXML.ts your-export.xml
    ```
@@ -193,12 +197,12 @@ Add custom fields or relationships:
 // In mapArtistData() function
 async function mapArtistData(wpArtist: WordPressArtist, payload: any): Promise<PayloadArtistData> {
   // ... existing code ...
-  
+
   // Add custom field mapping
   if (meta['custom_field']) {
     artistData.customField = transformCustomField(meta['custom_field'])
   }
-  
+
   return artistData
 }
 ```
@@ -208,18 +212,22 @@ async function mapArtistData(wpArtist: WordPressArtist, payload: any): Promise<P
 ### Common Issues
 
 **"Media not found"**
+
 - Ensure media migrated first: `pnpm migrate:media`
 - Update `findMediaId()` to match your media ID strategy
 
 **"Biography is empty"**
+
 - Check WordPress field name with inspector
 - Verify HTML-to-Lexical transformation works
 
 **"Invalid instrument value"**
+
 - Check valid values in `src/constants/options.ts`
 - Add value mapping in `mapInstruments()`
 
 **"Slug already exists"**
+
 - This is expected behavior (migration updates existing artists)
 - To create duplicates instead, modify `migrateArtist()` logic
 
@@ -243,12 +251,14 @@ For more troubleshooting, see [`MIGRATION_README.md`](./MIGRATION_README.md).
 5. **Confirm explicitly** before writing to database
 
 These scripts will:
+
 - ✅ Check `.env` for DATABASE_URI
 - ✅ Support dry-run mode for testing
 - ✅ Provide detailed output before changes
 - ✅ Report errors without stopping entire migration
 
 But YOU must:
+
 - ⚠️ Verify which database you're targeting
 - ⚠️ Create backups before running
 - ⚠️ Review dry-run output before proceeding
