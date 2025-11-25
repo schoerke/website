@@ -5,10 +5,10 @@
  * Handles localized content, media relationships, and contact information parsing.
  *
  * Prerequisites:
- * 1. Export employees from both WordPress instances:
- *    - EN: Tools > Export > Select "Employees" > Download
- *    - DE: Tools > Export > Select "Employees" > Download
- * 2. Place files in scripts/wordpress/data/employee.xml and employee-de.xml
+ * 1. Export ALL content from both WordPress instances:
+ *    - EN: Tools > Export > Select "All content" > Download
+ *    - DE: Tools > Export > Select "All content" > Download
+ * 2. Place files in scripts/wordpress/data/all-en.xml and all-de.xml
  * 3. Ensure media has been migrated first (employee images)
  *
  * Usage:
@@ -35,7 +35,12 @@
 import config from '@payload-config'
 import { XMLParser } from 'fast-xml-parser'
 import * as fs from 'fs/promises'
+import path from 'path'
 import { getPayload } from 'payload'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // Environment variables are automatically loaded by Payload CLI
 
@@ -85,8 +90,8 @@ interface MigrationStats {
 // ============================================================================
 
 const CONFIG = {
-  xmlPathEn: './scripts/wordpress/data/employee.xml',
-  xmlPathDe: './scripts/wordpress/data/employee-de.xml',
+  xmlPathEn: './scripts/wordpress/data/all-en.xml',
+  xmlPathDe: './scripts/wordpress/data/all-de.xml',
   dryRun: process.argv.includes('--dry-run'),
   verbose: process.argv.includes('--verbose'),
   defaultLocale: 'en' as const,
@@ -96,6 +101,112 @@ const CONFIG = {
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
+
+/**
+ * Media ID map loaded from media-id-map.json
+ * Maps filename → Payload media ID
+ */
+let mediaIdMap: Record<string, number> = {}
+
+/**
+ * Get WordPress attachment URL from all-en.xml
+ * This is used to resolve _thumbnail_id to actual media filename
+ */
+const attachmentMap = new Map<string, string>()
+
+/**
+ * Load media ID mapping from media-id-map.json
+ */
+async function loadMediaIdMap() {
+  try {
+    const mapPath = path.join(__dirname, 'data', 'media-id-map.json')
+    const mapData = await fs.readFile(mapPath, 'utf-8')
+    mediaIdMap = JSON.parse(mapData)
+    console.log(`✅ Loaded media ID map with ${Object.keys(mediaIdMap).length} entries\n`)
+  } catch (error) {
+    console.warn('⚠️  Could not load media-id-map.json:', error instanceof Error ? error.message : error)
+  }
+}
+
+/**
+ * Load attachment map from all-en.xml
+ * Maps attachment ID → URL
+ */
+async function loadAttachmentMap() {
+  try {
+    const xmlData = await fs.readFile(CONFIG.xmlPathEn, 'utf8')
+    const parser = new XMLParser()
+    const wpData = parser.parse(xmlData)
+    const items = wpData.rss?.channel?.item || []
+    const allItems = Array.isArray(items) ? items : [items]
+
+    for (const item of allItems) {
+      if (item['wp:post_type'] === 'attachment') {
+        const attachmentId = item['wp:post_id']
+        const attachmentUrl = item['wp:attachment_url']
+        if (attachmentId && attachmentUrl) {
+          attachmentMap.set(String(attachmentId), String(attachmentUrl))
+        }
+      }
+    }
+
+    console.log(`✅ Loaded ${attachmentMap.size} attachment URLs from all-en.xml\n`)
+  } catch (error) {
+    console.warn('⚠️  Could not load attachment map from all-en.xml:', error instanceof Error ? error.message : error)
+  }
+}
+
+/**
+ * Find media ID from pre-uploaded media using the media-id-map.json
+ */
+function findMediaByFilename(filename: string | undefined): number | null {
+  if (!filename) return null
+
+  // Try exact match first
+  if (mediaIdMap[filename]) {
+    return mediaIdMap[filename]
+  }
+
+  // Try URL-decoded filename
+  try {
+    const decoded = decodeURIComponent(filename)
+    if (mediaIdMap[decoded]) {
+      return mediaIdMap[decoded]
+    }
+  } catch {
+    // Ignore decode errors
+  }
+
+  return null
+}
+
+/**
+ * Find media ID by resolving thumbnail ID to URL, then filename
+ */
+function findMediaId(thumbnailId: string | number | undefined): number | null {
+  if (!thumbnailId) return null
+
+  // Look up attachment URL from ID
+  const attachmentUrl = attachmentMap.get(String(thumbnailId))
+  if (!attachmentUrl) {
+    if (CONFIG.verbose) {
+      console.log(`  ⚠️  Attachment ID ${thumbnailId} not found in all-en.xml`)
+    }
+    return null
+  }
+
+  // Extract filename from URL
+  const filename = attachmentUrl.split('/').pop()
+  if (!filename) return null
+
+  // Look up Payload media ID
+  const mediaId = findMediaByFilename(filename)
+  if (!mediaId && CONFIG.verbose) {
+    console.log(`  ⚠️  Media not found in map: ${filename}`)
+  }
+
+  return mediaId
+}
 
 /**
  * Parse WordPress postmeta into key-value object
@@ -172,20 +283,6 @@ function parseEmployeeContent(content: string): ParsedEmployeeData {
 }
 
 /**
- * Find media ID by WordPress attachment ID
- */
-async function findMediaId(payload: any, wpMediaId: string | number): Promise<number | null> {
-  try {
-    // Search by filename pattern (WordPress media IDs might be in filename)
-    // For now, we'll skip media lookup - can be added manually later
-    return null
-  } catch (error) {
-    console.warn(`Could not find media: ${wpMediaId}`)
-    return null
-  }
-}
-
-/**
  * Map WordPress employee data to Payload employee schema
  */
 async function mapEmployeeData(
@@ -207,10 +304,10 @@ async function mapEmployeeData(
     order: xmlOrder, // Use position in XML (1-indexed)
   }
 
-  // Featured image (optional)
+  // Featured image (resolve thumbnail ID to Payload media ID)
   const featuredImageId = meta['_thumbnail_id']
   if (featuredImageId) {
-    const mediaId = await findMediaId(payload, featuredImageId)
+    const mediaId = findMediaId(featuredImageId)
     if (mediaId) {
       employeeData.image = mediaId
     }
@@ -224,7 +321,7 @@ async function mapEmployeeData(
 // ============================================================================
 
 /**
- * Load and parse XML file
+ * Load and parse XML file, filtering for employee post type
  */
 async function loadXML(filePath: string): Promise<WordPressEmployee[]> {
   const xmlData = await fs.readFile(filePath, 'utf8')
@@ -232,7 +329,10 @@ async function loadXML(filePath: string): Promise<WordPressEmployee[]> {
   const wpData = parser.parse(xmlData)
 
   const items = wpData.rss?.channel?.item || []
-  return Array.isArray(items) ? items : [items]
+  const allItems = Array.isArray(items) ? items : [items]
+
+  // Filter for only employee post type
+  return allItems.filter((item) => item['wp:post_type'] === 'employee')
 }
 
 /**
@@ -333,6 +433,19 @@ async function migrateEmployee(
         locale: 'de',
       })
 
+      // Update media alt text if image exists
+      if (enData.image) {
+        try {
+          await payload.update({
+            collection: 'media',
+            id: enData.image,
+            data: { alt: name },
+          })
+        } catch (error) {
+          console.warn(`  ⚠️  Failed to update media alt text:`, error instanceof Error ? error.message : error)
+        }
+      }
+
       console.log(`🔄 Updated: ${name} (order: ${enData.order})`)
       stats.updated++
     } else {
@@ -352,6 +465,19 @@ async function migrateEmployee(
         },
         locale: 'de',
       })
+
+      // Update media alt text if image exists
+      if (enData.image) {
+        try {
+          await payload.update({
+            collection: 'media',
+            id: enData.image,
+            data: { alt: name },
+          })
+        } catch (error) {
+          console.warn(`  ⚠️  Failed to update media alt text:`, error instanceof Error ? error.message : error)
+        }
+      }
 
       console.log(`✅ Created: ${name} (order: ${enData.order})`)
       stats.created++
@@ -388,6 +514,10 @@ async function runMigration() {
     // Initialize Payload
     const payload = await getPayload({ config })
     console.log('✅ Payload initialized\n')
+
+    // Load media ID mapping and attachment URLs
+    await loadMediaIdMap()
+    await loadAttachmentMap()
 
     // Load both XML files
     console.log('📥 Loading WordPress exports...')
