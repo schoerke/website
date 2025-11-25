@@ -8,7 +8,6 @@ import { fileURLToPath } from 'url'
 // Adapters & Plugins
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { searchPlugin } from '@payloadcms/plugin-search'
-import { s3Storage } from '@payloadcms/storage-s3'
 
 // Collections
 import { Artists } from './collections/Artists'
@@ -65,7 +64,7 @@ export default buildConfig({
     fallback: false,
   },
   plugins: [
-    // Search Plugin
+    // Search
     searchPlugin({
       collections: ['artists', 'employees', 'recordings', 'posts'],
       beforeSync: beforeSyncHook,
@@ -84,6 +83,9 @@ export default buildConfig({
         employees: 15,
       },
       searchOverrides: {
+        admin: {
+          group: 'System',
+        },
         fields: ({ defaultFields }) => [
           ...defaultFields,
           {
@@ -110,21 +112,25 @@ export default buildConfig({
       },
     }),
 
-    // Cloudflare R2
-    s3Storage({
-      bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
-      collections: {
-        media: true,
-      },
-      config: {
-        credentials: {
-          accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
-          secretAccessKey: process.env.CLOUDFLARE_SECRET ?? '',
-        },
-        region: 'auto',
-        endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
-      },
-    }),
+    // Cloudflare R2 via S3 API
+    // TEMPORARILY DISABLED FOR MIGRATION - SSL/TLS issues with AWS SDK + R2
+    // Files will be stored locally, then manually synced to R2 after migration
+    // TODO: Re-enable after migration is complete
+    // s3Storage({
+    //   bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
+    //   collections: {
+    //     media: true,
+    //   },
+    //   config: {
+    //     credentials: {
+    //       accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
+    //       secretAccessKey: process.env.CLOUDFLARE_SECRET ?? '',
+    //     },
+    //     region: 'auto',
+    //     endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
+    //     forcePathStyle: true, // Required for R2
+    //   },
+    // }),
 
     payloadCloudPlugin(),
   ],
@@ -132,7 +138,7 @@ export default buildConfig({
   sharp,
   upload: {
     limits: {
-      fileSize: 5_000_000, // 5 MB in bytes
+      fileSize: 60_000_000, // 60 MB in bytes (temporarily increased for migration)
     },
   },
   typescript: {

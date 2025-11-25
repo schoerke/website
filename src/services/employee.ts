@@ -38,7 +38,7 @@ export const getEmployees = async (locale?: LocaleCode) => {
 export const getEmployeeById = async (id: string, locale?: LocaleCode) => {
   const payload = await getPayload({ config })
   return await payload.findByID({
-    collection: 'artists',
+    collection: 'employees',
     id: id,
     locale: locale || 'de',
   })
