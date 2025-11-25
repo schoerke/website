@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     artists: Artist;
     employees: Employee;
+    pages: Page;
     posts: Post;
     recordings: Recording;
     repertoire: Repertoire;
@@ -84,6 +85,7 @@ export interface Config {
   collectionsSelect: {
     artists: ArtistsSelect<false> | ArtistsSelect<true>;
     employees: EmployeesSelect<false> | EmployeesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     recordings: RecordingsSelect<false> | RecordingsSelect<true>;
     repertoire: RepertoireSelect<false> | RepertoireSelect<true>;
@@ -323,6 +325,36 @@ export interface Employee {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * URL path for this page (e.g. "impressum" for DE, "imprint" for EN)
+   */
+  slug: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts".
  */
 export interface Post {
@@ -487,6 +519,10 @@ export interface Search {
         value: number | Employee;
       }
     | {
+        relationTo: 'pages';
+        value: number | Page;
+      }
+    | {
         relationTo: 'recordings';
         value: number | Recording;
       }
@@ -544,6 +580,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'employees';
         value: number | Employee;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
       } | null)
     | ({
         relationTo: 'posts';
@@ -674,6 +714,18 @@ export interface EmployeesSelect<T extends boolean = true> {
   order?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

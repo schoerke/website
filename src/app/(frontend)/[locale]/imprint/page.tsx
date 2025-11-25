@@ -2,8 +2,8 @@ import PayloadRichText from '@/components/ui/PayloadRichText'
 import { getPageBySlug } from '@/services/page'
 import { notFound } from 'next/navigation'
 
-const ImpressumPage = async () => {
-  const page = await getPageBySlug('impressum', 'de')
+const ImprintPage = async () => {
+  const page = await getPageBySlug('imprint', 'en')
 
   if (!page) {
     notFound()
@@ -19,4 +19,4 @@ const ImpressumPage = async () => {
   )
 }
 
-export default ImpressumPage
+export default ImprintPage

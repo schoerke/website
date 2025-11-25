@@ -13,6 +13,7 @@ import { searchPlugin } from '@payloadcms/plugin-search'
 import { Artists } from './collections/Artists'
 import { Employees } from './collections/Employees'
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Recordings } from './collections/Recordings'
 import { Repertoire } from './collections/Repertoire'
@@ -38,7 +39,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Artists, Employees, Posts, Recordings, Repertoire, Users, Media],
+  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Media],
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URI!,
@@ -67,7 +68,7 @@ export default buildConfig({
   plugins: [
     // Search
     searchPlugin({
-      collections: ['artists', 'employees', 'recordings', 'posts', 'repertoire'],
+      collections: ['artists', 'employees', 'pages', 'recordings', 'posts', 'repertoire'],
       beforeSync: beforeSyncHook,
       localize: true, // Localizes the 'title' field in search collection
       defaultPriorities: {
@@ -82,6 +83,7 @@ export default buildConfig({
           return 20
         },
         employees: 15,
+        pages: 25,
         repertoire: 10,
       },
       searchOverrides: {

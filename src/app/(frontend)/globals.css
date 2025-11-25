@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Hind&family=Montserrat:ital@0;1&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 @plugin 'tailwindcss-animate';
+@plugin '@tailwindcss/typography';
 @import url('https://fonts.googleapis.com/css2?family=Hind&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital@0;1&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 @import 'tailwindcss';
@@ -135,5 +136,36 @@
   .bio-prose p[style] {
     margin-top: 1.5rem !important;
     margin-bottom: 1.5rem !important;
+  }
+
+  /* Payload Lexical Rich Text Styles */
+  .prose .payload-richtext ul.list-bullet,
+  .prose .payload-richtext ol.list-number {
+    list-style: revert;
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose .payload-richtext ul.list-bullet li {
+    list-style-type: disc;
+    padding-left: 0.25rem;
+  }
+
+  .prose .payload-richtext ol.list-number li {
+    list-style-type: decimal;
+    padding-left: 0.25rem;
+  }
+
+  /* Handle nested lists */
+  .prose .payload-richtext li.nestedListItem > ul,
+  .prose .payload-richtext li.nestedListItem > ol {
+    margin-top: 0.5rem;
+    list-style-type: none;
+  }
+
+  /* Remove nested list item bullets since content is in the li */
+  .prose .payload-richtext li.nestedListItem {
+    list-style-type: none;
   }
 }

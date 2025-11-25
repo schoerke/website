@@ -5,6 +5,9 @@
  * instead of Next.js's default navigation components. These helpers automatically
  * maintain the current locale when navigating between pages.
  *
+ * With pathname mappings enabled, these helpers will automatically translate
+ * routes between locales (e.g., /de/impressum <-> /en/imprint).
+ *
  * Usage:
  * - Use `Link` from this file instead of `next/link` for internal navigation
  * - Use `useRouter`, `usePathname` for locale-aware routing in client components
