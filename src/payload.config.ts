@@ -97,6 +97,14 @@ export default buildConfig({
             },
           },
           {
+            name: 'slug',
+            type: 'text',
+            index: true,
+            admin: {
+              description: 'URL slug for routing (artists and posts)',
+            },
+          },
+          {
             name: 'locale',
             type: 'select',
             options: [

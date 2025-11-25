@@ -233,13 +233,15 @@ function getSection(relationTo: string): string {
 function getDocumentPath(doc: SearchDoc, locale: string): string {
   switch (doc.relationTo) {
     case 'artists':
-      return `/${locale}/artists/${doc.relationId}`
+      // Use slug if available, otherwise fall back to ID
+      return `/${locale}/artists/${doc.slug || doc.relationId}`
     case 'recordings':
       return `/${locale}/recordings/${doc.relationId}`
     case 'posts':
-      return `/${locale}/news/${doc.relationId}` // TODO: Detect news vs projects
+      // Use slug if available, otherwise fall back to ID
+      return `/${locale}/news/${doc.slug || doc.relationId}` // TODO: Detect news vs projects
     case 'employees':
-      return `/${locale}/team#${doc.relationId}`
+      return `/${locale}/team`
     case 'pages':
       return `/${locale}/${doc.relationId}`
     default:

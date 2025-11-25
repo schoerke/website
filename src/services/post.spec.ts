@@ -44,6 +44,7 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
         locale: 'de',
+        limit: 0,
       })
     })
 
@@ -55,6 +56,7 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
         locale: 'en',
+        limit: 0,
       })
     })
   })
@@ -74,6 +76,7 @@ describe('Post Service', () => {
           published: { equals: true },
         },
         locale: 'de',
+        limit: 0,
       })
     })
   })
@@ -92,6 +95,7 @@ describe('Post Service', () => {
           published: { equals: true },
         },
         locale: 'de',
+        limit: 0,
       })
     })
   })
@@ -110,6 +114,7 @@ describe('Post Service', () => {
           published: { equals: true },
         },
         locale: 'de',
+        limit: 0,
       })
     })
   })
@@ -129,6 +134,7 @@ describe('Post Service', () => {
           published: { equals: true },
         },
         locale: 'de',
+        limit: 0,
       })
     })
 
@@ -162,6 +168,7 @@ describe('Post Service', () => {
           published: { equals: true },
         },
         locale: 'de',
+        limit: 0,
       })
     })
 

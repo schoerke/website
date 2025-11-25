@@ -21,6 +21,7 @@ export const getEmployees = async (locale?: LocaleCode) => {
     collection: 'employees',
     locale: locale || 'de',
     sort: 'order',
+    limit: 0, // Fetch all employees (no limit)
   })
 }
 

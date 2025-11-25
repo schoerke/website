@@ -16,6 +16,7 @@
  *     title: string (clean display title from displayTitle field)
  *     relationTo: string (collection name)
  *     relationId: string (doc ID)
+ *     slug: string (URL slug for artists and posts)
  *     priority: number
  *     locale: string
  *   }>
@@ -63,6 +64,7 @@ export async function GET(request: Request) {
         title: doc.displayTitle || doc.title, // Use displayTitle if available
         relationTo: doc.doc.relationTo,
         relationId: doc.doc.value,
+        slug: doc.slug || '', // Include slug for routing
         priority: doc.priority,
         locale: doc.locale,
       })),

@@ -46,12 +46,15 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
 
   let documentTitle = ''
   let additionalContent = ''
+  let documentSlug = ''
 
   // Extract and process content based on collection type
   switch (searchDoc.doc.relationTo) {
     case 'artists': {
       // Get artist name (non-localized)
       documentTitle = doc.name || ''
+      // Get artist slug (non-localized)
+      documentSlug = doc.slug || ''
 
       // Biography (localized richText)
       if (doc.biography) {
@@ -93,6 +96,8 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
     case 'posts': {
       // Get post title (localized)
       documentTitle = doc.title || ''
+      // Get post slug (localized)
+      documentSlug = doc.slug || ''
 
       // Content (localized richText)
       if (doc.content) {
@@ -125,6 +130,7 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
     case 'recordings': {
       // Get recording title (localized)
       documentTitle = doc.title || ''
+      // Recordings don't have slugs currently
 
       // Description (localized richText)
       if (doc.description) {
@@ -136,10 +142,9 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
     }
 
     case 'employees': {
-      // Get employee name (construct from first + last name, non-localized)
-      const firstName = doc.firstName || ''
-      const lastName = doc.lastName || ''
-      documentTitle = `${firstName} ${lastName}`.trim()
+      // Get employee name (non-localized)
+      documentTitle = doc.name || ''
+      // Employees don't have slugs
 
       // Bio (localized richText)
       if (doc.bio) {
@@ -161,6 +166,7 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
     collection: searchDoc.doc.relationTo,
     docId: searchDoc.doc.value,
     displayTitle: documentTitle,
+    slug: documentSlug,
     locale,
   })
 
@@ -168,6 +174,8 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
     ...searchDoc,
     // Store the clean document title for display
     displayTitle: documentTitle,
+    // Store the slug for routing (artists and posts only)
+    slug: documentSlug,
     // Store the full searchable content in title field
     title: filteredContent,
     // Store the locale for filtering search results

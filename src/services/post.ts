@@ -18,6 +18,7 @@ export const getAllPosts = async (locale?: LocaleCode) => {
   return await payload.find({
     collection: 'posts',
     locale: locale || 'de',
+    limit: 0, // Fetch all posts (no limit)
   })
 }
 
@@ -44,6 +45,7 @@ export const getAllNewsPosts = async (locale?: LocaleCode) => {
       },
     },
     locale: locale || 'de',
+    limit: 0, // Fetch all news posts (no limit)
   })
 }
 
@@ -70,6 +72,7 @@ export const getAllProjectPosts = async (locale?: LocaleCode) => {
       },
     },
     locale: locale || 'de',
+    limit: 0, // Fetch all project posts (no limit)
   })
 }
 
@@ -97,6 +100,7 @@ export const getAllHomepagePosts = async (locale?: LocaleCode) => {
       },
     },
     locale: locale || 'de',
+    limit: 0, // Fetch all homepage posts (no limit)
   })
 }
 
@@ -127,6 +131,7 @@ export const getAllNewsPostsByArtist = async (artistId: string, locale?: LocaleC
       },
     },
     locale: locale || 'de',
+    limit: 0, // Fetch all news posts for artist (no limit)
   })
 }
 
@@ -157,6 +162,7 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
       },
     },
     locale: locale || 'de',
+    limit: 0, // Fetch all project posts for artist (no limit)
   })
 }
 /**

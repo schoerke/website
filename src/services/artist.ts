@@ -19,6 +19,7 @@ export const getArtists = async (locale?: LocaleCode) => {
     collection: 'artists',
     locale: locale || 'de',
     fallbackLocale: 'de',
+    limit: 0, // Fetch all artists (no limit)
   })
 }
 
@@ -94,5 +95,6 @@ export const getArtistListData = async (locale?: LocaleCode) => {
     },
     locale: locale || 'de',
     fallbackLocale: 'de',
+    limit: 0, // Fetch all artists (no limit)
   })
 }

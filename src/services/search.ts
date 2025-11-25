@@ -23,6 +23,7 @@ export interface SearchDoc {
   title: string
   relationTo: string
   relationId: string
+  slug?: string
   priority: number
 }
 
@@ -190,6 +191,7 @@ async function searchViaAPI(query: string, locale: 'de' | 'en', signal: AbortSig
       title: doc.title,
       relationTo: doc.relationTo,
       relationId: doc.relationId,
+      slug: doc.slug,
       priority: doc.priority,
     }
 

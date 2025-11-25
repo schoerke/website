@@ -41,6 +41,7 @@ describe('Employee Service', () => {
         collection: 'employees',
         locale: 'de',
         sort: 'order',
+        limit: 0,
       })
     })
 
@@ -53,6 +54,7 @@ describe('Employee Service', () => {
         collection: 'employees',
         locale: 'en',
         sort: 'order',
+        limit: 0,
       })
     })
 
@@ -76,7 +78,7 @@ describe('Employee Service', () => {
 
       expect(result).toEqual(mockEmployee)
       expect(mockPayload.findByID).toHaveBeenCalledWith({
-        collection: 'artists', // Note: This is intentionally 'artists' in the implementation
+        collection: 'employees',
         id: '1',
         locale: 'de',
       })
@@ -89,7 +91,7 @@ describe('Employee Service', () => {
       await getEmployeeById('1', 'en')
 
       expect(mockPayload.findByID).toHaveBeenCalledWith({
-        collection: 'artists',
+        collection: 'employees',
         id: '1',
         locale: 'en',
       })

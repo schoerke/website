@@ -49,7 +49,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }
         <div className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"></div>
       </div>
       <div className="p-6">
-        <h3 className="font-playfair mb-2 text-2xl font-bold">{name}</h3>
+        <h3 className="font-playfair mb-1 text-xl font-bold">{name}</h3>
         <p className="text-sm text-gray-700">{translatedInstruments}</p>
       </div>
     </Link>
@@ -67,7 +67,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }
         <div className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"></div>
       </div>
       <div className="p-6">
-        <h3 className="font-playfair mb-2 text-2xl font-bold">{name}</h3>
+        <h3 className="font-playfair mb-1 text-xl font-bold">{name}</h3>
         <p className="text-sm text-gray-700">{translatedInstruments}</p>
       </div>
     </div>

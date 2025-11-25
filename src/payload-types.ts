@@ -458,6 +458,10 @@ export interface Search {
    */
   displayTitle?: string | null;
   /**
+   * URL slug for routing (artists and posts)
+   */
+  slug?: string | null;
+  /**
    * Locale of the search record for filtering results
    */
   locale?: ('de' | 'en') | null;
@@ -741,6 +745,7 @@ export interface SearchSelect<T extends boolean = true> {
   priority?: T;
   doc?: T;
   displayTitle?: T;
+  slug?: T;
   locale?: T;
   updatedAt?: T;
   createdAt?: T;

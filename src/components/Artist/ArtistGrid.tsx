@@ -32,7 +32,10 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
       {filteredArtists.length === 0 ? (
         <div className="text-gray-500">No artists found for these instruments.</div>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div
+          key={selectedInstruments.join(',')}
+          className="animate-in fade-in mt-8 grid grid-cols-1 gap-6 duration-500 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
           {filteredArtists.map((artist) => (
             <ArtistCard
               key={String(artist.id)}

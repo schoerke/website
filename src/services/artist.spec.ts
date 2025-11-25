@@ -38,6 +38,7 @@ describe('Artist Service', () => {
         collection: 'artists',
         locale: 'de',
         fallbackLocale: 'de',
+        limit: 0,
       })
     })
 
@@ -50,6 +51,7 @@ describe('Artist Service', () => {
         collection: 'artists',
         locale: 'en',
         fallbackLocale: 'de',
+        limit: 0,
       })
     })
   })
@@ -138,6 +140,7 @@ describe('Artist Service', () => {
         },
         locale: 'de',
         fallbackLocale: 'de',
+        limit: 0,
       })
     })
 
