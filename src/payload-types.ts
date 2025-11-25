@@ -71,6 +71,7 @@ export interface Config {
     employees: Employee;
     posts: Post;
     recordings: Recording;
+    repertoire: Repertoire;
     users: User;
     media: Media;
     search: Search;
@@ -85,6 +86,7 @@ export interface Config {
     employees: EmployeesSelect<false> | EmployeesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     recordings: RecordingsSelect<false> | RecordingsSelect<true>;
+    repertoire: RepertoireSelect<false> | RepertoireSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
@@ -402,6 +404,45 @@ export interface Recording {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "repertoire".
+ */
+export interface Repertoire {
+  id: number;
+  /**
+   * Examples: "Duo Ruth Killius & Thomas Zehetmair", "Christian Zacharias Play/Conduct", "Maurice Steger Recorder", "Mario Venzago Conductor"
+   */
+  title: string;
+  /**
+   * Artist(s) performing this repertoire. Can link to multiple artists for duos/ensembles.
+   */
+  artists?: (number | Artist)[] | null;
+  /**
+   * List of works in this repertoire section (text only, no links)
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Select artist roles for this repertoire (optional). For Play/Conduct, select both Solo AND Conductor.
+   */
+  roles?: ('solo' | 'chamber' | 'conductor')[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -452,6 +493,10 @@ export interface Search {
     | {
         relationTo: 'posts';
         value: number | Post;
+      }
+    | {
+        relationTo: 'repertoire';
+        value: number | Repertoire;
       };
   /**
    * Clean display title for search results (e.g., artist name, post title)
@@ -507,6 +552,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'recordings';
         value: number | Recording;
+      } | null)
+    | ({
+        relationTo: 'repertoire';
+        value: number | Repertoire;
       } | null)
     | ({
         relationTo: 'users';
@@ -658,6 +707,18 @@ export interface RecordingsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "repertoire_select".
+ */
+export interface RepertoireSelect<T extends boolean = true> {
+  title?: T;
+  artists?: T;
+  content?: T;
+  roles?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,364 +1,391 @@
 /**
  * WordPress to Payload CMS Repertoire Migration Script
- *
- * Migrates repertoire posts from WordPress XML exports into
- * existing Payload artist records.
- *
- * NOTE: Discography posts are NOT migrated by this script.
- * Discographies will be handled separately via the Recordings collection.
- *
- * Prerequisites:
- * 1. Artists must already be migrated (run migrateArtists.ts first)
- * 2. WordPress XML exports in scripts/wordpress/data/all-en.xml and all-de.xml
- *
- * Usage:
- *   # Preview mode (dry run)
- *   pnpm tsx scripts/wordpress/migrateRepertoire.ts --dry-run
- *
- *   # Verbose output
- *   pnpm tsx scripts/wordpress/migrateRepertoire.ts --verbose
- *
- *   # Full migration
- *   pnpm tsx scripts/wordpress/migrateRepertoire.ts
- *
- * Features:
- * - Handles multiple repertoire sections per artist
- * - Converts HTML to Lexical rich text format
- * - Preserves EN/DE localization
- * - Idempotent (can be re-run safely)
- *
- * @see scripts/wordpress/README.md
  */
 
 import config from '@payload-config'
 import 'dotenv/config'
-import { XMLParser } from 'fast-xml-parser'
-import * as fs from 'fs/promises'
 import path from 'path'
 import { getPayload } from 'payload'
 import { fileURLToPath } from 'url'
+import { htmlToLexical } from './utils/lexicalConverter'
+import { parseWordPressXML } from './utils/xmlParser'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// ============================================================================
-// CONFIGURATION
-// ============================================================================
-
-const CONFIG = {
-  dryRun: process.argv.includes('--dry-run'),
-  verbose: process.argv.includes('--verbose'),
-  xmlPathEn: path.join(__dirname, 'data', 'all-en.xml'),
-  xmlPathDe: path.join(__dirname, 'data', 'all-de.xml'),
-}
-
-interface MigrationStats {
-  total: number
-  updated: number
-  skipped: number
-  failed: number
-  errors: Array<{ artist: string; error: string }>
-}
-
-interface RepertoirePost {
-  title: string
+interface RepertoireData {
   slug: string
+  title: string
   content: string
-  artistCategory: string
-  section: string
+  categories: string[]
 }
 
-// ============================================================================
-// HELPERS
-// ============================================================================
-
 /**
- * Extract section name from post title
+ * Translate DE title to EN
  */
-function extractSectionFromTitle(title: string): string {
-  // Try to extract section after "Repertoire"
-  const match = title.match(/(?:Repertoire|Repertoir)\s+(.+?)$/i)
-  if (match) {
-    return match[1].trim()
-  }
-
-  // Check for section in middle
-  const match2 = title.match(/(?:Repertoire|Repertoir)\s+(\w+)/i)
-  if (match2) {
-    return match2[1].trim()
-  }
-
-  // Generic fallback
-  return 'General'
+function translateTitle(deTitle: string): string {
+  return deTitle
+    .replace(/Dirigent/g, 'Conductor')
+    .replace(/Klavier/g, 'Piano')
+    .replace(/Violine/g, 'Violin')
+    .replace(/Violoncello/g, 'Cello')
+    .replace(/Blockflöte/g, 'Recorder')
+    .replace(/Horn/g, 'Horn')
+    .replace(/Duo/g, 'Duo')
 }
 
-// ============================================================================
-// XML PARSING
-// ============================================================================
+interface RepertoireData {
+  slug: string
+  title: string
+  content: string
+  categories: string[]
+}
 
 /**
- * Load and parse XML file for repertoire posts only
+ * Extract categories from WordPress item
  */
-async function loadPostsFromXML(filePath: string): Promise<any[]> {
-  const xmlData = await fs.readFile(filePath, 'utf8')
+function extractCategories(item: any): string[] {
+  const cats = item.category
+  if (!cats) return []
+  if (Array.isArray(cats)) {
+    return cats.map((c: any) => (typeof c === 'string' ? c : c['#text'] || '')).filter(Boolean)
+  }
+  return [typeof cats === 'string' ? cats : cats['#text'] || ''].filter(Boolean)
+}
 
-  const parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: '_',
-  })
-  const parsed = parser.parse(xmlData)
+/**
+ * Extract artist names (returns array to handle duos/ensembles)
+ * Duos: "Duo Thomas Zehetmair & Ruth Killius" → ["Thomas Zehetmair", "Ruth Killius"]
+ * Solo: "Christian Zacharias" → ["Christian Zacharias"]
+ */
+function extractArtistNames(categories: string[], slug: string): string[] {
+  const generic = ['Repertoire', 'Projekte', 'Projects']
 
-  const items = parsed.rss.channel.item || []
-  const posts: any[] = []
+  // Try categories first
+  for (const cat of categories) {
+    if (!generic.includes(cat)) {
+      // Decode HTML entities
+      const decoded = cat.replace(/&amp;/g, '&')
 
-  for (const item of items) {
-    const postType = item['wp:post_type'] || ''
-    if (postType !== 'post') continue
-
-    const categories = Array.isArray(item.category) ? item.category : item.category ? [item.category] : []
-    const categoryNames = categories
-      .map((cat: any) => (typeof cat === 'string' ? cat : cat['#text'] || cat))
-      .filter(Boolean)
-
-    // Only match repertoire posts
-    const isRepertoire = categoryNames.some(
-      (c: string) => c.toLowerCase().includes('repertoire') || c.toLowerCase().includes('repertoir'),
-    )
-
-    if (!isRepertoire) continue
-
-    // Find artist category (the one that's not "Repertoire")
-    const artistCategory = categoryNames.find(
-      (c: string) =>
-        !c.toLowerCase().includes('repertoire') && !c.toLowerCase().includes('repertoir') && c !== 'Projects', // Exclude "Projects" category
-    )
-
-    if (!artistCategory) {
-      if (CONFIG.verbose) {
-        console.log(`  ⚠️  No artist category found for: ${item.title}`)
+      // Check if it's a duo/ensemble
+      const duoMatch = decoded.match(/^Duo\s+(.+?)\s+(?:&|and|und)\s+(.+)$/i)
+      if (duoMatch) {
+        return [duoMatch[1].trim(), duoMatch[2].trim()]
       }
-      continue
-    }
 
-    posts.push({
-      title: item.title || '',
-      slug: item['wp:post_name'] || '',
-      content: item['content:encoded'] || '',
-      artistCategory,
-      section: extractSectionFromTitle(item.title || ''),
-    })
+      const trioMatch = decoded.match(/^Trio\s+(.+)$/i)
+      if (trioMatch) {
+        return [trioMatch[1].trim()]
+      }
+
+      return [decoded]
+    }
   }
 
-  return posts
+  // Fallback: parse slug
+  const patterns = [/^repertoire-(.+)$/, /^(.+?)-repertoire/]
+
+  for (const p of patterns) {
+    const m = slug.match(p)
+    if (m) {
+      const name = m[1].replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+      return [name]
+    }
+  }
+
+  return []
 }
 
 /**
- * Merge EN and DE posts for the same artist
+ * Extract roles
  */
-function mergeLocalizedPosts(enPosts: any[], dePosts: any[]): Map<string, { en: any[]; de: any[] }> {
-  const merged = new Map<string, { en: any[]; de: any[] }>()
+function extractRoles(slug: string, title: string): Array<'solo' | 'chamber' | 'conductor'> {
+  const roles: Array<'solo' | 'chamber' | 'conductor'> = []
+  const s = slug.toLowerCase()
+  const t = title.toLowerCase()
 
-  // Add EN posts
-  for (const post of enPosts) {
-    if (!merged.has(post.artistCategory)) {
-      merged.set(post.artistCategory, { en: [], de: [] })
-    }
-    merged.get(post.artistCategory)!.en.push(post)
+  if (s.includes('playconduct') || s.includes('play-conduct') || t.includes('play/conduct')) {
+    return ['solo', 'conductor']
   }
 
-  // Add DE posts
-  for (const post of dePosts) {
-    if (!merged.has(post.artistCategory)) {
-      merged.set(post.artistCategory, { en: [], de: [] })
-    }
-    merged.get(post.artistCategory)!.de.push(post)
+  if (s.includes('dirigent') || s.includes('conductor') || t.includes('dirigent') || t.includes('conductor')) {
+    roles.push('conductor')
   }
 
-  return merged
+  const instruments = [
+    'klavier',
+    'piano',
+    'violine',
+    'violin',
+    'viola',
+    'violoncello',
+    'cello',
+    'horn',
+    'blockfloete',
+    'recorder',
+  ]
+  if (instruments.some((i) => s.includes(i)) && !roles.includes('conductor')) {
+    roles.push('solo')
+  }
+
+  const ensembles = ['duo', 'trio', 'quartett', 'quintett']
+  if (ensembles.some((e) => s.includes(e))) {
+    roles.push('chamber')
+  }
+
+  return roles
 }
 
-// ============================================================================
-// MAIN MIGRATION LOGIC
-// ============================================================================
+/**
+ * Generate title from artist names
+ */
+function generateTitle(artistNames: string[], slug: string, wpTitle: string): string {
+  const s = slug.toLowerCase()
+  const t = wpTitle.toLowerCase()
 
-async function runMigration() {
-  console.log('\n🚀 WordPress Repertoire Migration\n')
-  console.log(`Mode: ${CONFIG.dryRun ? 'DRY RUN' : 'LIVE'}`)
-  console.log(`EN XML: ${CONFIG.xmlPathEn}`)
-  console.log(`DE XML: ${CONFIG.xmlPathDe}\n`)
-
-  const stats: MigrationStats = {
-    total: 0,
-    updated: 0,
-    skipped: 0,
-    failed: 0,
-    errors: [],
+  // For duos, create "Duo Name1 & Name2" format
+  if (artistNames.length === 2) {
+    return `Duo ${artistNames[0]} & ${artistNames[1]}`
   }
 
-  try {
-    // Initialize Payload
-    const payload = await getPayload({ config })
-    console.log('✅ Payload initialized\n')
+  const artist = artistNames[0]
 
-    // Load repertoires only
-    console.log('🎵 Loading repertoire posts...')
-    const repEN = await loadPostsFromXML(CONFIG.xmlPathEn)
-    const repDE = await loadPostsFromXML(CONFIG.xmlPathDe)
-    const repByArtist = mergeLocalizedPosts(repEN, repDE)
-    console.log(`   Found ${repEN.length} EN + ${repDE.length} DE = ${repByArtist.size} artists\n`)
+  if (s.includes('playconduct') || s.includes('play-conduct') || t.includes('play/conduct')) {
+    return `${artist} Play/Conduct`
+  }
 
-    // Process each artist
-    stats.total = repByArtist.size
+  if (s.includes('dirigent') || s.includes('-conductor')) return `${artist} Conductor`
+  if (s.includes('klavier') || s.includes('-piano')) return `${artist} Piano`
+  if (s.includes('violine') || s.includes('-violin')) return `${artist} Violin`
+  if (s.includes('-viola')) return `${artist} Viola`
+  if (s.includes('violoncello') || s.includes('-cello')) return `${artist} Cello`
+  if (s.includes('-horn')) return `${artist} Horn`
+  if (s.includes('blockfloete') || s.includes('recorder')) return `${artist} Recorder`
 
-    console.log(`\n📊 Processing ${stats.total} artists...\n`)
+  return artist
+}
 
-    for (const artistName of repByArtist.keys()) {
-      try {
-        // Special case: "Duo Thomas Zehetmair and Ruth Killius" or "Duo Thomas Zehetmair & Ruth Killius"
-        // Add repertoire to both Thomas Zehetmair and Ruth Killius
-        const isDuo =
-          artistName.includes('Duo Thomas Zehetmair') ||
-          artistName === 'Duo Thomas Zehetmair and Ruth Killius' ||
-          artistName === 'Duo Thomas Zehetmair & Ruth Killius' ||
-          artistName === 'Duo Thomas Zehetmair &amp; Ruth Killius'
+/**
+ * Find artist by name
+ */
+async function findArtist(payload: any, name: string): Promise<string | null> {
+  const result = await payload.find({
+    collection: 'artists',
+    where: { name: { equals: name } },
+    limit: 1,
+  })
 
-        const artistsToUpdate: string[] = isDuo ? ['Thomas Zehetmair', 'Ruth Killius'] : [artistName]
+  if (result.docs.length > 0) return result.docs[0].id
 
-        for (const targetArtistName of artistsToUpdate) {
-          // Find artist in Payload
-          const artistResult = await payload.find({
-            collection: 'artists',
-            where: {
-              name: { equals: targetArtistName },
-            },
-            limit: 1,
-          })
+  const fuzzy = await payload.find({
+    collection: 'artists',
+    where: { name: { contains: name.split(' ')[0] } },
+    limit: 5,
+  })
 
-          if (artistResult.totalDocs === 0) {
-            console.log(`⚠️  Artist not found: ${targetArtistName}`)
-            if (!isDuo) {
-              stats.skipped++
-            }
-            continue
-          }
+  for (const artist of fuzzy.docs) {
+    if (artist.name.toLowerCase().includes(name.toLowerCase())) {
+      console.log(`  Fuzzy: "${name}" → "${artist.name}"`)
+      return artist.id
+    }
+  }
 
-          const artist = artistResult.docs[0]
-          console.log(`\n📝 Processing: ${targetArtistName} (ID: ${artist.id})${isDuo ? ' [from Duo]' : ''}`)
+  return null
+}
 
-          // Process repertoire
-          const reps = repByArtist.get(artistName)
-          if (reps && (reps.en.length > 0 || reps.de.length > 0)) {
-            console.log(`   🎵 ${reps.en.length} EN + ${reps.de.length} DE repertoires`)
+async function migrateRepertoire() {
+  const args = process.argv.slice(2)
+  const dryRun = args.includes('--dry-run')
+  const verbose = args.includes('--verbose')
 
-            const repertoireArray: any[] = []
+  console.log('🎼 WordPress Repertoire Migration')
+  console.log('='.repeat(60))
+  console.log(`Mode: ${dryRun ? 'DRY RUN' : 'LIVE'}`)
+  console.log('')
 
-            // Create a merged map by section
-            const repertoireBySection = new Map<string, { en: any | null; de: any | null }>()
+  const payload = await getPayload({ config })
 
-            for (const enPost of reps.en) {
-              const section = enPost.section
-              if (!repertoireBySection.has(section)) {
-                repertoireBySection.set(section, { en: null, de: null })
-              }
-              repertoireBySection.get(section)!.en = enPost
-            }
+  const dePath = path.join(__dirname, 'data', 'all-de.xml')
+  const enPath = path.join(__dirname, 'data', 'all-en.xml')
 
-            for (const dePost of reps.de) {
-              const section = dePost.section
-              if (!repertoireBySection.has(section)) {
-                repertoireBySection.set(section, { en: null, de: null })
-              }
-              repertoireBySection.get(section)!.de = dePost
-            }
+  const deItems = await parseWordPressXML(dePath)
+  const enItems = await parseWordPressXML(enPath)
 
-            // Build repertoire entries - EN locale
-            const { htmlToLexical } = await import('./utils/lexicalConverter.js')
-            for (const [sectionTitle, posts] of repertoireBySection) {
-              repertoireArray.push({
-                title: sectionTitle,
-                content: posts.en ? htmlToLexical(posts.en.content) : htmlToLexical(posts.de?.content || ''),
-              })
+  // Filter and parse repertoire posts
+  const deRep: RepertoireData[] = []
+  const enRep: RepertoireData[] = []
 
-              console.log(`      - ${sectionTitle}`)
-            }
-
-            // Update artist with EN repertoire
-            if (!CONFIG.dryRun) {
-              await payload.update({
-                collection: 'artists',
-                id: artist.id,
-                data: { repertoire: repertoireArray },
-                locale: 'en',
-              })
-
-              // Now update DE locale
-              if (reps.de.length > 0) {
-                const deRepertoireArray: any[] = []
-                for (const [sectionTitle, posts] of repertoireBySection) {
-                  if (posts.de) {
-                    deRepertoireArray.push({
-                      title: sectionTitle,
-                      content: htmlToLexical(posts.de.content),
-                    })
-                  }
-                }
-
-                if (deRepertoireArray.length > 0) {
-                  await payload.update({
-                    collection: 'artists',
-                    id: artist.id,
-                    data: { repertoire: deRepertoireArray },
-                    locale: 'de',
-                  })
-                }
-              }
-
-              console.log(`   ✅ Updated in Payload`)
-            } else {
-              console.log(
-                `   🔍 DRY RUN - Would update:`,
-                JSON.stringify({ repertoire: repertoireArray }, null, 2).substring(0, 200),
-              )
-            }
-          }
-
-          if (!isDuo) {
-            stats.updated++
-          }
-        }
-
-        if (isDuo) {
-          stats.updated++
-        }
-      } catch (error) {
-        console.error(`❌ Failed: ${artistName}`, error)
-        stats.failed++
-        stats.errors.push({
-          artist: artistName,
-          error: error instanceof Error ? error.message : String(error),
+  for (const item of deItems) {
+    if (item['wp:post_type'] === 'post') {
+      const cats = extractCategories(item)
+      if (cats.includes('Repertoire')) {
+        deRep.push({
+          slug: item['wp:post_name'],
+          title: item.title || '',
+          content: item['content:encoded'] || '',
+          categories: cats,
         })
       }
     }
+  }
 
-    // Summary
-    console.log('\n\n📊 Migration Summary:')
-    console.log(`  Total artists: ${stats.total}`)
-    console.log(`  ✅ Updated: ${stats.updated}`)
-    console.log(`  ⏭️  Skipped: ${stats.skipped}`)
-    console.log(`  ❌ Failed: ${stats.failed}`)
-
-    if (stats.errors.length > 0) {
-      console.log('\n❌ Errors:')
-      for (const err of stats.errors) {
-        console.log(`  - ${err.artist}: ${err.error}`)
+  for (const item of enItems) {
+    if (item['wp:post_type'] === 'post') {
+      const cats = extractCategories(item)
+      if (cats.includes('Repertoire')) {
+        enRep.push({
+          slug: item['wp:post_name'],
+          title: item.title || '',
+          content: item['content:encoded'] || '',
+          categories: cats,
+        })
       }
     }
-
-    process.exit(0)
-  } catch (error) {
-    console.error('\n❌ Migration failed:', error)
-    process.exit(1)
   }
+
+  console.log(`Found ${deRep.length} DE, ${enRep.length} EN posts\n`)
+
+  // Delete all existing repertoire entries before migration
+  if (!dryRun) {
+    console.log('Deleting existing repertoire entries...')
+    const existing = await payload.find({
+      collection: 'repertoire',
+      limit: 1000,
+      locale: 'all',
+    })
+
+    for (const doc of existing.docs) {
+      await payload.delete({
+        collection: 'repertoire',
+        id: doc.id,
+      })
+    }
+    console.log(`✅ Deleted ${existing.docs.length} existing entries\n`)
+  }
+
+  // Group by slug
+  const map = new Map<string, { de?: RepertoireData; en?: RepertoireData }>()
+
+  for (const post of deRep) {
+    map.set(post.slug, { de: post })
+  }
+
+  for (const post of enRep) {
+    const ex = map.get(post.slug) || {}
+    map.set(post.slug, { ...ex, en: post })
+  }
+
+  let created = 0,
+    skipped = 0,
+    errors = 0
+
+  for (const [slug, { de, en }] of map) {
+    const src = de || en
+    if (!src) continue
+
+    try {
+      const artistNames = extractArtistNames(src.categories, slug)
+      if (artistNames.length === 0) {
+        console.log(`⚠️  Skip ${slug}: no artist`)
+        skipped++
+        continue
+      }
+
+      // Look up all artists (supports duos/ensembles)
+      const artistIds: number[] = []
+      for (const name of artistNames) {
+        const id = await findArtist(payload, name)
+        if (id) {
+          artistIds.push(Number(id))
+        } else {
+          console.log(`⚠️  Artist not found: "${name}"`)
+        }
+      }
+
+      if (artistIds.length === 0) {
+        console.log(`⚠️  Skip ${slug}: no artists found in database`)
+        skipped++
+        continue
+      }
+
+      const roles = extractRoles(slug, src.title)
+      const title = generateTitle(artistNames, slug, src.title)
+
+      console.log(`📝 ${title}`)
+      if (verbose) {
+        console.log(`   Slug: ${slug}`)
+        console.log(`   Artists: ${artistNames.join(', ')}`)
+        console.log(`   Roles: ${roles.join(', ') || 'none'}`)
+      }
+
+      if (!dryRun) {
+        if (de) {
+          const lexContent = htmlToLexical(de.content)
+          const doc = await payload.create({
+            collection: 'repertoire',
+            data: {
+              title,
+              content: lexContent as any,
+              artists: artistIds,
+              roles: roles.length > 0 ? roles : undefined,
+            },
+            locale: 'de',
+          })
+
+          if (en) {
+            // EN post exists - use its content
+            const lexContentEn = htmlToLexical(en.content)
+            const enTitle = translateTitle(title) // Translate DE title to EN
+            await payload.update({
+              collection: 'repertoire',
+              id: doc.id,
+              data: {
+                title: enTitle,
+                content: lexContentEn as any,
+                artists: artistIds,
+                roles: roles.length > 0 ? roles : undefined,
+              },
+              locale: 'en',
+            })
+          } else {
+            // No EN post - copy DE content and translate title
+            const enTitle = translateTitle(title)
+            await payload.update({
+              collection: 'repertoire',
+              id: doc.id,
+              data: {
+                title: enTitle,
+                content: lexContent as any, // Copy DE content
+                artists: artistIds,
+                roles: roles.length > 0 ? roles : undefined,
+              },
+              locale: 'en',
+            })
+          }
+
+          console.log(`   ✅ Created (${doc.id})`)
+          created++
+        }
+      } else {
+        console.log(`   🔍 Would create`)
+        created++
+      }
+
+      console.log('')
+    } catch (error) {
+      console.error(`❌ Error: ${slug}`, error)
+      errors++
+    }
+  }
+
+  console.log('='.repeat(60))
+  console.log(`Created: ${created}, Skipped: ${skipped}, Errors: ${errors}`)
+  if (dryRun) console.log('\n⚠️  DRY RUN - no changes made')
+
+  process.exit(0)
 }
 
-runMigration()
+migrateRepertoire().catch((err) => {
+  console.error('Fatal:', err)
+  process.exit(1)
+})

@@ -15,6 +15,7 @@ import { Employees } from './collections/Employees'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
 import { Recordings } from './collections/Recordings'
+import { Repertoire } from './collections/Repertoire'
 import { Users } from './collections/Users'
 
 // v2: Newsletter Contact Management
@@ -37,7 +38,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Artists, Employees, Posts, Recordings, Users, Media],
+  collections: [Artists, Employees, Posts, Recordings, Repertoire, Users, Media],
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URI!,
@@ -66,7 +67,7 @@ export default buildConfig({
   plugins: [
     // Search
     searchPlugin({
-      collections: ['artists', 'employees', 'recordings', 'posts'],
+      collections: ['artists', 'employees', 'recordings', 'posts', 'repertoire'],
       beforeSync: beforeSyncHook,
       localize: true, // Localizes the 'title' field in search collection
       defaultPriorities: {
@@ -81,6 +82,7 @@ export default buildConfig({
           return 20
         },
         employees: 15,
+        repertoire: 10,
       },
       searchOverrides: {
         admin: {
