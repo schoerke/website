@@ -1,7 +1,7 @@
 'use client'
 
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
-import type { Artist } from '@/payload-types'
+import type { Artist, Repertoire } from '@/payload-types'
 import { getQuoteMarks } from '@/utils/content'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
@@ -22,6 +22,9 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const [recordingsLoading, setRecordingsLoading] = useState(false)
   const [recordingsFetched, setRecordingsFetched] = useState(false)
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
+  const [repertoires, setRepertoires] = useState<Repertoire[]>([])
+  const [repertoiresLoading, setRepertoiresLoading] = useState(false)
+  const [repertoiresFetched, setRepertoiresFetched] = useState(false)
 
   // Get quote marks for the current locale
   const quoteMarks = getQuoteMarks(locale)
@@ -29,6 +32,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   // Reset fetched flags when locale changes
   useEffect(() => {
     setRecordingsFetched(false)
+    setRepertoiresFetched(false)
     setSelectedRole(null)
   }, [locale])
 
@@ -77,6 +81,25 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
         })
     }
   }, [activeTab, artist.id, recordingsFetched, recordingsLoading, locale])
+
+  // Fetch repertoires when repertoire tab is selected
+  useEffect(() => {
+    if (activeTab === 'repertoire' && !repertoiresFetched && !repertoiresLoading) {
+      setRepertoiresLoading(true)
+      fetch(`/api/repertoire?where[artists][equals]=${artist.id}&locale=${locale}&limit=1000`)
+        .then((res) => res.json())
+        .then((data) => {
+          setRepertoires(data.docs || [])
+          setRepertoiresLoading(false)
+          setRepertoiresFetched(true)
+        })
+        .catch((err) => {
+          console.error('Failed to fetch repertoires:', err)
+          setRepertoiresLoading(false)
+          setRepertoiresFetched(true)
+        })
+    }
+  }, [activeTab, artist.id, repertoiresFetched, repertoiresLoading, locale])
 
   // Extract unique roles from recordings
   const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort()
@@ -135,7 +158,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           <BiographyTab content={artist.biography} quote={artist.quote} quoteMarks={quoteMarks} />
         )}
         {activeTab === 'repertoire' && (
-          <RepertoireTab content={artist.repertoire} emptyMessage={t('empty.repertoire')} />
+          <RepertoireTab repertoires={repertoires} loading={repertoiresLoading} emptyMessage={t('empty.repertoire')} />
         )}
         {activeTab === 'discography' && (
           <RecordingsTab
@@ -148,9 +171,11 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           />
         )}
         {activeTab === 'video' && <VideoTab videos={artist.youtubeLinks} emptyMessage={t('empty.video')} />}
-        {activeTab === 'news' && <NewsFeedClient category="news" artistId={artist.id} emptyMessage={t('empty.news')} />}
+        {activeTab === 'news' && (
+          <NewsFeedClient category="news" artistId={artist.id.toString()} emptyMessage={t('empty.news')} />
+        )}
         {activeTab === 'projects' && (
-          <NewsFeedClient category="projects" artistId={artist.id} emptyMessage={t('empty.projects')} />
+          <NewsFeedClient category="projects" artistId={artist.id.toString()} emptyMessage={t('empty.projects')} />
         )}
         {activeTab === 'concertDates' && artist.externalCalendarURL && (
           <ConcertDatesTab externalCalendarURL={artist.externalCalendarURL} buttonText={t('concertDates.button')} />

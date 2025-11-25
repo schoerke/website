@@ -6,7 +6,7 @@ import RoleFilter from '@/components/Recording/RoleFilter'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
-import type { Artist } from '@/payload-types'
+import type { Artist, Repertoire } from '@/payload-types'
 import React from 'react'
 import VideoAccordion from './VideoAccordion'
 
@@ -36,14 +36,30 @@ export const BiographyTab: React.FC<BiographyTabProps> = ({ content, quote, quot
 
 // Repertoire Tab
 interface RepertoireTabProps {
-  content: Artist['repertoire']
+  repertoires: Repertoire[]
+  loading?: boolean
   emptyMessage: string
 }
 
-export const RepertoireTab: React.FC<RepertoireTabProps> = ({ content, emptyMessage }) => {
+export const RepertoireTab: React.FC<RepertoireTabProps> = ({ repertoires, loading, emptyMessage }) => {
   const [selectedSection, setSelectedSection] = React.useState<number>(0)
 
-  if (!content || !Array.isArray(content) || content.length === 0) {
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="py-4">
+            <Skeleton className="mb-3 h-6 w-2/3" />
+            <Skeleton className="mb-2 h-4 w-full" />
+            <Skeleton className="mb-2 h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (repertoires.length === 0) {
     return (
       <div className="py-12 text-center text-gray-500">
         <p>{emptyMessage}</p>
@@ -51,7 +67,7 @@ export const RepertoireTab: React.FC<RepertoireTabProps> = ({ content, emptyMess
     )
   }
 
-  const hasMultipleSections = content.length > 1
+  const hasMultipleSections = repertoires.length > 1
 
   const handleValueChange = (value: string) => {
     if (value) {
@@ -70,14 +86,14 @@ export const RepertoireTab: React.FC<RepertoireTabProps> = ({ content, emptyMess
           className="mb-6 flex flex-wrap justify-start gap-2"
           aria-label="Filter repertoire by section"
         >
-          {content.map((section, index) => (
+          {repertoires.map((repertoire, index) => (
             <ToggleGroupItem
-              key={section.id || index}
+              key={repertoire.id || index}
               value={index.toString()}
-              aria-label={section.title || `Section ${index + 1}`}
+              aria-label={repertoire.title || `Section ${index + 1}`}
               className="capitalize"
             >
-              {section.title}
+              {repertoire.title}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
@@ -85,7 +101,7 @@ export const RepertoireTab: React.FC<RepertoireTabProps> = ({ content, emptyMess
 
       {/* Selected section content */}
       <div className="prose max-w-none">
-        <PayloadRichText content={content[selectedSection]?.content} />
+        <PayloadRichText content={repertoires[selectedSection]?.content} />
       </div>
     </div>
   )
