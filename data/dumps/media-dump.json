@@ -1,1 +1,3152 @@
-[]
+[
+  {
+    "id": 75,
+    "alt": "Justine Stemmelin",
+    "credit": null,
+    "updatedAt": "2025-11-25T08:43:33.782Z",
+    "createdAt": "2025-11-25T08:31:10.509Z",
+    "url": "/api/media/file/Foto-Justine-scaled.jpg",
+    "thumbnailURL": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+    "filename": "Foto-Justine-scaled.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 449181,
+    "width": 2560,
+    "height": 2560,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Foto-Justine-scaled-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 7238,
+        "filename": "Foto-Justine-scaled-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Foto-Justine-scaled-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 26352,
+        "filename": "Foto-Justine-scaled-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/Foto-Justine-scaled-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 37828,
+        "filename": "Foto-Justine-scaled-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 74,
+    "alt": "Veronika Fischer",
+    "credit": null,
+    "updatedAt": "2025-11-25T08:43:33.946Z",
+    "createdAt": "2025-11-25T08:31:10.190Z",
+    "url": "/api/media/file/V.Fischer-sw.jpg",
+    "thumbnailURL": "/api/media/file/V.Fischer-sw-300x300.webp",
+    "filename": "V.Fischer-sw.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 99291,
+    "width": 1024,
+    "height": 1024,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/V.Fischer-sw-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 4204,
+        "filename": "V.Fischer-sw-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/V.Fischer-sw-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 16668,
+        "filename": "V.Fischer-sw-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/V.Fischer-sw-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 21126,
+        "filename": "V.Fischer-sw-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 73,
+    "alt": "Tina Nurnus",
+    "credit": null,
+    "updatedAt": "2025-11-25T08:43:34.119Z",
+    "createdAt": "2025-11-25T08:31:09.905Z",
+    "url": "/api/media/file/Tina.png",
+    "thumbnailURL": "/api/media/file/Tina-300x300.webp",
+    "filename": "Tina.png",
+    "mimeType": "image/png",
+    "filesize": 474072,
+    "width": 1000,
+    "height": 1000,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Tina-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 4070,
+        "filename": "Tina-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Tina-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 12702,
+        "filename": "Tina-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/Tina-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 16206,
+        "filename": "Tina-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 72,
+    "alt": "Eva Wagner",
+    "credit": null,
+    "updatedAt": "2025-11-25T08:43:34.324Z",
+    "createdAt": "2025-11-25T08:31:09.576Z",
+    "url": "/api/media/file/IMG_2578-squashed.jpg",
+    "thumbnailURL": "/api/media/file/IMG_2578-squashed-300x300.webp",
+    "filename": "IMG_2578-squashed.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 75388,
+    "width": 1024,
+    "height": 1024,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/IMG_2578-squashed-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 5102,
+        "filename": "IMG_2578-squashed-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/IMG_2578-squashed-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 21758,
+        "filename": "IMG_2578-squashed-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/IMG_2578-squashed-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 27314,
+        "filename": "IMG_2578-squashed-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 71,
+    "alt": "Tianwa Yang",
+    "credit": null,
+    "updatedAt": "2025-11-25T08:45:04.785Z",
+    "createdAt": "2025-11-25T08:11:35.055Z",
+    "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618.jpg",
+    "thumbnailURL": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-300x300.webp",
+    "filename": "K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 137092,
+    "width": 1800,
+    "height": 976,
+    "focalX": 78,
+    "focalY": 37,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 10098,
+        "filename": "K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 33998,
+        "filename": "K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 42368,
+        "filename": "K1600_Tianwa-Yang_CAndrej-Grilc-e1718278803618-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 70,
+    "alt": "Mario Venzago - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:11:09.559Z",
+    "createdAt": "2025-11-25T08:04:02.527Z",
+    "url": "/api/media/file/Mario-Venzago-_c-Alberto-Venzago.zip",
+    "thumbnailURL": null,
+    "filename": "Mario-Venzago-_c-Alberto-Venzago.zip",
+    "mimeType": "application/zip",
+    "filesize": 2558335,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 69,
+    "alt": "Mario Venzago - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:11:09.387Z",
+    "createdAt": "2025-11-25T08:04:02.318Z",
+    "url": "/api/media/file/MV_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "MV_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 173588,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 68,
+    "alt": "Mario Venzago",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:11:09.212Z",
+    "createdAt": "2025-11-25T08:04:02.111Z",
+    "url": "/api/media/file/Mario-Venzago-1_c-Alberto-Venzago-e1762933634869.jpg",
+    "thumbnailURL": "/api/media/file/Mario-Venzago-1_c-Alberto-Venzago-e1762933634869-300x300.webp",
+    "filename": "Mario-Venzago-1_c-Alberto-Venzago-e1762933634869.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 131368,
+    "width": 1280,
+    "height": 745,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Mario-Venzago-1_c-Alberto-Venzago-e1762933634869-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 6916,
+        "filename": "Mario-Venzago-1_c-Alberto-Venzago-e1762933634869-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Mario-Venzago-1_c-Alberto-Venzago-e1762933634869-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 46082,
+        "filename": "Mario-Venzago-1_c-Alberto-Venzago-e1762933634869-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/Mario-Venzago-1_c-Alberto-Venzago-e1762933634869-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 67090,
+        "filename": "Mario-Venzago-1_c-Alberto-Venzago-e1762933634869-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 67,
+    "alt": "Maurice Steger - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:11:06.093Z",
+    "createdAt": "2025-11-25T08:04:01.781Z",
+    "url": "/api/media/file/Maurice-Steger_zip.zip",
+    "thumbnailURL": null,
+    "filename": "Maurice-Steger_zip.zip",
+    "mimeType": "application/zip",
+    "filesize": 60446540,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 66,
+    "alt": "Maurice Steger - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:11:05.929Z",
+    "createdAt": "2025-11-25T08:04:01.526Z",
+    "url": "/api/media/file/MS_Bio_e-2.pdf",
+    "thumbnailURL": null,
+    "filename": "MS_Bio_e-2.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 182011,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 65,
+    "alt": "Maurice Steger",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:11:05.764Z",
+    "createdAt": "2025-11-25T08:04:01.291Z",
+    "url": "/api/media/file/Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486.jpg",
+    "thumbnailURL": "/api/media/file/Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486-300x300.webp",
+    "filename": "Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 60793,
+    "width": 897,
+    "height": 373,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 13264,
+        "filename": "Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 37594,
+        "filename": "Maurice-Steger_2_Jean-Baptiste-Millot-e1551267352486-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 64,
+    "alt": "Christian Zacharias - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:11:02.331Z",
+    "createdAt": "2025-11-25T08:04:00.988Z",
+    "url": "/api/media/file/CZ_13%C2%A9Constanze-Zacharias.zip",
+    "thumbnailURL": null,
+    "filename": "CZ_13©Constanze-Zacharias.zip",
+    "mimeType": "application/zip",
+    "filesize": 56843956,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 63,
+    "alt": "Christian Zacharias - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:11:02.170Z",
+    "createdAt": "2025-11-25T08:04:00.643Z",
+    "url": "/api/media/file/CZ_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "CZ_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 174495,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 62,
+    "alt": "Christian Zacharias",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:11:02.004Z",
+    "createdAt": "2025-11-25T08:04:00.456Z",
+    "url": "/api/media/file/CZ01%C2%A9Constanze-Zacharias-e1522062645520.jpg",
+    "thumbnailURL": "/api/media/file/CZ01%C2%A9Constanze-Zacharias-e1522062645520-300x300.webp",
+    "filename": "CZ01©Constanze-Zacharias-e1522062645520.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 45287,
+    "width": 1024,
+    "height": 524,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/CZ01%C2%A9Constanze-Zacharias-e1522062645520-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 8108,
+        "filename": "CZ01©Constanze-Zacharias-e1522062645520-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/CZ01%C2%A9Constanze-Zacharias-e1522062645520-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 23164,
+        "filename": "CZ01©Constanze-Zacharias-e1522062645520-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 61,
+    "alt": "Claire Huangci - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:58.445Z",
+    "createdAt": "2025-11-25T08:04:00.195Z",
+    "url": "/api/media/file/Claire-Huangci-C-Mateusz-Zahora_MG_3302-2.zip",
+    "thumbnailURL": null,
+    "filename": "Claire-Huangci-C-Mateusz-Zahora_MG_3302-2.zip",
+    "mimeType": "application/zip",
+    "filesize": 36809129,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 60,
+    "alt": "Claire Huangci - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:58.254Z",
+    "createdAt": "2025-11-25T08:03:59.768Z",
+    "url": "/api/media/file/CH_Bio_e-1.pdf",
+    "thumbnailURL": null,
+    "filename": "CH_Bio_e-1.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 149012,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 59,
+    "alt": "Claire Huangci",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:58.091Z",
+    "createdAt": "2025-11-25T08:03:59.577Z",
+    "url": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370.jpg",
+    "thumbnailURL": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-300x300.webp",
+    "filename": "Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 239203,
+    "width": 1465,
+    "height": 1331,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 10832,
+        "filename": "Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 49740,
+        "filename": "Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 70172,
+        "filename": "Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 58,
+    "alt": "Tianwa Yang - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:54.834Z",
+    "createdAt": "2025-11-25T08:03:59.206Z",
+    "url": "/api/media/file/Tianwa-Yang-Zip.zip",
+    "thumbnailURL": null,
+    "filename": "Tianwa-Yang-Zip.zip",
+    "mimeType": "application/zip",
+    "filesize": 16493905,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 57,
+    "alt": "Tianwa Yang - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:54.665Z",
+    "createdAt": "2025-11-25T08:03:58.951Z",
+    "url": "/api/media/file/TY_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "TY_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 197313,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 56,
+    "alt": "Monet Quintett - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:51.283Z",
+    "createdAt": "2025-11-25T08:03:58.687Z",
+    "url": "/api/media/file/Monet-Quintett.zip",
+    "thumbnailURL": null,
+    "filename": "Monet-Quintett.zip",
+    "mimeType": "application/zip",
+    "filesize": 44958442,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 55,
+    "alt": "Monet Quintett - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:51.116Z",
+    "createdAt": "2025-11-25T08:03:58.318Z",
+    "url": "/api/media/file/MQ_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "MQ_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 197994,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 54,
+    "alt": "Monet Quintett",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:50.953Z",
+    "createdAt": "2025-11-25T08:03:58.117Z",
+    "url": "/api/media/file/c-Studioline-e1717143348821.jpg",
+    "thumbnailURL": "/api/media/file/c-Studioline-e1717143348821-300x300.webp",
+    "filename": "c-Studioline-e1717143348821.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 88713,
+    "width": 1004,
+    "height": 619,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/c-Studioline-e1717143348821-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 9208,
+        "filename": "c-Studioline-e1717143348821-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/c-Studioline-e1717143348821-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 36158,
+        "filename": "c-Studioline-e1717143348821-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 53,
+    "alt": "Trio Gaspard - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:47.327Z",
+    "createdAt": "2025-11-25T08:03:57.844Z",
+    "url": "/api/media/file/Trio-Gaspard-%C2%A9-Andrej-Grilc.zip",
+    "thumbnailURL": null,
+    "filename": "Trio-Gaspard-©-Andrej-Grilc.zip",
+    "mimeType": "application/zip",
+    "filesize": 51390559,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 52,
+    "alt": "Trio Gaspard - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:47.151Z",
+    "createdAt": "2025-11-25T08:03:57.538Z",
+    "url": "/api/media/file/TG_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "TG_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 205910,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 51,
+    "alt": "Trio Gaspard",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:46.989Z",
+    "createdAt": "2025-11-25T08:03:57.265Z",
+    "url": "/api/media/file/23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893.jpg",
+    "thumbnailURL": "/api/media/file/23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893-300x300.webp",
+    "filename": "23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 71574,
+    "width": 1027,
+    "height": 585,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 9526,
+        "filename": "23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 41476,
+        "filename": "23-24-c-Andrej-Grilc-04057_klein-1-e1694766612893-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 50,
+    "alt": "Zehetmair Quartett - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:43.772Z",
+    "createdAt": "2025-11-25T08:03:56.989Z",
+    "url": "/api/media/file/2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567.zip",
+    "thumbnailURL": null,
+    "filename": "2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567.zip",
+    "mimeType": "application/zip",
+    "filesize": 780467,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 49,
+    "alt": "Zehetmair Quartett - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:43.606Z",
+    "createdAt": "2025-11-25T08:03:56.721Z",
+    "url": "/api/media/file/ZQ_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "ZQ_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 116107,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 48,
+    "alt": "Zehetmair Quartett",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:43.444Z",
+    "createdAt": "2025-11-25T08:03:56.426Z",
+    "url": "/api/media/file/2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567.jpg",
+    "thumbnailURL": "/api/media/file/2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567-300x300.webp",
+    "filename": "2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 311835,
+    "width": 1600,
+    "height": 1065,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 16540,
+        "filename": "2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 59850,
+        "filename": "2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 85408,
+        "filename": "2_DSC7013_Frederic_Laverriere_Photography_Quartet_Zehetmair-e1625670736567-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 47,
+    "alt": "Cuarteto SolTango - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:40.405Z",
+    "createdAt": "2025-11-25T08:03:55.877Z",
+    "url": "/api/media/file/Cuarteto-SolTango-zip.zip",
+    "thumbnailURL": null,
+    "filename": "Cuarteto-SolTango-zip.zip",
+    "mimeType": "application/zip",
+    "filesize": 55472732,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 46,
+    "alt": "Schoerke Logo",
+    "credit": null,
+    "updatedAt": "2025-11-25T08:03:47.161Z",
+    "createdAt": "2025-11-25T08:03:47.161Z",
+    "url": "/api/media/file/logo.png",
+    "thumbnailURL": "/api/media/file/logo-300x300.webp",
+    "filename": "logo.png",
+    "mimeType": "image/png",
+    "filesize": 115500,
+    "width": 1182,
+    "height": 328,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/logo-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 12616,
+        "filename": "logo-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/logo-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 33024,
+        "filename": "logo-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 45,
+    "alt": "Schoerke Logo Icon",
+    "credit": null,
+    "updatedAt": "2025-11-25T08:03:46.708Z",
+    "createdAt": "2025-11-25T08:03:46.708Z",
+    "url": "/api/media/file/logo_icon.png",
+    "thumbnailURL": "/api/media/file/logo_icon-300x300.webp",
+    "filename": "logo_icon.png",
+    "mimeType": "image/png",
+    "filesize": 19820,
+    "width": 378,
+    "height": 327,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/logo_icon-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 9050,
+        "filename": "logo_icon-300x300.webp"
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 44,
+    "alt": "Default Avatar",
+    "credit": null,
+    "updatedAt": "2025-11-25T08:03:46.505Z",
+    "createdAt": "2025-11-25T08:03:46.505Z",
+    "url": "/api/media/file/default-avatar.webp",
+    "thumbnailURL": "/api/media/file/default-avatar-300x300.webp",
+    "filename": "default-avatar.webp",
+    "mimeType": "image/webp",
+    "filesize": 872,
+    "width": 300,
+    "height": 300,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/default-avatar-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 872,
+        "filename": "default-avatar-300x300.webp"
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 43,
+    "alt": "Cuarteto SolTango - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:40.237Z",
+    "createdAt": "2025-11-25T08:03:38.541Z",
+    "url": "/api/media/file/ST_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "ST_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 140010,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 42,
+    "alt": "Cuarteto SolTango",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:40.075Z",
+    "createdAt": "2025-11-25T08:03:38.330Z",
+    "url": "/api/media/file/c-Andrej-Grilc-01599-scaled-e1663140372301.jpg",
+    "thumbnailURL": "/api/media/file/c-Andrej-Grilc-01599-scaled-e1663140372301-300x300.webp",
+    "filename": "c-Andrej-Grilc-01599-scaled-e1663140372301.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 96110,
+    "width": 1230,
+    "height": 581,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/c-Andrej-Grilc-01599-scaled-e1663140372301-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 14144,
+        "filename": "c-Andrej-Grilc-01599-scaled-e1663140372301-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/c-Andrej-Grilc-01599-scaled-e1663140372301-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 47968,
+        "filename": "c-Andrej-Grilc-01599-scaled-e1663140372301-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/c-Andrej-Grilc-01599-scaled-e1663140372301-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 67618,
+        "filename": "c-Andrej-Grilc-01599-scaled-e1663140372301-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 41,
+    "alt": "Dominik Wagner - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:36.495Z",
+    "createdAt": "2025-11-25T08:03:38.047Z",
+    "url": "/api/media/file/Dominik-Wagner-wegen-Grose-nicht-alle-Grilc-Bilder.zip",
+    "thumbnailURL": null,
+    "filename": "Dominik-Wagner-wegen-Grose-nicht-alle-Grilc-Bilder.zip",
+    "mimeType": "application/zip",
+    "filesize": 61786871,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 40,
+    "alt": "Dominik Wagner - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:36.302Z",
+    "createdAt": "2025-11-25T08:03:37.778Z",
+    "url": "/api/media/file/DW_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "DW_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 165691,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 39,
+    "alt": "Dominik Wagner",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:36.134Z",
+    "createdAt": "2025-11-25T08:03:37.593Z",
+    "url": "/api/media/file/K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950.jpg",
+    "thumbnailURL": "/api/media/file/K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950-300x300.webp",
+    "filename": "K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 104228,
+    "width": 1152,
+    "height": 619,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 12544,
+        "filename": "K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 35798,
+        "filename": "K1024_Dominik-Wagner-C-Andrej-Grilc-6-e1761724773950-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 38,
+    "alt": "Thomas Zehetmair - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:32.743Z",
+    "createdAt": "2025-11-25T08:03:37.334Z",
+    "url": "/api/media/file/THOMAS-ZEHETMAIR-Download.zip",
+    "thumbnailURL": null,
+    "filename": "THOMAS-ZEHETMAIR-Download.zip",
+    "mimeType": "application/zip",
+    "filesize": 14604162,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 37,
+    "alt": "Thomas Zehetmair - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:32.563Z",
+    "createdAt": "2025-11-25T08:03:37.119Z",
+    "url": "/api/media/file/TZ_Bio_e-1.pdf",
+    "thumbnailURL": null,
+    "filename": "TZ_Bio_e-1.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 199436,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 36,
+    "alt": "Thomas Zehetmair",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:32.407Z",
+    "createdAt": "2025-11-25T08:03:36.922Z",
+    "url": "/api/media/file/THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein.jpg",
+    "thumbnailURL": "/api/media/file/THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein-300x300.webp",
+    "filename": "THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 87502,
+    "width": 1762,
+    "height": 1134,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 4912,
+        "filename": "THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 15956,
+        "filename": "THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 18774,
+        "filename": "THOMAS-ZEHETMAIR-6532-Wolfgang-Schmidt_klein-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 35,
+    "alt": "Jonian Ilias Kadesha - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:29.076Z",
+    "createdAt": "2025-11-25T08:03:36.611Z",
+    "url": "/api/media/file/JIK-Zip-credit-Kaupo-Kikkas.zip",
+    "thumbnailURL": null,
+    "filename": "JIK-Zip-credit-Kaupo-Kikkas.zip",
+    "mimeType": "application/zip",
+    "filesize": 5972087,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 34,
+    "alt": "Jonian Ilias Kadesha - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:28.898Z",
+    "createdAt": "2025-11-25T08:03:36.386Z",
+    "url": "/api/media/file/JIK_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "JIK_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 186562,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 33,
+    "alt": "Jonian Ilias Kadesha",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:28.729Z",
+    "createdAt": "2025-11-25T08:03:36.169Z",
+    "url": "/api/media/file/Jonian-3-credit-Kaupo-Kikkas-e1575468874437.jpg",
+    "thumbnailURL": "/api/media/file/Jonian-3-credit-Kaupo-Kikkas-e1575468874437-300x300.webp",
+    "filename": "Jonian-3-credit-Kaupo-Kikkas-e1575468874437.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 90631,
+    "width": 1024,
+    "height": 471,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Jonian-3-credit-Kaupo-Kikkas-e1575468874437-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 21440,
+        "filename": "Jonian-3-credit-Kaupo-Kikkas-e1575468874437-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Jonian-3-credit-Kaupo-Kikkas-e1575468874437-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 81182,
+        "filename": "Jonian-3-credit-Kaupo-Kikkas-e1575468874437-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 32,
+    "alt": "Marc Gruber - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:25.372Z",
+    "createdAt": "2025-11-25T08:03:35.870Z",
+    "url": "/api/media/file/Marc-Gruber-zip.zip",
+    "thumbnailURL": null,
+    "filename": "Marc-Gruber-zip.zip",
+    "mimeType": "application/zip",
+    "filesize": 7840518,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 31,
+    "alt": "Marc Gruber - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:25.194Z",
+    "createdAt": "2025-11-25T08:03:35.658Z",
+    "url": "/api/media/file/MG_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "MG_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 182805,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 30,
+    "alt": "Marc Gruber",
+    "credit": null,
+    "updatedAt": "2025-11-25T16:08:33.727Z",
+    "createdAt": "2025-11-25T08:03:35.438Z",
+    "url": "/api/media/file/Grubi_slide-1-e1535704350486.jpg",
+    "thumbnailURL": "/api/media/file/Grubi_slide-1-e1535704350486-300x300.webp",
+    "filename": "Grubi_slide-1-e1535704350486.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 43922,
+    "width": 1000,
+    "height": 414,
+    "focalX": 26,
+    "focalY": 38,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Grubi_slide-1-e1535704350486-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 7428,
+        "filename": "Grubi_slide-1-e1535704350486-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Grubi_slide-1-e1535704350486-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 23772,
+        "filename": "Grubi_slide-1-e1535704350486-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 29,
+    "alt": "Christian Poltéra - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:21.656Z",
+    "createdAt": "2025-11-25T08:03:35.152Z",
+    "url": "/api/media/file/Christian-Poltera.zip",
+    "thumbnailURL": null,
+    "filename": "Christian-Poltera.zip",
+    "mimeType": "application/zip",
+    "filesize": 48838808,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 28,
+    "alt": "Christian Poltéra - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:21.490Z",
+    "createdAt": "2025-11-25T08:03:34.908Z",
+    "url": "/api/media/file/CP_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "CP_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 171851,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 27,
+    "alt": "Christian Poltéra",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:21.271Z",
+    "createdAt": "2025-11-25T08:03:34.709Z",
+    "url": "/api/media/file/11c-Nikolaj-Lund-Banner-e1535620202340.jpg",
+    "thumbnailURL": "/api/media/file/11c-Nikolaj-Lund-Banner-e1535620202340-300x300.webp",
+    "filename": "11c-Nikolaj-Lund-Banner-e1535620202340.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 18718,
+    "width": 500,
+    "height": 211,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/11c-Nikolaj-Lund-Banner-e1535620202340-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 8870,
+        "filename": "11c-Nikolaj-Lund-Banner-e1535620202340-300x300.webp"
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 26,
+    "alt": "Jean-Paul Gasparian - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:17.946Z",
+    "createdAt": "2025-11-25T08:03:34.479Z",
+    "url": "/api/media/file/Jean-Paul-Gasparian-C-Bernard-Martinez.zip",
+    "thumbnailURL": null,
+    "filename": "Jean-Paul-Gasparian-C-Bernard-Martinez.zip",
+    "mimeType": "application/zip",
+    "filesize": 62436405,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 25,
+    "alt": "Jean-Paul Gasparian - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:17.781Z",
+    "createdAt": "2025-11-25T08:03:34.070Z",
+    "url": "/api/media/file/JPG_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "JPG_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 129562,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 24,
+    "alt": "Jean-Paul Gasparian",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:17.593Z",
+    "createdAt": "2025-11-25T08:03:33.872Z",
+    "url": "/api/media/file/K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697.jpg",
+    "thumbnailURL": "/api/media/file/K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697-300x300.webp",
+    "filename": "K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 142614,
+    "width": 1600,
+    "height": 860,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 10578,
+        "filename": "K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 31130,
+        "filename": "K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697-768x768.webp"
+      },
+      "hero": {
+        "url": "/api/media/file/K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697-1200x800.webp",
+        "width": 1200,
+        "height": 800,
+        "mimeType": "image/webp",
+        "filesize": 45352,
+        "filename": "K1600_Jean-Paul-Gasparian-C-Frank-Juery-e1759320359697-1200x800.webp"
+      }
+    }
+  },
+  {
+    "id": 23,
+    "alt": "Trio Jean Paul - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T12:09:50.929Z",
+    "createdAt": "2025-11-25T08:03:33.568Z",
+    "url": "/api/media/file/Trio-Jean-Paul_Galerie-Download.zip",
+    "thumbnailURL": null,
+    "filename": "Trio-Jean-Paul_Galerie-Download.zip",
+    "mimeType": "application/zip",
+    "filesize": 52848342,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 22,
+    "alt": "Trio Jean Paul - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T12:09:50.767Z",
+    "createdAt": "2025-11-25T08:03:33.273Z",
+    "url": "/api/media/file/TJP_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "TJP_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 241868,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 21,
+    "alt": "Trio Jean Paul",
+    "credit": null,
+    "updatedAt": "2025-11-25T12:09:50.596Z",
+    "createdAt": "2025-11-25T08:03:33.069Z",
+    "url": "/api/media/file/trio_jeanpaul_slide.jpg",
+    "thumbnailURL": "/api/media/file/trio_jeanpaul_slide-300x300.webp",
+    "filename": "trio_jeanpaul_slide.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 22563,
+    "width": 600,
+    "height": 240,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/trio_jeanpaul_slide-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 8368,
+        "filename": "trio_jeanpaul_slide-300x300.webp"
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 20,
+    "alt": "Andreas Staier - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:12.268Z",
+    "createdAt": "2025-11-25T08:03:32.847Z",
+    "url": "/api/media/file/Andreas-Staier_zip.zip",
+    "thumbnailURL": null,
+    "filename": "Andreas-Staier_zip.zip",
+    "mimeType": "application/zip",
+    "filesize": 61984706,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 19,
+    "alt": "Andreas Staier - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:12.067Z",
+    "createdAt": "2025-11-25T08:03:32.569Z",
+    "url": "/api/media/file/AS_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "AS_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 160142,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 18,
+    "alt": "Andreas Staier",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:11.864Z",
+    "createdAt": "2025-11-25T08:03:32.355Z",
+    "url": "/api/media/file/Andreas_Staier_photo_Andrej-Grilc-04482.jpg",
+    "thumbnailURL": "/api/media/file/Andreas_Staier_photo_Andrej-Grilc-04482-300x300.webp",
+    "filename": "Andreas_Staier_photo_Andrej-Grilc-04482.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 172831,
+    "width": 875,
+    "height": 583,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Andreas_Staier_photo_Andrej-Grilc-04482-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 16556,
+        "filename": "Andreas_Staier_photo_Andrej-Grilc-04482-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Andreas_Staier_photo_Andrej-Grilc-04482-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 58810,
+        "filename": "Andreas_Staier_photo_Andrej-Grilc-04482-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 17,
+    "alt": "Martin Stadtfeld - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:07.119Z",
+    "createdAt": "2025-11-25T08:03:32.084Z",
+    "url": "/api/media/file/Martin-Stadtfeld_Galerie-Download-2023-2.zip",
+    "thumbnailURL": null,
+    "filename": "Martin-Stadtfeld_Galerie-Download-2023-2.zip",
+    "mimeType": "application/zip",
+    "filesize": 25628513,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 16,
+    "alt": "Martin Stadtfeld - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:06.914Z",
+    "createdAt": "2025-11-25T08:03:31.839Z",
+    "url": "/api/media/file/MST_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "MST_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 181982,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 15,
+    "alt": "Martin Stadtfeld",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:06.697Z",
+    "createdAt": "2025-11-25T08:03:31.644Z",
+    "url": "/api/media/file/Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-%C2%AE-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940.jpg",
+    "thumbnailURL": "/api/media/file/Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-%C2%AE-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940-300x300.webp",
+    "filename": "Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-®-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 37983,
+    "width": 1024,
+    "height": 407,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-%C2%AE-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 9246,
+        "filename": "Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-®-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-%C2%AE-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 25154,
+        "filename": "Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-®-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 14,
+    "alt": "Till Fellner - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:01.933Z",
+    "createdAt": "2025-11-25T08:03:31.286Z",
+    "url": "/api/media/file/Till-Fellner-Fotos-download.zip",
+    "thumbnailURL": null,
+    "filename": "Till-Fellner-Fotos-download.zip",
+    "mimeType": "application/zip",
+    "filesize": 13264301,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 13,
+    "alt": "Till Fellner - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:01.725Z",
+    "createdAt": "2025-11-25T08:03:31.047Z",
+    "url": "/api/media/file/TF_Bio_e.pdf",
+    "thumbnailURL": null,
+    "filename": "TF_Bio_e.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 143661,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 12,
+    "alt": "Till Fellner",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:10:01.527Z",
+    "createdAt": "2025-11-25T08:03:30.833Z",
+    "url": "/api/media/file/till_fellner_slide.jpg",
+    "thumbnailURL": "/api/media/file/till_fellner_slide-300x300.webp",
+    "filename": "till_fellner_slide.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 14136,
+    "width": 600,
+    "height": 240,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/till_fellner_slide-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 4480,
+        "filename": "till_fellner_slide-300x300.webp"
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 11,
+    "alt": "Tzimon Barto - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:56.600Z",
+    "createdAt": "2025-11-25T08:03:30.600Z",
+    "url": "/api/media/file/Tzimon-Barto-zip.zip",
+    "thumbnailURL": null,
+    "filename": "Tzimon-Barto-zip.zip",
+    "mimeType": "application/zip",
+    "filesize": 62042148,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 10,
+    "alt": "Tzimon Barto - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:56.311Z",
+    "createdAt": "2025-11-25T08:03:30.295Z",
+    "url": "/api/media/file/TB_Bio_e-1.pdf",
+    "thumbnailURL": null,
+    "filename": "TB_Bio_e-1.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 209689,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 9,
+    "alt": "Tzimon Barto",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:56.114Z",
+    "createdAt": "2025-11-25T08:03:30.085Z",
+    "url": "/api/media/file/C-Nancy-Horowitz-2-e1634724249818.jpg",
+    "thumbnailURL": "/api/media/file/C-Nancy-Horowitz-2-e1634724249818-300x300.webp",
+    "filename": "C-Nancy-Horowitz-2-e1634724249818.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 24514,
+    "width": 1019,
+    "height": 489,
+    "focalX": 49,
+    "focalY": 26,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/C-Nancy-Horowitz-2-e1634724249818-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 3482,
+        "filename": "C-Nancy-Horowitz-2-e1634724249818-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/C-Nancy-Horowitz-2-e1634724249818-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 11234,
+        "filename": "C-Nancy-Horowitz-2-e1634724249818-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 8,
+    "alt": "Marie-Luise Neunecker - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:51.230Z",
+    "createdAt": "2025-11-25T08:03:29.784Z",
+    "url": "/api/media/file/Galerie-MLN.zip",
+    "thumbnailURL": null,
+    "filename": "Galerie-MLN.zip",
+    "mimeType": "application/zip",
+    "filesize": 6045245,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 7,
+    "alt": "Marie-Luise Neunecker - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:51.001Z",
+    "createdAt": "2025-11-25T08:03:29.555Z",
+    "url": "/api/media/file/MLN_Bio_e-1.pdf",
+    "thumbnailURL": null,
+    "filename": "MLN_Bio_e-1.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 175272,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 6,
+    "alt": "Marie-Luise Neunecker",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:50.735Z",
+    "createdAt": "2025-11-25T08:03:29.274Z",
+    "url": "/api/media/file/marie-luise_neunecker-slide.jpg",
+    "thumbnailURL": "/api/media/file/marie-luise_neunecker-slide-300x300.webp",
+    "filename": "marie-luise_neunecker-slide.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 15804,
+    "width": 600,
+    "height": 240,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/marie-luise_neunecker-slide-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 4530,
+        "filename": "marie-luise_neunecker-slide-300x300.webp"
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 5,
+    "alt": "Gustav Rivinius - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:45.500Z",
+    "createdAt": "2025-11-25T08:03:28.933Z",
+    "url": "/api/media/file/GR_Bio_e-1.pdf",
+    "thumbnailURL": null,
+    "filename": "GR_Bio_e-1.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 163777,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 4,
+    "alt": "Gustav Rivinius",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:45.254Z",
+    "createdAt": "2025-11-25T08:03:28.731Z",
+    "url": "/api/media/file/Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133.jpg",
+    "thumbnailURL": "/api/media/file/Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133-300x300.webp",
+    "filename": "Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 42261,
+    "width": 1000,
+    "height": 425,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 9148,
+        "filename": "Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133-300x300.webp"
+      },
+      "card": {
+        "url": "/api/media/file/Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133-768x768.webp",
+        "width": 768,
+        "height": 768,
+        "mimeType": "image/webp",
+        "filesize": 33410,
+        "filename": "Gustav-Rivinius-Foto-B-C-Jean-M.-Laffitau-e1644829971133-768x768.webp"
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 3,
+    "alt": "Ruth Killius - Gallery",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:40.450Z",
+    "createdAt": "2025-11-25T08:03:28.470Z",
+    "url": "/api/media/file/Download-Zip_RK.zip",
+    "thumbnailURL": null,
+    "filename": "Download-Zip_RK.zip",
+    "mimeType": "application/zip",
+    "filesize": 8734542,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 2,
+    "alt": "Ruth Killius - Biography",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:40.229Z",
+    "createdAt": "2025-11-25T08:03:28.189Z",
+    "url": "/api/media/file/RK_Bio_e-1.pdf",
+    "thumbnailURL": null,
+    "filename": "RK_Bio_e-1.pdf",
+    "mimeType": "application/pdf",
+    "filesize": 188849,
+    "width": null,
+    "height": null,
+    "focalX": null,
+    "focalY": null,
+    "sizes": {
+      "thumbnail": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  },
+  {
+    "id": 1,
+    "alt": "Ruth Killius",
+    "credit": null,
+    "updatedAt": "2025-11-25T15:09:40.016Z",
+    "createdAt": "2025-11-25T08:03:27.988Z",
+    "url": "/api/media/file/Ruth-Killius_Jean-Fran%C3%A7ois-Mariotti-e1568814418126.jpg",
+    "thumbnailURL": "/api/media/file/Ruth-Killius_Jean-Fran%C3%A7ois-Mariotti-e1568814418126-300x300.webp",
+    "filename": "Ruth-Killius_Jean-François-Mariotti-e1568814418126.jpg",
+    "mimeType": "image/jpeg",
+    "filesize": 12426,
+    "width": 489,
+    "height": 260,
+    "focalX": 50,
+    "focalY": 50,
+    "sizes": {
+      "thumbnail": {
+        "url": "/api/media/file/Ruth-Killius_Jean-Fran%C3%A7ois-Mariotti-e1568814418126-300x300.webp",
+        "width": 300,
+        "height": 300,
+        "mimeType": "image/webp",
+        "filesize": 7796,
+        "filename": "Ruth-Killius_Jean-François-Mariotti-e1568814418126-300x300.webp"
+      },
+      "card": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      },
+      "hero": {
+        "url": null,
+        "width": null,
+        "height": null,
+        "mimeType": null,
+        "filesize": null,
+        "filename": null
+      }
+    }
+  }
+]
