@@ -182,6 +182,7 @@ Current pages in the system:
 |------|-------------|--------------|------------|-------------|
 | Impressum/Imprint | `impressum` | `imprint` | `/impressum` | `/imprint` |
 | Datenschutz/Privacy | `datenschutz` | `privacy-policy` | `/datenschutz` | `/privacy-policy` |
+| Contact | `contact` | `contact` | `/contact` | `/contact` |
 
 ## Related Files
 
@@ -214,3 +215,46 @@ If headings and paragraphs don't have proper spacing/sizing:
 1. **Switch locale**: Use the language dropdown in Payload Admin
 2. **Fill both languages**: Ensure content is added for both DE and EN
 3. **Check service call**: Verify the correct locale is passed to `getPageBySlug()`
+
+## Contact Page Example
+
+The contact page uses the same slug for both languages (`/contact`):
+
+**Route file** (`src/app/(frontend)/[locale]/contact/page.tsx`):
+
+```typescript
+import PayloadRichText from '@/components/ui/PayloadRichText'
+import { getPageBySlug } from '@/services/page'
+import { notFound } from 'next/navigation'
+
+const ContactPage = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params
+
+  const page = await getPageBySlug('contact', locale as 'de' | 'en')
+
+  if (!page) {
+    notFound()
+  }
+
+  return (
+    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
+      <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">{page.title}</h1>
+      <div className="prose max-w-none">
+        <PayloadRichText content={page.content} />
+      </div>
+    </main>
+  )
+}
+
+export default ContactPage
+```
+
+**Routing** (in `src/i18n/routing.ts`):
+
+```typescript
+pathnames: {
+  '/contact': '/contact', // Same URL for both languages
+}
+```
+
+When the URL is the same for both languages, you extract the `locale` from `params` and pass it to `getPageBySlug()`.
