@@ -27,25 +27,17 @@ const nextConfig = {
   },
   // Mark packages as external - prevents bundling them
   // Required for Payload CMS, libsql, and their dependencies
-  serverExternalPackages: ['@payloadcms/db-sqlite', '@libsql/client', 'libsql', 'payload', 'pino', 'thread-stream'],
-
-  // Webpack configuration for additional externalization
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      // Externalize problematic packages to prevent bundling
-      config.externals = config.externals || []
-      config.externals.push(
-        'pino',
-        'thread-stream',
-        'pino-pretty',
-        'sonic-boom',
-        '@payloadcms/db-sqlite',
-        '@libsql/client',
-        'libsql',
-      )
-    }
-    return config
-  },
+  // pino requires all its dependencies to be external due to dynamic requires
+  serverExternalPackages: [
+    '@payloadcms/db-sqlite',
+    '@libsql/client',
+    'libsql',
+    'payload',
+    'pino',
+    'pino-pretty',
+    'thread-stream',
+    'sonic-boom',
+  ],
 }
 
 export default withPayload(withNextIntl(nextConfig))
