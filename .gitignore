@@ -57,3 +57,13 @@ next-env.d.ts
 /scripts/wordpress/data/posts-*.xml
 /scripts/wordpress/data/artist-*.xml
 /scripts/wordpress/data/employee*.xml
+
+# WordPress migration data (already migrated, keep local only)
+/scripts/wordpress/data/all-en.xml
+/scripts/wordpress/data/all-de.xml
+
+# Database dumps (local backup only)
+/data/dumps/*.json
+
+# Legacy media data
+/src/data/media.xml

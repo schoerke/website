@@ -1,0 +1,13 @@
+# Database dumps - not needed in production
+data/dumps
+
+# Migration data - not needed in production  
+scripts/wordpress/data/*.xml
+src/data/media.xml
+
+# Migration scripts - not needed in production
+scripts/db
+scripts/wordpress
+
+# Local media - served from Cloudflare R2
+media
