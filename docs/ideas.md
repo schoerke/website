@@ -14,7 +14,7 @@
 
 - artist biographies
 
-## Idea: Newsletter Management
+## Idea: Newsletter Management (v2)
 
 - manage contacts via Mailjet API
 - manage campaigns via Mailjet API
@@ -24,8 +24,16 @@
 
 ## Cmd-K: Advanced Search (implemented)
 
-- implement Cmd-K style search for quick navigation
 - search across collections, media, and pages
-- display search results in a modal or overlay
-- support keyboard navigation for search results
-- allow filtering of search results by collection or type
+- dynamically show cmd/ctrl + k hint in the UI based on user's OS (localize as well for German "Strg")
+
+## UI: Enhancements
+
+- only render slider on artist list if filter active
+- global navigation on mobile/desktop
+- fancier Locale switcher UI
+- homepage design
+
+## Docs
+
+- generate a change log from git commits
