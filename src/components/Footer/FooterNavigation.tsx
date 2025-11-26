@@ -16,7 +16,7 @@ const FooterNavigation: React.FC<FooterNavigationProps> = async ({ locale }) => 
     { text: t('news.title'), href: '/news' as const },
     { text: t('projects.title'), href: '/projects' as const },
     { text: t('team.title'), href: '/team' as const },
-    { text: t('contact.title'), href: '/contact' as const },
+    { text: t('contact.title'), href: '/kontakt' as const },
   ]
 
   return (

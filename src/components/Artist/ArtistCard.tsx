@@ -34,7 +34,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }
 
   return slug ? (
     <Link
-      href={`/artists/${slug}`}
+      href={`/artists/${slug}` as any}
       className="group block overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]"
     >
       <div className="relative h-72 w-full">

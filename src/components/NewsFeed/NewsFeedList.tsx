@@ -96,7 +96,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
             </div>
 
             {/* Content column */}
-            <Link href={postPath} className="flex gap-4 sm:gap-6 lg:contents">
+            <Link href={postPath as any} className="flex gap-4 sm:gap-6 lg:contents">
               {/* Image - start on mobile/tablet, end on large screens */}
               <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden sm:h-28 sm:w-28 lg:order-last">
                 <Image

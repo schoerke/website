@@ -25,6 +25,9 @@ const nextConfig = {
       },
     ],
   },
+  // Mark packages as external - prevents Turbopack from bundling them
+  // Required for Payload CMS, libsql, and their dependencies
+  serverExternalPackages: ['@payloadcms/db-sqlite', '@libsql/client', 'libsql', 'payload', 'pino', 'thread-stream'],
 }
 
 export default withPayload(withNextIntl(nextConfig))

@@ -56,7 +56,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
           {images.map((img, idx) => (
             <div className="min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] sm:px-2" key={img.src + idx}>
               {img.link ? (
-                <Link href={img.link} tabIndex={-1} aria-label={img.bannerText || img.alt}>
+                <Link href={img.link as any} tabIndex={-1} aria-label={img.bannerText || img.alt}>
                   <ImageSlide image={img} isActive={selectedIndex === idx} />
                 </Link>
               ) : (

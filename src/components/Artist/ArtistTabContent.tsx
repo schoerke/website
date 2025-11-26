@@ -114,7 +114,7 @@ interface DiscographyTabProps {
 }
 
 export const DiscographyTab: React.FC<DiscographyTabProps> = ({ content, emptyMessage }) => {
-  if (!content) {
+  if (!content || content.length === 0) {
     return (
       <div className="py-12 text-center text-gray-500">
         <p>{emptyMessage}</p>
@@ -123,8 +123,17 @@ export const DiscographyTab: React.FC<DiscographyTabProps> = ({ content, emptyMe
   }
 
   return (
-    <div className="prose max-w-none">
-      <PayloadRichText content={content} />
+    <div className="space-y-8">
+      {content.map((section, index) => (
+        <div key={section.id || index} className="space-y-4">
+          {section.role && (
+            <h3 className="text-xl font-semibold capitalize text-gray-900">{section.role.replace(/_/g, ' ')}</h3>
+          )}
+          <div className="prose max-w-none">
+            <PayloadRichText content={section.recordings} />
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

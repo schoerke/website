@@ -50,7 +50,7 @@ const FooterInfo: React.FC<FooterInfoProps> = async ({ locale }) => {
                   </NextLink>
                 ) : (
                   <Link
-                    href={link.href}
+                    href={link.href as any}
                     className="text-sm text-gray-600 transition duration-150 ease-in-out hover:text-gray-800"
                   >
                     {link.text}

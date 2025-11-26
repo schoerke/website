@@ -97,9 +97,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             {author && (
               <>
                 <span aria-hidden="true">·</span>
-                <span>
-                  {author.firstName} {author.lastName}
-                </span>
+                <span>{author.name}</span>
               </>
             )}
           </div>

@@ -68,7 +68,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         shortcut: locale === 'de' ? ['t'] : ['c'],
         keywords: 'contact kontakt',
         priority: 1, // Higher priority for contact
-        perform: () => router.push('/contact'),
+        perform: () => router.push('/kontakt'),
       },
       {
         id: 'team',
@@ -86,7 +86,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         perform: () => {
           const newLocale = locale === 'de' ? 'en' : 'de'
           const currentPath = window.location.pathname.replace(`/${locale}`, '')
-          router.push(currentPath, { locale: newLocale })
+          router.push(currentPath as any, { locale: newLocale })
         },
       },
     ]

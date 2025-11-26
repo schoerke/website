@@ -98,9 +98,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
             {author && (
               <>
                 <span aria-hidden="true">·</span>
-                <span>
-                  {author.firstName} {author.lastName}
-                </span>
+                <span>{author.name}</span>
               </>
             )}
           </div>
