@@ -15,16 +15,7 @@ function isMedia(obj: unknown): obj is Media {
 }
 
 function getImageUrl(img: Media | null | undefined): string {
-  if (!img) return ''
-  // Use the url field directly (local or remote)
-  if (img.url) return img.url
-  // Fallback to filename with local API endpoint
-  if (img.filename) {
-    // Sanitize filename to prevent path traversal
-    const sanitized = img.filename.replace(/\.\./g, '').replace(/^\/+/, '')
-    return `/api/media/file/${sanitized}`
-  }
-  return ''
+  return img?.url || ''
 }
 
 function formatDate(dateString: string, locale: string): string {

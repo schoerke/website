@@ -10,17 +10,7 @@ export const dynamic = 'force-dynamic'
 
 const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, mobile }) => {
   const img = image as Media | undefined
-
-  const getImageUrl = (img: Media | undefined) => {
-    if (!img) return '/placeholder.jpg'
-    // Use the url field directly (local or remote)
-    if (img.url) return img.url
-    // Fallback to filename with local API endpoint
-    if (img.filename) return `/api/media/file/${img.filename}`
-    return '/placeholder.jpg'
-  }
-
-  const imageUrl = getImageUrl(img)
+  const imageUrl = img?.url || '/placeholder.jpg'
 
   return (
     <div className="group overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">

@@ -14,12 +14,8 @@ interface ArtistCardProps {
 }
 
 function getImageUrl(img: Media | null | undefined): string {
-  if (!img) return '/placeholder.jpg'
-  // Use the url field directly (local or remote)
-  if (img.url) return img.url
-  // Fallback to filename with local API endpoint
-  if (img.filename) return `/api/media/file/${img.filename}`
-  return '/placeholder.jpg'
+  if (!img?.url) return '/placeholder.jpg'
+  return img.url
 }
 
 const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }) => {
