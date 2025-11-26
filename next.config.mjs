@@ -6,6 +6,9 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // Disable Next.js Image Optimization for R2 images
+    // Serve them directly from R2 without processing
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
