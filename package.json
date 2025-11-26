@@ -38,7 +38,7 @@
   },
   "packageManager": "pnpm@10.22.0",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.932.0",
+    "@aws-sdk/client-s3": "^3.940.0",
     "@libsql/client": "^0.15.15",
     "@payloadcms/db-sqlite": "^3.64.0",
     "@payloadcms/next": "^3.64.0",
