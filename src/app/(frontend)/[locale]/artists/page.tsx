@@ -36,17 +36,26 @@ const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) 
   }
 
   const sliderImages = shuffleArray(
-    (artists || []).map((artist: any) => {
-      const sizes = artist.image?.sizes || {}
-      const src = sizes.hero?.url || sizes.card?.url || sizes.thumbnail?.url || artist.image?.url || '/placeholder.jpg'
-      return {
-        src,
-        alt: artist.name,
-        bannerText: artist.name,
-        link: artist.slug ? `/artists/${artist.slug}` : undefined,
-        sizesAttr: '(max-width: 768px) 100vw, 50vw',
-      }
-    }),
+    (artists || [])
+      .filter((artist: any) => artist.image) // Only include artists with images
+      .map((artist: any) => {
+        const sizes = artist.image?.sizes || {}
+        // Get the first available non-null, non-empty URL
+        const src =
+          (sizes.hero?.url && sizes.hero.url !== 'null' ? sizes.hero.url : null) ||
+          (sizes.card?.url && sizes.card.url !== 'null' ? sizes.card.url : null) ||
+          (sizes.thumbnail?.url && sizes.thumbnail.url !== 'null' ? sizes.thumbnail.url : null) ||
+          (artist.image?.url && artist.image.url !== 'null' ? artist.image.url : null) ||
+          '/placeholder.jpg'
+
+        return {
+          src,
+          alt: artist.name,
+          bannerText: artist.name,
+          link: artist.slug ? `/artists/${artist.slug}` : undefined,
+          sizesAttr: '(max-width: 768px) 100vw, 50vw',
+        }
+      }),
   )
 
   return (
