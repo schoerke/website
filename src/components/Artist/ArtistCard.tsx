@@ -14,7 +14,7 @@ interface ArtistCardProps {
 }
 
 function getImageUrl(img: Media | null | undefined): string {
-  if (!img?.url) return '/placeholder.jpg'
+  if (!img?.url || img.url === 'null' || img.url.includes('/null')) return '/placeholder.jpg'
   return img.url
 }
 

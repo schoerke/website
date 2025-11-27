@@ -37,7 +37,20 @@ const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) 
 
   const sliderImages = shuffleArray(
     (artists || [])
-      .filter((artist: any) => artist.image) // Only include artists with images
+      .filter((artist: any) => {
+        // Only include artists with valid image URLs
+        if (!artist.image || typeof artist.image !== 'object') return false
+
+        const sizes = artist.image.sizes || {}
+        const mainUrl = artist.image.url
+
+        // Check if any URL is valid (not null, not "null" string, not empty)
+        const hasValidUrl = [sizes.hero?.url, sizes.card?.url, sizes.thumbnail?.url, mainUrl].some(
+          (url) => url && url !== 'null' && !url.includes('/null') && url !== '',
+        )
+
+        return hasValidUrl
+      })
       .map((artist: any) => {
         const sizes = artist.image?.sizes || {}
         // Get the first available non-null, non-empty URL

@@ -13,11 +13,11 @@ interface NewsFeedListProps {
 }
 
 function getImageUrl(img: Media | null | undefined, defaultImg: Media | null | undefined): string {
-  // Use post's image if available
-  if (img?.url) return img.url
+  // Use post's image if available and valid
+  if (img?.url && img.url !== 'null' && !img.url.includes('/null')) return img.url
 
-  // Fall back to default image
-  if (defaultImg?.url) return defaultImg.url
+  // Fall back to default image if valid
+  if (defaultImg?.url && defaultImg.url !== 'null' && !defaultImg.url.includes('/null')) return defaultImg.url
 
   // Final fallback to placeholder
   return '/placeholder.jpg'
