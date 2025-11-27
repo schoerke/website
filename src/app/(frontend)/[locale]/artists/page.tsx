@@ -53,12 +53,16 @@ const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) 
       })
       .map((artist: any) => {
         const sizes = artist.image?.sizes || {}
-        // Get the first available non-null, non-empty URL
+        // Helper to check if URL is valid
+        const isValidUrl = (url: any) =>
+          url && url !== 'null' && !url.includes('/null') && url !== '' && typeof url === 'string'
+
+        // Get the first available valid URL
         const src =
-          (sizes.hero?.url && sizes.hero.url !== 'null' ? sizes.hero.url : null) ||
-          (sizes.card?.url && sizes.card.url !== 'null' ? sizes.card.url : null) ||
-          (sizes.thumbnail?.url && sizes.thumbnail.url !== 'null' ? sizes.thumbnail.url : null) ||
-          (artist.image?.url && artist.image.url !== 'null' ? artist.image.url : null) ||
+          (isValidUrl(sizes.hero?.url) ? sizes.hero.url : null) ||
+          (isValidUrl(sizes.card?.url) ? sizes.card.url : null) ||
+          (isValidUrl(sizes.thumbnail?.url) ? sizes.thumbnail.url : null) ||
+          (isValidUrl(artist.image?.url) ? artist.image.url : null) ||
           '/placeholder.jpg'
 
         return {

@@ -136,6 +136,11 @@ export default buildConfig({
           disablePayloadAccessControl: true,
           // Generate URLs that point directly to R2 public domain
           generateFileURL: ({ filename, prefix }: { filename: string; prefix?: string }) => {
+            // If filename is null/undefined/empty, return empty string
+            // This prevents "/null" URLs when image size generation fails
+            if (!filename || filename === 'null' || filename === 'undefined') {
+              return ''
+            }
             const baseURL = process.env.NEXT_PUBLIC_S3_HOSTNAME ?? ''
             const path = prefix ? `${prefix}/${filename}` : filename
             return `${baseURL}/${path}`
