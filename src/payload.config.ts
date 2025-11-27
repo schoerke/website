@@ -128,7 +128,14 @@ export default buildConfig({
     // Cloudflare R2 via S3 API
     s3Storage({
       collections: {
-        media: true,
+        media: {
+          generateFileURL: ({ filename }) => {
+            // For R2 public access, return direct public URL
+            // filename will be null for sizes that couldn't be generated
+            if (!filename) return ''
+            return `${process.env.NEXT_PUBLIC_S3_HOSTNAME}/${filename}`
+          },
+        },
       },
       bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
       config: {
