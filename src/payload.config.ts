@@ -127,17 +127,26 @@ export default buildConfig({
 
     // Cloudflare R2 via S3 API
     s3Storage({
+      bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
       collections: {
         media: {
-          generateFileURL: ({ filename }) => {
-            // For R2 public access, return direct public URL
-            // filename will be null for sizes that couldn't be generated
-            if (!filename) return ''
-            return `${process.env.NEXT_PUBLIC_S3_HOSTNAME}/${filename}`
+          // Bypass Payload's Access Control to prevent URL transformation
+          // Since media collection has read: () => true (public access),
+          // we don't need Payload to intercept URLs
+          disablePayloadAccessControl: true,
+          // Generate URLs that point directly to R2 public domain
+          generateFileURL: ({ filename, prefix }: { filename: string; prefix?: string }) => {
+            // If filename is null/undefined/empty, return empty string
+            // This prevents "/null" URLs when image size generation fails
+            if (!filename || filename === 'null' || filename === 'undefined') {
+              return ''
+            }
+            const baseURL = process.env.NEXT_PUBLIC_S3_HOSTNAME ?? ''
+            const path = prefix ? `${prefix}/${filename}` : filename
+            return `${baseURL}/${path}`
           },
         },
       },
-      bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
       config: {
         credentials: {
           accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
