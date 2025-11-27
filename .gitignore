@@ -30,6 +30,8 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
+.env.vercel.preview
 
 # vercel
 .vercel
@@ -37,8 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-.env
 
 /media
 
@@ -67,3 +67,6 @@ next-env.d.ts
 
 # Legacy media data
 /src/data/media.xml
+
+# Payload auto-generated files
+src/payload-generated-schema.ts
