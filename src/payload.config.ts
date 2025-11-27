@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url'
 // Adapters & Plugins
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { searchPlugin } from '@payloadcms/plugin-search'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 // Collections
 import { Artists } from './collections/Artists'
@@ -125,22 +126,32 @@ export default buildConfig({
     }),
 
     // Cloudflare R2 via S3 API
-    // DISABLED: We manually manage R2 URLs in the database now
-    // s3Storage({
-    //   bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
-    //   collections: {
-    //     media: true,
-    //   },
-    //   config: {
-    //     credentials: {
-    //       accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
-    //       secretAccessKey: process.env.CLOUDFLARE_SECRET ?? '',
-    //     },
-    //     region: 'auto',
-    //     endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
-    //     forcePathStyle: true, // Required for R2
-    //   },
-    // }),
+    s3Storage({
+      bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
+      collections: {
+        media: {
+          // Bypass Payload's Access Control to prevent URL transformation
+          // Since media collection has read: () => true (public access),
+          // we don't need Payload to intercept URLs
+          disablePayloadAccessControl: true,
+          // Generate URLs that point directly to R2 public domain
+          generateFileURL: ({ filename, prefix }: { filename: string; prefix?: string }) => {
+            const baseURL = process.env.NEXT_PUBLIC_S3_HOSTNAME ?? ''
+            const path = prefix ? `${prefix}/${filename}` : filename
+            return `${baseURL}/${path}`
+          },
+        },
+      },
+      config: {
+        credentials: {
+          accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
+          secretAccessKey: process.env.CLOUDFLARE_SECRET ?? '',
+        },
+        region: 'auto',
+        endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
+        forcePathStyle: true, // Required for R2
+      },
+    }),
 
     payloadCloudPlugin(),
   ],
