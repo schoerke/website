@@ -129,7 +129,14 @@ export default buildConfig({
     s3Storage({
       bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
       collections: {
-        media: true,
+        media: {
+          // Use signed downloads to bypass broken streaming code in Payload v3.53.0
+          // See: https://github.com/payloadcms/payload/issues/14128
+          // This generates a 302 redirect to a pre-signed R2 URL instead of streaming
+          signedDownloads: {
+            expiresIn: 7200, // 2 hours
+          },
+        },
       },
       config: {
         credentials: {
