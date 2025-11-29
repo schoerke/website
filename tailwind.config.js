@@ -63,24 +63,6 @@ export default {
             display: 'none',
           },
         },
-        '.pb-safe': {
-          'padding-bottom': 'env(safe-area-inset-bottom)',
-        },
-        '.pt-safe': {
-          'padding-top': 'env(safe-area-inset-top)',
-        },
-        '.pl-safe': {
-          'padding-left': 'env(safe-area-inset-left)',
-        },
-        '.pr-safe': {
-          'padding-right': 'env(safe-area-inset-right)',
-        },
-        '.pb-8-safe': {
-          'padding-bottom': 'calc(2rem + env(safe-area-inset-bottom))',
-        },
-        '.pb-12-safe': {
-          'padding-bottom': 'calc(3rem + env(safe-area-inset-bottom))',
-        },
       })
     },
   ],
