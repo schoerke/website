@@ -31,41 +31,57 @@ Migrate from Cloudflare R2 to Vercel Blob storage with separate **Images** and *
 Images Collection → Vercel Blob (hybrid upload: <4.5MB server, >4.5MB direct)
 Documents Collection → Vercel Blob (hybrid upload: <4.5MB server, >4.5MB direct)
 Backup: Both → AWS S3 (cold storage via GitHub Actions)
-### GitHub Organization & Vercel Team Setup
+```
+
+### GitHub Organization & Vercel Account Setup
 
 #### GitHub Repository (Completed)
 
 **Current Setup:**
-- **Repository:** `schoerke/website` (already transferred from `zeitchef/schoerke-website`)
+
+- **Repository:** `schoerke/website` (public repo in schoerke organization)
 - **Organization:** `schoerke` (existing organization, you are owner)
 - **Collaborator:** `zeitchef` with Admin role (for development)
 
 This setup allows you to:
+
 - Develop and push code as `zeitchef` GitHub user
-- Maintain clean organizational structure (personal projects under `schoerke` org)
+- Maintain clean organizational structure (client projects under `schoerke` org)
 - Collaborate across your GitHub accounts
 
-#### Vercel Account Setup (New)
+**Note:** Repository must be public to use with Vercel Hobby plan. Private repos in GitHub organizations require Vercel
+Pro ($20/month).
 
-**Create Separate Vercel Account for Isolation:**
+#### Vercel Account Setup
 
-Instead of creating a new paid team under the existing `zeitchef` Vercel account, create a completely separate Vercel account to get dedicated Hobby plan benefits (free 100GB Blob storage).
+**Client Vercel Account (Hobby Plan):**
 
-**Steps:**
+- **Account:** Client's Vercel account (Hobby plan, free)
+- **Access:** You log in with client's credentials (shared access)
+- **Storage:** Dedicated 100GB Blob storage quota
+- **Cost:** $0
 
-1. **Create new Vercel account:**
+**Why This Approach:**
+
+- Vercel Hobby plan doesn't support team collaboration
+- Can't add you as administrator without upgrading to Pro ($20/month)
+- Standard practice: Share credentials with freelancer/contractor
+- All management done by logging into client's account
+
+**Setup Steps:**
+
+1. **Client creates Vercel account:**
    - Sign up at: https://vercel.com/signup
-   - Email: Use alias like `yourname+schoerke@gmail.com` (or separate email)
-   - Account name: `schoerke` (or similar)
+   - Email: Client's email
    - Plan: Hobby (free)
 
-2. **Install Vercel GitHub App on schoerke org:**
-   - During signup, authorize Vercel to access GitHub
-   - Select `schoerke` organization
-   - Grant access to `website` repository
+2. **Client shares credentials with you:**
+   - Store securely in password manager
+   - You log in as client when needed for deployments/settings
 
-3. **Import project:**
+3. **Import project (you do this logged in as client):**
    - Click "Add New Project"
+   - Authorize Vercel GitHub App to access `schoerke` organization
    - Select `schoerke/website` from repository list
    - Configure project settings:
      - Framework: Next.js (auto-detected)
@@ -86,34 +102,47 @@ Instead of creating a new paid team under the existing `zeitchef` Vercel account
    - Click "Create Database" → Select "Blob"
    - This generates `BLOB_READ_WRITE_TOKEN` automatically
 
-**Benefits of Separate Account:**
+**Benefits:**
+
 - ✅ Dedicated 100GB Blob storage quota (not shared with other projects)
 - ✅ Free (Hobby plan)
-- ✅ Complete isolation from `zeitweb` and other teams
-- ✅ Simple account management (no team complexity)
+- ✅ Client owns the Vercel account (easier handoff later)
+- ✅ You have full management access via shared credentials
 
 **Development Workflow:**
+
 - **Local development:** Work as normal (git clone, pnpm dev, push as `zeitchef`)
-- **Vercel deployments:** Every push auto-deploys to `schoerke` Vercel account
-- **Dashboard access:** Switch to `schoerke` Vercel account in browser when needed
+- **Vercel deployments:** Every push auto-deploys to client's Vercel account
+- **Dashboard access:** Log into client's Vercel account when needed
 - **Admin panel:** Access via deployment URL (credentials in app, not Vercel-specific)
 
-**Note:** You'll need to switch Vercel accounts in your browser to access the dashboard/logs for this project, but all development and git operations work normally as `zeitchef`.
-
 ---
 
+### Collection Architecture
 
----
+**Images Collection** (`src/collections/Images.ts`):
 
+```typescript
+export const Images: CollectionConfig = {
+  slug: 'images',
+  upload: {
+    mimeTypes: ['image/*'],
+    imageSizes: [
+      { name: 'thumbnail', width: 400, height: 300 },
+      { name: 'card', width: 768, height: 1024 },
       { name: 'tablet', width: 1024 },
     ],
-
-}, fields: [ { name: 'alt', type: 'text', required: true }, { name: 'caption', type: 'text' }, ], access:
-authenticatedOrPublished, }
-
-````
+  },
+  fields: [
+    { name: 'alt', type: 'text', required: true },
+    { name: 'caption', type: 'text' },
+  ],
+  access: authenticatedOrPublished,
+}
+```
 
 **Documents Collection** (`src/collections/Documents.ts`):
+
 ```typescript
 export const Documents: CollectionConfig = {
   slug: 'documents',
@@ -128,7 +157,7 @@ export const Documents: CollectionConfig = {
   ],
   access: authenticatedOrPublished,
 }
-````
+```
 
 ### Payload Configuration
 
@@ -226,13 +255,14 @@ async function uploadFile(filePath: string, mimeType: string, collection: 'image
 
 ### Prerequisites
 
-1. ✅ GitHub repository at `schoerke/website` (completed)
+1. ✅ GitHub repository at `schoerke/website` (public, completed)
 2. ✅ `zeitchef` added as collaborator (completed)
-3. ⏳ New Vercel account created (`schoerke` account)
+3. ✅ Client Vercel account created
 4. ⏳ Vercel project imported from `schoerke/website`
 5. ⏳ Environment variables configured (including `BLOB_READ_WRITE_TOKEN`)
 6. ⏳ Vercel Blob storage enabled
 
+### Step 1: Collection Schema Updates
 
 **Create new collections:**
 
@@ -405,15 +435,14 @@ node scripts/restoreBlobFromS3.js ./recovery/
 ### Pre-Migration Checklist
 
 ```bash
-# 1. Verify GitHub org and Vercel team
-- [ ] GitHub org 'schoerke' created
-- [ ] Repository transferred: schoerke/website
-- [ ] Vercel team 'ks-schoerke' created
-- [ ] Project imported to ks-schoerke team
-- [ ] zeitchef added as GitHub collaborator
+# 1. Verify GitHub and Vercel setup
+- [ ] GitHub repo 'schoerke/website' is public
+- [ ] `zeitchef` is collaborator on GitHub repo
+- [ ] Client Vercel account created
+- [ ] You have client's Vercel credentials
 
 # 2. Verify environment variables
-- [ ] BLOB_READ_WRITE_TOKEN configured
+- [ ] BLOB_READ_WRITE_TOKEN configured in Vercel
 - [ ] DATABASE_URI configured
 - [ ] PAYLOAD_SECRET configured
 
@@ -518,8 +547,7 @@ git revert <commit-hash>
 git push origin main
 ```
 
-**Recovery time:** ~5 minutes
-**Data loss:** None
+**Recovery time:** ~5 minutes **Data loss:** None
 
 **Stage 2: Mid-Migration (Partial Upload)**
 
@@ -530,8 +558,7 @@ git checkout main # Revert code
 # Restore R2 config
 ```
 
-**Recovery time:** 10-30 minutes
-**Data loss:** Partial uploads (fixable)
+**Recovery time:** 10-30 minutes **Data loss:** Partial uploads (fixable)
 
 **Stage 3: Post-Migration (Live on Vercel Blob)**
 
@@ -542,8 +569,7 @@ git checkout main # Revert code
 git push origin main
 ```
 
-**Recovery time:** 15-30 minutes
-**Data loss:** New uploads since migration
+**Recovery time:** 15-30 minutes **Data loss:** New uploads since migration
 
 ## 7. Documentation Updates
 
@@ -593,10 +619,8 @@ git push origin main
 
 ### Cost Analysis
 
-**Current (R2):** ~$0.10/month
-**Future (Vercel Blob):** $0 (under 100GB free tier)
-**Backup (S3):** ~$1-9/month (depending on retention)
-**Net change:** ~$1-9/month increase (acceptable for complexity reduction)
+**Current (R2):** ~$0.10/month **Future (Vercel Blob):** $0 (under 100GB free tier) **Backup (S3):** ~$1-9/month
+(depending on retention) **Net change:** ~$1-9/month increase (acceptable for complexity reduction)
 
 ### Why Separate Collections?
 
@@ -629,6 +653,6 @@ git push origin main
 
 - [Database Selection ADR](../adr/2025-10-26-database-selection.md)
 - [Database Backup Strategy](../adr/2025-11-23-database-backup-strategy.md)
-- [Storage Migration ADR](../adr/2025-11-29-storage-migration-vercel-blob.md) (to be created)
+- [Storage Migration ADR](../adr/2025-11-29-storage-migration-vercel-blob.md)
 - [Vercel Image 500 Investigation](2025-11-29-vercel-image-500-investigation.md) (superseded)
 - [Cross-Environment Image Serving](2025-11-29-cross-environment-image-serving-design.md) (superseded)
