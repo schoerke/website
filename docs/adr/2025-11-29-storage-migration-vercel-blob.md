@@ -26,13 +26,21 @@ We currently store media files (images, PDFs, ZIPs) in Cloudflare R2 using Paylo
 
 ## Decision
 
-**Note on GitHub Organization:** The repository was previously at `schoerke/website` but moved to `zeitchef/schoerke-website` due to an undocumented Vercel connectivity issue. The migration plan includes investigating this issue to determine if the repo can be moved back to the preferred `schoerke` organization location.
-
 We will **migrate from Cloudflare R2 to Vercel Blob** with the following architecture:
+
 ### Storage Strategy
 
 - **Images Collection** → Vercel Blob (hybrid upload: <4.5MB server, >4.5MB direct)
 - **Documents Collection** → Vercel Blob (hybrid upload: <4.5MB server, >4.5MB direct)
+- **Backup** → AWS S3 (automated daily backups via GitHub Actions)
+
+### Organizational Structure
+
+- **GitHub Organization:** `schoerke` (existing org, repo already at `schoerke/website`)
+- **Vercel Account:** New separate `schoerke` account (Hobby plan, free)
+- **Isolation:** Dedicated 100GB Blob storage quota, separate from other projects
+
+**Rationale for Separate Vercel Account:** Instead of creating a paid Pro team ($20/month) under the existing `zeitchef` Vercel account, we create a new free Hobby account. This provides the same isolation benefits (dedicated 100GB Blob quota) at zero cost. Vercel ToS allows multiple personal accounts, and this is a legitimate use case for separating projects.
 - **Backup** → AWS S3 (automated daily backups via GitHub Actions)
 
 ### Organizational Structure
