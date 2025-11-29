@@ -33,10 +33,52 @@ Backup: Both → AWS S3 (cold storage via GitHub Actions)
 
 ### GitHub Organization & Vercel Team Setup
 
+**IMPORTANT: Previous Blocking Issue**
+
+The repository was previously located at `schoerke/website` but encountered issues connecting to Vercel, requiring a move to `zeitchef/schoerke-website`. The root cause was not documented. This migration includes an investigation phase to determine if the issue is resolved or requires a workaround.
+
+#### Phase 0: Investigate GitHub Organization Connectivity
+
+**Test Vercel + schoerke Org Connection:**
+
+1. Go to Vercel dashboard (zeitchef account)
+2. Click "Add New Project" → "Import Git Repository"
+3. Check if `schoerke` organization appears in the list
+4. If visible, check if repositories are accessible
+5. Document any errors or permission issues
+
+**Common Issues to Check:**
+
+- **Vercel GitHub App not installed:** https://github.com/organizations/schoerke/settings/installations
+  - Verify "Vercel" is installed
+  - Ensure repository access is granted (All repos or specific repos including `website`)
+  
+- **Third-party app restrictions:** https://github.com/organizations/schoerke/settings/oauth_application_policy
+  - If restricted, approve Vercel explicitly
+  
+- **Repository visibility:** Private repos require proper Vercel plan
+  - Verify Hobby plan supports private org repos (it should)
+  
+- **Account permissions:** Verify `zeitchef` has proper access to `schoerke` org repos
+
+**Decision Point:** Based on investigation results, proceed with Scenario A or B below.
+
+---
+
+#### Scenario A: schoerke Org Connection Works (Preferred)
+
 **GitHub Organization:**
-- **Name:** `schoerke` (new organization)
-- **Repository:** Transfer `zeitchef/schoerke-website` → `schoerke/website`
+- **Name:** `schoerke` (existing organization, you are owner)
+- **Repository:** Transfer `zeitchef/schoerke-website` → `schoerke/website`  
+  *Note: Repo was previously at this location but moved due to Vercel connectivity issue*
 - **Collaborator:** Add `zeitchef` with Admin role
+
+**Transfer Steps:**
+1. Go to: https://github.com/zeitchef/schoerke-website/settings
+2. Scroll to "Danger Zone" → "Transfer repository"
+3. New owner: `schoerke`
+4. New repository name: `website`
+5. Confirm transfer
 
 **Vercel Team:**
 - **Team name:** `ks-schoerke` (under `zeitchef` account)
@@ -44,17 +86,39 @@ Backup: Both → AWS S3 (cold storage via GitHub Actions)
 - **Blob Storage Quota:** Dedicated 100GB for this team
 - **Benefits:** Isolated quota, clear organizational boundary
 
-### Collection Architecture
+**Vercel Project Import:**
+1. In `zeitchef` Vercel account, create new team `ks-schoerke`
+2. Import project from `schoerke/website`
+3. Connect GitHub repository
+4. Copy environment variables from old project
 
-**Images Collection** (`src/collections/Images.ts`):
-```typescript
-export const Images: CollectionConfig = {
-  slug: 'images',
-  upload: {
-    mimeTypes: ['image/*'],
-    imageSizes: [
-      { name: 'thumbnail', width: 400, height: 300 },
-      { name: 'card', width: 768, height: 1024 },
+---
+
+#### Scenario B: schoerke Org Connection Blocked (Fallback)
+
+**If Vercel cannot connect to `schoerke` org after investigation:**
+
+**GitHub Repository:**
+- **Keep current location:** `zeitchef/schoerke-website` (do not transfer)
+- **Reason:** Avoid unknown blocking issue
+- **Future:** Investigate org issue as separate task
+
+**Vercel Team:**
+- **Team name:** `ks-schoerke` (under `zeitchef` account)
+- **Plan:** Hobby (free)
+- **Blob Storage Quota:** Dedicated 100GB for this team
+- **Benefits:** Still get quota isolation from other projects
+
+**Vercel Project Import:**
+1. In `zeitchef` Vercel account, create new team `ks-schoerke`
+2. Import project from `zeitchef/schoerke-website`
+3. Connect GitHub repository
+4. Copy environment variables from old project
+
+**Note:** You still get isolated Blob quota even without moving the repo. The GitHub org location is independent of Vercel team benefits.
+
+---
+
       { name: 'tablet', width: 1024 },
     ],
   },

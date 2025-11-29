@@ -26,8 +26,9 @@ We currently store media files (images, PDFs, ZIPs) in Cloudflare R2 using Paylo
 
 ## Decision
 
-We will **migrate from Cloudflare R2 to Vercel Blob** with the following architecture:
+**Note on GitHub Organization:** The repository was previously at `schoerke/website` but moved to `zeitchef/schoerke-website` due to an undocumented Vercel connectivity issue. The migration plan includes investigating this issue to determine if the repo can be moved back to the preferred `schoerke` organization location.
 
+We will **migrate from Cloudflare R2 to Vercel Blob** with the following architecture:
 ### Storage Strategy
 
 - **Images Collection** → Vercel Blob (hybrid upload: <4.5MB server, >4.5MB direct)
