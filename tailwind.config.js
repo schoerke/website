@@ -63,6 +63,9 @@ export default {
             display: 'none',
           },
         },
+        '.pb-safe': {
+          'padding-bottom': 'env(safe-area-inset-bottom)',
+        },
       })
     },
   ],
