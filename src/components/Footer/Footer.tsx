@@ -14,7 +14,7 @@ const Footer: React.FC<FooterProps> = async ({ locale }) => {
         </div>
       </div>
       <div className="bg-primary-platinum">
-        <div className="pb-safe mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="pb-safe mx-auto max-w-7xl px-4 py-8 sm:px-6 md:pb-8 lg:px-8">
           <FooterInfo locale={locale} />
         </div>
       </div>
