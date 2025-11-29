@@ -18,16 +18,16 @@ const LocaleSwitcher: React.FC = () => {
   const handleLocaleChange = (locale: string) => {
     // Preserve hash fragment when switching locales
     const hash = window.location.hash
-    
+
     // With `pathnames`: Pass `params` as well
     router.replace(
       // @ts-expect-error -- TypeScript will validate that only known `params`
       // are used in combination with a given `pathname`. Since the two will
       // always match for the current route, we can skip runtime checks.
       { pathname, params },
-      { locale, scroll: false }
+      { locale, scroll: false },
     )
-    
+
     // Re-apply hash after navigation (if needed)
     if (hash) {
       setTimeout(() => {
