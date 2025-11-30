@@ -9,10 +9,13 @@ import { fileURLToPath } from 'url'
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { s3Storage } from '@payloadcms/storage-s3'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 // Collections
 import { Artists } from './collections/Artists'
+import { Documents } from './collections/Documents'
 import { Employees } from './collections/Employees'
+import { Images } from './collections/Images'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
@@ -40,7 +43,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Media],
+  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Media, Images, Documents],
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URI!,
@@ -156,6 +159,15 @@ export default buildConfig({
         endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
         forcePathStyle: true, // Required for R2
       },
+    }),
+
+    // Vercel Blob Storage for new Images and Documents collections
+    vercelBlobStorage({
+      collections: {
+        images: true,
+        documents: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN!,
     }),
 
     payloadCloudPlugin(),
