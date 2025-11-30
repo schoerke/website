@@ -74,7 +74,6 @@ export interface Config {
     recordings: Recording;
     repertoire: Repertoire;
     users: User;
-    media: Media;
     images: Image;
     documents: Document;
     search: Search;
@@ -92,7 +91,6 @@ export interface Config {
     recordings: RecordingsSelect<false> | RecordingsSelect<true>;
     repertoire: RepertoireSelect<false> | RepertoireSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
     images: ImagesSelect<false> | ImagesSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
@@ -160,7 +158,7 @@ export interface Artist {
   /**
    * Used as the primary image for the artist
    */
-  image?: (number | null) | Media;
+  image?: (number | null) | Image;
   /**
    * Auto-generated from artist name
    */
@@ -246,8 +244,8 @@ export interface Artist {
       }[]
     | null;
   downloads?: {
-    biographyPDF?: (number | null) | Media;
-    galleryZIP?: (number | null) | Media;
+    biographyPDF?: (number | null) | Document;
+    galleryZIP?: (number | null) | Document;
   };
   youtubeLinks?:
     | {
@@ -268,11 +266,17 @@ export interface Artist {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "images".
  */
-export interface Media {
+export interface Image {
   id: number;
+  /**
+   * Alternative text for accessibility and SEO
+   */
   alt: string;
+  /**
+   * Photo credit or attribution (e.g., photographer name)
+   */
   credit?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -302,7 +306,7 @@ export interface Media {
       filesize?: number | null;
       filename?: string | null;
     };
-    hero?: {
+    tablet?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -323,10 +327,40 @@ export interface Employee {
   email: string;
   phone: string;
   mobile: string;
-  image?: (number | null) | Media;
+  image?: (number | null) | Image;
   order: number;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: number;
+  /**
+   * Document title for identification
+   */
+  title: string;
+  /**
+   * Optional description of the document contents
+   */
+  description?: string | null;
+  /**
+   * File size in bytes (auto-populated)
+   */
+  fileSize?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -386,7 +420,7 @@ export interface Post {
   };
   categories?: ('news' | 'projects' | 'home')[] | null;
   artists?: (number | Artist)[] | null;
-  image?: (number | null) | Media;
+  image?: (number | null) | Image;
   createdBy: number | Employee;
   updatedAt: string;
   createdAt: string;
@@ -426,7 +460,7 @@ export interface Recording {
   recordingYear?: number | null;
   recordingLabel?: string | null;
   catalogNumber?: string | null;
-  coverArt?: (number | null) | Media;
+  coverArt?: (number | null) | Image;
   /**
    * Select one or more artists who performed in this recording
    */
@@ -503,88 +537,6 @@ export interface User {
       }[]
     | null;
   password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "images".
- */
-export interface Image {
-  id: number;
-  /**
-   * Alternative text for accessibility and SEO
-   */
-  alt: string;
-  /**
-   * Optional caption displayed below the image
-   */
-  caption?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    tablet?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
- */
-export interface Document {
-  id: number;
-  /**
-   * Document title for identification
-   */
-  title: string;
-  /**
-   * Optional description of the document contents
-   */
-  description?: string | null;
-  /**
-   * File size in bytes (auto-populated)
-   */
-  fileSize?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
@@ -687,10 +639,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: number | Media;
       } | null)
     | ({
         relationTo: 'images';
@@ -893,64 +841,11 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  credit?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        thumbnail?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        card?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        hero?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "images_select".
  */
 export interface ImagesSelect<T extends boolean = true> {
   alt?: T;
-  caption?: T;
+  credit?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

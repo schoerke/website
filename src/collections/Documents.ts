@@ -1,11 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticatedOrPublished } from '../access/authenticatedOrPublished'
-
 export const Documents: CollectionConfig = {
   slug: 'documents',
   access: {
-    read: authenticatedOrPublished,
+    read: () => true, // Public read access - no draft status
     create: ({ req: { user } }) => !!user,
     update: ({ req: { user } }) => !!user,
     delete: ({ req: { user } }) => !!user,

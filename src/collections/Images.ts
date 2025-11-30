@@ -1,11 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticatedOrPublished } from '../access/authenticatedOrPublished'
-
 export const Images: CollectionConfig = {
   slug: 'images',
   access: {
-    read: authenticatedOrPublished,
+    read: () => true, // Public read access - no draft status
     create: ({ req: { user } }) => !!user,
     update: ({ req: { user } }) => !!user,
     delete: ({ req: { user } }) => !!user,
@@ -55,10 +53,10 @@ export const Images: CollectionConfig = {
       },
     },
     {
-      name: 'caption',
+      name: 'credit',
       type: 'text',
       admin: {
-        description: 'Optional caption displayed below the image',
+        description: 'Photo credit or attribution (e.g., photographer name)',
       },
     },
   ],
