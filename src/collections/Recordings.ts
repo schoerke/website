@@ -115,7 +115,7 @@ export const Recordings: CollectionConfig = {
     {
       name: 'coverArt',
       type: 'upload',
-      relationTo: 'media',
+      relationTo: 'images',
       required: false,
       label: {
         de: 'Cover',

@@ -78,7 +78,7 @@ export const Posts: CollectionConfig = {
     },
     {
       name: 'image',
-      relationTo: 'media',
+      relationTo: 'images',
       type: 'upload',
       label: {
         de: 'Bild',

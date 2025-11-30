@@ -44,12 +44,12 @@ import artistsData from './json/artists.json'
  * }
  */
 async function getDefaultMedia(payload: any) {
-  // Try to find existing media first
+  // Try to find existing image first
   const existingMedia = await payload.find({
     where: {
       filename: { equals: 'default-avatar.webp' },
     },
-    collection: 'media',
+    collection: 'images',
     limit: 1,
   })
 
@@ -64,7 +64,7 @@ async function getDefaultMedia(payload: any) {
     const fileData = fs.readFileSync(assetsPath)
 
     const media = await payload.create({
-      collection: 'media',
+      collection: 'images',
       data: {
         alt: 'Default Avatar',
       },

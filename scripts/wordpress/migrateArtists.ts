@@ -34,13 +34,18 @@
  * @see scripts/wordpress/utils/uploadLocalMedia.ts - Uploads media files first
  */
 
-import config from '@payload-config'
 import 'dotenv/config'
 import fs from 'fs/promises'
 import path from 'path'
 import { getPayload } from 'payload'
 import { fileURLToPath } from 'url'
-import { findEmployeeByName, mapInstruments, validateAndCleanURL } from './utils/fieldMappers'
+import config from '../../src/payload.config.js'
+import {
+  cleanWordPressFilename,
+  findEmployeeByName,
+  mapInstruments,
+  validateAndCleanURL,
+} from './utils/fieldMappers'
 import { htmlToLexical } from './utils/lexicalConverter'
 import { cleanBiographyHTML, extractFirstParagraph, parsePostMeta, parseWordPressXML } from './utils/xmlParser'
 
@@ -105,10 +110,11 @@ const CONFIG: MigrationConfig = {
 // ============================================================================
 
 /**
- * Media ID map loaded from media-id-map.json
- * Maps filename → Payload media ID
+ * Media ID maps loaded from images-id-map.json and documents-id-map.json
+ * Maps filename → Payload media ID for each collection
  */
-let mediaIdMap: Record<string, number> = {}
+let imagesIdMap: Record<string, number> = {}
+let documentsIdMap: Record<string, number> = {}
 
 /**
  * Get WordPress attachment URL from all-en.xml
@@ -143,20 +149,26 @@ async function loadAttachmentMap() {
 }
 
 /**
- * Find media ID from pre-uploaded media using the media-id-map.json
+ * Find media ID from pre-uploaded media using the images-id-map.json or documents-id-map.json
  */
-async function findMediaByFilename(filename: string | undefined, dryRun: boolean = false): Promise<number | null> {
+async function findMediaByFilename(
+  filename: string | undefined,
+  collection: 'images' | 'documents',
+  dryRun: boolean = false,
+): Promise<number | null> {
   if (!filename) return null
   if (dryRun) return null
+
+  const idMap = collection === 'images' ? imagesIdMap : documentsIdMap
 
   // The filename might be URL-encoded in the map
   const encodedFilename = encodeURIComponent(filename)
 
   // Try both encoded and decoded versions
-  let mediaId = mediaIdMap[filename] || mediaIdMap[encodedFilename]
+  let mediaId = idMap[filename] || idMap[encodedFilename]
 
   if (!mediaId) {
-    console.warn(`  ⚠️  Media not found in map: ${filename}`)
+    console.warn(`  ⚠️  Media not found in ${collection} map: ${filename}`)
     return null
   }
 
@@ -181,14 +193,18 @@ async function findMediaId(wpMediaId: string | number, dryRun: boolean = false):
   // Extract filename from URL
   try {
     const url = new URL(attachmentUrl)
-    const filename = url.pathname.split('/').pop()
+    let filename = url.pathname.split('/').pop()
 
     if (!filename) {
       console.warn(`  ⚠️  Could not extract filename from: ${attachmentUrl}`)
       return null
     }
 
-    return await findMediaByFilename(filename, dryRun)
+    // Clean WordPress timestamp postfixes
+    filename = cleanWordPressFilename(filename, CONFIG.verbose)
+
+    // Artist featured images are always in 'images' collection
+    return await findMediaByFilename(filename, 'images', dryRun)
   } catch (error) {
     console.warn(`  ⚠️  Invalid attachment URL: ${attachmentUrl}`)
     return null
@@ -267,9 +283,12 @@ async function mapArtistData(
       const pdfUrl = meta.biography_pdf.trim()
       if (pdfUrl) {
         try {
-          const filename = new URL(pdfUrl).pathname.split('/').pop()
-          const pdfId = await findMediaByFilename(filename, dryRun)
-          if (pdfId) downloads.biographyPDF = pdfId
+          let filename = new URL(pdfUrl).pathname.split('/').pop()
+          if (filename) {
+            filename = cleanWordPressFilename(filename, CONFIG.verbose)
+            const pdfId = await findMediaByFilename(filename, 'documents', dryRun)
+            if (pdfId) downloads.biographyPDF = pdfId
+          }
         } catch (error) {
           console.warn(`  ⚠️  Invalid biography PDF URL: ${pdfUrl}`)
         }
@@ -280,9 +299,12 @@ async function mapArtistData(
       const zipUrl = meta.gallery_zip_link.trim()
       if (zipUrl) {
         try {
-          const filename = new URL(zipUrl).pathname.split('/').pop()
-          const zipId = await findMediaByFilename(filename, dryRun)
-          if (zipId) downloads.galleryZIP = zipId
+          let filename = new URL(zipUrl).pathname.split('/').pop()
+          if (filename) {
+            filename = cleanWordPressFilename(filename, CONFIG.verbose)
+            const zipId = await findMediaByFilename(filename, 'documents', dryRun)
+            if (zipId) downloads.galleryZIP = zipId
+          }
         } catch (error) {
           console.warn(`  ⚠️  Invalid gallery ZIP URL: ${zipUrl}`)
         }
@@ -354,21 +376,28 @@ async function migrateArtist(
       })
 
       // Update DE locale with localized fields
+      // Use EN biography as fallback if DE biography is empty (avoids validation error)
+      const deBiographyUpdate = deData.biography.root.children.length > 0 ? deData.biography : enData.biography
+
       await payload.update({
         collection: 'artists',
         id: existing.docs[0].id,
         data: {
           quote: deData.quote,
-          biography: deData.biography,
+          biography: deBiographyUpdate,
         },
         locale: 'de',
       })
 
-      // Update media alt text for artist image and downloads
+      if (deData.biography.root.children.length === 0) {
+        console.warn(`  ⚠️  German biography empty, using English as fallback`)
+      }
+
+      // Update metadata for artist image and downloads
       if (enData.image) {
         try {
           await payload.update({
-            collection: 'media',
+            collection: 'images',
             id: enData.image,
             data: { alt: name },
           })
@@ -379,23 +408,23 @@ async function migrateArtist(
       if (enData.downloads?.biographyPDF) {
         try {
           await payload.update({
-            collection: 'media',
+            collection: 'documents',
             id: enData.downloads.biographyPDF,
-            data: { alt: `${name} - Biography` },
+            data: { title: `${name} - Biography` },
           })
         } catch (error) {
-          console.warn(`  ⚠️  Failed to update PDF alt text:`, error instanceof Error ? error.message : error)
+          console.warn(`  ⚠️  Failed to update PDF title:`, error instanceof Error ? error.message : error)
         }
       }
       if (enData.downloads?.galleryZIP) {
         try {
           await payload.update({
-            collection: 'media',
+            collection: 'documents',
             id: enData.downloads.galleryZIP,
-            data: { alt: `${name} - Gallery` },
+            data: { title: `${name} - Gallery` },
           })
         } catch (error) {
-          console.warn(`  ⚠️  Failed to update ZIP alt text:`, error instanceof Error ? error.message : error)
+          console.warn(`  ⚠️  Failed to update ZIP title:`, error instanceof Error ? error.message : error)
         }
       }
 
@@ -408,23 +437,29 @@ async function migrateArtist(
         data: enData,
         locale: 'en',
       })
-
       // Update DE locale with localized fields
+      // Use EN biography as fallback if DE biography is empty (avoids validation error)
+      const deBiography = deData.biography.root.children.length > 0 ? deData.biography : enData.biography
+
       await payload.update({
         collection: 'artists',
         id: created.id,
         data: {
           quote: deData.quote,
-          biography: deData.biography,
+          biography: deBiography,
         },
         locale: 'de',
       })
 
-      // Update media alt text for artist image and downloads
+      if (deData.biography.root.children.length === 0) {
+        console.warn(`  ⚠️  German biography empty, using English as fallback`)
+      }
+
+      // Update metadata for artist image and downloads
       if (enData.image) {
         try {
           await payload.update({
-            collection: 'media',
+            collection: 'images',
             id: enData.image,
             data: { alt: name },
           })
@@ -435,23 +470,23 @@ async function migrateArtist(
       if (enData.downloads?.biographyPDF) {
         try {
           await payload.update({
-            collection: 'media',
+            collection: 'documents',
             id: enData.downloads.biographyPDF,
-            data: { alt: `${name} - Biography` },
+            data: { title: `${name} - Biography` },
           })
         } catch (error) {
-          console.warn(`  ⚠️  Failed to update PDF alt text:`, error instanceof Error ? error.message : error)
+          console.warn(`  ⚠️  Failed to update PDF title:`, error instanceof Error ? error.message : error)
         }
       }
       if (enData.downloads?.galleryZIP) {
         try {
           await payload.update({
-            collection: 'media',
+            collection: 'documents',
             id: enData.downloads.galleryZIP,
-            data: { alt: `${name} - Gallery` },
+            data: { title: `${name} - Gallery` },
           })
         } catch (error) {
-          console.warn(`  ⚠️  Failed to update ZIP alt text:`, error instanceof Error ? error.message : error)
+          console.warn(`  ⚠️  Failed to update ZIP title:`, error instanceof Error ? error.message : error)
         }
       }
 
@@ -495,15 +530,20 @@ async function runMigration() {
     const payload = await getPayload({ config })
     console.log('✅ Payload initialized\n')
 
-    // Load media ID map
+    // Load media ID maps (images and documents)
     if (!CONFIG.dryRun) {
       try {
-        const mapPath = path.join(__dirname, 'data', 'media-id-map.json')
-        const mapContent = await fs.readFile(mapPath, 'utf-8')
-        mediaIdMap = JSON.parse(mapContent)
-        console.log(`✅ Loaded media ID map with ${Object.keys(mediaIdMap).length} entries\n`)
+        const imagesMapPath = path.join(__dirname, 'data', 'images-id-map.json')
+        const imagesMapContent = await fs.readFile(imagesMapPath, 'utf-8')
+        imagesIdMap = JSON.parse(imagesMapContent)
+        console.log(`✅ Loaded images ID map with ${Object.keys(imagesIdMap).length} entries`)
+
+        const documentsMapPath = path.join(__dirname, 'data', 'documents-id-map.json')
+        const documentsMapContent = await fs.readFile(documentsMapPath, 'utf-8')
+        documentsIdMap = JSON.parse(documentsMapContent)
+        console.log(`✅ Loaded documents ID map with ${Object.keys(documentsIdMap).length} entries\n`)
       } catch (error) {
-        console.warn('⚠️  Could not load media-id-map.json:', error instanceof Error ? error.message : error)
+        console.warn('⚠️  Could not load ID maps:', error instanceof Error ? error.message : error)
         console.warn('   Media uploads will be skipped. Run utils/uploadLocalMedia.ts first.\n')
       }
 

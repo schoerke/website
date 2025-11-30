@@ -53,7 +53,7 @@ describe('NewsFeedServer', () => {
     const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getFilteredPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockResolvedValue(null)
+    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ category: 'news' })
 
@@ -73,7 +73,7 @@ describe('NewsFeedServer', () => {
     const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getFilteredPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockResolvedValue(null)
+    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ category: ['news', 'projects'] })
 
@@ -93,7 +93,7 @@ describe('NewsFeedServer', () => {
     const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getFilteredPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockResolvedValue(null)
+    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ artistId: '123' })
 
@@ -113,7 +113,7 @@ describe('NewsFeedServer', () => {
     const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getFilteredPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockResolvedValue(null)
+    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ limit: 5 })
 
@@ -133,7 +133,7 @@ describe('NewsFeedServer', () => {
     const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getFilteredPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockResolvedValue(null)
+    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ locale: 'en' })
 
@@ -153,7 +153,7 @@ describe('NewsFeedServer', () => {
     const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getFilteredPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockResolvedValue(null)
+    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ emptyMessage: 'Custom empty message' })
 
@@ -167,7 +167,7 @@ describe('NewsFeedServer', () => {
     const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getFilteredPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockResolvedValue(null)
+    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({})
 

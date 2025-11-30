@@ -1,73 +1,161 @@
-# Vercel Blob Migration - Ready for Implementation
+# Vercel Blob Migration Status
 
-**Date:** 2025-11-29  
-**Status:** Design Complete, Ready to Execute
+**Last Updated:** 2025-11-30
 
-## What's Done ✅
+## Quick Reference
 
-1. **Complete Design Document** - `docs/plans/2025-11-29-vercel-blob-migration-design.md`
-2. **ADR** - `docs/adr/2025-11-29-storage-migration-vercel-blob.md`
-3. **GitHub Repo** - Already moved to `schoerke/website`
-4. **Collaborator** - `zeitchef` has Admin access
-5. **All commits on main** - Safe, recoverable starting point
+- **Design Doc:** `docs/plans/2025-11-29-vercel-blob-migration-design.md`
+- **Status:** ✅ **Complete (Artists & Employees)**
 
-## Final Architecture
+## Current State
 
-```
-GitHub: schoerke/website (✅ completed)
-Vercel Account: NEW "schoerke" account (⏳ to create)
-Storage: Vercel Blob (dedicated 100GB, free)
-Backup: AWS S3 (automated via GitHub Actions)
-Development: Push as zeitchef, deploy to schoerke Vercel account
-```
+### ✅ Completed
 
-## Next Steps (Tomorrow)
+**Infrastructure:**
 
-### 1. Create New Vercel Account (~5 min)
-- Sign up at https://vercel.com/signup
-- Email: Use `yourname+schoerke@gmail.com` or separate email
-- Account name: `schoerke`
-- Plan: Hobby (free)
+- Vercel Blob storage enabled with `BLOB_READ_WRITE_TOKEN`
+- Collections created: `Images` (31 records), `Documents` (45 records)
+- Old `Media` collection removed from codebase
+- Cloudflare R2 plugin removed from config
 
-### 2. Import Project (~5 min)
-- Authorize Vercel GitHub App on `schoerke` org
-- Import `schoerke/website`
-- Copy environment variables from old project
-- Enable Vercel Blob storage
+**Migrations:**
 
-### 3. Update Code (~30 min)
-- Create `Images` and `Documents` collections
-- Update `payload.config.ts` to use `@payloadcms/storage-vercel-blob`
-- Update migration scripts with hybrid upload logic
-- Update relationship fields in existing collections
+- **Artists:** 23/23 complete with images and documents from WordPress
+- **Employees:** 4/4 complete with images from WordPress
+- All images and documents uploaded to Vercel Blob
+- Database relationships verified and working
 
-### 4. Execute Migration (~1-2 hours)
-- Reset database
-- Run migration scripts (upload media, migrate artists/posts)
-- Verify in admin panel
-- Test frontend
+**Code:**
 
-### 5. Set Up Backups (~30 min)
-- Create GitHub Actions workflow
-- Add AWS S3 credentials to GitHub Secrets
-- Test backup script
+- All collections updated to use `images` and `documents`:
+  - `Artists.ts`: image → `images`, PDFs/ZIPs → `documents`
+  - `Posts.ts`: image → `images`
+  - `Employees.ts`: image → `images`
+  - `Recordings.ts`: coverArt → `images`
+- Migration scripts updated for Vercel Blob hybrid upload
 
-## Key Decisions Made
+### 🔄 Pending (Not Required for Vercel Migration)
 
-1. **Separate Vercel Account** - Free Hobby plan instead of $20/month Pro team
-2. **Separate Collections** - Images and Documents instead of unified Media
-3. **Hybrid Upload Strategy** - Handle files >4.5MB with direct Blob uploads
-4. **Keep Existing Repo Location** - Already at `schoerke/website`
+**WordPress Migrations:**
 
-## Documents to Review Before Starting
+- Posts migration script needs work before running
+- Recordings migration script needs work before running
 
-- **Design:** `docs/plans/2025-11-29-vercel-blob-migration-design.md`
-- **ADR:** `docs/adr/2025-11-29-storage-migration-vercel-blob.md`
+**Future Work:**
 
-## Rollback Plan Available
+- Setup AWS S3 backup automation (waiting for client bucket)
+- Update documentation to reflect completed state
 
-Complete rollback procedures documented in design doc (Section 8) if anything goes wrong.
+## Migration Details
 
----
+### Images Collection (31 records)
 
-**Ready to implement!** 🚀
+- Artist profile photos (23)
+- Employee headshots (4)
+- Additional artist images (4)
+- Uploaded via Vercel Blob hybrid strategy
+
+### Documents Collection (45 records)
+
+- Artist PDFs (biographies, press kits)
+- Artist ZIP files (media galleries)
+- All files uploaded successfully to Vercel Blob
+
+### Hybrid Upload Strategy
+
+Successfully implemented for files >4.5MB:
+
+- Small files (≤4.5MB): Upload via Payload API (server upload)
+- Large files (>4.5MB): Direct Blob upload + manual record creation
+- All 60MB ZIP files handled correctly
+
+## Database: Remote Turso (`ksschoerke-development`)
+
+| Collection | Records | Status                    |
+| ---------- | ------- | ------------------------- |
+| Artists    | 23      | ✅ Complete               |
+| Employees  | 4       | ✅ Complete               |
+| Images     | 31      | ✅ Complete               |
+| Documents  | 45      | ✅ Complete               |
+| Posts      | 0       | ⏸️ Pending script updates |
+| Recordings | 0       | ⏸️ Pending script updates |
+
+## Key Learnings
+
+### Image ID Mapping Issues
+
+**Problem:** Foreign key constraint errors during employee migration.
+
+**Root Cause:** `media-id-map.json` contained outdated IDs that didn't match actual database records.
+
+**Solution:**
+
+- Upload missing images to Vercel Blob
+- Update `media-id-map.json` with correct Payload IDs
+- Always verify image IDs exist in database before migration
+
+**Prevention:** Added to AGENTS.md - always verify database environment and check foreign key relationships before
+migrations.
+
+### WordPress Attachment Resolution
+
+**Problem:** Employee thumbnail IDs from WordPress XML didn't resolve to files.
+
+**Root Cause:**
+
+- Some attachment IDs referenced in WordPress XML weren't in the exported attachment list
+- Files existed locally but needed manual upload
+
+**Solution:**
+
+- Check `media-urls.json` for all referenced attachments
+- Upload missing files manually to Vercel Blob
+- Update migration map before running live migration
+
+## Environment Variables
+
+**Active:**
+
+- `BLOB_READ_WRITE_TOKEN` - Vercel Blob (Images + Documents)
+- `DATABASE_URI` - Turso (remote)
+- `DATABASE_AUTH_TOKEN` - Turso auth
+
+**Removed:**
+
+- `CLOUDFLARE_S3_BUCKET` - No longer needed
+- `CLOUDFLARE_S3_ACCESS_KEY` - No longer needed
+- `CLOUDFLARE_SECRET` - No longer needed
+- `CLOUDFLARE_S3_API_ENDPOINT` - No longer needed
+- `NEXT_PUBLIC_S3_HOSTNAME` - No longer needed
+
+## Files Modified This Session
+
+**Removed:**
+
+- `src/collections/Media.ts` - Old R2-based media collection
+- Cloudflare R2 plugin configuration from `payload.config.ts`
+
+**Updated:**
+
+- `scripts/wordpress/data/media-id-map.json` - Added employee image IDs (28-31)
+- `scripts/wordpress/migrateEmployees.ts` - Fixed dotenv import
+
+**Created:**
+
+- Employee images uploaded to Vercel Blob (IDs 28-31)
+
+## Success Criteria
+
+- ✅ All artist images migrated to Vercel Blob
+- ✅ All artist documents (PDFs, ZIPs) migrated to Vercel Blob
+- ✅ All employee images migrated to Vercel Blob
+- ✅ Admin panel thumbnails work (no 500 errors)
+- ✅ Database relationships correct (no foreign key errors)
+- ✅ Old Media collection removed from codebase
+- ✅ Cloudflare R2 configuration removed
+
+## Related Documents
+
+- [Design Document](plans/2025-11-29-vercel-blob-migration-design.md)
+- [ADR: Storage Migration](adr/2025-11-29-storage-migration-vercel-blob.md)
+- [Database Backup Strategy](adr/2025-11-23-database-backup-strategy.md)

@@ -1,32 +1,31 @@
 /**
- * Regenerate Media Sizes Utility
+ * Regenerate Image Sizes Utility
  *
- * Regenerates all image sizes for media in the Media collection.
+ * Regenerates all image sizes for images in the Images collection.
  * Useful when:
- * - Adding new image size configurations to Media collection
- * - Migrating media from one storage provider to another
+ * - Adding new image size configurations to Images collection
+ * - Migrating images from one storage provider to another
  * - Fixing corrupted or missing image size variants
  * - Updating image optimization settings
  *
  * Process:
- * 1. Fetches all media documents from the collection
- * 2. Downloads original image from S3/R2 storage
+ * 1. Fetches all image documents from the Images collection
+ * 2. Downloads original image from Vercel Blob storage
  * 3. Re-uploads to Payload to trigger size regeneration
  * 4. Cleans up temporary files
  *
  * Requirements:
- * - NEXT_PUBLIC_S3_HOSTNAME or CLOUDFLARE_PUBLIC_URL must be set
- * - Original images must be accessible at the public URL
+ * - BLOB_READ_WRITE_TOKEN must be set (Vercel Blob)
+ * - Original images must be accessible via Vercel Blob
  * - Sufficient disk space for temporary image storage
  *
  * Usage:
  *   pnpm tsx scripts/utils/regenerateMediaSizes.ts
  *
  * Environment Variables:
- *   NEXT_PUBLIC_S3_HOSTNAME - Public URL for S3/R2 bucket
- *   CLOUDFLARE_PUBLIC_URL   - Alternative public URL
+ *   BLOB_READ_WRITE_TOKEN - Vercel Blob authentication token
  *
- * @see src/collections/Media.ts - Media collection configuration
+ * @see src/collections/Images.ts - Images collection configuration
  */
 
 import 'dotenv/config'
@@ -64,31 +63,31 @@ async function downloadImage(url: string, dest: string) {
 }
 
 /**
- * Regenerate image sizes for a single media document
+ * Regenerate image sizes for a single image document
  *
  * Downloads the original image, re-uploads it to Payload, and cleans up.
  * This triggers Payload's image processing pipeline to regenerate all sizes.
  *
  * @param payload - Payload CMS instance
- * @param mediaDoc - Media document to process
- * @param publicUrl - Base public URL for accessing media files
+ * @param imageDoc - Image document to process
+ * @param publicUrl - Base public URL for accessing image files
  * @throws {Error} If download, upload, or cleanup fails
  *
  * @example
- * const mediaDoc = await payload.findByID({ collection: 'media', id: '123' })
- * await regenerateSizesForMedia(payload, mediaDoc, 'https://cdn.example.com')
+ * const imageDoc = await payload.findByID({ collection: 'images', id: '123' })
+ * await regenerateSizesForImage(payload, imageDoc, 'https://blob.vercel-storage.com')
  */
-async function regenerateSizesForMedia(payload: any, mediaDoc: any, publicUrl: string) {
-  const originalUrl = mediaDoc.url?.startsWith('http') ? mediaDoc.url : `${publicUrl}/${mediaDoc.filename}`
+async function regenerateSizesForImage(payload: any, imageDoc: any, publicUrl: string) {
+  const originalUrl = imageDoc.url?.startsWith('http') ? imageDoc.url : `${publicUrl}/${imageDoc.filename}`
   const tmpDir = path.join(process.cwd(), 'tmp')
   await fs.mkdir(tmpDir, { recursive: true })
-  const originalPath = path.join(tmpDir, mediaDoc.filename)
+  const originalPath = path.join(tmpDir, imageDoc.filename)
   await downloadImage(originalUrl, originalPath)
 
   // Use Local API to re-upload and regenerate sizes
   await payload.update({
-    collection: 'media',
-    id: mediaDoc.id,
+    collection: 'images',
+    id: imageDoc.id,
     filePath: originalPath,
     overwriteExistingFiles: true,
     data: {},
@@ -100,33 +99,44 @@ async function regenerateSizesForMedia(payload: any, mediaDoc: any, publicUrl: s
 /**
  * Main execution function
  *
- * Processes all media documents in the collection:
+ * Processes all image documents in the Images collection:
  * 1. Initializes Payload CMS
  * 2. Validates environment configuration
- * 3. Fetches all media documents (up to 10,000)
+ * 3. Fetches all image documents (up to 10,000)
  * 4. Regenerates sizes for each image
  * 5. Logs progress and errors
  *
- * @throws {Error} If no public URL is configured or Payload initialization fails
+ * @throws {Error} If no Vercel Blob token is configured or Payload initialization fails
  */
 async function main() {
   const config = await getConfig()
   const payload = await getPayload({ config })
-  const imageSizes = config.collections.find((c: any) => c.slug === 'media')?.upload?.imageSizes || []
-  const publicUrl = process.env.NEXT_PUBLIC_S3_HOSTNAME || process.env.CLOUDFLARE_PUBLIC_URL
-  if (!publicUrl) throw new Error('No public S3/R2 URL found in env')
+  const imageSizes = config.collections.find((c: any) => c.slug === 'images')?.upload?.imageSizes || []
+  
+  // Vercel Blob public URL (no longer using R2)
+  const publicUrl = 'https://blob.vercel-storage.com'
+  
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error('BLOB_READ_WRITE_TOKEN not found in environment variables')
+  }
 
-  const { docs: mediaDocs } = await payload.find({ collection: 'media', limit: 10000 })
-  for (const mediaDoc of mediaDocs) {
-    if (!mediaDoc.filename) continue
+  console.log(`📊 Found ${imageSizes.length} image size configurations`)
+  
+  const { docs: imageDocs } = await payload.find({ collection: 'images', limit: 10000 })
+  console.log(`🖼️  Processing ${imageDocs.length} images...\n`)
+  
+  for (const imageDoc of imageDocs) {
+    if (!imageDoc.filename) continue
     try {
-      console.log(`Regenerating sizes for: ${mediaDoc.filename}`)
-      await regenerateSizesForMedia(payload, mediaDoc, publicUrl)
-      console.log(`Done: ${mediaDoc.filename}`)
+      console.log(`Regenerating sizes for: ${imageDoc.filename}`)
+      await regenerateSizesForImage(payload, imageDoc, publicUrl)
+      console.log(`✅ Done: ${imageDoc.filename}`)
     } catch (err) {
-      console.error(`Error processing ${mediaDoc.filename}:`, err)
+      console.error(`❌ Error processing ${imageDoc.filename}:`, err)
     }
   }
+  
+  console.log('\n✨ All images processed!')
   process.exit(0)
 }
 

@@ -8,12 +8,13 @@ import { fileURLToPath } from 'url'
 // Adapters & Plugins
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { searchPlugin } from '@payloadcms/plugin-search'
-import { s3Storage } from '@payloadcms/storage-s3'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 // Collections
 import { Artists } from './collections/Artists'
+import { Documents } from './collections/Documents'
 import { Employees } from './collections/Employees'
-import { Media } from './collections/Media'
+import { Images } from './collections/Images'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Recordings } from './collections/Recordings'
@@ -40,7 +41,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Media],
+  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Images, Documents],
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URI!,
@@ -125,37 +126,13 @@ export default buildConfig({
       },
     }),
 
-    // Cloudflare R2 via S3 API
-    s3Storage({
-      bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
+    // Vercel Blob Storage for Images and Documents collections
+    vercelBlobStorage({
       collections: {
-        media: {
-          // Bypass Payload's Access Control to prevent URL transformation
-          // Since media collection has read: () => true (public access),
-          // we don't need Payload to intercept URLs
-          disablePayloadAccessControl: true,
-          // Generate URLs that point directly to R2 public domain
-          generateFileURL: ({ filename, prefix }: { filename: string; prefix?: string }) => {
-            // If filename is null/undefined/empty, return empty string
-            // This prevents "/null" URLs when image size generation fails
-            if (!filename || filename === 'null' || filename === 'undefined') {
-              return ''
-            }
-            const baseURL = process.env.NEXT_PUBLIC_S3_HOSTNAME ?? ''
-            const path = prefix ? `${prefix}/${filename}` : filename
-            return `${baseURL}/${path}`
-          },
-        },
+        images: true,
+        documents: true,
       },
-      config: {
-        credentials: {
-          accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
-          secretAccessKey: process.env.CLOUDFLARE_SECRET ?? '',
-        },
-        region: 'auto',
-        endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
-        forcePathStyle: true, // Required for R2
-      },
+      token: process.env.BLOB_READ_WRITE_TOKEN!,
     }),
 
     payloadCloudPlugin(),

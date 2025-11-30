@@ -11,8 +11,11 @@
  * # Export all posts
  * pnpm dump posts
  *
- * # Export media files metadata
- * pnpm dump media
+ * # Export images metadata
+ * pnpm dump images
+ * 
+ * # Export documents metadata  
+ * pnpm dump documents
  * ```
  *
  * Output: Writes to `data/dumps/{collection}-dump.json`
@@ -48,13 +51,13 @@ async function getConfig() {
  * Extracts the slugs of all registered collections from the Payload config.
  *
  * @param config - The Payload configuration object
- * @returns Array of collection slug strings (e.g., ['artists', 'posts', 'media'])
+ * @returns Array of collection slug strings (e.g., ['artists', 'posts', 'images', 'documents'])
  *
  * @example
  * ```ts
  * const config = await getConfig()
  * const collections = getValidCollections(config)
- * // ['artists', 'employees', 'media', 'posts', 'recordings', 'users']
+ * // ['artists', 'documents', 'employees', 'images', 'posts', 'recordings', 'users']
  * ```
  */
 function getValidCollections(config: any): string[] {

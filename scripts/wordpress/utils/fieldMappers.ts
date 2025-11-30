@@ -93,6 +93,11 @@ export async function findEmployeeByName(payload: any, name: string | number | u
 
 /**
  * Download file from URL and upload to Payload media collection
+ * 
+ * @deprecated This function is no longer used. Media should be uploaded via uploadLocalMedia.ts
+ * which properly handles the split between 'images' and 'documents' collections.
+ * 
+ * @see scripts/wordpress/utils/uploadLocalMedia.ts
  */
 export async function downloadAndUploadMedia(
   payload: any,
@@ -184,6 +189,38 @@ export async function downloadAndUploadMedia(
     console.warn(`  ⚠️  Error downloading/uploading ${trimmed}:`, error instanceof Error ? error.message : error)
     return null
   }
+}
+
+/**
+ * Clean WordPress filename by removing timestamp postfixes
+ *
+ * WordPress sometimes adds timestamp postfixes to filenames:
+ * - Pattern: -e[timestamp] or -e[timestamp]-[number]
+ * - Examples:
+ *   - "image-e1762933634869.jpg" → "image.jpg"
+ *   - "photo-e1734089581370-scaled.jpg" → "photo-scaled.jpg"
+ *   - "file-e1762933634869-1.jpg" → "file-1.jpg"
+ *
+ * This function removes these postfixes to get the original filename.
+ *
+ * @param filename - WordPress filename (may contain timestamp postfix)
+ * @returns Cleaned filename without timestamp postfix
+ */
+export function cleanWordPressFilename(filename: string, debug = false): string {
+  if (!filename) return filename
+
+  // Remove timestamp postfix pattern: -e[digits]
+  // Handles these cases:
+  // - "file-e1762933634869.jpg" → "file.jpg"
+  // - "file-e1762933634869-scaled.jpg" → "file-scaled.jpg"
+  // - "file-e1762933634869-1.jpg" → "file-1.jpg"
+  const cleaned = filename.replace(/-e\d+(?=-|\.)/g, '')
+  
+  if (debug && cleaned !== filename) {
+    console.log(`  🧹 Cleaned filename: "${filename}" → "${cleaned}"`)
+  }
+  
+  return cleaned
 }
 
 /**

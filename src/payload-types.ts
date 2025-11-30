@@ -74,7 +74,8 @@ export interface Config {
     recordings: Recording;
     repertoire: Repertoire;
     users: User;
-    media: Media;
+    images: Image;
+    documents: Document;
     search: Search;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -90,7 +91,8 @@ export interface Config {
     recordings: RecordingsSelect<false> | RecordingsSelect<true>;
     repertoire: RepertoireSelect<false> | RepertoireSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
+    images: ImagesSelect<false> | ImagesSelect<true>;
+    documents: DocumentsSelect<false> | DocumentsSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -100,6 +102,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('de' | 'en') | ('de' | 'en')[];
   globals: {};
   globalsSelect: {};
   locale: 'de' | 'en';
@@ -155,7 +158,7 @@ export interface Artist {
   /**
    * Used as the primary image for the artist
    */
-  image?: (number | null) | Media;
+  image?: (number | null) | Image;
   /**
    * Auto-generated from artist name
    */
@@ -241,8 +244,8 @@ export interface Artist {
       }[]
     | null;
   downloads?: {
-    biographyPDF?: (number | null) | Media;
-    galleryZIP?: (number | null) | Media;
+    biographyPDF?: (number | null) | Document;
+    galleryZIP?: (number | null) | Document;
   };
   youtubeLinks?:
     | {
@@ -263,11 +266,17 @@ export interface Artist {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "images".
  */
-export interface Media {
+export interface Image {
   id: number;
+  /**
+   * Alternative text for accessibility and SEO
+   */
   alt: string;
+  /**
+   * Photo credit or attribution (e.g., photographer name)
+   */
   credit?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -297,7 +306,7 @@ export interface Media {
       filesize?: number | null;
       filename?: string | null;
     };
-    hero?: {
+    tablet?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -318,10 +327,40 @@ export interface Employee {
   email: string;
   phone: string;
   mobile: string;
-  image?: (number | null) | Media;
+  image?: (number | null) | Image;
   order: number;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: number;
+  /**
+   * Document title for identification
+   */
+  title: string;
+  /**
+   * Optional description of the document contents
+   */
+  description?: string | null;
+  /**
+   * File size in bytes (auto-populated)
+   */
+  fileSize?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -381,7 +420,7 @@ export interface Post {
   };
   categories?: ('news' | 'projects' | 'home')[] | null;
   artists?: (number | Artist)[] | null;
-  image?: (number | null) | Media;
+  image?: (number | null) | Image;
   createdBy: number | Employee;
   updatedAt: string;
   createdAt: string;
@@ -421,7 +460,7 @@ export interface Recording {
   recordingYear?: number | null;
   recordingLabel?: string | null;
   catalogNumber?: string | null;
-  coverArt?: (number | null) | Media;
+  coverArt?: (number | null) | Image;
   /**
    * Select one or more artists who performed in this recording
    */
@@ -602,8 +641,12 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
-        relationTo: 'media';
-        value: number | Media;
+        relationTo: 'images';
+        value: number | Image;
+      } | null)
+    | ({
+        relationTo: 'documents';
+        value: number | Document;
       } | null)
     | ({
         relationTo: 'search';
@@ -798,9 +841,9 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "images_select".
  */
-export interface MediaSelect<T extends boolean = true> {
+export interface ImagesSelect<T extends boolean = true> {
   alt?: T;
   credit?: T;
   updatedAt?: T;
@@ -837,7 +880,7 @@ export interface MediaSelect<T extends boolean = true> {
               filesize?: T;
               filename?: T;
             };
-        hero?:
+        tablet?:
           | T
           | {
               url?: T;
@@ -848,6 +891,26 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents_select".
+ */
+export interface DocumentsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  fileSize?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

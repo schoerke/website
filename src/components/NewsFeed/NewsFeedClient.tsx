@@ -1,7 +1,7 @@
 'use client'
 
 import { Skeleton } from '@/components/ui/Skeleton'
-import type { Media, Post } from '@/payload-types'
+import type { Image as PayloadImage, Post } from '@/payload-types'
 import { useEffect, useState } from 'react'
 import NewsFeedList from './NewsFeedList'
 
@@ -23,7 +23,7 @@ const NewsFeedClient: React.FC<NewsFeedClientProps> = ({
   showLoadingState = true,
 }) => {
   const [posts, setPosts] = useState<Post[]>([])
-  const [defaultImage, setDefaultImage] = useState<Media | null>(null)
+  const [defaultImage, setDefaultImage] = useState<PayloadImage | null>(null)
   const [loading, setLoading] = useState(true)
   const [fetched, setFetched] = useState(false)
 
@@ -90,7 +90,7 @@ const NewsFeedClient: React.FC<NewsFeedClientProps> = ({
       posts={posts}
       emptyMessage={emptyMessage}
       category={translationCategory as 'news' | 'projects'}
-      defaultImage={defaultImage}
+      defaultImage={defaultImage?.url || null}
     />
   )
 }

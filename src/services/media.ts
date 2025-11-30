@@ -1,143 +1,64 @@
-import type { Media } from '@/payload-types'
-import config from '@/payload.config'
-import { getPayload } from 'payload'
+import type { Image as PayloadImage } from '@/payload-types'
 
 /**
- * Fetches a media item from the media collection by its filename.
- *
- * @param filename - The exact filename to search for (e.g., 'logo.png', 'avatar.webp')
- * @returns A promise that resolves to the Media object if found, or null if not found
- *
- * @example
- * ```ts
- * const logo = await getMediaByFilename('logo.png')
- * if (logo) {
- *   console.log(logo.url) // Access the media URL
- * }
- * ```
+ * Common media asset paths served from Vercel Blob via Payload CMS.
+ * These assets were uploaded to the database and are now served through the API.
  */
-export const getMediaByFilename = async (filename: string): Promise<Media | null> => {
-  const payload = await getPayload({ config })
-  const result = await payload.find({
-    collection: 'media',
-    where: { filename: { equals: filename } },
-    limit: 1,
-  })
-
-  return result.docs[0] || null
-}
 
 /**
- * Fetches a media item from the media collection by its ID.
- *
- * @param id - The unique identifier of the media item
- * @returns A promise that resolves to the Media object if found, or null if not found or if an error occurs
- *
- * @example
- * ```ts
- * const media = await getMediaById('507f1f77bcf86cd799439011')
- * if (media) {
- *   console.log(media.url)
- * }
- * ```
+ * Payload API path for the full logo image (logo.png).
+ * @example <Image src={LOGO_PATH} alt="Logo" />
  */
-export const getMediaById = async (id: string): Promise<Media | null> => {
-  const payload = await getPayload({ config })
-  try {
-    return await payload.findByID({
-      collection: 'media',
-      id,
-    })
-  } catch {
-    return null
-  }
-}
+export const LOGO_PATH = '/api/images/file/logo.png'
 
 /**
- * Fetches a media item from the media collection by its alt text.
- *
- * This is useful for finding images by their descriptive alt text,
- * such as employee photos or artist images.
- *
- * @param alt - The alt text to search for (exact match)
- * @returns A promise that resolves to the Media object if found, or null if not found
- *
- * @example
- * ```ts
- * const employeePhoto = await getMediaByAlt('John Doe')
- * if (employeePhoto) {
- *   console.log(employeePhoto.url)
- * }
- * ```
+ * Payload API path for the logo icon image (logo_icon.png).
+ * Typically used for smaller logo representations in headers, footers, or favicons.
+ * @example <Image src={LOGO_ICON_PATH} alt="Logo" width={40} height={40} />
  */
-export const getMediaByAlt = async (alt: string): Promise<Media | null> => {
-  const payload = await getPayload({ config })
-  const result = await payload.find({
-    collection: 'media',
-    where: { alt: { equals: alt } },
-    limit: 1,
-  })
-
-  return result.docs[0] || null
-}
-
-// Convenience helpers for known assets
+export const LOGO_ICON_PATH = '/api/images/file/logo_icon.png'
 
 /**
- * Fetches the full logo image (logo.png) from the media collection.
- *
- * This is a convenience wrapper around getMediaByFilename for the main logo asset.
- *
- * @returns A promise that resolves to the Media object for logo.png, or null if not found
- *
- * @example
- * ```ts
- * const logo = await getLogo()
- * if (logo) {
- *   <Image src={logo.url} alt={logo.alt || 'Logo'} />
- * }
- * ```
+ * Payload API path for the default avatar image (default-avatar.webp).
+ * Used as a fallback image when an employee or artist doesn't have a specific photo.
+ * @example <Image src={DEFAULT_AVATAR_PATH} alt="Default Avatar" />
  */
-export const getLogo = async (): Promise<Media | null> => {
-  return getMediaByFilename('logo.png')
-}
+export const DEFAULT_AVATAR_PATH = '/api/images/file/default-avatar.webp'
 
 /**
- * Fetches the logo icon image (logo_icon.png) from the media collection.
- *
- * This is typically used for smaller logo representations in headers, footers, or favicons.
- * This is a convenience wrapper around getMediaByFilename.
- *
- * @returns A promise that resolves to the Media object for logo_icon.png, or null if not found
- *
- * @example
- * ```ts
- * const logoIcon = await getLogoIcon()
- * if (logoIcon) {
- *   <Image src={logoIcon.url} alt="Logo" width={40} height={40} />
- * }
- * ```
+ * @deprecated Use LOGO_PATH constant instead
  */
-export const getLogoIcon = async (): Promise<Media | null> => {
-  return getMediaByFilename('logo_icon.png')
-}
+export const getLogo = (): string => LOGO_PATH
 
 /**
- * Fetches the default avatar image (default-avatar.webp) from the media collection.
+ * @deprecated Use LOGO_ICON_PATH constant instead
+ */
+export const getLogoIcon = (): string => LOGO_ICON_PATH
+
+/**
+ * @deprecated Use DEFAULT_AVATAR_PATH constant instead
+ */
+export const getDefaultAvatar = (): string => DEFAULT_AVATAR_PATH
+
+/**
+ * Fetches an image from Payload by filename.
+ * Useful for dynamically loading assets that are stored in Vercel Blob.
  *
- * This is used as a fallback image when an employee or artist doesn't have a specific photo.
- * This is a convenience wrapper around getMediaByFilename.
- *
- * @returns A promise that resolves to the Media object for default-avatar.webp, or null if not found
+ * @param filename - The filename to search for (e.g., 'logo.png')
+ * @returns The image record from Payload, or null if not found
  *
  * @example
  * ```ts
- * const avatar = await getDefaultAvatar()
+ * const avatar = await getImageByFilename('default-avatar.webp')
  * if (avatar) {
- *   <Image src={avatar.url} alt="Default Avatar" />
+ *   <Image src={avatar.url} alt={avatar.alt} />
  * }
  * ```
  */
-export const getDefaultAvatar = async (): Promise<Media | null> => {
-  return getMediaByFilename('default-avatar.webp')
+export async function getImageByFilename(filename: string): Promise<PayloadImage | null> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/api/images?where[filename][equals]=${filename}&limit=1`,
+  )
+  const data = await response.json()
+  return data.docs?.[0] || null
 }

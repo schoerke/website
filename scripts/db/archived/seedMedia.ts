@@ -1,14 +1,14 @@
 /**
- * Seed Media Collection
+ * Seed Images Collection
  *
- * Seeds the Media collection with all images from the assets/ folder.
- * Uploads images to Payload CMS storage and creates corresponding media records.
+ * Seeds the Images collection with all images from the assets/ folder.
+ * Uploads images to Payload CMS storage and creates corresponding image records.
  *
  * Features:
  * - Scans assets/ folder for all image files
- * - Checks if media already exists (by filename) to avoid duplicates
+ * - Checks if images already exist (by filename) to avoid duplicates
  * - Uploads images with appropriate mimetype
- * - Creates media records with descriptive alt text
+ * - Creates image records with descriptive alt text
  *
  * Supported formats:
  * - PNG (.png)
@@ -25,7 +25,7 @@
  *   assets/ folder
  *
  * @see scripts/db/seedAll.ts - Master orchestration script
- * @see scripts/db/seedArtists.ts - Uses default-avatar.webp from media
+ * @see scripts/db/seedArtists.ts - Uses default-avatar.webp from images
  */
 
 import config from '@payload-config'
@@ -84,11 +84,11 @@ function generateAltText(filename: string): string {
 }
 
 /**
- * Upload media file to Payload
+ * Upload image file to Payload
  *
  * @param payload - Payload CMS instance
  * @param filename - Name of file in assets folder
- * @returns Media document ID
+ * @returns Image document ID
  */
 async function uploadMedia(payload: any, filename: string): Promise<string> {
   const assetsPath = path.join(process.cwd(), 'assets', filename)
@@ -98,7 +98,7 @@ async function uploadMedia(payload: any, filename: string): Promise<string> {
   const altText = generateAltText(filename)
 
   const media = await payload.create({
-    collection: 'media',
+    collection: 'images',
     data: {
       alt: altText,
     },
@@ -118,14 +118,14 @@ async function uploadMedia(payload: any, filename: string): Promise<string> {
  *
  * Iterates through assets folder and uploads all images:
  * 1. Get all image files from assets/
- * 2. Check if each file already exists in media collection
+ * 2. Check if each file already exists in images collection
  * 3. Upload if not found, skip if already exists
  */
 async function run() {
   try {
     const payload = await getPayload({ config })
 
-    console.log('Seeding Media Collection...\n')
+    console.log('Seeding Images Collection...\n')
 
     // Get all image files from assets
     const assetFiles = getAssetFiles()
@@ -141,12 +141,12 @@ async function run() {
     let skippedCount = 0
 
     for (const filename of assetFiles) {
-      // Check if media already exists
+      // Check if image already exists
       const existingMedia = await payload.find({
         where: {
           filename: { equals: filename },
         },
-        collection: 'media',
+        collection: 'images',
         limit: 1,
       })
 
@@ -156,7 +156,7 @@ async function run() {
         continue
       }
 
-      // Upload new media
+      // Upload new image
       await uploadMedia(payload, filename)
       uploadedCount++
     }
@@ -166,7 +166,7 @@ async function run() {
     console.log(`Skipped: ${skippedCount}`)
     console.log(`Total: ${assetFiles.length}`)
   } catch (error) {
-    console.error('Error seeding media:', error)
+    console.error('Error seeding images:', error)
     process.exit(1)
   }
 

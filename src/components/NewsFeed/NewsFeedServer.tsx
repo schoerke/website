@@ -17,16 +17,15 @@ const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
   locale = 'de',
   emptyMessage = 'No posts found',
 }) => {
-  const [result, defaultImage] = await Promise.all([
-    getFilteredPosts({
-      category,
-      artistId,
-      limit,
-      locale: locale as 'de' | 'en',
-      publishedOnly: true,
-    }),
-    getDefaultAvatar(),
-  ])
+  const result = await getFilteredPosts({
+    category,
+    artistId,
+    limit,
+    locale: locale as 'de' | 'en',
+    publishedOnly: true,
+  })
+
+  const defaultImagePath = getDefaultAvatar()
 
   // Determine which category to use for translations
   const translationCategory = Array.isArray(category) ? category[0] : category || 'news'
@@ -36,7 +35,7 @@ const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
       posts={result.docs}
       emptyMessage={emptyMessage}
       category={translationCategory as 'news' | 'projects'}
-      defaultImage={defaultImage}
+      defaultImage={defaultImagePath}
     />
   )
 }
