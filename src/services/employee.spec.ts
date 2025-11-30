@@ -1,8 +1,7 @@
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockEmployee, createMockPaginatedDocs } from './__test-utils__/payloadMocks'
-import { getEmployeeById, getEmployeeByName, getEmployeeImageId, getEmployees } from './employee'
-import * as mediaService from './media'
+import { getEmployeeById, getEmployeeByName, getEmployees } from './employee'
 
 // Mock getPayload at the module level
 vi.mock('payload', async (importOriginal) => {
@@ -122,48 +121,6 @@ describe('Employee Service', () => {
       const result = await getEmployeeByName('Nonexistent Person')
 
       expect(result.docs).toHaveLength(0)
-    })
-  })
-
-  describe('getEmployeeImageId', () => {
-    it('should return employee image ID when found by alt text', async () => {
-      const mockEmployee = createMockEmployee()
-      vi.spyOn(mediaService, 'getMediaByAlt').mockResolvedValue({
-        id: 5,
-        alt: 'John Doe',
-        filename: 'john-doe.jpg',
-      } as any)
-
-      const result = await getEmployeeImageId(mockEmployee)
-
-      expect(result).toBe(5)
-      expect(mediaService.getMediaByAlt).toHaveBeenCalledWith('John Doe')
-    })
-
-    it('should return default avatar ID when employee image not found', async () => {
-      const mockEmployee = createMockEmployee()
-      vi.spyOn(mediaService, 'getMediaByAlt').mockResolvedValue(null)
-      vi.spyOn(mediaService, 'getDefaultAvatar').mockResolvedValue({
-        id: 10,
-        alt: 'Default Avatar',
-        filename: 'default-avatar.webp',
-      } as any)
-
-      const result = await getEmployeeImageId(mockEmployee)
-
-      expect(result).toBe(10)
-      expect(mediaService.getMediaByAlt).toHaveBeenCalledWith('John Doe')
-      expect(mediaService.getDefaultAvatar).toHaveBeenCalledWith()
-    })
-
-    it('should return null when neither employee image nor default avatar found', async () => {
-      const mockEmployee = createMockEmployee()
-      vi.spyOn(mediaService, 'getMediaByAlt').mockResolvedValue(null)
-      vi.spyOn(mediaService, 'getDefaultAvatar').mockResolvedValue(null)
-
-      const result = await getEmployeeImageId(mockEmployee)
-
-      expect(result).toBeNull()
     })
   })
 })

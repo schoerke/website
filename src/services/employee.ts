@@ -1,7 +1,6 @@
 import config from '@/payload.config'
 import { getPayload } from 'payload'
 import type { Employee } from '../payload-types'
-import { getDefaultAvatar, getMediaByAlt } from './media'
 
 type LocaleCode = 'de' | 'en' | 'all'
 
@@ -66,37 +65,4 @@ export const getEmployeeByName = async (name: string, locale?: LocaleCode) => {
     limit: 1,
     locale: locale || 'de',
   })
-}
-
-/**
- * Retrieves the appropriate image ID for an employee.
- * First attempts to find media with alt text matching the employee's name,
- * then falls back to the default avatar if no match is found.
- *
- * @param employee - The employee document
- * @returns A promise resolving to the media ID string, or null if no image is available
- *
- * @example
- * const employee = await getEmployeeById('123')
- * const imageId = await getEmployeeImageId(employee)
- * if (imageId) {
- *   console.log(`Image ID: ${imageId}`)
- * }
- */
-export async function getEmployeeImageId(employee: Employee) {
-  // Try to find existing media first
-  const employeeImage = await getMediaByAlt(employee.name)
-
-  if (employeeImage) {
-    return employeeImage.id
-  }
-
-  // Otherwise use a default image
-  const defaultAvatar = await getDefaultAvatar()
-
-  if (defaultAvatar) {
-    return defaultAvatar.id
-  }
-
-  return null
 }
