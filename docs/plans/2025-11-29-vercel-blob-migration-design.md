@@ -252,22 +252,53 @@ async function uploadFile(filePath: string, mimeType: string, collection: 'image
 - Both supported via hybrid upload strategy
 
 ## 3. Migration Execution
+## 3. Migration Execution
 
 ### Prerequisites
 
 1. ✅ GitHub repository at `schoerke/website` (public, completed)
 2. ✅ `zeitchef` added as collaborator (completed)
 3. ✅ Client Vercel account created
-4. ⏳ Vercel project imported from `schoerke/website`
-5. ⏳ Environment variables configured (including `BLOB_READ_WRITE_TOKEN`)
-6. ⏳ Vercel Blob storage enabled
+4. ✅ Vercel project imported from `schoerke/website`
+5. ✅ Environment variables configured (including `BLOB_READ_WRITE_TOKEN`)
+6. ✅ Vercel Blob storage enabled
+
+### Media Collection Strategy
+
+**IMPORTANT: The existing `Media` collection will be kept during migration for safety.**
+
+**Why keep it?**
+- Safety net during development (can compare old vs new)
+- Easier rollback if issues arise
+- Allows side-by-side verification
+- Existing database records remain intact during testing
+
+**Removal timeline:**
+- Keep during Steps 1-3 (schema updates, migration, verification)
+- Remove in Step 4 (after successful verification only)
+
+**Collections that currently use `media` (will be updated):**
+- `Artists` - `image` field (profile photo) → `images`
+- `Artists` - Press kit downloads (PDFs, ZIPs) → `documents`
+- `Posts` - `image` field (featured image) → `images`
+- `Employees` - `image` field (headshot) → `images`
+- `Recordings` - `coverArt` field → `images`
 
 ### Step 1: Collection Schema Updates
 
-**Create new collections:**
+**✅ COMPLETED**
 
-- `src/collections/Images.ts`
-- `src/collections/Documents.ts`
+**Created new collections:**
+- ✅ `src/collections/Images.ts` - Image storage with Vercel Blob
+- ✅ `src/collections/Documents.ts` - PDF/ZIP storage with Vercel Blob
+- ✅ `src/payload.config.ts` - Added both collections + vercelBlobStorage plugin
+- ✅ Dependencies installed and tested
+
+**Status:**
+- Media collection still present (intentionally kept for safety)
+- New collections registered and ready
+- Dev server starts without errors
+- No relationship updates yet (next step)
 
 **Update relationships in existing collections:**
 
@@ -291,6 +322,12 @@ async function uploadFile(filePath: string, mimeType: string, collection: 'image
   relationTo: 'documents', // Documents only
 }
 ```
+
+**Collections to update:**
+- `src/collections/Artists.ts` - Update 3 fields (image, biography PDF, gallery ZIP)
+- `src/collections/Posts.ts` - Update 1 field (featured image)
+- `src/collections/Employees.ts` - Update 1 field (headshot)
+- `src/collections/Recordings.ts` - Update 1 field (cover art)
 
 ### Step 2: Update Migration Scripts
 
@@ -326,14 +363,27 @@ pnpm migrate:posts
 pnpm dev
 # Check: /admin/collections/images
 # Check: /admin/collections/documents
+# Check: /admin/collections/media (should exist but be empty)
 ```
 
 ### Step 4: Remove Old Media Collection
 
-After verification:
+**ONLY AFTER SUCCESSFUL VERIFICATION:**
 
+Checklist before removal:
+- [ ] All images migrated to `images` collection
+- [ ] All PDFs/ZIPs migrated to `documents` collection
+- [ ] All collection relationships updated
+- [ ] Frontend displays images correctly
+- [ ] Downloads work for documents
+- [ ] No console errors
+- [ ] No broken thumbnails in admin panel
+
+Then remove:
 - Delete `src/collections/Media.ts`
-- Remove from `payload.config.ts` collections array
+- Remove `Media` from `payload.config.ts` collections array
+- Remove `s3Storage` plugin from `payload.config.ts` (Cloudflare R2)
+- Update `payload-types.ts` (will auto-regenerate)
 
 ## 4. Backup Strategy (Vercel Blob → AWS S3)
 

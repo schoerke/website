@@ -1,73 +1,118 @@
-# Vercel Blob Migration - Ready for Implementation
+# Vercel Blob Migration Status
 
-**Date:** 2025-11-29  
-**Status:** Design Complete, Ready to Execute
+**Last Updated:** 2025-11-30
 
-## What's Done ✅
+## Quick Reference
 
-1. **Complete Design Document** - `docs/plans/2025-11-29-vercel-blob-migration-design.md`
-2. **ADR** - `docs/adr/2025-11-29-storage-migration-vercel-blob.md`
-3. **GitHub Repo** - Already moved to `schoerke/website`
-4. **Collaborator** - `zeitchef` has Admin access
-5. **All commits on main** - Safe, recoverable starting point
+- **Design Doc:** `docs/plans/2025-11-29-vercel-blob-migration-design.md`
+- **Branch:** `feature/vercel-blob-migration`
+- **Status:** Phase 2 Complete (Collection Schema Updates)
 
-## Final Architecture
+## Progress Tracker
 
-```
-GitHub: schoerke/website (✅ completed)
-Vercel Account: NEW "schoerke" account (⏳ to create)
-Storage: Vercel Blob (dedicated 100GB, free)
-Backup: AWS S3 (automated via GitHub Actions)
-Development: Push as zeitchef, deploy to schoerke Vercel account
-```
+### Phase 1: Prerequisites ✅
+- [x] Client Vercel account created
+- [x] Vercel project imported (`schoerke/website`)
+- [x] Vercel Blob storage enabled
+- [x] `BLOB_READ_WRITE_TOKEN` obtained
+- [x] Dependencies installed (`@payloadcms/storage-vercel-blob`, `@vercel/blob`)
+- [x] All Payload packages upgraded to 3.65.0
 
-## Next Steps (Tomorrow)
+### Phase 2: Collection Schema Updates ✅
+- [x] Created `src/collections/Images.ts` with Vercel Blob config
+- [x] Created `src/collections/Documents.ts` with Vercel Blob config
+- [x] Updated `src/payload.config.ts` (registered collections, added vercelBlobStorage plugin)
+- [x] Dependencies clean install (resolved version mismatches)
+- [x] Dev server tested and working
+- [x] Design document updated with Media collection strategy
 
-### 1. Create New Vercel Account (~5 min)
-- Sign up at https://vercel.com/signup
-- Email: Use `yourname+schoerke@gmail.com` or separate email
-- Account name: `schoerke`
-- Plan: Hobby (free)
+**Key Decision:** Keep existing `Media` collection during migration for safety. Remove only after verification.
 
-### 2. Import Project (~5 min)
-- Authorize Vercel GitHub App on `schoerke` org
-- Import `schoerke/website`
-- Copy environment variables from old project
-- Enable Vercel Blob storage
+### Phase 3: Update Collection Relationships ⏳
+- [ ] Update `src/collections/Artists.ts` (3 fields: image, biography PDF, gallery ZIP)
+- [ ] Update `src/collections/Posts.ts` (1 field: featured image)
+- [ ] Update `src/collections/Employees.ts` (1 field: headshot)
+- [ ] Update `src/collections/Recordings.ts` (1 field: cover art)
 
-### 3. Update Code (~30 min)
-- Create `Images` and `Documents` collections
-- Update `payload.config.ts` to use `@payloadcms/storage-vercel-blob`
-- Update migration scripts with hybrid upload logic
-- Update relationship fields in existing collections
+### Phase 4: Update Migration Scripts ⏳
+- [ ] Modify `scripts/wordpress/utils/uploadLocalMedia.ts`
+- [ ] Implement hybrid upload strategy (size-based routing)
+- [ ] Route by MIME type (images vs documents)
+- [ ] Update `scripts/wordpress/migrateArtists.ts`
+- [ ] Update `scripts/wordpress/migratePosts.ts`
 
-### 4. Execute Migration (~1-2 hours)
-- Reset database
-- Run migration scripts (upload media, migrate artists/posts)
-- Verify in admin panel
-- Test frontend
+### Phase 5: Execute Migration ⏳
+- [ ] Drop database (fresh start)
+- [ ] Upload media to Vercel Blob
+- [ ] Migrate artists
+- [ ] Migrate posts
+- [ ] Verify in admin panel
 
-### 5. Set Up Backups (~30 min)
-- Create GitHub Actions workflow
-- Add AWS S3 credentials to GitHub Secrets
-- Test backup script
+### Phase 6: Cleanup ⏳
+- [ ] Verify all images migrated
+- [ ] Verify all documents migrated
+- [ ] Test frontend display
+- [ ] Test document downloads
+- [ ] Remove `src/collections/Media.ts`
+- [ ] Remove `Media` from `payload.config.ts`
+- [ ] Remove `s3Storage` plugin (Cloudflare R2)
 
-## Key Decisions Made
+### Phase 7: Setup Backups ⏳
+- [ ] Create `scripts/backupBlobToS3.js`
+- [ ] Create `.github/workflows/backup-vercel-blob.yml`
+- [ ] Test backup script manually
+- [ ] Verify GitHub Actions workflow
 
-1. **Separate Vercel Account** - Free Hobby plan instead of $20/month Pro team
-2. **Separate Collections** - Images and Documents instead of unified Media
-3. **Hybrid Upload Strategy** - Handle files >4.5MB with direct Blob uploads
-4. **Keep Existing Repo Location** - Already at `schoerke/website`
+## Collections Using Media (To Update)
 
-## Documents to Review Before Starting
+| Collection  | Field        | Type     | New Target   |
+|-------------|--------------|----------|--------------|
+| Artists     | image        | Image    | images       |
+| Artists     | biography    | PDF      | documents    |
+| Artists     | gallery      | ZIP      | documents    |
+| Posts       | image        | Image    | images       |
+| Employees   | image        | Image    | images       |
+| Recordings  | coverArt     | Image    | images       |
 
-- **Design:** `docs/plans/2025-11-29-vercel-blob-migration-design.md`
-- **ADR:** `docs/adr/2025-11-29-storage-migration-vercel-blob.md`
+## Important Notes
 
-## Rollback Plan Available
+### Media Collection Strategy
+- **Keep during migration** - Safety net for development
+- **Remove after verification** - Only when all tests pass
+- Not a special Payload collection, safe to delete after migration
 
-Complete rollback procedures documented in design doc (Section 8) if anything goes wrong.
+### Hybrid Upload Strategy
+- Files ≤4.5MB: Upload via Payload API (server upload)
+- Files >4.5MB: Direct Blob upload + manual record creation
+- Required due to Vercel serverless function body size limit
 
----
+### Environment Variables
+- **Added:** `BLOB_READ_WRITE_TOKEN` (Vercel auto-generated)
+- **Keep for now:** Cloudflare R2 env vars (for existing Media collection)
+- **Remove later:** R2 env vars after Media collection removed
 
-**Ready to implement!** 🚀
+## Next Steps
+
+1. **Continue with Phase 3:** Update collection relationships in Artists, Posts, Employees, Recordings
+2. **Review changes:** Ensure all fields updated correctly
+3. **Test TypeScript:** Verify no compilation errors
+4. **Proceed to Phase 4:** Update migration scripts
+
+## Rollback Plan
+
+If issues arise:
+1. Git checkout to previous commit
+2. Existing database still uses Media collection (unchanged)
+3. Cloudflare R2 files still intact (not deleted)
+4. Zero data loss risk
+
+## Questions Resolved
+
+**Q: Is Media collection special to Payload?**
+A: No, it's just a regular collection we created. Safe to remove after migration.
+
+**Q: Should we remove Media collection now or later?**
+A: Keep during migration for safety, remove only after successful verification.
+
+**Q: What if migration fails?**
+A: Keep Media collection, rollback code changes, existing data remains intact.
