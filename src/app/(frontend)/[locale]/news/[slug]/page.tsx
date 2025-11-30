@@ -1,7 +1,7 @@
 import BackButton from '@/components/ui/BackButton'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Link } from '@/i18n/navigation'
-import type { Employee, Media } from '@/payload-types'
+import type { Employee, Image as PayloadImage } from '@/payload-types'
 import { getDefaultAvatar } from '@/services/media'
 import { getFilteredPosts, getPostBySlug } from '@/services/post'
 import { isEmployee } from '@/utils/collection'
@@ -10,11 +10,11 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
-function isMedia(obj: unknown): obj is Media {
+function isMedia(obj: unknown): obj is PayloadImage {
   return typeof obj === 'object' && obj !== null && 'url' in obj
 }
 
-function getImageUrl(img: Media | null | undefined): string {
+function getImageUrl(img: PayloadImage | null | undefined): string {
   return img?.url || ''
 }
 
@@ -56,7 +56,8 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
   // Enable static rendering
   setRequestLocale(locale)
 
-  const [post, defaultImage] = await Promise.all([getPostBySlug(slug, locale), getDefaultAvatar()])
+  const post = await getPostBySlug(slug, locale)
+  const defaultImagePath = getDefaultAvatar()
 
   if (!post) return notFound()
 
@@ -64,7 +65,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
 
   const { title, content, createdAt, image, createdBy } = post
   const postImage = isMedia(image) ? image : null
-  const imageUrl = getImageUrl(postImage) || getImageUrl(defaultImage)
+  const imageUrl = getImageUrl(postImage) || defaultImagePath
   const author = isEmployee(createdBy) ? (createdBy as Employee) : null
 
   return (

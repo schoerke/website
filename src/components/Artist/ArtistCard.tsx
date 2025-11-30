@@ -1,7 +1,7 @@
 'use client'
 
 import { Link } from '@/i18n/navigation'
-import type { Media } from '@/payload-types'
+import type { Image as PayloadImage } from '@/payload-types'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
@@ -9,11 +9,11 @@ interface ArtistCardProps {
   id: string
   name: string
   instrument?: string[]
-  image?: number | null | Media
+  image?: number | null | PayloadImage
   slug?: string
 }
 
-function getImageUrl(img: Media | null | undefined): string {
+function getImageUrl(img: PayloadImage | null | undefined): string {
   if (!img?.url || img.url === 'null' || img.url.includes('/null')) return '/placeholder.jpg'
   return img.url
 }
@@ -22,7 +22,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }
   const t = useTranslations('custom.instruments')
 
   // If image is a number or null, treat as missing
-  const img = typeof image === 'object' && image !== null ? (image as Media) : null
+  const img = typeof image === 'object' && image !== null ? (image as PayloadImage) : null
   const imageUrl = getImageUrl(img)
 
   // Translate instruments

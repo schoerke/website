@@ -1,5 +1,5 @@
 import PayloadRichText from '@/components/ui/PayloadRichText'
-import { Employee, Media } from '@/payload-types'
+import { Employee, Image as PayloadImage } from '@/payload-types'
 import { getEmployees } from '@/services/employee'
 import { getPageBySlug } from '@/services/page'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -9,7 +9,7 @@ import Image from 'next/image'
 export const dynamic = 'force-dynamic'
 
 const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, mobile }) => {
-  const img = image as Media | undefined
+  const img = image as PayloadImage | undefined
   const imageUrl = img?.url || '/placeholder.jpg'
 
   return (

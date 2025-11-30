@@ -1,7 +1,7 @@
 'use client'
 
 import { Link } from '@/i18n/navigation'
-import type { Media, Post } from '@/payload-types'
+import type { Image as PayloadImage, Post } from '@/payload-types'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
@@ -9,15 +9,16 @@ interface NewsFeedListProps {
   posts: Post[]
   emptyMessage: string
   category?: 'news' | 'projects'
-  defaultImage?: Media | null
+  defaultImage?: string | null
 }
 
-function getImageUrl(img: Media | null | undefined, defaultImg: Media | null | undefined): string {
+function getImageUrl(img: PayloadImage | null | undefined, defaultImg: string | null | undefined): string {
   // Use post's image if available and valid
-  if (img?.url && img.url !== 'null' && !img.url.includes('/null')) return img.url
+  if (img && typeof img === 'object' && img.url && img.url !== 'null' && !img.url.includes('/null'))
+    return img.url
 
-  // Fall back to default image if valid
-  if (defaultImg?.url && defaultImg.url !== 'null' && !defaultImg.url.includes('/null')) return defaultImg.url
+  // Fall back to default image string path
+  if (defaultImg && typeof defaultImg === 'string') return defaultImg
 
   // Final fallback to placeholder
   return '/placeholder.jpg'
@@ -72,7 +73,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
   return (
     <div className="divide-y divide-gray-200">
       {posts.map((post) => {
-        const img = typeof post.image === 'object' && post.image !== null ? (post.image as Media) : null
+        const img = typeof post.image === 'object' && post.image !== null ? (post.image as PayloadImage) : null
         const imageUrl = getImageUrl(img, defaultImage)
         const preview = extractTextPreview(post.content)
         const postPath = getPostPath(post)
