@@ -111,12 +111,14 @@
     "overrides": {
       "@types/react": "npm:types-react@19.0.0-rc.1",
       "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
-      "dompurify": ">=3.2.4"
+      "dompurify": ">=3.2.4",
+      "baseline-browser-mapping": "2.9.0-beta2"
     }
   },
   "overrides": {
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
-    "dompurify": ">=3.2.4"
+    "dompurify": ">=3.2.4",
+    "baseline-browser-mapping": "2.9.0-beta2"
   }
 }
