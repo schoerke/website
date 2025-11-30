@@ -49,7 +49,7 @@ export const Artists: CollectionConfig = {
     },
     {
       name: 'image',
-      relationTo: 'media',
+      relationTo: 'images',
       type: 'upload',
       label: {
         en: 'Featured Image',
@@ -315,7 +315,7 @@ export const Artists: CollectionConfig = {
                     en: 'Biography PDF Download',
                     de: 'Biographie PDF Download',
                   },
-                  relationTo: 'media',
+                  relationTo: 'documents',
                 },
                 {
                   name: 'galleryZIP',
@@ -324,7 +324,7 @@ export const Artists: CollectionConfig = {
                     en: 'Gallery ZIP Download',
                     de: 'Galerie ZIP Download',
                   },
-                  relationTo: 'media',
+                  relationTo: 'documents',
                 },
               ],
             },

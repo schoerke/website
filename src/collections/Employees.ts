@@ -71,7 +71,7 @@ export const Employees: CollectionConfig = {
       },
       name: 'image',
       // required: true,
-      relationTo: 'media',
+      relationTo: 'images',
       type: 'upload',
     },
     {
