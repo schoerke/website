@@ -55,7 +55,7 @@
     "kbar": "0.1.0-beta.48",
     "libsql": "^0.5.22",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.553.0",
+    "lucide-react": "^0.555.0",
     "mime": "^4.0.7",
     "next": "16.0.3",
     "next-intl": "^4.5.3",
