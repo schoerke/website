@@ -5,139 +5,157 @@
 ## Quick Reference
 
 - **Design Doc:** `docs/plans/2025-11-29-vercel-blob-migration-design.md`
-- **Branch:** `feature/vercel-blob-migration`
-- **Status:** Phase 4 Complete (Migration Scripts Updated)
+- **Status:** ✅ **Complete (Artists & Employees)**
 
-## Progress Tracker
+## Current State
 
-### Phase 1: Prerequisites ✅
+### ✅ Completed
 
-- [x] Client Vercel account created
-- [x] Vercel project imported (`schoerke/website`)
-- [x] Vercel Blob storage enabled
-- [x] `BLOB_READ_WRITE_TOKEN` obtained
-- [x] Dependencies installed (`@payloadcms/storage-vercel-blob`, `@vercel/blob`)
-- [x] All Payload packages upgraded to 3.65.0
+**Infrastructure:**
 
-### Phase 2: Collection Schema Updates ✅
+- Vercel Blob storage enabled with `BLOB_READ_WRITE_TOKEN`
+- Collections created: `Images` (31 records), `Documents` (45 records)
+- Old `Media` collection removed from codebase
+- Cloudflare R2 plugin removed from config
 
-- [x] Created `src/collections/Images.ts` with Vercel Blob config
-- [x] Created `src/collections/Documents.ts` with Vercel Blob config
-- [x] Updated `src/payload.config.ts` (registered collections, added vercelBlobStorage plugin)
-- [x] Dependencies clean install (resolved version mismatches)
-- [x] Dev server tested and working
-- [x] Design document updated with Media collection strategy
+**Migrations:**
 
-**Key Decision:** Keep existing `Media` collection during migration for safety. Remove only after verification.
+- **Artists:** 23/23 complete with images and documents from WordPress
+- **Employees:** 4/4 complete with images from WordPress
+- All images and documents uploaded to Vercel Blob
+- Database relationships verified and working
 
-### Phase 3: Update Collection Relationships ✅
+**Code:**
 
-- [x] Update `src/collections/Artists.ts` (3 fields: image, biography PDF, gallery ZIP)
-- [x] Update `src/collections/Posts.ts` (1 field: featured image)
-- [x] Update `src/collections/Employees.ts` (1 field: headshot)
-- [x] Update `src/collections/Recordings.ts` (1 field: cover art)
+- All collections updated to use `images` and `documents`:
+  - `Artists.ts`: image → `images`, PDFs/ZIPs → `documents`
+  - `Posts.ts`: image → `images`
+  - `Employees.ts`: image → `images`
+  - `Recordings.ts`: coverArt → `images`
+- Migration scripts updated for Vercel Blob hybrid upload
 
-### Phase 4: Update Migration Scripts ✅
+### 🔄 Pending (Not Required for Vercel Migration)
 
-- [x] Rewrite `scripts/wordpress/utils/uploadLocalMedia.ts`
-  - [x] Implement hybrid upload strategy (≤4.5MB via Payload, >4.5MB direct Blob)
-  - [x] Route by MIME type (images vs documents)
-  - [x] Generate separate ID maps: `images-id-map.json`, `documents-id-map.json`
-  - [x] Create dry-run test script (`testUploadDryRun.ts`)
-- [x] Update `scripts/wordpress/migrateArtists.ts`
-  - [x] Load both ID maps (images and documents)
-  - [x] Update `findMediaByFilename()` to accept collection parameter
-  - [x] Route images to `'images'` collection (use `alt` field)
-  - [x] Route PDFs/ZIPs to `'documents'` collection (use `title` field)
-  - [x] Test with local database (dry-run successful)
-- [x] Document `scripts/wordpress/migratePosts.ts`
-  - [x] Add JSDoc with media handling pattern
-  - [x] Note: Full implementation needed separately (skeleton only)
+**WordPress Migrations:**
 
-**Commits:**
+- Posts migration script needs work before running
+- Recordings migration script needs work before running
 
-- `819445c` - Update uploadLocalMedia for Vercel Blob with hybrid strategy
-- `2a95f4a` - Update migrateArtists for new images/documents collections
-- `b628f83` - Document migratePosts.ts media handling for Vercel Blob
+**Future Work:**
 
-### Phase 5: Execute Migration ⏳
+- Setup AWS S3 backup automation (waiting for client bucket)
+- Update documentation to reflect completed state
 
-- [ ] Drop database (fresh start)
-- [ ] Upload media to Vercel Blob
-- [ ] Migrate artists
-- [ ] Migrate posts
-- [ ] Verify in admin panel
+## Migration Details
 
-### Phase 6: Cleanup ⏳
+### Images Collection (31 records)
 
-- [ ] Verify all images migrated
-- [ ] Verify all documents migrated
-- [ ] Test frontend display
-- [ ] Test document downloads
-- [ ] Remove `src/collections/Media.ts`
-- [ ] Remove `Media` from `payload.config.ts`
-- [ ] Remove `s3Storage` plugin (Cloudflare R2)
+- Artist profile photos (23)
+- Employee headshots (4)
+- Additional artist images (4)
+- Uploaded via Vercel Blob hybrid strategy
 
-### Phase 7: Setup Backups ⏳
+### Documents Collection (45 records)
 
-- [ ] Create `scripts/backupBlobToS3.js`
-- [ ] Create `.github/workflows/backup-vercel-blob.yml`
-- [ ] Test backup script manually
-- [ ] Verify GitHub Actions workflow
-
-## Collections Using Media (To Update)
-
-| Collection | Field     | Type  | New Target |
-| ---------- | --------- | ----- | ---------- |
-| Artists    | image     | Image | images     |
-| Artists    | biography | PDF   | documents  |
-| Artists    | gallery   | ZIP   | documents  |
-| Posts      | image     | Image | images     |
-| Employees  | image     | Image | images     |
-| Recordings | coverArt  | Image | images     |
-
-## Important Notes
-
-### Media Collection Strategy
-
-- **Keep during migration** - Safety net for development
-- **Remove after verification** - Only when all tests pass
-- Not a special Payload collection, safe to delete after migration
+- Artist PDFs (biographies, press kits)
+- Artist ZIP files (media galleries)
+- All files uploaded successfully to Vercel Blob
 
 ### Hybrid Upload Strategy
 
-- Files ≤4.5MB: Upload via Payload API (server upload)
-- Files >4.5MB: Direct Blob upload + manual record creation
-- Required due to Vercel serverless function body size limit
+Successfully implemented for files >4.5MB:
 
-### Environment Variables
+- Small files (≤4.5MB): Upload via Payload API (server upload)
+- Large files (>4.5MB): Direct Blob upload + manual record creation
+- All 60MB ZIP files handled correctly
 
-- **Added:** `BLOB_READ_WRITE_TOKEN` (Vercel auto-generated)
-- **Keep for now:** Cloudflare R2 env vars (for existing Media collection)
-- **Remove later:** R2 env vars after Media collection removed
+## Database: Remote Turso (`ksschoerke-development`)
 
-## Next Steps
+| Collection | Records | Status                    |
+| ---------- | ------- | ------------------------- |
+| Artists    | 23      | ✅ Complete               |
+| Employees  | 4       | ✅ Complete               |
+| Images     | 31      | ✅ Complete               |
+| Documents  | 45      | ✅ Complete               |
+| Posts      | 0       | ⏸️ Pending script updates |
+| Recordings | 0       | ⏸️ Pending script updates |
 
-1. **Continue with Phase 3:** Update collection relationships in Artists, Posts, Employees, Recordings
-2. **Review changes:** Ensure all fields updated correctly
-3. **Test TypeScript:** Verify no compilation errors
-4. **Proceed to Phase 4:** Update migration scripts
+## Key Learnings
 
-## Rollback Plan
+### Image ID Mapping Issues
 
-If issues arise:
+**Problem:** Foreign key constraint errors during employee migration.
 
-1. Git checkout to previous commit
-2. Existing database still uses Media collection (unchanged)
-3. Cloudflare R2 files still intact (not deleted)
-4. Zero data loss risk
+**Root Cause:** `media-id-map.json` contained outdated IDs that didn't match actual database records.
 
-## Questions Resolved
+**Solution:**
 
-**Q: Is Media collection special to Payload?** A: No, it's just a regular collection we created. Safe to remove after
-migration.
+- Upload missing images to Vercel Blob
+- Update `media-id-map.json` with correct Payload IDs
+- Always verify image IDs exist in database before migration
 
-**Q: Should we remove Media collection now or later?** A: Keep during migration for safety, remove only after successful
-verification.
+**Prevention:** Added to AGENTS.md - always verify database environment and check foreign key relationships before
+migrations.
 
-**Q: What if migration fails?** A: Keep Media collection, rollback code changes, existing data remains intact.
+### WordPress Attachment Resolution
+
+**Problem:** Employee thumbnail IDs from WordPress XML didn't resolve to files.
+
+**Root Cause:**
+
+- Some attachment IDs referenced in WordPress XML weren't in the exported attachment list
+- Files existed locally but needed manual upload
+
+**Solution:**
+
+- Check `media-urls.json` for all referenced attachments
+- Upload missing files manually to Vercel Blob
+- Update migration map before running live migration
+
+## Environment Variables
+
+**Active:**
+
+- `BLOB_READ_WRITE_TOKEN` - Vercel Blob (Images + Documents)
+- `DATABASE_URI` - Turso (remote)
+- `DATABASE_AUTH_TOKEN` - Turso auth
+
+**Removed:**
+
+- `CLOUDFLARE_S3_BUCKET` - No longer needed
+- `CLOUDFLARE_S3_ACCESS_KEY` - No longer needed
+- `CLOUDFLARE_SECRET` - No longer needed
+- `CLOUDFLARE_S3_API_ENDPOINT` - No longer needed
+- `NEXT_PUBLIC_S3_HOSTNAME` - No longer needed
+
+## Files Modified This Session
+
+**Removed:**
+
+- `src/collections/Media.ts` - Old R2-based media collection
+- Cloudflare R2 plugin configuration from `payload.config.ts`
+
+**Updated:**
+
+- `scripts/wordpress/data/media-id-map.json` - Added employee image IDs (28-31)
+- `scripts/wordpress/migrateEmployees.ts` - Fixed dotenv import
+
+**Created:**
+
+- Employee images uploaded to Vercel Blob (IDs 28-31)
+
+## Success Criteria
+
+- ✅ All artist images migrated to Vercel Blob
+- ✅ All artist documents (PDFs, ZIPs) migrated to Vercel Blob
+- ✅ All employee images migrated to Vercel Blob
+- ✅ Admin panel thumbnails work (no 500 errors)
+- ✅ Database relationships correct (no foreign key errors)
+- ✅ Old Media collection removed from codebase
+- ✅ Cloudflare R2 configuration removed
+
+## Related Documents
+
+- [Design Document](plans/2025-11-29-vercel-blob-migration-design.md)
+- [ADR: Storage Migration](adr/2025-11-29-storage-migration-vercel-blob.md)
+- [Database Backup Strategy](adr/2025-11-23-database-backup-strategy.md)

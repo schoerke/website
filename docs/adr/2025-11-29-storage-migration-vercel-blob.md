@@ -1,16 +1,18 @@
 # Architectural Decision Record: Storage Migration to Vercel Blob
 
 **Date:** 2025-11-29  
-**Status:** APPROVED  
+**Status:** ✅ IMPLEMENTED (Artists & Employees Complete)  
 **Supersedes:** [2025-10-26-cloudflare-r2-image-storage-design.md](../plans/2025-10-26-cloudflare-r2-image-storage-design.md)
 
 ## Context
 
-We currently store media files (images, PDFs, ZIPs) in Cloudflare R2 using Payload CMS's S3 storage adapter. This setup has encountered several critical issues on Vercel's serverless platform:
+We currently store media files (images, PDFs, ZIPs) in Cloudflare R2 using Payload CMS's S3 storage adapter. This setup
+has encountered several critical issues on Vercel's serverless platform:
 
 ### Problems with Current Approach
 
-1. **Admin panel thumbnails broken** - Known Payload CMS bug (#14128) causes `staticHandler` to fail on serverless environments
+1. **Admin panel thumbnails broken** - Known Payload CMS bug (#14128) causes `staticHandler` to fail on serverless
+   environments
 2. **500 errors on preview deployments** - Streaming issues in serverless functions
 3. **Serverless incompatibility** - R2 adapter not optimized for Vercel's execution model
 4. **Official guidance** - Payload explicitly recommends Vercel Blob (not S3/R2) for Vercel deployments
@@ -40,7 +42,11 @@ We will **migrate from Cloudflare R2 to Vercel Blob** with the following archite
 - **Vercel Account:** New separate `schoerke` account (Hobby plan, free)
 - **Isolation:** Dedicated 100GB Blob storage quota, separate from other projects
 
-**Rationale for Separate Vercel Account:** Instead of creating a paid Pro team ($20/month) under the existing `zeitchef` Vercel account, we create a new free Hobby account. This provides the same isolation benefits (dedicated 100GB Blob quota) at zero cost. Vercel ToS allows multiple personal accounts, and this is a legitimate use case for separating projects.
+**Rationale for Separate Vercel Account:** Instead of creating a paid Pro team ($20/month) under the existing `zeitchef`
+Vercel account, we create a new free Hobby account. This provides the same isolation benefits (dedicated 100GB Blob
+quota) at zero cost. Vercel ToS allows multiple personal accounts, and this is a legitimate use case for separating
+projects.
+
 - **Backup** → AWS S3 (automated daily backups via GitHub Actions)
 
 ### Organizational Structure
@@ -61,6 +67,7 @@ Split the monolithic `media` collection into two domain-specific collections:
 ### Why Vercel Blob?
 
 **Technical:**
+
 - Official Payload recommendation for Vercel deployments
 - Native serverless compatibility (no streaming issues)
 - Fixes bug #14128 (admin panel thumbnails)
@@ -68,12 +75,14 @@ Split the monolithic `media` collection into two domain-specific collections:
 - No custom domain/DNS configuration required
 
 **Operational:**
+
 - Simpler architecture (one storage system vs two)
 - Zero configuration (auto-provision on Vercel)
 - Unified developer experience
 - Less credential management
 
 **Cost:**
+
 - Free under 100GB (currently ~12.5GB usage = 8x headroom)
 - No egress fees
 - Cost increase negligible (~$1-9/month for S3 backups only)
@@ -81,11 +90,13 @@ Split the monolithic `media` collection into two domain-specific collections:
 ### Why Separate Collections?
 
 **Code Quality:**
+
 - Clear domain separation (images vs documents)
 - Type-safe relationships (artist.photo → images, artist.pressKit → documents)
 - Explicit intent in code
 
 **User Experience:**
+
 - Admin panel clarity (separate sections)
 - Different upload workflows (images = thumbnails, documents = raw)
 - Better organization at scale
@@ -93,16 +104,19 @@ Split the monolithic `media` collection into two domain-specific collections:
 ### Why Not Keep R2?
 
 **Complexity:**
+
 - R2 + Vercel Blob = two storage systems to maintain
 - Dual backups required
 - More failure points
 
 **Technical Issues:**
+
 - Doesn't solve serverless compatibility problems
 - Admin panel thumbnails still broken
 - Workarounds add complexity
 
 **Cost:**
+
 - Savings minimal (~$0.10/month vs $0)
 - Not worth engineering time and ongoing maintenance
 
@@ -117,32 +131,60 @@ Split the monolithic `media` collection into two domain-specific collections:
 ### Rejected Alternatives
 
 **Option A: Keep R2, fix with CloudFlare Workers**
+
 - ❌ More complexity (Workers + R2 + custom domain)
 - ❌ Doesn't fix admin panel issues
 - ❌ Still requires workarounds for serverless
 
 **Option B: AWS S3 for documents, Vercel Blob for images**
+
 - ❌ Two storage systems = 2x complexity
 - ❌ Still under 100GB free tier with unified approach
 - ❌ Cost savings negligible
 
 **Option C: Keep unified media collection**
+
 - ❌ Less clear domain separation
 - ❌ Mixed concerns in code (images + documents together)
 - ❌ Harder to optimize per file type
 
 ## Implementation
 
-**See detailed design:** [2025-11-29-vercel-blob-migration-design.md](../plans/2025-11-29-vercel-blob-migration-design.md)
+**Status: ✅ Completed 2025-11-30 (Artists & Employees)**
 
-### Key Components
+### Infrastructure Complete
 
-1. **GitHub/Vercel setup** - New org and team for isolation
-2. **Collection schema** - Two new collections (Images, Documents)
-3. **Payload config** - Switch from `@payloadcms/storage-s3` to `@payloadcms/storage-vercel-blob`
-4. **Migration scripts** - Hybrid upload strategy with MIME type routing
-5. **Backup automation** - GitHub Actions → S3 daily backups
-6. **Documentation updates** - Mark R2 docs as superseded
+- ✅ Vercel Blob storage configured with `BLOB_READ_WRITE_TOKEN`
+- ✅ Created `Images` collection (31 records)
+- ✅ Created `Documents` collection (45 records)
+- ✅ Removed old `Media` collection from codebase
+- ✅ Removed Cloudflare R2 plugin (`@payloadcms/storage-s3`)
+- ✅ Cleaned up environment variables (removed all R2 vars)
+
+### Migrations Completed
+
+- ✅ **Artists:** 23/23 migrated with images and documents from WordPress
+- ✅ **Employees:** 4/4 migrated with images from WordPress
+- ✅ All files uploaded to Vercel Blob using hybrid upload strategy
+- ✅ Database relationships verified (no foreign key errors)
+
+### Collection Updates Complete
+
+All collections updated to use `images` and `documents`:
+
+- `Artists.ts`: image → `images`, PDFs/ZIPs → `documents`
+- `Posts.ts`: image → `images`
+- `Employees.ts`: image → `images`
+- `Recordings.ts`: coverArt → `images`
+
+### Remaining (Not Required for Vercel Migration)
+
+- Posts migration (script needs work before running)
+- Recordings migration (script needs work before running)
+- AWS S3 backup automation (waiting for client bucket setup)
+
+**See detailed design:**
+[2025-11-29-vercel-blob-migration-design.md](../plans/2025-11-29-vercel-blob-migration-design.md)
 
 ## Consequences
 
