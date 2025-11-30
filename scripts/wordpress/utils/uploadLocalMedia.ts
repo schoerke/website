@@ -1,20 +1,26 @@
 /**
  * Upload Local Media Files with Hybrid Upload Strategy
  *
- * Uploads locally downloaded WordPress media files to Payload CMS using the new
- * Images and Documents collections with Vercel Blob storage.
+ * Uploads locally downloaded WordPress media files AND core application assets
+ * to Payload CMS using the Images and Documents collections with Vercel Blob storage.
  *
  * This script:
- * 1. Reads the list of media files from media-urls.json
- * 2. Routes by MIME type to appropriate collection (images vs documents)
- * 3. Uses hybrid upload strategy based on file size:
+ * 1. Uploads core application assets (logo, logo icon, default avatar) from assets/
+ * 2. Reads the list of WordPress media files from media-urls.json
+ * 3. Routes by MIME type to appropriate collection (images vs documents)
+ * 4. Uses hybrid upload strategy based on file size:
  *    - Files ≤4.5MB: Upload via Payload API (server upload)
  *    - Files >4.5MB: Upload directly to Vercel Blob (bypass 4.5MB limit)
- * 4. Creates separate filename→media ID mappings for each collection
- * 5. Saves mappings to images-id-map.json and documents-id-map.json
+ * 5. Creates separate filename→media ID mappings for each collection
+ * 6. Saves mappings to images-id-map.json and documents-id-map.json
  *
  * Usage:
  *   pnpm tsx scripts/wordpress/utils/uploadLocalMedia.ts
+ *
+ * Prerequisites:
+ *   - Core assets must exist in assets/ directory
+ *     (if missing, restore from git: git restore assets/)
+ *   - WordPress media files must be downloaded to data/downloaded-media/
  *
  * Environment Variables:
  *   DATABASE_URI - Database connection string
@@ -22,17 +28,18 @@
  *   BLOB_READ_WRITE_TOKEN - Vercel Blob storage token
  *
  * @see scripts/wordpress/utils/extractMediaUrls.ts - Generates media-urls.json
- * @see scripts/wordpress/utils/downloadMedia.sh - Downloads files locally
+ * @see scripts/wordpress/utils/downloadMedia.sh - Downloads WordPress files locally
  * @see scripts/wordpress/migrateArtists.ts - Uses ID maps for migration
  */
 
-import config from '@/payload.config'
 import { put } from '@vercel/blob'
 import 'dotenv/config'
 import fs from 'fs/promises'
 import path from 'path'
 import { getPayload } from 'payload'
 import { fileURLToPath } from 'url'
+import config from '../../../src/payload.config.js'
+import { cleanWordPressFilename } from './fieldMappers.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -104,9 +111,10 @@ async function uploadViaPayload(
       size: buffer.length,
     }
 
-    const data = collection === 'images' 
-      ? { alt: altText }
-      : { title: filename, description: `Migrated from WordPress: ${filename}` }
+    const data =
+      collection === 'images'
+        ? { alt: altText }
+        : { title: filename, description: `Migrated from WordPress: ${filename}` }
 
     const uploaded = await payload.create({
       collection,
@@ -137,32 +145,35 @@ async function uploadViaBlob(
   try {
     // Upload directly to Vercel Blob
     const buffer = await fs.readFile(filePath)
-    
+
     const blob = await put(filename, buffer, {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN,
       contentType: mimeType,
+      addRandomSuffix: false,
+      allowOverwrite: true,
     })
 
     console.log(`  📤 Uploaded to Blob: ${filename} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`)
 
     // Create Payload record manually (without file upload)
-    const data = collection === 'images'
-      ? {
-          alt: altText,
-          filename,
-          mimeType,
-          filesize: fileSize,
-          url: blob.url,
-        }
-      : {
-          title: filename,
-          description: `Migrated from WordPress: ${filename}`,
-          filename,
-          mimeType,
-          fileSize,
-          url: blob.url,
-        }
+    const data =
+      collection === 'images'
+        ? {
+            alt: altText,
+            filename,
+            mimeType,
+            filesize: fileSize,
+            url: blob.url,
+          }
+        : {
+            title: filename,
+            description: `Migrated from WordPress: ${filename}`,
+            filename,
+            mimeType,
+            fileSize,
+            url: blob.url,
+          }
 
     const record = await payload.create({
       collection,
@@ -225,6 +236,71 @@ async function uploadLocalFile(
 }
 
 /**
+ * Upload core application assets (logo, logo icon, default avatar)
+ */
+async function uploadCoreAssets(
+  payload: any,
+  imagesIdMap: MediaIdMap,
+  stats: UploadStats,
+): Promise<void> {
+  console.log('🎨 Uploading core application assets...\n')
+
+  const coreAssets = [
+    { filename: 'default-avatar.webp', alt: 'Default Avatar', path: 'assets/default-avatar.webp' },
+    { filename: 'logo_icon.png', alt: 'KSSchoerke Logo Icon', path: 'assets/logo_icon.png' },
+    { filename: 'logo.png', alt: 'KSSchoerke Logo', path: 'assets/logo.png' },
+  ]
+
+  for (const asset of coreAssets) {
+    const filePath = path.join(process.cwd(), asset.path)
+
+    // Check if file exists
+    try {
+      await fs.access(filePath)
+    } catch {
+      console.warn(
+        `  ⚠️  Core asset not found: ${asset.filename} (${asset.path})` +
+          `\n      If needed, restore from git: git restore ${asset.path}`,
+      )
+      continue
+    }
+
+    // Check if already exists in database
+    const existing = await payload.find({
+      collection: 'images',
+      where: { filename: { equals: asset.filename } },
+      limit: 1,
+    })
+
+    if (existing.totalDocs > 0) {
+      const existingDoc = existing.docs[0]
+      console.log(`  ℹ️  Core asset already exists: ${asset.filename} (ID: ${existingDoc.id})`)
+      const docId = typeof existingDoc.id === 'number' ? existingDoc.id : parseInt(String(existingDoc.id), 10)
+      imagesIdMap[asset.filename] = docId
+      stats.skipCount++
+      continue
+    }
+
+    // Upload the core asset
+    const result = await uploadLocalFile(payload, filePath, asset.filename, asset.alt)
+
+    if (result.id !== null) {
+      imagesIdMap[asset.filename] = result.id
+      stats.successCount++
+      if (result.uploadMethod === 'blob') {
+        stats.largeFileCount++
+      } else {
+        stats.smallFileCount++
+      }
+    } else {
+      stats.errorCount++
+    }
+  }
+
+  console.log()
+}
+
+/**
  * Main execution
  */
 async function main() {
@@ -235,19 +311,10 @@ async function main() {
 
   const payload = await getPayload({ config })
 
-  // Read media URLs list
-  const mediaUrlsPath = path.join(__dirname, 'data', 'media-urls.json')
-  const mediaUrlsContent = await fs.readFile(mediaUrlsPath, 'utf-8')
-  const mediaUrls: MediaUrl[] = JSON.parse(mediaUrlsContent)
-
-  console.log(`Found ${mediaUrls.length} media files to upload\n`)
-
-  // Initialize mappings
+  // Initialize mappings and stats
   const imagesIdMap: MediaIdMap = {}
   const documentsIdMap: MediaIdMap = {}
-  const downloadedDir = path.join(__dirname, 'data', 'downloaded-media')
 
-  // Upload stats
   const stats: UploadStats = {
     successCount: 0,
     skipCount: 0,
@@ -256,9 +323,24 @@ async function main() {
     largeFileCount: 0,
   }
 
+  // Upload core application assets first
+  await uploadCoreAssets(payload, imagesIdMap, stats)
+
+  // Read media URLs list
+  const mediaUrlsPath = path.join(__dirname, '..', 'data', 'media-urls.json')
+  const mediaUrlsContent = await fs.readFile(mediaUrlsPath, 'utf-8')
+  const mediaUrls: MediaUrl[] = JSON.parse(mediaUrlsContent)
+
+  console.log(`📋 Found ${mediaUrls.length} WordPress media files to upload\n`)
+
+  const downloadedDir = path.join(__dirname, '..', 'data', 'downloaded-media')
+
   // Upload each file
   for (const mediaItem of mediaUrls) {
-    const { filename } = mediaItem
+    const { filename: originalFilename } = mediaItem
+
+    // Clean WordPress timestamp postfixes
+    const filename = cleanWordPressFilename(originalFilename)
 
     // Decode URL-encoded filename for filesystem lookup
     const decodedFilename = decodeURIComponent(filename)
@@ -273,6 +355,46 @@ async function main() {
       continue
     }
 
+    // Determine collection from MIME type
+    const mimeType = getMimeType(decodedFilename)
+    const collection = getCollectionForMimeType(mimeType)
+
+    // Check if already exists in database (idempotency)
+    try {
+      const existing = await payload.find({
+        collection,
+        where: {
+          filename: { equals: decodedFilename },
+        },
+        limit: 1,
+      })
+
+      if (existing.totalDocs > 0) {
+        const existingDoc = existing.docs[0]
+        console.log(`  ℹ️  Already exists in ${collection}: ${decodedFilename} (ID: ${existingDoc.id})`)
+
+        // Store mapping using BOTH original and cleaned filenames (ensure ID is a number)
+        const docId = typeof existingDoc.id === 'number' ? existingDoc.id : parseInt(String(existingDoc.id), 10)
+        if (collection === 'images') {
+          imagesIdMap[originalFilename] = docId
+          if (originalFilename !== filename) {
+            imagesIdMap[filename] = docId
+          }
+        } else {
+          documentsIdMap[originalFilename] = docId
+          if (originalFilename !== filename) {
+            documentsIdMap[filename] = docId
+          }
+        }
+
+        stats.skipCount++
+        continue
+      }
+    } catch (error) {
+      // If check fails, continue with upload attempt
+      console.warn(`  ⚠️  Could not check existing record: ${error instanceof Error ? error.message : error}`)
+    }
+
     // Generate temporary alt/title text
     const altText = decodedFilename
 
@@ -280,11 +402,18 @@ async function main() {
     const result = await uploadLocalFile(payload, filePath, decodedFilename, altText)
 
     if (result.id !== null) {
-      // Store mapping in appropriate collection map
+      // Store mapping using BOTH original and cleaned filenames
+      // This ensures migrations can find files by either name
       if (result.collection === 'images') {
-        imagesIdMap[filename] = result.id
+        imagesIdMap[originalFilename] = result.id
+        if (originalFilename !== filename) {
+          imagesIdMap[filename] = result.id
+        }
       } else {
-        documentsIdMap[filename] = result.id
+        documentsIdMap[originalFilename] = result.id
+        if (originalFilename !== filename) {
+          documentsIdMap[filename] = result.id
+        }
       }
 
       // Track stats
@@ -301,9 +430,9 @@ async function main() {
   }
 
   // Save mappings to separate files
-  const imagesMapPath = path.join(__dirname, 'data', 'images-id-map.json')
-  const documentsMapPath = path.join(__dirname, 'data', 'documents-id-map.json')
-  
+  const imagesMapPath = path.join(__dirname, '..', 'data', 'images-id-map.json')
+  const documentsMapPath = path.join(__dirname, '..', 'data', 'documents-id-map.json')
+
   await fs.writeFile(imagesMapPath, JSON.stringify(imagesIdMap, null, 2))
   await fs.writeFile(documentsMapPath, JSON.stringify(documentsIdMap, null, 2))
 
@@ -311,15 +440,15 @@ async function main() {
   console.log(`  ✅ Successfully uploaded: ${stats.successCount}`)
   console.log(`  ❌ Errors: ${stats.errorCount}`)
   console.log(`  📋 Total processed: ${mediaUrls.length}\n`)
-  
+
   console.log('📊 Upload Method:')
   console.log(`  🔹 Small files (≤4.5MB via Payload): ${stats.smallFileCount}`)
   console.log(`  🔸 Large files (>4.5MB via Blob): ${stats.largeFileCount}\n`)
-  
+
   console.log('💾 ID Mappings saved:')
   console.log(`  🖼️  Images: ${imagesMapPath} (${Object.keys(imagesIdMap).length} files)`)
   console.log(`  📄 Documents: ${documentsMapPath} (${Object.keys(documentsIdMap).length} files)`)
-  
+
   console.log(`\nNext step: Run artist and post migrations with updated media linking`)
 
   process.exit(0)
