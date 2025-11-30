@@ -34,13 +34,18 @@
  * @see scripts/wordpress/utils/uploadLocalMedia.ts - Uploads media files first
  */
 
-import config from '@payload-config'
 import 'dotenv/config'
 import fs from 'fs/promises'
 import path from 'path'
 import { getPayload } from 'payload'
 import { fileURLToPath } from 'url'
-import { findEmployeeByName, mapInstruments, validateAndCleanURL } from './utils/fieldMappers'
+import config from '../../src/payload.config.js'
+import {
+  cleanWordPressFilename,
+  findEmployeeByName,
+  mapInstruments,
+  validateAndCleanURL,
+} from './utils/fieldMappers'
 import { htmlToLexical } from './utils/lexicalConverter'
 import { cleanBiographyHTML, extractFirstParagraph, parsePostMeta, parseWordPressXML } from './utils/xmlParser'
 
@@ -188,12 +193,15 @@ async function findMediaId(wpMediaId: string | number, dryRun: boolean = false):
   // Extract filename from URL
   try {
     const url = new URL(attachmentUrl)
-    const filename = url.pathname.split('/').pop()
+    let filename = url.pathname.split('/').pop()
 
     if (!filename) {
       console.warn(`  ⚠️  Could not extract filename from: ${attachmentUrl}`)
       return null
     }
+
+    // Clean WordPress timestamp postfixes
+    filename = cleanWordPressFilename(filename, CONFIG.verbose)
 
     // Artist featured images are always in 'images' collection
     return await findMediaByFilename(filename, 'images', dryRun)
@@ -275,9 +283,12 @@ async function mapArtistData(
       const pdfUrl = meta.biography_pdf.trim()
       if (pdfUrl) {
         try {
-          const filename = new URL(pdfUrl).pathname.split('/').pop()
-          const pdfId = await findMediaByFilename(filename, 'documents', dryRun)
-          if (pdfId) downloads.biographyPDF = pdfId
+          let filename = new URL(pdfUrl).pathname.split('/').pop()
+          if (filename) {
+            filename = cleanWordPressFilename(filename, CONFIG.verbose)
+            const pdfId = await findMediaByFilename(filename, 'documents', dryRun)
+            if (pdfId) downloads.biographyPDF = pdfId
+          }
         } catch (error) {
           console.warn(`  ⚠️  Invalid biography PDF URL: ${pdfUrl}`)
         }
@@ -288,9 +299,12 @@ async function mapArtistData(
       const zipUrl = meta.gallery_zip_link.trim()
       if (zipUrl) {
         try {
-          const filename = new URL(zipUrl).pathname.split('/').pop()
-          const zipId = await findMediaByFilename(filename, 'documents', dryRun)
-          if (zipId) downloads.galleryZIP = zipId
+          let filename = new URL(zipUrl).pathname.split('/').pop()
+          if (filename) {
+            filename = cleanWordPressFilename(filename, CONFIG.verbose)
+            const zipId = await findMediaByFilename(filename, 'documents', dryRun)
+            if (zipId) downloads.galleryZIP = zipId
+          }
         } catch (error) {
           console.warn(`  ⚠️  Invalid gallery ZIP URL: ${zipUrl}`)
         }
@@ -362,15 +376,22 @@ async function migrateArtist(
       })
 
       // Update DE locale with localized fields
+      // Use EN biography as fallback if DE biography is empty (avoids validation error)
+      const deBiographyUpdate = deData.biography.root.children.length > 0 ? deData.biography : enData.biography
+
       await payload.update({
         collection: 'artists',
         id: existing.docs[0].id,
         data: {
           quote: deData.quote,
-          biography: deData.biography,
+          biography: deBiographyUpdate,
         },
         locale: 'de',
       })
+
+      if (deData.biography.root.children.length === 0) {
+        console.warn(`  ⚠️  German biography empty, using English as fallback`)
+      }
 
       // Update metadata for artist image and downloads
       if (enData.image) {
@@ -416,17 +437,23 @@ async function migrateArtist(
         data: enData,
         locale: 'en',
       })
-
       // Update DE locale with localized fields
+      // Use EN biography as fallback if DE biography is empty (avoids validation error)
+      const deBiography = deData.biography.root.children.length > 0 ? deData.biography : enData.biography
+
       await payload.update({
         collection: 'artists',
         id: created.id,
         data: {
           quote: deData.quote,
-          biography: deData.biography,
+          biography: deBiography,
         },
         locale: 'de',
       })
+
+      if (deData.biography.root.children.length === 0) {
+        console.warn(`  ⚠️  German biography empty, using English as fallback`)
+      }
 
       // Update metadata for artist image and downloads
       if (enData.image) {

@@ -15,7 +15,8 @@ echo ""
 
 # Parse JSON and download each file
 cat "$MEDIA_JSON" | jq -r '.[] | .url' | while read -r url; do
-  filename=$(basename "$url" | sed 's/%20/ /g')
+  # Extract filename and clean WordPress timestamp postfixes
+  filename=$(basename "$url" | sed 's/%20/ /g' | sed -E 's/-e[0-9]+(-|\.)/\1/g')
   filepath="$MEDIA_DIR/$filename"
   
   if [ -f "$filepath" ]; then

@@ -13,13 +13,13 @@
  *
  * Usage:
  *   # Dry run (preview without changes)
- *   pnpm payload run tmp/migrateEmployees.ts -- --dry-run
+ *   pnpm tsx scripts/wordpress/migrateEmployees.ts --dry-run
  *
  *   # Full migration
- *   pnpm payload run tmp/migrateEmployees.ts
+ *   pnpm tsx scripts/wordpress/migrateEmployees.ts
  *
  *   # Verbose output
- *   pnpm payload run tmp/migrateEmployees.ts -- --verbose
+ *   pnpm tsx scripts/wordpress/migrateEmployees.ts --verbose
  *
  * Features:
  * - Parses contact info from content (title, email, phone, mobile)
@@ -32,12 +32,14 @@
  * @see docs/plans/wordpress-migration-strategy.md
  */
 
-import config from '@payload-config'
+import 'dotenv/config'
 import { XMLParser } from 'fast-xml-parser'
 import * as fs from 'fs/promises'
 import path from 'path'
 import { getPayload } from 'payload'
 import { fileURLToPath } from 'url'
+import config from '../../src/payload.config.js'
+import { cleanWordPressFilename } from './utils/fieldMappers.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -195,9 +197,11 @@ function findMediaId(thumbnailId: string | number | undefined): number | null {
     return null
   }
 
-  // Extract filename from URL
-  const filename = attachmentUrl.split('/').pop()
+  // Extract filename from URL and clean WordPress postfixes
+  let filename = attachmentUrl.split('/').pop()
   if (!filename) return null
+
+  filename = cleanWordPressFilename(filename, CONFIG.verbose)
 
   // Look up Payload media ID
   const mediaId = findMediaByFilename(filename)

@@ -164,7 +164,7 @@ function parseInlineHTML(html: string): LexicalNode[] {
         }
 
         // If this is a link, wrap in a link node
-        if (segment.link) {
+        if (segment.link && segment.link.trim()) {
           nodes.push(createLinkNode(segment.link, [textNode]))
         } else {
           nodes.push(textNode)
@@ -328,7 +328,7 @@ function createParagraphNode(children: LexicalNode[]): LexicalNode {
 function createLinkNode(url: string, children: LexicalNode[]): LexicalNode {
   return {
     type: 'link',
-    version: 1,
+    version: 3,
     url,
     rel: null,
     target: null,
@@ -337,6 +337,11 @@ function createLinkNode(url: string, children: LexicalNode[]): LexicalNode {
     direction: 'ltr',
     format: '',
     indent: 0,
+    fields: {
+      linkType: 'custom',
+      url,
+      newTab: false,
+    },
   }
 }
 
