@@ -35,9 +35,6 @@ importers:
       '@payloadcms/richtext-lexical':
         specifier: ^3.65.0
         version: 3.65.0(@faceless-ui/modal@3.0.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@faceless-ui/scroll-info@2.0.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@payloadcms/next@3.65.0(graphql@16.12.0)(monaco-editor@0.55.1)(next@16.0.3(@babel/core@7.28.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(types-react@19.0.0-rc.1)(typescript@5.9.3))(monaco-editor@0.55.1)(next@16.0.3(@babel/core@7.28.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(types-react@19.0.0-rc.1)(typescript@5.9.3)(yjs@13.6.27)
-      '@payloadcms/storage-s3':
-        specifier: ^3.65.0
-        version: 3.65.0(monaco-editor@0.55.1)(next@16.0.3(@babel/core@7.28.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(types-react@19.0.0-rc.1)(typescript@5.9.3)
       '@payloadcms/storage-vercel-blob':
         specifier: ^3.65.0
         version: 3.65.0(monaco-editor@0.55.1)(next@16.0.3(@babel/core@7.28.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(types-react@19.0.0-rc.1)(typescript@5.9.3)
@@ -375,10 +372,6 @@ packages:
     resolution: {integrity: sha512-wOKhzzWsshXGduxO4pqSiNyL9oUtk4BEvjWm9aaq6Hmfdoydq6v6t0rAGHWPjFwy9z2haovGRi3C8IxdMB4muw==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/s3-request-presigner@3.940.0':
-    resolution: {integrity: sha512-TgTUDM2H7revReDfkVwVtIqxV3K0cJLdyuLDIkefVHRUNKwU1Vd5FB2TaFrs6STO0kx5pTckDCOLh0iy7nW5WQ==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/signature-v4-multi-region@3.940.0':
     resolution: {integrity: sha512-ugHZEoktD/bG6mdgmhzLDjMP2VrYRAUPRPF1DpCyiZexkH7DCU7XrSJyXMvkcf0DHV+URk0q2sLf/oqn1D2uYw==}
     engines: {node: '>=18.0.0'}
@@ -397,10 +390,6 @@ packages:
 
   '@aws-sdk/util-endpoints@3.936.0':
     resolution: {integrity: sha512-0Zx3Ntdpu+z9Wlm7JKUBOzS9EunwKAb4KdGUQQxDqh5Lc3ta5uBoub+FgmVuzwnmBu9U1Os8UuwVTH0Lgu+P5w==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/util-format-url@3.936.0':
-    resolution: {integrity: sha512-MS5eSEtDUFIAMHrJaMERiHAvDPdfxc/T869ZjDNFAIiZhyc037REw0aoTNeimNXDNy2txRNZJaAUn/kE4RwN+g==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/util-locate-window@3.893.0':
@@ -1532,12 +1521,6 @@ packages:
       payload: 3.65.0
       react: ^19.0.0 || ^19.0.0-rc-65a56d0e-20241020
       react-dom: ^19.0.0 || ^19.0.0-rc-65a56d0e-20241020
-
-  '@payloadcms/storage-s3@3.65.0':
-    resolution: {integrity: sha512-46K4w5LOHM6K8rr6e/T/aEZiV1CTPXPfJq1cRXn6F+H4YhIth/ot3yO+SVwVegm9u7LZC1F5D40GSXqpgHj0Mg==}
-    engines: {node: ^18.20.2 || >=20.9.0}
-    peerDependencies:
-      payload: 3.65.0
 
   '@payloadcms/storage-vercel-blob@3.65.0':
     resolution: {integrity: sha512-oH+mS1xbg7IbeTseJdwM5rp7hVXhUItRcJ/YN7TRx9Ed+gsDRq3TBT8IV4WFhr6dstbRLqIsQdaE5v+I4KpGEg==}
@@ -6158,17 +6141,6 @@ snapshots:
       '@smithy/types': 4.9.0
       tslib: 2.8.1
 
-  '@aws-sdk/s3-request-presigner@3.940.0':
-    dependencies:
-      '@aws-sdk/signature-v4-multi-region': 3.940.0
-      '@aws-sdk/types': 3.936.0
-      '@aws-sdk/util-format-url': 3.936.0
-      '@smithy/middleware-endpoint': 4.3.12
-      '@smithy/protocol-http': 5.3.5
-      '@smithy/smithy-client': 4.9.8
-      '@smithy/types': 4.9.0
-      tslib: 2.8.1
-
   '@aws-sdk/signature-v4-multi-region@3.940.0':
     dependencies:
       '@aws-sdk/middleware-sdk-s3': 3.940.0
@@ -6205,13 +6177,6 @@ snapshots:
       '@smithy/types': 4.9.0
       '@smithy/url-parser': 4.2.5
       '@smithy/util-endpoints': 3.2.5
-      tslib: 2.8.1
-
-  '@aws-sdk/util-format-url@3.936.0':
-    dependencies:
-      '@aws-sdk/types': 3.936.0
-      '@smithy/querystring-builder': 4.2.5
-      '@smithy/types': 4.9.0
       tslib: 2.8.1
 
   '@aws-sdk/util-locate-window@3.893.0':
@@ -7434,23 +7399,6 @@ snapshots:
       - supports-color
       - typescript
       - yjs
-
-  '@payloadcms/storage-s3@3.65.0(monaco-editor@0.55.1)(next@16.0.3(@babel/core@7.28.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(types-react@19.0.0-rc.1)(typescript@5.9.3)':
-    dependencies:
-      '@aws-sdk/client-s3': 3.940.0
-      '@aws-sdk/lib-storage': 3.940.0(@aws-sdk/client-s3@3.940.0)
-      '@aws-sdk/s3-request-presigner': 3.940.0
-      '@payloadcms/plugin-cloud-storage': 3.65.0(monaco-editor@0.55.1)(next@16.0.3(@babel/core@7.28.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(types-react@19.0.0-rc.1)(typescript@5.9.3)
-      payload: 3.65.0(graphql@16.12.0)(typescript@5.9.3)
-    transitivePeerDependencies:
-      - '@types/react'
-      - aws-crt
-      - monaco-editor
-      - next
-      - react
-      - react-dom
-      - supports-color
-      - typescript
 
   '@payloadcms/storage-vercel-blob@3.65.0(monaco-editor@0.55.1)(next@16.0.3(@babel/core@7.28.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(types-react@19.0.0-rc.1)(typescript@5.9.3)':
     dependencies:
