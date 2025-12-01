@@ -44,7 +44,11 @@ interface SearchIndex {
   version: string
   locale: string
   updated: string
-  results: SearchResults['results']
+  docs: Array<{
+    displayTitle: string
+    slug: string
+    relationTo: string
+  }>
 }
 
 // Session cache: Map<`${locale}:${query}`, SearchResults>
@@ -113,15 +117,28 @@ export async function searchContent(query: string, locale: 'de' | 'en'): Promise
   abortControllers.set(abortKey, controller)
 
   try {
-    // Try API first with 5-second timeout
-    const apiResults = await searchViaAPI(sanitizedQuery, locale, controller.signal)
+    // Try API first with 500ms timeout
+    const apiPromise = searchViaAPI(sanitizedQuery, locale, controller.signal)
+    const timeoutPromise = new Promise<SearchResults>((_, reject) => {
+      const timeoutId = setTimeout(() => {
+        controller.abort() // Abort the fetch when timeout occurs
+        reject(new Error('API timeout after 500ms'))
+      }, 500)
+      // Store timeout ID so we can clear it if API succeeds
+      ;(apiPromise as any).timeoutId = timeoutId
+    })
+
+    const apiResults = await Promise.race([apiPromise, timeoutPromise])
+
+    // API succeeded - clear the timeout
+    clearTimeout((apiPromise as any).timeoutId)
 
     // Cache and return
     searchCache.set(cacheKey, apiResults)
     abortControllers.delete(abortKey)
     return apiResults
   } catch (error) {
-    // If API fails, fallback to static JSON
+    // If API fails or times out, fallback to static JSON
     console.warn('API search failed, falling back to static JSON:', error)
 
     try {
@@ -160,11 +177,7 @@ export async function searchContent(query: string, locale: 'de' | 'en'): Promise
 async function searchViaAPI(query: string, locale: 'de' | 'en', signal: AbortSignal): Promise<SearchResults> {
   const url = `/api/search?q=${encodeURIComponent(query)}&locale=${locale}&limit=50`
 
-  const response = await fetch(url, {
-    signal,
-    // 5-second timeout
-    ...(typeof AbortSignal !== 'undefined' && 'timeout' in AbortSignal ? { signal: AbortSignal.timeout(5000) } : {}),
-  })
+  const response = await fetch(url, { signal })
 
   if (!response.ok) {
     throw new Error(`API returned ${response.status}`)
@@ -213,7 +226,7 @@ async function searchViaAPI(query: string, locale: 'de' | 'en', signal: AbortSig
 }
 
 /**
- * Search via static JSON with client-side fuzzy matching
+ * Search via static JSON with client-side substring matching
  */
 async function searchViaStaticJSON(query: string, locale: 'de' | 'en'): Promise<SearchResults> {
   const url = `/search-index-${locale}.json`
@@ -226,24 +239,48 @@ async function searchViaStaticJSON(query: string, locale: 'de' | 'en'): Promise<
 
   const index: SearchIndex = await response.json()
 
-  // Perform client-side fuzzy search
+  // Perform client-side substring search on displayTitle
   const lowerQuery = query.toLowerCase()
 
-  const filterResults = (docs: SearchDoc[]): SearchDoc[] => {
-    return docs.filter((doc) => doc.title.toLowerCase().includes(lowerQuery)).sort((a, b) => b.priority - a.priority)
-  }
+  const matchedDocs = index.docs.filter((doc) => doc.displayTitle.toLowerCase().includes(lowerQuery))
 
-  return {
+  // Group by collection type and convert to SearchDoc format
+  const grouped: SearchResults = {
     results: {
-      artists: filterResults(index.results.artists),
-      projects: filterResults(index.results.projects),
-      news: filterResults(index.results.news),
-      recordings: filterResults(index.results.recordings),
-      employees: filterResults(index.results.employees),
-      pages: filterResults(index.results.pages),
+      artists: [],
+      projects: [],
+      news: [],
+      recordings: [],
+      employees: [],
+      pages: [],
     },
     source: 'backup',
   }
+
+  for (const doc of matchedDocs) {
+    const searchDoc: SearchDoc = {
+      id: doc.slug || doc.displayTitle, // Use slug as ID, fallback to displayTitle
+      title: doc.displayTitle,
+      relationTo: doc.relationTo,
+      relationId: doc.slug || doc.displayTitle,
+      slug: doc.slug,
+      priority: 0, // Priority not needed for client-side results
+    }
+
+    if (doc.relationTo === 'artists') {
+      grouped.results.artists.push(searchDoc)
+    } else if (doc.relationTo === 'recordings') {
+      grouped.results.recordings.push(searchDoc)
+    } else if (doc.relationTo === 'employees') {
+      grouped.results.employees.push(searchDoc)
+    } else if (doc.relationTo === 'posts') {
+      grouped.results.news.push(searchDoc)
+    } else if (doc.relationTo === 'pages') {
+      grouped.results.pages.push(searchDoc)
+    }
+  }
+
+  return grouped
 }
 
 /**
