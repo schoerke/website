@@ -2,12 +2,15 @@
 
 import ArtistCard from '@/components/Artist/ArtistCard'
 import InstrumentFilter from '@/components/Artist/InstrumentFilter'
-import { useState } from 'react'
+import ImageSlider from '@/components/ui/ImageSlider'
+import type { Image } from '@/payload-types'
+import { useTranslations } from 'next-intl'
+import { useMemo, useState } from 'react'
 
 type Artist = {
   id: string
   name: string
-  image?: any
+  image?: Image | null
   instrument?: string[]
   slug?: string
 }
@@ -73,8 +76,49 @@ function sortArtists(artists: Artist[]): Artist[] {
   })
 }
 
+/**
+ * Randomize array order
+ */
+function shuffleArray<T>(array: T[]): T[] {
+  const arr = [...array]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}
+
+/**
+ * Check if a URL string is valid (not null, not empty, not the string "null")
+ */
+function isValidUrl(url: unknown): url is string {
+  return typeof url === 'string' && url !== '' && url !== 'null' && !url.includes('/null')
+}
+
+/**
+ * Get the first valid image URL from a Payload image object
+ * Prioritizes: tablet -> original -> card -> thumbnail
+ */
+function getValidImageUrl(image: Image | null | undefined): string | null {
+  if (!image) return null
+
+  const sizes = image.sizes
+
+  // Check available sizes in priority order
+  if (sizes?.tablet?.url && isValidUrl(sizes.tablet.url)) return sizes.tablet.url
+  if (image.url && isValidUrl(image.url)) return image.url
+  if (sizes?.card?.url && isValidUrl(sizes.card.url)) return sizes.card.url
+  if (sizes?.thumbnail?.url && isValidUrl(sizes.thumbnail.url)) return sizes.thumbnail.url
+
+  return null
+}
+
 const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
   const [selectedInstruments, setSelectedInstruments] = useState<string[]>([])
+  const t = useTranslations('custom.pages.artists')
+
+  // Shuffle artists once on mount for stable slider order
+  const [shuffledArtists] = useState(() => shuffleArray([...artists]))
 
   // Show all artists if no instruments selected, else show artists with ANY selected instrument
   const filteredArtists =
@@ -85,29 +129,70 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
   // Sort the filtered artists
   const sortedArtists = sortArtists(filteredArtists)
 
+  // Get IDs of displayed artists
+  const displayedArtistIds = useMemo(() => new Set(sortedArtists.map((a) => a.id)), [sortedArtists])
+
+  // Filter slider images from the pre-shuffled list to exclude artists shown in grid
+  const sliderArtists = useMemo(
+    () => shuffledArtists.filter((artist) => !displayedArtistIds.has(artist.id)),
+    [shuffledArtists, displayedArtistIds],
+  )
+
+  // Only show slider if there are artists not shown in the grid
+  const showSlider = sliderArtists.length > 0
+
+  const sliderImages = useMemo(() => {
+    if (!showSlider) return []
+
+    return sliderArtists
+      .map((artist) => {
+        const imageUrl = getValidImageUrl(artist.image)
+        if (!imageUrl) return null
+
+        return {
+          src: imageUrl,
+          alt: artist.name,
+          bannerText: artist.name,
+          link: artist.slug ? `/artists/${artist.slug}` : undefined,
+          sizesAttr: '(max-width: 768px) 100vw, 50vw',
+          focalX: artist.image?.focalX ?? null,
+          focalY: artist.image?.focalY ?? null,
+        }
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null)
+  }, [showSlider, sliderArtists])
+
   return (
-    <div>
-      <InstrumentFilter instruments={instruments} selected={selectedInstruments} onChange={setSelectedInstruments} />
-      {sortedArtists.length === 0 ? (
-        <div className="text-gray-500">No artists found for these instruments.</div>
-      ) : (
-        <div
-          key={selectedInstruments.join(',')}
-          className="animate-in fade-in mt-8 grid grid-cols-1 gap-6 duration-500 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        >
-          {sortedArtists.map((artist) => (
-            <ArtistCard
-              key={String(artist.id)}
-              id={String(artist.id)}
-              name={artist.name}
-              image={artist.image}
-              instrument={artist.instrument ?? []}
-              slug={artist.slug}
-            />
-          ))}
+    <>
+      <div>
+        <InstrumentFilter instruments={instruments} selected={selectedInstruments} onChange={setSelectedInstruments} />
+        {sortedArtists.length === 0 ? (
+          <div className="text-gray-500">No artists found for these instruments.</div>
+        ) : (
+          <div
+            key={selectedInstruments.join(',')}
+            className="animate-in fade-in mt-8 grid grid-cols-1 gap-6 duration-500 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          >
+            {sortedArtists.map((artist) => (
+              <ArtistCard
+                key={String(artist.id)}
+                id={String(artist.id)}
+                name={artist.name}
+                image={artist.image}
+                instrument={artist.instrument ?? []}
+                slug={artist.slug}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      {showSlider && (
+        <div className="mt-16">
+          <h2 className="font-playfair mb-6 text-3xl font-bold">{t('discoverMore')}</h2>
+          <ImageSlider images={sliderImages} autoAdvance interval={6000} showArrows={false} showDots />
         </div>
       )}
-    </div>
+    </>
   )
 }
 
