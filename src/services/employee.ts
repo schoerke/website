@@ -1,6 +1,5 @@
 import config from '@/payload.config'
 import { getPayload } from 'payload'
-import type { Employee } from '../payload-types'
 
 type LocaleCode = 'de' | 'en' | 'all'
 
