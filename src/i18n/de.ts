@@ -55,6 +55,7 @@ const de = {
       },
       artists: {
         title: 'Künstler:innen',
+        discoverMore: 'Weitere Künstler:innen entdecken',
       },
       artist: {
         backButton: 'Zurück',

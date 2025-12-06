@@ -52,6 +52,7 @@ const en = {
       },
       artists: {
         title: 'Artists',
+        discoverMore: 'Discover More Artists',
       },
       artist: {
         backButton: 'Back to Artists',
