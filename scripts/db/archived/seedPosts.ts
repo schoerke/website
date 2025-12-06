@@ -12,15 +12,16 @@
  * - All posts are published by default
  *
  * Usage:
- *   pnpm payload run scripts/db/seedPosts.ts
+ *   pnpm tsx scripts/db/archived/seedPosts.ts
  *   pnpm seed:all  # Part of master seed script
  *
  * @see scripts/db/seedAll.ts - Master orchestration script
  * @see scripts/db/seedArtists.ts - Artist seeding (run first)
  */
 
-import config from '@payload-config'
+import 'dotenv/config'
 import { getPayload } from 'payload'
+import config from '../../../src/payload.config.js'
 
 const POSTS_PER_CATEGORY = 5
 const GENERAL_CATEGORIES = ['news', 'projects', 'home']
@@ -107,50 +108,20 @@ async function run() {
 
     // 1. Create general category posts
     console.log('📝 Creating general category posts...')
+    let generalPostsCreated = 0
+    let generalPostsSkipped = 0
+
     for (const category of GENERAL_CATEGORIES) {
       for (let i = 1; i <= POSTS_PER_CATEGORY; i++) {
-        const postEn = {
-          title: `${category.charAt(0).toUpperCase() + category.slice(1)} Post ${i}`,
-          content: generateLoremContent(),
-          categories: [category],
-          artists: [],
-          createdBy: 1, // Eva Wagner
-          _status: 'published',
-        }
+        const title = `${category.charAt(0).toUpperCase() + category.slice(1)} Post ${i}`
 
-        const created = await payload.create({
-          collection: 'posts',
-          data: postEn,
-          locale: 'en',
-        })
-
-        console.log(`  ✓ Created: ${postEn.title} (en)`)
-
-        await payload.update({
-          collection: 'posts',
-          id: created.id,
-          data: {
-            title: `${category.charAt(0).toUpperCase() + category.slice(1)} Beitrag ${i}`,
-            content: generateLoremContent(),
-          },
-          locale: 'de',
-        })
-      }
-    }
-
-    // 2. Create artist-specific posts
-    console.log('\n🎭 Creating artist-specific posts...')
-    for (const artist of artists.docs) {
-      console.log(`\n  Artist: ${artist.name}`)
-
-      for (const category of ARTIST_POST_CATEGORIES) {
-        for (let i = 1; i <= POSTS_PER_ARTIST; i++) {
+        try {
           const postEn = {
-            title: `${artist.name} - ${category.charAt(0).toUpperCase() + category.slice(1)} ${i}`,
+            title,
             content: generateLoremContent(),
             categories: [category],
-            artists: [artist.id],
-            createdBy: 1,
+            artists: [],
+            createdBy: 1, // Eva Wagner
             _status: 'published',
           }
 
@@ -160,17 +131,79 @@ async function run() {
             locale: 'en',
           })
 
-          console.log(`    ✓ Created: ${postEn.title} (en)`)
+          console.log(`  ✓ Created: ${postEn.title} (en)`)
 
           await payload.update({
             collection: 'posts',
             id: created.id,
             data: {
-              title: `${artist.name} - ${category.charAt(0).toUpperCase() + category.slice(1)} ${i}`,
+              title: `${category.charAt(0).toUpperCase() + category.slice(1)} Beitrag ${i}`,
               content: generateLoremContent(),
             },
             locale: 'de',
           })
+
+          generalPostsCreated++
+        } catch (error: any) {
+          if (error.code === 'SQLITE_CONSTRAINT' && error.message?.includes('UNIQUE constraint')) {
+            console.log(`  ⏭️  Skipped: ${title} (already exists)`)
+            generalPostsSkipped++
+          } else {
+            throw error
+          }
+        }
+      }
+    }
+
+    // 2. Create artist-specific posts
+    console.log('\n🎭 Creating artist-specific posts...')
+    let artistPostsCreated = 0
+    let artistPostsSkipped = 0
+
+    for (const artist of artists.docs) {
+      console.log(`\n  Artist: ${artist.name}`)
+
+      for (const category of ARTIST_POST_CATEGORIES) {
+        for (let i = 1; i <= POSTS_PER_ARTIST; i++) {
+          const title = `${artist.name} - ${category.charAt(0).toUpperCase() + category.slice(1)} ${i}`
+
+          try {
+            const postEn = {
+              title,
+              content: generateLoremContent(),
+              categories: [category],
+              artists: [artist.id],
+              createdBy: 1,
+              _status: 'published',
+            }
+
+            const created = await payload.create({
+              collection: 'posts',
+              data: postEn,
+              locale: 'en',
+            })
+
+            console.log(`    ✓ Created: ${postEn.title} (en)`)
+
+            await payload.update({
+              collection: 'posts',
+              id: created.id,
+              data: {
+                title: `${artist.name} - ${category.charAt(0).toUpperCase() + category.slice(1)} ${i}`,
+                content: generateLoremContent(),
+              },
+              locale: 'de',
+            })
+
+            artistPostsCreated++
+          } catch (error: any) {
+            if (error.code === 'SQLITE_CONSTRAINT' && error.message?.includes('UNIQUE constraint')) {
+              console.log(`    ⏭️  Skipped: ${title} (already exists)`)
+              artistPostsSkipped++
+            } else {
+              throw error
+            }
+          }
         }
       }
     }
@@ -179,9 +212,12 @@ async function run() {
       GENERAL_CATEGORIES.length * POSTS_PER_CATEGORY +
       artists.docs.length * ARTIST_POST_CATEGORIES.length * POSTS_PER_ARTIST
 
-    console.log(`\n✅ Successfully seeded ${totalPosts} posts`)
-    console.log(`   - ${GENERAL_CATEGORIES.length * POSTS_PER_CATEGORY} general posts`)
-    console.log(`   - ${artists.docs.length * ARTIST_POST_CATEGORIES.length * POSTS_PER_ARTIST} artist-specific posts`)
+    console.log(`\n✅ Post seeding complete:`)
+    console.log(`   - ${generalPostsCreated} general posts created (${generalPostsSkipped} skipped)`)
+    console.log(`   - ${artistPostsCreated} artist-specific posts created (${artistPostsSkipped} skipped)`)
+    console.log(`   - ${generalPostsCreated + artistPostsCreated} total posts created`)
+    console.log(`   - ${generalPostsSkipped + artistPostsSkipped} total posts skipped`)
+    console.log(`   - ${totalPosts} total expected posts`)
   } catch (error) {
     console.error('❌ Error seeding posts:', error)
     process.exit(1)
