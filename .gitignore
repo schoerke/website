@@ -63,7 +63,7 @@ next-env.d.ts
 /scripts/wordpress/data/all-de.xml
 
 # Database dumps (local backup only)
-/data/dumps/*.json
+/data/
 
 # Legacy media data
 /src/data/media.xml
