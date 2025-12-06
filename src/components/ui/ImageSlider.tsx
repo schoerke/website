@@ -58,7 +58,11 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
     (idx: number) => {
       if (emblaApi) {
         emblaApi.scrollTo(idx)
-        autoplayPlugin?.reset() // Reset timer on manual navigation
+        // Reset timer by stopping and restarting autoplay
+        if (autoplayPlugin) {
+          autoplayPlugin.stop()
+          autoplayPlugin.play()
+        }
       }
     },
     [emblaApi, autoplayPlugin],
@@ -67,14 +71,22 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   const scrollPrev = useCallback(() => {
     if (emblaApi) {
       emblaApi.scrollPrev()
-      autoplayPlugin?.reset() // Reset timer on manual navigation
+      // Reset timer by stopping and restarting autoplay
+      if (autoplayPlugin) {
+        autoplayPlugin.stop()
+        autoplayPlugin.play()
+      }
     }
   }, [emblaApi, autoplayPlugin])
 
   const scrollNext = useCallback(() => {
     if (emblaApi) {
       emblaApi.scrollNext()
-      autoplayPlugin?.reset() // Reset timer on manual navigation
+      // Reset timer by stopping and restarting autoplay
+      if (autoplayPlugin) {
+        autoplayPlugin.stop()
+        autoplayPlugin.play()
+      }
     }
   }, [emblaApi, autoplayPlugin])
 
