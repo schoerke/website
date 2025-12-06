@@ -13,8 +13,8 @@
  *
  * # Export images metadata
  * pnpm dump images
- * 
- * # Export documents metadata  
+ *
+ * # Export documents metadata
  * pnpm dump documents
  * ```
  *

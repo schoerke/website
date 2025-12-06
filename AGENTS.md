@@ -64,10 +64,12 @@ This includes:
 **2025-11-30: Unauthorized Database Token Generation**
 
 - **What happened:** Agent generated a new Turso database auth token without user permission
-- **Root cause:** When cleaning up R2 environment variables, `DATABASE_AUTH_TOKEN` was accidentally removed from `.env`. Agent ran `turso db tokens create` without asking first.
-- **Impact:** Created a new token that could have invalidated Vercel deployment or other environments using the old token
+- **Root cause:** When cleaning up R2 environment variables, `DATABASE_AUTH_TOKEN` was accidentally removed from `.env`.
+  Agent ran `turso db tokens create` without asking first.
+- **Impact:** Created a new token that could have invalidated Vercel deployment or other environments using the old
+  token
 - **Resolution:** User provided original token, which was restored to `.env`
-- **Prevention:** 
+- **Prevention:**
   - **NEVER generate new database credentials without explicit permission**
   - When environment variables are missing, ask user to provide them - don't generate new ones
   - Add to database protection policy: Credential generation requires explicit approval
@@ -123,11 +125,13 @@ This includes:
 **CRITICAL: Be surgical, not broad, when removing environment variables**
 
 ❌ **BAD - Too broad, will remove unrelated variables:**
+
 ```bash
 cat .env | grep -v -E "CLOUDFLARE|S3_|R2" > .env.tmp
 ```
 
 ✅ **GOOD - Explicit list of variables to remove:**
+
 ```bash
 # Remove specific R2 variables one by one
 grep -v "CLOUDFLARE_S3_BUCKET" .env | \
@@ -138,6 +142,7 @@ grep -v "NEXT_PUBLIC_S3_HOSTNAME" > .env.tmp
 ```
 
 ✅ **BETTER - Show user what will be removed and ask for confirmation:**
+
 ```bash
 # List what will be removed
 echo "Will remove these variables:"
@@ -305,11 +310,13 @@ Migration fails with "FOREIGN KEY constraint failed" when trying to link to imag
 
 ### WordPress Filename Timestamp Postfixes
 
-**Critical Rule:** WordPress adds timestamp postfixes to filenames when images are edited or re-uploaded. Migration scripts MUST clean these postfixes to avoid cluttering the database.
+**Critical Rule:** WordPress adds timestamp postfixes to filenames when images are edited or re-uploaded. Migration
+scripts MUST clean these postfixes to avoid cluttering the database.
 
 **Common Pattern (2025-11-30):**
 
 WordPress adds `-e[timestamp]` to filenames:
+
 - `Mario-Venzago-1_c-Alberto-Venzago-e1762933634869.jpg`
 - `Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370.jpg`
 
@@ -328,6 +335,7 @@ filename = cleanWordPressFilename(filename)
 ```
 
 **Files Updated (2025-11-30):**
+
 - `scripts/wordpress/utils/fieldMappers.ts` - Added `cleanWordPressFilename()` utility
 - `scripts/wordpress/migrateArtists.ts` - Cleans featured images, PDFs, ZIPs
 - `scripts/wordpress/migrateEmployees.ts` - Cleans employee images
@@ -335,15 +343,18 @@ filename = cleanWordPressFilename(filename)
 - `scripts/wordpress/utils/downloadMedia.sh` - Cleans filenames during download
 
 **Prevention:**
+
 - All future WordPress migrations will automatically clean timestamp postfixes
 - No manual cleanup required after migrations
 - Database will contain clean, descriptive filenames
 
 ### Vercel Blob Storage and Bandwidth Management
 
-**Critical Understanding (2025-11-30):** Vercel Blob has a 10 GB/month bandwidth limit on the free tier. Large files like ZIP archives can quickly exhaust this limit.
+**Critical Understanding (2025-11-30):** Vercel Blob has a 10 GB/month bandwidth limit on the free tier. Large files
+like ZIP archives can quickly exhaust this limit.
 
 **Current Status:**
+
 - 866 MB / 10 GB bandwidth used (8.6%)
 - 139 files totaling 731.55 MB stored
 - **21 ZIP files: 721.93 MB** (artist photo galleries, 40-60 MB each)
@@ -351,16 +362,19 @@ filename = cleanWordPressFilename(filename)
 - PDFs: ~4 MB
 
 **Issue:**
+
 - Artist gallery ZIP downloads consume significant bandwidth
 - ~12 full downloads of all galleries would exhaust monthly limit
 - Large files (>10 MB) should not be stored in Vercel Blob
 
 **Recommendations:**
+
 1. **For large downloads (ZIPs, large PDFs):** Use Cloudflare R2 (unlimited egress bandwidth)
 2. **For images:** Vercel Blob is fine (small files, Next.js optimization)
 3. **Monitor bandwidth:** Check Vercel dashboard regularly during development
 
 **Prevention:**
+
 - Always analyze storage before uploading large files
 - Use `tmp/analyzeBlobUsage.ts` to audit Blob storage
 - Consider bandwidth impact of file downloads
@@ -395,7 +409,8 @@ filename = cleanWordPressFilename(filename)
 
 ### CRITICAL: Always Load Environment Variables
 
-**RULE: ALL scripts that use Payload, database connections, or environment variables MUST import `dotenv/config` at the top:**
+**RULE: ALL scripts that use Payload, database connections, or environment variables MUST import `dotenv/config` at the
+top:**
 
 ```typescript
 // ✅ CORRECT - Always include this as the first import
@@ -407,12 +422,14 @@ import { getPayload } from 'payload'
 ```
 
 **Why this matters:**
+
 - Payload requires `PAYLOAD_SECRET` from `.env`
 - Database connections need `DATABASE_URI` and `DATABASE_AUTH_TOKEN`
 - Without this import, scripts will fail with "missing secret key" or connection errors
 - This applies to ALL scripts in both `tmp/` and `scripts/` directories
 
 **Common mistake pattern:**
+
 ```typescript
 // ❌ WRONG - Will fail with "missing secret key"
 import config from '@/payload.config'

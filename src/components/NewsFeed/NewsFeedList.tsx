@@ -14,8 +14,7 @@ interface NewsFeedListProps {
 
 function getImageUrl(img: PayloadImage | null | undefined, defaultImg: string | null | undefined): string {
   // Use post's image if available and valid
-  if (img && typeof img === 'object' && img.url && img.url !== 'null' && !img.url.includes('/null'))
-    return img.url
+  if (img && typeof img === 'object' && img.url && img.url !== 'null' && !img.url.includes('/null')) return img.url
 
   // Fall back to default image string path
   if (defaultImg && typeof defaultImg === 'string') return defaultImg

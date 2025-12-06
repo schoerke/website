@@ -93,10 +93,10 @@ export async function findEmployeeByName(payload: any, name: string | number | u
 
 /**
  * Download file from URL and upload to Payload media collection
- * 
+ *
  * @deprecated This function is no longer used. Media should be uploaded via uploadLocalMedia.ts
  * which properly handles the split between 'images' and 'documents' collections.
- * 
+ *
  * @see scripts/wordpress/utils/uploadLocalMedia.ts
  */
 export async function downloadAndUploadMedia(
@@ -215,11 +215,11 @@ export function cleanWordPressFilename(filename: string, debug = false): string 
   // - "file-e1762933634869-scaled.jpg" → "file-scaled.jpg"
   // - "file-e1762933634869-1.jpg" → "file-1.jpg"
   const cleaned = filename.replace(/-e\d+(?=-|\.)/g, '')
-  
+
   if (debug && cleaned !== filename) {
     console.log(`  🧹 Cleaned filename: "${filename}" → "${cleaned}"`)
   }
-  
+
   return cleaned
 }
 

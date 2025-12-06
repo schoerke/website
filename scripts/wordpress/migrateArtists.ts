@@ -40,12 +40,7 @@ import path from 'path'
 import { getPayload } from 'payload'
 import { fileURLToPath } from 'url'
 import config from '../../src/payload.config.js'
-import {
-  cleanWordPressFilename,
-  findEmployeeByName,
-  mapInstruments,
-  validateAndCleanURL,
-} from './utils/fieldMappers'
+import { cleanWordPressFilename, findEmployeeByName, mapInstruments, validateAndCleanURL } from './utils/fieldMappers'
 import { htmlToLexical } from './utils/lexicalConverter'
 import { cleanBiographyHTML, extractFirstParagraph, parsePostMeta, parseWordPressXML } from './utils/xmlParser'
 

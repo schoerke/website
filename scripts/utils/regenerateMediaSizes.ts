@@ -112,19 +112,19 @@ async function main() {
   const config = await getConfig()
   const payload = await getPayload({ config })
   const imageSizes = config.collections.find((c: any) => c.slug === 'images')?.upload?.imageSizes || []
-  
+
   // Vercel Blob public URL (no longer using R2)
   const publicUrl = 'https://blob.vercel-storage.com'
-  
+
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     throw new Error('BLOB_READ_WRITE_TOKEN not found in environment variables')
   }
 
   console.log(`📊 Found ${imageSizes.length} image size configurations`)
-  
+
   const { docs: imageDocs } = await payload.find({ collection: 'images', limit: 10000 })
   console.log(`🖼️  Processing ${imageDocs.length} images...\n`)
-  
+
   for (const imageDoc of imageDocs) {
     if (!imageDoc.filename) continue
     try {
@@ -135,7 +135,7 @@ async function main() {
       console.error(`❌ Error processing ${imageDoc.filename}:`, err)
     }
   }
-  
+
   console.log('\n✨ All images processed!')
   process.exit(0)
 }

@@ -238,11 +238,7 @@ async function uploadLocalFile(
 /**
  * Upload core application assets (logo, logo icon, default avatar)
  */
-async function uploadCoreAssets(
-  payload: any,
-  imagesIdMap: MediaIdMap,
-  stats: UploadStats,
-): Promise<void> {
+async function uploadCoreAssets(payload: any, imagesIdMap: MediaIdMap, stats: UploadStats): Promise<void> {
   console.log('🎨 Uploading core application assets...\n')
 
   const coreAssets = [
