@@ -28,25 +28,31 @@ function formatDate(dateString: string, locale: string): string {
 }
 
 export async function generateStaticParams() {
-  const locales = ['de', 'en'] as const
-  const params = []
+  try {
+    const locales = ['de', 'en'] as const
+    const params = []
 
-  for (const locale of locales) {
-    const posts = await getFilteredPosts({
-      category: 'news',
-      locale,
-      publishedOnly: true,
-    })
-
-    params.push(
-      ...posts.docs.map((post) => ({
+    for (const locale of locales) {
+      const posts = await getFilteredPosts({
+        category: 'news',
         locale,
-        slug: post.slug,
-      })),
-    )
-  }
+        publishedOnly: true,
+      })
 
-  return params
+      params.push(
+        ...posts.docs.map((post) => ({
+          locale,
+          slug: post.slug,
+        })),
+      )
+    }
+
+    return params
+  } catch (error) {
+    // Return empty array if posts don't exist yet or database is unavailable
+    console.warn('Failed to generate static params for news posts:', error)
+    return []
+  }
 }
 
 export default async function PostDetailPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {

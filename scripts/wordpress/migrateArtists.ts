@@ -42,7 +42,7 @@ import { fileURLToPath } from 'url'
 import config from '../../src/payload.config.js'
 import { cleanWordPressFilename, findEmployeeByName, mapInstruments, validateAndCleanURL } from './utils/fieldMappers'
 import { htmlToLexical } from './utils/lexicalConverter'
-import { cleanBiographyHTML, extractFirstParagraph, parsePostMeta, parseWordPressXML } from './utils/xmlParser'
+import { cleanBiographyHTML, extractQuote, parsePostMeta, parseWordPressXML } from './utils/xmlParser'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -219,7 +219,7 @@ async function mapArtistData(
   const content = wpArtist['content:encoded'] || ''
 
   // Extract quote (first paragraph if it's quoted text)
-  const quote = extractFirstParagraph(content)
+  const quote = extractQuote(content)
 
   // Biography (remove quote if it was extracted)
   const biographyHTML = quote ? cleanBiographyHTML(content) : content
