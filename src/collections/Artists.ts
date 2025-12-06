@@ -1,7 +1,7 @@
 import { INSTRUMENTS } from '@/constants/options'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { createSlugHook } from '@/utils/slug'
-import { validateQuote, validateURL, validateYouTubeURL } from '@/validators/fields'
+import { validateURL, validateYouTubeURL } from '@/validators/fields'
 import type { CollectionConfig } from 'payload'
 
 export const Artists: CollectionConfig = {
@@ -132,7 +132,6 @@ export const Artists: CollectionConfig = {
               type: 'text',
               required: false,
               localized: true,
-              validate: validateQuote,
             },
             {
               name: 'biography',
