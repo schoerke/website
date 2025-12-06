@@ -7,6 +7,8 @@ export type ImageSlideData = {
   bannerText?: string
   link?: string
   sizesAttr?: string
+  focalX?: number | null
+  focalY?: number | null
 }
 
 interface ImageSlideProps {
@@ -15,18 +17,29 @@ interface ImageSlideProps {
 }
 
 const ImageSlide: React.FC<ImageSlideProps> = ({ image, isActive }) => {
+  // Convert Payload focal point (0-100) to CSS object-position (percentage)
+  const objectPosition =
+    image.focalX !== undefined && image.focalX !== null && image.focalY !== undefined && image.focalY !== null
+      ? `${image.focalX}% ${image.focalY}%`
+      : 'center'
+
+  // Handle image loading errors by falling back to default avatar
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = '/assets/default-avatar.webp'
+  }
+
   return (
-    <div
-      className={`relative w-full transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-60'}`}
-      style={{ aspectRatio: '4 / 3' }}
-    >
+    <div className={`relative h-96 w-full transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-60'}`}>
       <Image
         src={image.src}
         alt={image.alt}
-        fill
-        className="rounded-lg object-cover"
+        width={400}
+        height={400}
+        className="h-full w-full rounded-lg object-cover"
+        style={{ objectPosition }}
         loading="lazy"
         sizes={image.sizesAttr || '(max-width: 768px) 100vw, 50vw'}
+        onError={handleImageError}
       />
       {image.bannerText && (
         <div
