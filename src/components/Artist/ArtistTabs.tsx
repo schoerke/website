@@ -2,9 +2,8 @@
 
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Repertoire } from '@/payload-types'
-import { getQuoteMarks } from '@/utils/content'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import NewsFeedClient from '../NewsFeed/NewsFeedClient'
 import { BiographyTab, ConcertDatesTab, RecordingsTab, RepertoireTab, VideoTab } from './ArtistTabContent'
 
@@ -25,9 +24,6 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const [repertoires, setRepertoires] = useState<Repertoire[]>([])
   const [repertoiresLoading, setRepertoiresLoading] = useState(false)
   const [repertoiresFetched, setRepertoiresFetched] = useState(false)
-
-  // Get quote marks for the current locale
-  const quoteMarks = getQuoteMarks(locale)
 
   // Reset fetched flags when locale changes
   useEffect(() => {
@@ -154,9 +150,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
 
       {/* Tab Content */}
       <div key={activeTab} className="animate-in fade-in duration-300">
-        {activeTab === 'biography' && (
-          <BiographyTab content={artist.biography} quote={artist.quote} quoteMarks={quoteMarks} />
-        )}
+        {activeTab === 'biography' && <BiographyTab content={artist.biography} quote={artist.quote} />}
         {activeTab === 'repertoire' && (
           <RepertoireTab repertoires={repertoires} loading={repertoiresLoading} emptyMessage={t('empty.repertoire')} />
         )}
