@@ -55,43 +55,110 @@ export function parsePostMeta(postmeta: any): Record<string, string | number> {
 }
 
 /**
- * Extract first paragraph from HTML content (for quotes)
+ * Extract quote from HTML content
+ * Handles multiple quote patterns:
+ * 1. Standard inline quotes: "Quote text"
+ * 2. Partial quotes with attribution: 'Quote text' - Author continues...
+ * 3. Blockquote tags: <blockquote>Quote text</blockquote>
+ * 4. Multi-sentence quotes within one set of quote marks
  */
-export function extractFirstParagraph(html: string): string {
+export function extractQuote(html: string): string {
   if (!html) return ''
 
-  // Match content between first set of quotes (handles nested quotes)
-  // Tries ASCII quotes first, then Unicode quotes
-  let quotedMatch = html.match(/^"(.+?)"(\n|$)/s)
-  if (quotedMatch) {
-    return quotedMatch[1].trim()
+  // Remove blockquote elements first
+  let cleaned = html.replace(/<\/?blockquote[^>]*>/g, '').trim()
+
+  // Get first non-empty line (skip empty lines and &nbsp; entities)
+  const lines = cleaned.split('\n')
+  let firstLine = ''
+  for (const line of lines) {
+    const trimmed = line.trim()
+    // Skip empty lines, &nbsp; entities, and HTML tags that aren't text content
+    if (
+      trimmed &&
+      trimmed !== '&nbsp;' &&
+      !/^(&nbsp;|\s)+$/.test(trimmed) &&
+      !/^<(strong|span|em|div|p)[^>]*>/.test(trimmed)
+    ) {
+      firstLine = trimmed
+      break
+    }
+  }
+  if (!firstLine) return ''
+
+  // Pattern 1: Standard inline quoted text (starts AND ends with quote marks)
+  const standardQuotePattern = /^["'""''„].*["'""'']$/
+  if (standardQuotePattern.test(firstLine)) {
+    // Strip first layer of surrounding quotes (ASCII and Unicode)
+    const withoutOuterQuotes = firstLine
+      .replace(/^["'""''„]/, '') // Remove leading quote
+      .replace(/["'""'']$/, '') // Remove trailing quote
+      .trim()
+    return withoutOuterQuotes
   }
 
-  quotedMatch = html.match(/^[""](.+?)[""](\n|$)/s)
-  if (quotedMatch) {
-    return quotedMatch[1].trim()
+  // Pattern 2: Partial quote with continuation (e.g., 'Quote text' - continuation...)
+  // This pattern indicates a quote fragment followed by elaboration on the same line
+  // Return the full line as the quote
+  const partialQuotePattern = /^(["'""''„])(.+?)\1\s*[-–—]/
+  const partialMatch = firstLine.match(partialQuotePattern)
+  if (partialMatch) {
+    // Return the full line (quoted part + continuation)
+    return firstLine
   }
 
-  const paragraphMatch = html.match(/<p[^>]*>([^<]+)<\/p>/)
-  if (paragraphMatch) {
-    return paragraphMatch[1].trim()
-  }
-
+  // No valid quote pattern found
   return ''
 }
 
 /**
- * Clean HTML content (remove first paragraph if it's a quote)
+ * Clean HTML content (remove first quote if it was extracted)
+ * Handles the same patterns as extractQuote to ensure the quote is removed from biography
  */
 export function cleanBiographyHTML(html: string): string {
   if (!html) return ''
 
-  // If starts with a quote (ASCII or Unicode), remove it from biography
-  if (html.startsWith('"') || html.startsWith('"')) {
-    const firstLineEnd = html.indexOf('\n')
-    if (firstLineEnd > 0) {
-      return html.substring(firstLineEnd + 1).trim()
+  // Remove blockquote elements first
+  let cleaned = html.replace(/<\/?blockquote[^>]*>/g, '').trim()
+
+  // Split into lines to find where the quote is
+  const lines = cleaned.split('\n')
+  let quoteLineIndex = -1
+
+  // Find the first line that's a quote (same logic as extractQuote)
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim()
+    // Skip empty lines, &nbsp; entities, and HTML tags
+    if (
+      !trimmed ||
+      trimmed === '&nbsp;' ||
+      /^(&nbsp;|\s)+$/.test(trimmed) ||
+      /^<(strong|span|em|div|p)[^>]*>/.test(trimmed)
+    ) {
+      continue
     }
+
+    // Check if this line is a quote
+    const standardQuotePattern = /^["'""''„].*["'""'']$/
+    const partialQuotePattern = /^(["'""''„])(.+?)\1\s*[-–—]/
+
+    if (standardQuotePattern.test(trimmed) || partialQuotePattern.test(trimmed)) {
+      quoteLineIndex = i
+      break
+    } else {
+      // Not a quote - this is the start of biography
+      break
+    }
+  }
+
+  // If we found a quote, remove everything up to and including that line
+  if (quoteLineIndex >= 0) {
+    const remainingLines = lines.slice(quoteLineIndex + 1)
+    return remainingLines
+      .join('\n')
+      .trim()
+      .replace(/^(&nbsp;\s*)+/, '') // Remove leading &nbsp; entities
+      .trim()
   }
 
   return html.trim()
