@@ -9,6 +9,7 @@ import {
   getAllProjectPosts,
   getAllProjectPostsByArtist,
   getFilteredPosts,
+  getPaginatedPosts,
 } from './post'
 
 // Mock getPayload at the module level
@@ -313,6 +314,139 @@ describe('Post Service', () => {
       vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getFilteredPosts({})
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sort: '-createdAt',
+        }),
+      )
+    })
+  })
+
+  describe('getPaginatedPosts', () => {
+    it('should return pagination metadata', async () => {
+      const mockPosts = [createMockPost(), createMockPost({ id: 2, title: 'Post 2' })]
+      const mockResult = {
+        docs: mockPosts,
+        totalDocs: 50,
+        limit: 25,
+        totalPages: 2,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: true,
+        prevPage: null,
+        nextPage: 2,
+      }
+      vi.mocked(mockPayload.find).mockResolvedValue(mockResult)
+
+      const result = await getPaginatedPosts({ category: 'news' })
+
+      expect(result.docs).toEqual(mockPosts)
+      expect(result.totalPages).toBe(2)
+      expect(result.page).toBe(1)
+      expect(result.hasNextPage).toBe(true)
+      expect(result.hasPrevPage).toBe(false)
+    })
+
+    it('should use default page and limit', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 1,
+          limit: 25,
+        }),
+      )
+    })
+
+    it('should accept custom page and limit', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news', page: 3, limit: 10 })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 3,
+          limit: 10,
+        }),
+      )
+    })
+
+    it('should filter by category', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'projects', page: 1, limit: 25 })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            categories: { contains: 'projects' },
+          }),
+        }),
+      )
+    })
+
+    it('should filter by artistId', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news', artistId: 'artist-123' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            artists: { equals: 'artist-123' },
+          }),
+        }),
+      )
+    })
+
+    it('should filter by published status when publishedOnly is true', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news', publishedOnly: true })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            _status: { equals: 'published' },
+          }),
+        }),
+      )
+    })
+
+    it('should not filter by published status when publishedOnly is false', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news', publishedOnly: false })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.not.objectContaining({
+            _status: expect.anything(),
+          }),
+        }),
+      )
+    })
+
+    it('should use specified locale', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news', locale: 'en' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          locale: 'en',
+        }),
+      )
+    })
+
+    it('should sort by createdAt descending', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news' })
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({

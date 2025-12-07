@@ -25,6 +25,7 @@ export const getAllPosts = async (locale?: LocaleCode) => {
 /**
  * Retrieves all published posts in the 'news' category.
  *
+ * @deprecated Use getPaginatedPosts() instead for better performance with large datasets
  * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de'
  * @returns A promise resolving to published news posts
  *
@@ -52,6 +53,7 @@ export const getAllNewsPosts = async (locale?: LocaleCode) => {
 /**
  * Retrieves all published posts in the 'projects' category.
  *
+ * @deprecated Use getPaginatedPosts() instead for better performance with large datasets
  * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de'
  * @returns A promise resolving to published project posts
  *
@@ -226,6 +228,81 @@ export const getFilteredPosts = async (options: {
     collection: 'posts',
     where,
     limit: options.limit || 100,
+    locale: options.locale || 'de',
+    sort: '-createdAt', // Most recent first
+  })
+}
+
+/**
+ * Retrieves paginated posts with flexible filtering options and full pagination metadata.
+ * This is the recommended function for paginated post lists (e.g., news/projects pages).
+ *
+ * @param options - Query options
+ * @param options.category - Filter by category (single string or array of strings)
+ * @param options.artistId - Filter by artist ID
+ * @param options.page - Page number (1-indexed, default: 1)
+ * @param options.limit - Number of posts per page (default: 25)
+ * @param options.locale - Locale code ('de', 'en', or 'all'). Defaults to 'de'
+ * @param options.publishedOnly - Whether to only return published posts (default: true)
+ * @returns A promise resolving to paginated posts with metadata
+ *
+ * @example
+ * // Get first page of news posts (25 per page)
+ * const result = await getPaginatedPosts({ category: 'news' })
+ * console.log(result.docs) // Array of 25 posts
+ * console.log(result.totalPages) // Total number of pages
+ * console.log(result.hasNextPage) // Boolean
+ *
+ * @example
+ * // Get second page with 50 posts per page
+ * const result = await getPaginatedPosts({
+ *   category: 'news',
+ *   page: 2,
+ *   limit: 50,
+ *   locale: 'en'
+ * })
+ *
+ * @example
+ * // Get posts for specific artist with pagination
+ * const result = await getPaginatedPosts({
+ *   category: 'projects',
+ *   artistId: '123',
+ *   page: 1,
+ *   limit: 10
+ * })
+ */
+export const getPaginatedPosts = async (options: {
+  category?: string | string[]
+  artistId?: string
+  page?: number
+  limit?: number
+  locale?: LocaleCode
+  publishedOnly?: boolean
+}) => {
+  const payload = await getPayload({ config })
+
+  const where: any = {}
+
+  // Filter by published status (default: true)
+  if (options.publishedOnly !== false) {
+    where._status = { equals: 'published' }
+  }
+
+  // Filter by category
+  if (options.category) {
+    where.categories = Array.isArray(options.category) ? { in: options.category } : { contains: options.category }
+  }
+
+  // Filter by artist
+  if (options.artistId) {
+    where.artists = { equals: options.artistId }
+  }
+
+  return await payload.find({
+    collection: 'posts',
+    where,
+    page: options.page || 1,
+    limit: options.limit || 25,
     locale: options.locale || 'de',
     sort: '-createdAt', // Most recent first
   })
