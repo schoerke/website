@@ -11,7 +11,7 @@
     "format": "pnpm exec prettier . --write",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:media": "tsx scripts/utils/regenerateMediaSizes.ts",
-    "generate:search-index": "tsx scripts/generateSearchIndex.ts",
+    "generate:search-index": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/reindexSearch.ts",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
