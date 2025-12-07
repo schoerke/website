@@ -1,3 +1,5 @@
+import { normalizeText } from '@/utils/search/normalizeText'
+
 /**
  * Search Service
  *
@@ -9,6 +11,7 @@
  * - Request deduplication via AbortController
  * - Automatic fallback to static JSON when API fails
  * - Client-side fuzzy search on static data
+ * - Diacritic-insensitive search (e.g., "Poltera" matches "Poltéra")
  *
  * @example
  * ```typescript
@@ -30,11 +33,9 @@ export interface SearchDoc {
 export interface SearchResults {
   results: {
     artists: SearchDoc[]
-    projects: SearchDoc[]
-    news: SearchDoc[]
-    recordings: SearchDoc[]
     employees: SearchDoc[]
     pages: SearchDoc[]
+    repertoire: SearchDoc[]
   }
   source: 'api' | 'backup'
   error?: string
@@ -72,11 +73,9 @@ export async function searchContent(query: string, locale: 'de' | 'en'): Promise
     return {
       results: {
         artists: [],
-        projects: [],
-        news: [],
-        recordings: [],
         employees: [],
         pages: [],
+        repertoire: [],
       },
       source: 'api',
       error: 'Query too short (minimum 3 characters)',
@@ -87,11 +86,9 @@ export async function searchContent(query: string, locale: 'de' | 'en'): Promise
     return {
       results: {
         artists: [],
-        projects: [],
-        news: [],
-        recordings: [],
         employees: [],
         pages: [],
+        repertoire: [],
       },
       source: 'api',
       error: 'Query too long (maximum 100 characters)',
@@ -117,13 +114,13 @@ export async function searchContent(query: string, locale: 'de' | 'en'): Promise
   abortControllers.set(abortKey, controller)
 
   try {
-    // Try API first with 500ms timeout
+    // Try API first with 2000ms timeout (more generous for dev environment)
     const apiPromise = searchViaAPI(sanitizedQuery, locale, controller.signal)
     const timeoutPromise = new Promise<SearchResults>((_, reject) => {
       const timeoutId = setTimeout(() => {
         controller.abort() // Abort the fetch when timeout occurs
-        reject(new Error('API timeout after 500ms'))
-      }, 500)
+        reject(new Error('API timeout after 2000ms'))
+      }, 2000)
       // Store timeout ID so we can clear it if API succeeds
       ;(apiPromise as any).timeoutId = timeoutId
     })
@@ -155,11 +152,9 @@ export async function searchContent(query: string, locale: 'de' | 'en'): Promise
       const emptyResults: SearchResults = {
         results: {
           artists: [],
-          projects: [],
-          news: [],
-          recordings: [],
           employees: [],
           pages: [],
+          repertoire: [],
         },
         source: 'backup',
         error: 'Search temporarily unavailable',
@@ -172,12 +167,15 @@ export async function searchContent(query: string, locale: 'de' | 'en'): Promise
 }
 
 /**
- * Search via Payload API
+ * Search via API endpoint (primary search method)
  */
 async function searchViaAPI(query: string, locale: 'de' | 'en', signal: AbortSignal): Promise<SearchResults> {
-  const url = `/api/search?q=${encodeURIComponent(query)}&locale=${locale}&limit=50`
+  // Always use 'de' locale for search since only German records exist
+  // The content itself is localized, but the search records are only created for German
+  const searchLocale = 'de'
+  const url = `/api/search?q=${encodeURIComponent(query)}&locale=${searchLocale}&limit=50`
 
-  const response = await fetch(url, { signal })
+  const response = await fetch(url, { signal, cache: 'no-store' })
 
   if (!response.ok) {
     throw new Error(`API returned ${response.status}`)
@@ -189,11 +187,9 @@ async function searchViaAPI(query: string, locale: 'de' | 'en', signal: AbortSig
   const grouped: SearchResults = {
     results: {
       artists: [],
-      projects: [],
-      news: [],
-      recordings: [],
       employees: [],
       pages: [],
+      repertoire: [],
     },
     source: 'api',
   }
@@ -210,15 +206,12 @@ async function searchViaAPI(query: string, locale: 'de' | 'en', signal: AbortSig
 
     if (doc.relationTo === 'artists') {
       grouped.results.artists.push(searchDoc)
-    } else if (doc.relationTo === 'recordings') {
-      grouped.results.recordings.push(searchDoc)
     } else if (doc.relationTo === 'employees') {
       grouped.results.employees.push(searchDoc)
-    } else if (doc.relationTo === 'posts') {
-      // TODO: Categorize by post category
-      grouped.results.news.push(searchDoc)
     } else if (doc.relationTo === 'pages') {
       grouped.results.pages.push(searchDoc)
+    } else if (doc.relationTo === 'repertoire') {
+      grouped.results.repertoire.push(searchDoc)
     }
   }
 
@@ -239,20 +232,18 @@ async function searchViaStaticJSON(query: string, locale: 'de' | 'en'): Promise<
 
   const index: SearchIndex = await response.json()
 
-  // Perform client-side substring search on displayTitle
-  const lowerQuery = query.toLowerCase()
+  // Perform client-side substring search on displayTitle (normalized)
+  const normalizedQuery = normalizeText(query)
 
-  const matchedDocs = index.docs.filter((doc) => doc.displayTitle.toLowerCase().includes(lowerQuery))
+  const matchedDocs = index.docs.filter((doc) => normalizeText(doc.displayTitle).includes(normalizedQuery))
 
   // Group by collection type and convert to SearchDoc format
   const grouped: SearchResults = {
     results: {
       artists: [],
-      projects: [],
-      news: [],
-      recordings: [],
       employees: [],
       pages: [],
+      repertoire: [],
     },
     source: 'backup',
   }
@@ -269,14 +260,12 @@ async function searchViaStaticJSON(query: string, locale: 'de' | 'en'): Promise<
 
     if (doc.relationTo === 'artists') {
       grouped.results.artists.push(searchDoc)
-    } else if (doc.relationTo === 'recordings') {
-      grouped.results.recordings.push(searchDoc)
     } else if (doc.relationTo === 'employees') {
       grouped.results.employees.push(searchDoc)
-    } else if (doc.relationTo === 'posts') {
-      grouped.results.news.push(searchDoc)
     } else if (doc.relationTo === 'pages') {
       grouped.results.pages.push(searchDoc)
+    } else if (doc.relationTo === 'repertoire') {
+      grouped.results.repertoire.push(searchDoc)
     }
   }
 
