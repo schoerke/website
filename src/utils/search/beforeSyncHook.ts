@@ -1,6 +1,7 @@
 import type { Payload } from 'payload'
 import { extractLexicalText } from './extractLexicalText'
 import { filterStopwords } from './filterStopwords'
+import { normalizeText } from './normalizeText'
 
 // Type definitions from @payloadcms/plugin-search
 interface DocToSync {
@@ -19,6 +20,21 @@ type BeforeSync = (args: {
   payload: Payload
   searchDoc: DocToSync
 }) => DocToSync | Promise<DocToSync>
+
+// Instrument translations (both DE and EN for bilingual search)
+const INSTRUMENT_TRANSLATIONS: Record<string, string[]> = {
+  piano: ['Klavier', 'Piano'],
+  'piano-forte': ['Hammerklavier', 'Piano Forte'],
+  harpsichord: ['Cembalo', 'Harpsichord'],
+  conductor: ['Dirigent', 'Conductor'],
+  violin: ['Violine', 'Violin', 'Geige'], // Added common German synonym
+  viola: ['Bratsche', 'Viola'],
+  cello: ['Violoncello', 'Cello'],
+  bass: ['Kontrabass', 'Double Bass', 'Bass'],
+  horn: ['Horn', 'Horn'],
+  recorder: ['Blockflöte', 'Recorder'],
+  'chamber-music': ['Kammermusik', 'Chamber Music'],
+}
 
 /**
  * BeforeSync hook for the Payload Search Plugin.
@@ -56,87 +72,20 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
       // Get artist slug (non-localized)
       documentSlug = doc.slug || ''
 
-      // Biography (localized richText)
-      if (doc.biography) {
-        const biographyText = extractLexicalText(doc.biography)
-        additionalContent += ` ${biographyText}`
-      }
-
-      // Quote (localized text)
-      if (doc.quote) {
-        additionalContent += ` ${doc.quote}`
-      }
-
-      // Repertoire sections (localized richText)
-      if (Array.isArray(doc.repertoire)) {
-        doc.repertoire.forEach((section: any) => {
-          if (section.title) {
-            additionalContent += ` ${section.title}`
-          }
-          if (section.content) {
-            const contentText = extractLexicalText(section.content)
-            additionalContent += ` ${contentText}`
-          }
+      // Instruments (non-localized array)
+      // Add BOTH German and English instrument names to searchable content
+      // so "Klavier" and "Piano" both find pianists
+      if (Array.isArray(doc.instrument) && doc.instrument.length > 0) {
+        doc.instrument.forEach((instrumentKey: string) => {
+          const translations = INSTRUMENT_TRANSLATIONS[instrumentKey] || [instrumentKey]
+          // Add all translations for this instrument
+          additionalContent += ` ${translations.join(' ')}`
         })
       }
 
-      // Discography sections (localized richText)
-      if (Array.isArray(doc.discography)) {
-        doc.discography.forEach((section: any) => {
-          if (section.recordings) {
-            const recordingsText = extractLexicalText(section.recordings)
-            additionalContent += ` ${recordingsText}`
-          }
-        })
-      }
-
-      break
-    }
-
-    case 'posts': {
-      // Get post title (localized)
-      documentTitle = doc.title || ''
-      // Get post slug (localized)
-      documentSlug = doc.slug || ''
-
-      // Content (localized richText)
-      if (doc.content) {
-        const contentText = extractLexicalText(doc.content)
-        additionalContent += ` ${contentText}`
-      }
-
-      // Denormalize related artist names
-      if (Array.isArray(doc.artists) && doc.artists.length > 0) {
-        const artistIds = doc.artists.map((artist: any) => (typeof artist === 'object' ? artist.id : artist))
-
-        // Fetch artist names
-        const artistsData = await payload.find({
-          collection: 'artists',
-          where: {
-            id: {
-              in: artistIds,
-            },
-          },
-          limit: artistIds.length,
-        })
-
-        const artistNames = artistsData.docs.map((artist: any) => artist.name).join(' ')
-        additionalContent += ` ${artistNames}`
-      }
-
-      break
-    }
-
-    case 'recordings': {
-      // Get recording title (localized)
-      documentTitle = doc.title || ''
-      // Recordings don't have slugs currently
-
-      // Description (localized richText)
-      if (doc.description) {
-        const descriptionText = extractLexicalText(doc.description)
-        additionalContent += ` ${descriptionText}`
-      }
+      // Note: Biography, quote, repertoire, and discography are intentionally excluded
+      // to keep KBar search focused on finding artists by name and instrument.
+      // Full-text biography search can be added later as a separate feature.
 
       break
     }
@@ -146,10 +95,35 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
       documentTitle = doc.name || ''
       // Employees don't have slugs
 
-      // Bio (localized richText)
-      if (doc.bio) {
-        const bioText = extractLexicalText(doc.bio)
-        additionalContent += ` ${bioText}`
+      // Note: Employee bio is intentionally excluded to keep search focused on names
+
+      break
+    }
+
+    case 'pages': {
+      // Get page title (localized)
+      documentTitle = doc.title || ''
+      // Get page slug (localized)
+      documentSlug = doc.slug || ''
+
+      // Content (localized richText)
+      if (doc.content) {
+        const contentText = extractLexicalText(doc.content)
+        additionalContent += ` ${contentText}`
+      }
+
+      break
+    }
+
+    case 'repertoire': {
+      // Get repertoire title (localized)
+      documentTitle = doc.title || ''
+      // Repertoire doesn't have slugs (accessed via artist pages)
+
+      // Content (localized richText)
+      if (doc.content) {
+        const contentText = extractLexicalText(doc.content)
+        additionalContent += ` ${contentText}`
       }
 
       break
@@ -162,22 +136,17 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
   // Filter stopwords based on locale
   const filteredContent = filterStopwords(fullContent, locale as 'de' | 'en')
 
-  console.log('beforeSyncHook:', {
-    collection: searchDoc.doc.relationTo,
-    docId: searchDoc.doc.value,
-    displayTitle: documentTitle,
-    slug: documentSlug,
-    locale,
-  })
+  // Normalize for diacritic-insensitive search
+  const normalizedContent = normalizeText(filteredContent)
 
   return {
     ...searchDoc,
     // Store the clean document title for display
     displayTitle: documentTitle,
-    // Store the slug for routing (artists and posts only)
+    // Store the slug for routing (artists only now)
     slug: documentSlug,
-    // Store the full searchable content in title field
-    title: filteredContent,
+    // Store the normalized searchable content in title field (diacritic-insensitive)
+    title: normalizedContent,
     // Store the locale for filtering search results
     locale,
   }
