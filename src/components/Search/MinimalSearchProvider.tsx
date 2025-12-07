@@ -11,7 +11,7 @@ interface MinimalSearchProviderProps {
   children: ReactNode
 }
 
-export const MinimalSearchProvider: React.FC<MinimalSearchProviderProps> = ({ children }) => {
+const MinimalSearchProvider: React.FC<MinimalSearchProviderProps> = ({ children }) => {
   const actions = [
     {
       id: 'test1',
@@ -57,3 +57,5 @@ function MinimalResults() {
     />
   )
 }
+
+export default MinimalSearchProvider

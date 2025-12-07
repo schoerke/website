@@ -28,13 +28,13 @@ import {
 } from 'kbar'
 import { useLocale } from 'next-intl'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
-import { KBarTutorial } from './KBarTutorial'
+import KBarTutorial from './KBarTutorial'
 
 interface SearchProviderProps {
   children: ReactNode
 }
 
-export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
+const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const router = useRouter()
   const locale = useLocale() as 'de' | 'en'
 
@@ -248,3 +248,5 @@ function getDocumentPath(doc: SearchDoc): string {
       return '/'
   }
 }
+
+export default SearchProvider

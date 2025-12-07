@@ -1,6 +1,6 @@
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
-import { SearchProvider } from '@/components/Search/SearchProvider'
+import SearchProvider from '@/components/Search/SearchProvider'
 import { routing } from '@/i18n/routing'
 import { hasLocale, NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'

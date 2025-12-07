@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react'
 
 const TUTORIAL_SEEN_KEY = 'kbar-tutorial-seen'
 
-export const KBarTutorial: React.FC = () => {
+const KBarTutorial: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false)
   const locale = useLocale()
 
@@ -99,3 +99,5 @@ export const KBarTutorial: React.FC = () => {
     </div>
   )
 }
+
+export default KBarTutorial
