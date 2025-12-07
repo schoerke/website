@@ -122,6 +122,16 @@ const en = {
         visitYouTube: 'Visit us on YouTube',
       },
     },
+    pagination: {
+      previous: 'Previous',
+      next: 'Next',
+      goPrevious: 'Go to previous page',
+      goNext: 'Go to next page',
+      goToPage: 'Go to page {page}',
+      currentPage: 'Current page, page {page}',
+      morePages: 'More pages',
+      postsPerPage: 'Posts per page',
+    },
   },
 }
 

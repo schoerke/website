@@ -125,6 +125,16 @@ const de = {
         visitYouTube: 'Besuchen Sie uns auf YouTube',
       },
     },
+    pagination: {
+      previous: 'Zurück',
+      next: 'Weiter',
+      goPrevious: 'Zur vorherigen Seite',
+      goNext: 'Zur nächsten Seite',
+      goToPage: 'Gehe zu Seite {page}',
+      currentPage: 'Aktuelle Seite, Seite {page}',
+      morePages: 'Weitere Seiten',
+      postsPerPage: 'Beiträge pro Seite',
+    },
   },
 }
 
