@@ -57,11 +57,11 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
   const employees = employeesResult.docs
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
+    <main className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
       {/* CMS-editable content at the top */}
       {page && (
         <div className="mb-12">
-          <h1 className="font-playfair mb-6 mt-4 text-5xl font-bold">{page.title}</h1>
+          <h1 className="font-playfair mb-6 text-5xl font-bold">{page.title}</h1>
           <div className="prose mb-12 max-w-none">
             <PayloadRichText content={page.content} />
           </div>
@@ -69,7 +69,7 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
       )}
 
       {/* Fallback title if no page exists */}
-      {!page && <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">{t('title')}</h1>}
+      {!page && <h1 className="font-playfair mb-8 text-5xl font-bold sm:mb-12">{t('title')}</h1>}
 
       {/* Employee list */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

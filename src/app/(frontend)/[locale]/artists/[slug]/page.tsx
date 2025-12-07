@@ -35,7 +35,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
   const { name, image, contactPersons } = artist
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
+    <main className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
       <h1 className="font-playfair mb-6 text-6xl font-bold">{name}</h1>
       <div className="mb-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
         {isMedia(image) && (

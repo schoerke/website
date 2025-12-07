@@ -25,8 +25,8 @@ const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) 
   const instruments = artists ? Array.from(new Set(artists.flatMap((artist: any) => artist.instrument || []))) : []
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
-      <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold">{t('title')}</h1>
+    <main className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
+      <h1 className="font-playfair mb-8 text-5xl font-bold sm:mb-12">{t('title')}</h1>
       {error && <div className="text-red-600">{error}</div>}
       {!error && artists && artists.length === 0 && <div className="text-gray-500">No artists found.</div>}
       {!error && artists && artists.length > 0 && (
