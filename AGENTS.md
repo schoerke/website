@@ -187,16 +187,231 @@ grep -E "CLOUDFLARE|R2|S3_" .env
     - Tailwind CSS plugin enabled
 - **Imports:** Use ES module syntax; imports are auto-organized
 - **Types:** Use TypeScript for all new code
-- **React Components:** Always define components using the following pattern:
-  - `const ComponentName: React.FC<Props> = (props) => { ... }`
-  - Place `export default ComponentName` at the end of the file.
-  - Use named types/interfaces for props (e.g., `ComponentNameProps`).
+- **React Components:** See dedicated "React Component Pattern" section below for detailed guidelines.
 - **Naming:** Use descriptive, camelCase for variables/functions, PascalCase for types/components
 - **Error Handling:** Prefer explicit error handling; avoid silent failures
 - **Linting:** Follows Next.js, Prettier, and TypeScript ESLint rules
 - **Ignore:** build, dist, node_modules, temp, .git, .yarn, .tmp
 
 _This file is for agentic coding agents. Update if project conventions change._
+
+## React Component Pattern
+
+**CRITICAL: This is the standard pattern for ALL React components in this project.**
+
+### Required Component Structure
+
+```typescript
+'use client' // Only if client component
+
+import statements...
+
+interface ComponentNameProps {
+  prop1: Type1
+  prop2?: Type2 // Optional props marked with ?
+}
+
+const ComponentName: React.FC<ComponentNameProps> = ({ prop1, prop2 }) => {
+  // Component logic
+  return (
+    // JSX
+  )
+}
+
+export default ComponentName
+```
+
+### Key Rules
+
+1. **Component Declaration:**
+   - Always use: `const ComponentName: React.FC<PropsType> = (props) => { ... }`
+   - Never use function declarations: `function ComponentName() { ... }`
+   - Never export inline: `export const ComponentName = ...`
+
+2. **Props Interface:**
+   - Always define a named interface: `ComponentNameProps`
+   - Place it directly above the component declaration
+   - Use descriptive names that match the component name
+
+3. **Export Pattern:**
+   - Always use default export: `export default ComponentName`
+   - Place export at the end of the file (after component definition)
+   - **Exception:** Files with multiple related components (e.g., tab components, form sections) may use named exports
+     when consumed together
+
+4. **Helper Functions:**
+   - Define helper functions outside the component (above it)
+   - Add return type annotations: `function helper(x: number): string { ... }`
+   - Use `function` keyword for top-level helpers, not arrow functions
+
+5. **Client vs Server:**
+   - Add `'use client'` directive only when necessary (hooks, event handlers, browser APIs)
+   - Server components are the default (no directive needed)
+
+### Examples
+
+**✅ CORRECT - Client Component:**
+
+```typescript
+'use client'
+
+import { useState } from 'react'
+
+interface CounterProps {
+  initialValue?: number
+}
+
+const Counter: React.FC<CounterProps> = ({ initialValue = 0 }) => {
+  const [count, setCount] = useState(initialValue)
+
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Count: {count}
+    </button>
+  )
+}
+
+export default Counter
+```
+
+**✅ CORRECT - Server Component with Helper:**
+
+```typescript
+import { Post } from '@/payload-types'
+
+interface PostListProps {
+  posts: Post[]
+}
+
+function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString()
+}
+
+const PostList: React.FC<PostListProps> = ({ posts }) => {
+  return (
+    <div>
+      {posts.map(post => (
+        <div key={post.id}>
+          <h2>{post.title}</h2>
+          <time>{formatDate(post.createdAt)}</time>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default PostList
+```
+
+**❌ WRONG - Function Declaration:**
+
+```typescript
+// DON'T DO THIS
+export function ComponentName(props: Props) {
+  return <div>...</div>
+}
+```
+
+**❌ WRONG - Inline Named Export:**
+
+```typescript
+// DON'T DO THIS
+export const ComponentName: React.FC<Props> = (props) => {
+  return <div>...</div>
+}
+```
+
+**❌ WRONG - Export Before Definition:**
+
+```typescript
+// DON'T DO THIS
+export default ComponentName
+
+const ComponentName: React.FC<Props> = (props) => {
+  return <div>...</div>
+}
+```
+
+### Compound Component Pattern
+
+For components that use the compound pattern (like `NewsFeed.Server`, `NewsFeed.Client`):
+
+**File: `NewsFeedServer.tsx`**
+
+```typescript
+const NewsFeedServer: React.FC<NewsFeedServerProps> = (props) => {
+  // ...
+}
+
+export default NewsFeedServer
+```
+
+**File: `index.tsx`**
+
+```typescript
+import NewsFeedServer from './NewsFeedServer'
+import NewsFeedClient from './NewsFeedClient'
+
+const NewsFeed = {
+  Server: NewsFeedServer,
+  Client: NewsFeedClient,
+}
+
+export { NewsFeed }
+export default NewsFeed
+```
+
+### Multi-Component Files (Exception)
+
+For files containing multiple related components that are consumed together (like tab content):
+
+**File: `ArtistTabContent.tsx`**
+
+```typescript
+'use client'
+
+// Biography Tab
+interface BiographyTabProps {
+  content: Artist['biography']
+  quote?: string | null
+}
+
+export const BiographyTab: React.FC<BiographyTabProps> = ({ content, quote }) => {
+  return <div className="prose">{/* ... */}</div>
+}
+
+// Repertoire Tab
+interface RepertoireTabProps {
+  repertoires: Repertoire[]
+}
+
+export const RepertoireTab: React.FC<RepertoireTabProps> = ({ repertoires }) => {
+  return <div>{/* ... */}</div>
+}
+
+// More tab components...
+```
+
+**Usage:**
+
+```typescript
+import { BiographyTab, RepertoireTab } from './ArtistTabContent'
+
+// Use multiple components together
+<BiographyTab content={artist.biography} />
+<RepertoireTab repertoires={repertoires} />
+```
+
+**When to use multi-component files:**
+
+- Components are closely related (e.g., tabs, form sections, card variants)
+- Always consumed together in the same parent component
+- Sharing types or helper functions specific to that domain
+- **Not** for general utility components or unrelated components
+
+### When to Deviate
+
+**NEVER.** Always follow this pattern unless explicitly instructed otherwise by the user.
 
 ## Library-Specific Knowledge
 
