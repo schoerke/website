@@ -27,6 +27,7 @@
  */
 
 import config from '@/payload.config'
+import { normalizeText } from '@/utils/search/normalizeText'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 
@@ -44,13 +45,16 @@ export async function GET(request: Request) {
   try {
     const payload = await getPayload({ config })
 
+    // Normalize query for diacritic-insensitive search
+    const normalizedQuery = normalizeText(query.trim())
+
     // Search the search collection
     const results = await payload.find({
       collection: 'search' as any,
       locale, // Pass locale to get localized 'title' field
       where: {
         title: {
-          contains: query.trim(),
+          contains: normalizedQuery,
         },
       },
       limit,
