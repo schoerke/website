@@ -101,6 +101,23 @@ Successfully implemented KBar command palette with dynamic search results. Users
 - When searching with `locale: 'en'`, Payload queries `search_locales` WHERE `_locale = 'en'`
 - This returns English content even though parent `search.locale` shows 'de'
 - The locale filtering works correctly despite the parent locale field showing 'de'
+- **Update 2025-12-07**: Now using `locale: 'de'` for all searches as workaround for English records not being created
+
+### Search Index Content Strategy
+
+**Current approach (as of 2025-12-07):**
+
+- **Artists**: Name + instrument translations only
+- **Employees**: Name only
+- **Pages**: Title + content text
+- **Repertoire**: Title + content text
+
+**Rationale:**
+
+- Command palette search should be **identity-focused** (who/what), not **content-focused** (mentions)
+- Full biography indexing creates false positives (e.g., searching "piano" finds non-pianists who mention pianos)
+- Biography/discography search may be added later as a separate dedicated search feature
+- Instrument translations (both German and English) enable bilingual instrument search without separate locale indexes
 
 ### Files Created/Modified
 
@@ -164,6 +181,10 @@ Successfully implemented KBar command palette with dynamic search results. Users
 
 ## Known Issues
 
+⚠️ **English Search Records Not Created**: Only German (de) search records exist in the database. English locale
+searches use German records as workaround. This doesn't affect functionality since searchable content (names,
+instruments) is mostly language-neutral. See incident log for details.
+
 ⚠️ **Keyboard Shortcut Conflicts**: Typing a single letter can match multiple actions via text search, not just the
 designated shortcut. For example:
 
@@ -184,6 +205,94 @@ designated shortcut. For example:
 - [ ] Seed static pages (Contact, Team, etc.)
 
 ## Incident Log
+
+### 2025-12-07: KBar Search Returning No Results - Keywords Issue
+
+**What happened:**
+
+- Searching for "piano" returned API results but showed 0 results in KBar dropdown
+- Initial debugging showed 14 actions being created and registered with `useRegisterActions`
+- KBar's `useMatches()` returned 0 results despite actions being registered
+
+**Root cause:**
+
+- KBar's `useMatches()` hook filters actions by matching the search query against action `name` and `keywords` fields
+- Dynamic search result actions had no `keywords` field
+- Action names were just artist names (e.g., "Martin Stadtfeld") which don't contain search terms like "piano"
+- KBar's built-in filtering eliminated all actions because they didn't match the query
+
+**Solution:**
+
+- Added `keywords: \`${searchQuery} ${doc.title}\`` to each dynamic action
+- This tells KBar that the action matches the current search query
+- KBar no longer filters them out, showing all API results
+
+**Lesson learned:**
+
+- When using KBar with server-side search, you must explicitly set `keywords` on dynamic actions
+- KBar doesn't know that your backend already filtered results - it will apply its own client-side filtering
+- Without keywords that match the query, all results get filtered out
+
+### 2025-12-07: False Positives in Instrument Search
+
+**What happened:**
+
+- Searching for "piano" returned non-pianists like Dominik Wagner (bassist) and Trio Gaspard (chamber ensemble)
+- Users expect instrument searches to find artists who play that instrument, not artists who mention it in their
+  biography
+
+**Root cause:**
+
+- `beforeSyncHook` was indexing full biography and discography text
+- Biographies often mention collaborations with other instruments ("worked with pianist X", "piano accompaniment")
+- This created noise where every artist who mentioned "piano" was searchable by "piano"
+
+**Solution:**
+
+- Modified `beforeSyncHook` to ONLY index:
+  - Artist name
+  - Instrument translations (both German and English)
+- Removed indexing of: biography, quote, repertoire sections, discography
+- Regenerated search index on remote database
+
+**Lesson learned:**
+
+- For command palette search (KBar), focus on **identity** (name, role, instrument)
+- Full-text biography search creates false positives and poor UX
+- Biography search might be useful for a dedicated search page, but not for quick command palette
+- Keep KBar search focused and precise
+
+### 2025-12-07: English Search Records Not Being Created
+
+**What happened:**
+
+- Only German (de) search records were being created (30 records)
+- English (en) locale had 0 search records
+- Attempted multiple approaches to trigger English record creation:
+  - "Touching" documents with `data: {}` (didn't trigger hook)
+  - Forcing `updatedAt` changes (still only created DE records)
+  - Updating with explicit `locale: 'en'` parameter (no EN records created)
+
+**Root cause:**
+
+- Payload search plugin's `afterChange` hook fires once per API request
+- The hook uses `req.locale` from the incoming request
+- When updating documents programmatically, even with `locale: 'en'`, only one search record is created per update
+- To create records for both locales, you need TWO separate API calls (one for each locale)
+- The plugin doesn't automatically create records for all configured locales
+
+**Workaround:**
+
+- Modified `src/services/search.ts` to always use `locale: 'de'` for search API calls
+- Both German and English UI locales now use the same German search records
+- This works because the searchable content (artist names, instrument keywords) is mostly language-neutral
+
+**Lesson learned:**
+
+- Payload search plugin with `localize: true` does NOT automatically index all locales
+- You must explicitly update each document ONCE PER LOCALE to create search records for that locale
+- For multilingual sites, consider whether separate search indexes per locale are actually necessary
+- If searchable content is mostly language-neutral (names, keywords), a single locale's records may suffice
 
 ### 2025-11-24: Remote Database Modified Without Verification
 
