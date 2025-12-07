@@ -2,7 +2,7 @@
 
 import { Link } from '@/i18n/navigation'
 import type { Image as PayloadImage, Post } from '@/payload-types'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 interface NewsFeedListProps {
@@ -10,6 +10,8 @@ interface NewsFeedListProps {
   emptyMessage: string
   category?: 'news' | 'projects'
   defaultImage?: string | null
+  page?: number
+  limit?: number
 }
 
 function getImageUrl(img: PayloadImage | null | undefined, defaultImg: string | null | undefined): string {
@@ -50,8 +52,16 @@ function extractTextPreview(content: Post['content'], maxLength: number = 180): 
   return fullText.substring(0, maxLength).trim() + '...'
 }
 
-const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, category = 'news', defaultImage = null }) => {
+const NewsFeedList: React.FC<NewsFeedListProps> = ({
+  posts,
+  emptyMessage,
+  category = 'news',
+  defaultImage = null,
+  page = 1,
+  limit = 25,
+}) => {
   const t = useTranslations(`custom.pages.${category}`)
+  const locale = useLocale()
 
   if (posts.length === 0) {
     return (
@@ -70,7 +80,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
   }
 
   return (
-    <div className="divide-y divide-gray-200">
+    <div className="divide-y divide-gray-200 transition-opacity duration-300 ease-in-out">
       {posts.map((post) => {
         const img = typeof post.image === 'object' && post.image !== null ? (post.image as PayloadImage) : null
         const imageUrl = getImageUrl(img, defaultImage)
@@ -85,7 +95,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
             {/* Date column - only visible on large screens */}
             <div className="hidden lg:block">
               <time dateTime={post.createdAt} className="text-sm font-medium text-gray-500">
-                {formatDate(post.createdAt, 'en')}
+                {formatDate(post.createdAt, locale)}
               </time>
             </div>
 
@@ -112,7 +122,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
                 <div className="flex items-center gap-3 text-xs text-gray-500 sm:text-sm">
                   {/* Date shown inline on mobile/tablet */}
                   <time dateTime={post.createdAt} className="lg:hidden">
-                    {formatDate(post.createdAt, 'en')}
+                    {formatDate(post.createdAt, locale)}
                   </time>
                   <span className="text-primary-black decoration-primary-yellow group-hover:text-primary-yellow hidden font-medium underline decoration-2 underline-offset-2 transition-colors sm:inline">
                     {t('learnMore')}
