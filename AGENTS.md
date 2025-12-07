@@ -185,7 +185,10 @@ grep -E "CLOUDFLARE|R2|S3_" .env
     - Print width: 120
     - Organize imports (prettier-plugin-organize-imports)
     - Tailwind CSS plugin enabled
-- **Imports:** Use ES module syntax; imports are auto-organized
+- **Imports:**
+  - **ALWAYS place imports at the very top of the file** (before JSDoc comments, before any code)
+  - Use ES module syntax; imports are auto-organized by Prettier
+  - Group order: external dependencies, then internal imports (@ aliases)
 - **Types:** Use TypeScript for all new code
 - **React Components:** See dedicated "React Component Pattern" section below for detailed guidelines.
 - **Naming:** Use descriptive, camelCase for variables/functions, PascalCase for types/components
@@ -202,9 +205,9 @@ _This file is for agentic coding agents. Update if project conventions change._
 ### Required Component Structure
 
 ```typescript
-'use client' // Only if client component
-
 import statements...
+
+'use client' // Only if client component (place AFTER imports)
 
 interface ComponentNameProps {
   prop1: Type1
@@ -223,29 +226,35 @@ export default ComponentName
 
 ### Key Rules
 
-1. **Component Declaration:**
+1. **Import Placement:**
+   - **ALWAYS place imports at the very top of the file**
+   - Imports come before 'use client' directive, before JSDoc comments, before any code
+   - This is a critical rule for code organization
+
+2. **Component Declaration:**
    - Always use: `const ComponentName: React.FC<PropsType> = (props) => { ... }`
    - Never use function declarations: `function ComponentName() { ... }`
    - Never export inline: `export const ComponentName = ...`
 
-2. **Props Interface:**
+3. **Props Interface:**
    - Always define a named interface: `ComponentNameProps`
    - Place it directly above the component declaration
    - Use descriptive names that match the component name
 
-3. **Export Pattern:**
+4. **Export Pattern:**
    - Always use default export: `export default ComponentName`
    - Place export at the end of the file (after component definition)
    - **Exception:** Files with multiple related components (e.g., tab components, form sections) may use named exports
      when consumed together
 
-4. **Helper Functions:**
+5. **Helper Functions:**
    - Define helper functions outside the component (above it)
    - Add return type annotations: `function helper(x: number): string { ... }`
    - Use `function` keyword for top-level helpers, not arrow functions
 
-5. **Client vs Server:**
+6. **Client vs Server:**
    - Add `'use client'` directive only when necessary (hooks, event handlers, browser APIs)
+   - Place 'use client' AFTER imports
    - Server components are the default (no directive needed)
 
 ### Examples
