@@ -70,20 +70,11 @@ export default buildConfig({
   plugins: [
     // Search
     searchPlugin({
-      collections: ['artists', 'employees', 'pages', 'recordings', 'posts', 'repertoire'],
+      collections: ['artists', 'employees', 'pages', 'repertoire'],
       beforeSync: beforeSyncHook,
       localize: true, // Localizes the 'title' field in search collection
       defaultPriorities: {
         artists: 50,
-        recordings: 40,
-        posts: ({ doc }) => {
-          // Higher priority for news posts
-          if (doc.categories && Array.isArray(doc.categories) && doc.categories.includes('news')) {
-            return 30
-          }
-          // Lower priority for project posts
-          return 20
-        },
         employees: 15,
         pages: 25,
         repertoire: 10,

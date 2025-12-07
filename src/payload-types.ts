@@ -562,14 +562,6 @@ export interface Search {
         value: number | Page;
       }
     | {
-        relationTo: 'recordings';
-        value: number | Recording;
-      }
-    | {
-        relationTo: 'posts';
-        value: number | Post;
-      }
-    | {
         relationTo: 'repertoire';
         value: number | Repertoire;
       };
