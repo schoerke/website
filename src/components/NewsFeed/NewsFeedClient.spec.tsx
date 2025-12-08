@@ -9,6 +9,14 @@ import NewsFeedClient from './NewsFeedClient'
 // Mock fetch globally
 global.fetch = vi.fn()
 
+// Mock the server action
+vi.mock('@/actions/posts', () => ({
+  fetchPosts: vi.fn(),
+}))
+
+// Import the mocked function after the mock
+import { fetchPosts } from '@/actions/posts'
+
 // Mock NewsFeedList component
 vi.mock('./NewsFeedList', () => ({
   default: ({ posts, emptyMessage }: any) => (
@@ -39,24 +47,25 @@ describe('NewsFeedClient', () => {
 
   it('should show loading state initially', async () => {
     // Use a promise we can control to keep the component in loading state
-    let resolveFetch: (value: any) => void
-    const fetchPromise = new Promise((resolve) => {
-      resolveFetch = resolve
+    let resolveFetchPosts: (value: any) => void
+    const fetchPostsPromise = new Promise((resolve) => {
+      resolveFetchPosts = resolve
     })
 
-    vi.mocked(global.fetch).mockReturnValue(fetchPromise as any)
+    vi.mocked(fetchPosts).mockReturnValue(fetchPostsPromise as any)
+    vi.mocked(global.fetch).mockResolvedValue({
+      json: async () => ({ docs: [] }),
+    } as Response)
 
     renderWithIntl(<NewsFeedClient />)
 
     // Check skeletons are shown while loading
     expect(screen.getAllByTestId('skeleton')).toHaveLength(12)
 
-    // Now resolve the fetch
+    // Now resolve the fetchPosts promise
     await act(async () => {
-      resolveFetch!({
-        json: async () => ({ docs: [] }),
-      })
-      await fetchPromise
+      resolveFetchPosts!({ docs: [] })
+      await fetchPostsPromise
     })
 
     // Wait for loading to complete
@@ -68,8 +77,9 @@ describe('NewsFeedClient', () => {
   it('should fetch and display posts', async () => {
     const mockPosts = [createMockPost({ title: 'Test Post 1' }), createMockPost({ id: 2, title: 'Test Post 2' })]
 
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: mockPosts } as any)
     vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: mockPosts }),
+      json: async () => ({ docs: [] }),
     } as Response)
 
     await act(async () => {
@@ -82,7 +92,8 @@ describe('NewsFeedClient', () => {
     })
   })
 
-  it('should build API URL with category filter', async () => {
+  it('should call server action with category filter', async () => {
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({ docs: [] }),
     } as Response)
@@ -92,16 +103,17 @@ describe('NewsFeedClient', () => {
     })
 
     await waitFor(() => {
-      // Check that fetch was called with posts API
-      const postsCall = vi.mocked(global.fetch).mock.calls.find((call) => call[0].toString().includes('/api/posts'))
-      expect(postsCall).toBeDefined()
-      const url = postsCall![0] as string
-      // URL encoding: where[categories][contains] becomes where%5Bcategories%5D%5Bcontains%5D
-      expect(decodeURIComponent(url)).toContain('where[categories][contains]=news')
+      expect(fetchPosts).toHaveBeenCalledWith({
+        category: 'news',
+        artistId: undefined,
+        limit: 100,
+        locale: 'de',
+      })
     })
   })
 
-  it('should build API URL with multiple category filters', async () => {
+  it('should call server action with multiple category filters', async () => {
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({ docs: [] }),
     } as Response)
@@ -111,15 +123,17 @@ describe('NewsFeedClient', () => {
     })
 
     await waitFor(() => {
-      const postsCall = vi.mocked(global.fetch).mock.calls.find((call) => call[0].toString().includes('/api/posts'))
-      expect(postsCall).toBeDefined()
-      const url = decodeURIComponent(postsCall![0] as string)
-      expect(url).toContain('where[categories][contains]=news')
-      expect(url).toContain('where[categories][contains]=projects')
+      expect(fetchPosts).toHaveBeenCalledWith({
+        category: ['news', 'projects'],
+        artistId: undefined,
+        limit: 100,
+        locale: 'de',
+      })
     })
   })
 
-  it('should build API URL with artist filter', async () => {
+  it('should call server action with artist filter', async () => {
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({ docs: [] }),
     } as Response)
@@ -129,14 +143,17 @@ describe('NewsFeedClient', () => {
     })
 
     await waitFor(() => {
-      const postsCall = vi.mocked(global.fetch).mock.calls.find((call) => call[0].toString().includes('/api/posts'))
-      expect(postsCall).toBeDefined()
-      const url = decodeURIComponent(postsCall![0] as string)
-      expect(url).toContain('where[artists][equals]=123')
+      expect(fetchPosts).toHaveBeenCalledWith({
+        category: undefined,
+        artistId: '123',
+        limit: 100,
+        locale: 'de',
+      })
     })
   })
 
-  it('should build API URL with limit', async () => {
+  it('should call server action with limit', async () => {
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({ docs: [] }),
     } as Response)
@@ -146,13 +163,17 @@ describe('NewsFeedClient', () => {
     })
 
     await waitFor(() => {
-      const postsCall = vi.mocked(global.fetch).mock.calls.find((call) => call[0].toString().includes('/api/posts'))
-      expect(postsCall).toBeDefined()
-      expect(postsCall![0].toString()).toContain('limit=5')
+      expect(fetchPosts).toHaveBeenCalledWith({
+        category: undefined,
+        artistId: undefined,
+        limit: 5,
+        locale: 'de',
+      })
     })
   })
 
-  it('should build API URL with locale', async () => {
+  it('should call server action with locale', async () => {
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({ docs: [] }),
     } as Response)
@@ -162,13 +183,17 @@ describe('NewsFeedClient', () => {
     })
 
     await waitFor(() => {
-      const postsCall = vi.mocked(global.fetch).mock.calls.find((call) => call[0].toString().includes('/api/posts'))
-      expect(postsCall).toBeDefined()
-      expect(postsCall![0].toString()).toContain('locale=en')
+      expect(fetchPosts).toHaveBeenCalledWith({
+        category: undefined,
+        artistId: undefined,
+        limit: 100,
+        locale: 'en',
+      })
     })
   })
 
   it('should always filter by published status', async () => {
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({ docs: [] }),
     } as Response)
@@ -178,15 +203,16 @@ describe('NewsFeedClient', () => {
     })
 
     await waitFor(() => {
-      const postsCall = vi.mocked(global.fetch).mock.calls.find((call) => call[0].toString().includes('/api/posts'))
-      expect(postsCall).toBeDefined()
-      const url = decodeURIComponent(postsCall![0] as string)
-      expect(url).toContain('where[_status][equals]=published')
+      // The fetchPosts server action handles publishedOnly=true internally
+      expect(fetchPosts).toHaveBeenCalled()
     })
   })
 
   it('should handle fetch errors gracefully', async () => {
-    vi.mocked(global.fetch).mockRejectedValue(new Error('Network error'))
+    vi.mocked(fetchPosts).mockRejectedValue(new Error('Network error'))
+    vi.mocked(global.fetch).mockResolvedValue({
+      json: async () => ({ docs: [] }),
+    } as Response)
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     await act(async () => {
@@ -202,6 +228,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should not show loading state when showLoadingState is false', async () => {
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({ docs: [] }),
     } as Response)
@@ -219,6 +246,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should display empty message when no posts', async () => {
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({ docs: [] }),
     } as Response)
@@ -233,6 +261,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should only fetch once', async () => {
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({ docs: [] }),
     } as Response)
@@ -245,8 +274,9 @@ describe('NewsFeedClient', () => {
     })
 
     await waitFor(() => {
-      // Should call fetch twice (posts + default avatar)
-      expect(global.fetch).toHaveBeenCalledTimes(2)
+      // Should call fetchPosts once and media fetch once (2 total)
+      expect(fetchPosts).toHaveBeenCalledTimes(1)
+      expect(global.fetch).toHaveBeenCalledTimes(1)
     })
 
     await act(async () => {
@@ -258,6 +288,7 @@ describe('NewsFeedClient', () => {
     })
 
     // Should not fetch again
-    expect(global.fetch).toHaveBeenCalledTimes(2)
+    expect(fetchPosts).toHaveBeenCalledTimes(1)
+    expect(global.fetch).toHaveBeenCalledTimes(1)
   })
 })

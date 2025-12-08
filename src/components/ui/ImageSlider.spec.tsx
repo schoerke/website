@@ -24,6 +24,8 @@ vi.mock('embla-carousel-react', () => ({
 vi.mock('embla-carousel-autoplay', () => ({
   default: () => ({
     reset: vi.fn(),
+    stop: vi.fn(),
+    play: vi.fn(),
   }),
 }))
 

@@ -14,8 +14,8 @@ interface PaginatedResult {
   pagingCounter: number
   hasPrevPage: boolean
   hasNextPage: boolean
-  prevPage: number | null
-  nextPage: number | null
+  prevPage?: number | null
+  nextPage?: number | null
 }
 
 interface NewsFeedServerProps {

@@ -198,6 +198,7 @@ describe('Post Service', () => {
         where: { _status: { equals: 'published' } },
         limit: 100,
         locale: 'de',
+        depth: 1,
         sort: '-createdAt',
       })
     })
@@ -216,6 +217,7 @@ describe('Post Service', () => {
         },
         limit: 100,
         locale: 'de',
+        depth: 1,
         sort: '-createdAt',
       })
     })
@@ -233,6 +235,7 @@ describe('Post Service', () => {
         },
         limit: 100,
         locale: 'de',
+        depth: 1,
         sort: '-createdAt',
       })
     })
@@ -250,6 +253,7 @@ describe('Post Service', () => {
         },
         limit: 100,
         locale: 'de',
+        depth: 1,
         sort: '-createdAt',
       })
     })
@@ -268,6 +272,7 @@ describe('Post Service', () => {
         },
         limit: 100,
         locale: 'de',
+        depth: 1,
         sort: '-createdAt',
       })
     })
@@ -306,6 +311,7 @@ describe('Post Service', () => {
         where: {},
         limit: 100,
         locale: 'de',
+        depth: 1,
         sort: '-createdAt',
       })
     })
