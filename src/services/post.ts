@@ -230,6 +230,7 @@ export const getFilteredPosts = async (options: {
     limit: options.limit || 100,
     locale: options.locale || 'de',
     sort: '-createdAt', // Most recent first
+    depth: 1, // Populate image and other relationships
   })
 }
 
@@ -305,6 +306,7 @@ export const getPaginatedPosts = async (options: {
     limit: options.limit || 25,
     locale: options.locale || 'de',
     sort: '-createdAt', // Most recent first
+    depth: 1, // Populate image and other relationships
   })
 }
 
