@@ -2,6 +2,7 @@ import NewsFeedClient from './NewsFeedClient'
 import NewsFeedList from './NewsFeedList'
 import NewsFeedPagination from './NewsFeedPagination'
 import NewsFeedServer from './NewsFeedServer'
+import NewsFeedSkeleton from './NewsFeedSkeleton'
 import PostsPerPageSelector from './PostsPerPageSelector'
 
 const NewsFeed = {
@@ -10,6 +11,7 @@ const NewsFeed = {
   List: NewsFeedList,
   Pagination: NewsFeedPagination,
   PostsPerPageSelector: PostsPerPageSelector,
+  Skeleton: NewsFeedSkeleton,
 }
 
 export { NewsFeed }
