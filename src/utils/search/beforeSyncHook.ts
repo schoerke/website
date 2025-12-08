@@ -36,6 +36,10 @@ const INSTRUMENT_TRANSLATIONS: Record<string, string[]> = {
   'chamber-music': ['Kammermusik', 'Chamber Music'],
 }
 
+// Legal page slugs that should only be indexed by title, not content
+// This prevents legal text (e.g., names in Impressum) from appearing in search results
+const LEGAL_PAGE_SLUGS = ['impressum', 'imprint', 'datenschutz', 'privacy-policy', 'privacy']
+
 /**
  * BeforeSync hook for the Payload Search Plugin.
  *
@@ -106,8 +110,12 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
       // Get page slug (localized)
       documentSlug = doc.slug || ''
 
-      // Content (localized richText)
-      if (doc.content) {
+      // Only index content for non-legal pages
+      // Legal pages (impressum, privacy policy, etc.) are only searchable by title
+      // This prevents legal text (e.g., names in Impressum) from cluttering search results
+      const isLegalPage = LEGAL_PAGE_SLUGS.some((legalSlug) => documentSlug.toLowerCase().includes(legalSlug))
+
+      if (doc.content && !isLegalPage) {
         const contentText = extractLexicalText(doc.content)
         additionalContent += ` ${contentText}`
       }
