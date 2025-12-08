@@ -1,5 +1,7 @@
 'use client'
 
+import { fetchRecordingsByArtist } from '@/actions/recordings'
+import { fetchRepertoiresByArtist } from '@/actions/repertoires'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Repertoire } from '@/payload-types'
 import { useTranslations } from 'next-intl'
@@ -61,10 +63,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   useEffect(() => {
     if (activeTab === 'discography' && !recordingsFetched && !recordingsLoading) {
       setRecordingsLoading(true)
-      fetch(
-        `/api/recordings?where[artists][equals]=${artist.id}&where[_status][equals]=published&locale=${locale}&limit=1000`,
-      )
-        .then((res) => res.json())
+      fetchRecordingsByArtist(artist.id.toString(), locale as 'de' | 'en')
         .then((data) => {
           setRecordings(data.docs || [])
           setRecordingsLoading(false)
@@ -82,8 +81,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   useEffect(() => {
     if (activeTab === 'repertoire' && !repertoiresFetched && !repertoiresLoading) {
       setRepertoiresLoading(true)
-      fetch(`/api/repertoire?where[artists][equals]=${artist.id}&locale=${locale}&limit=1000`)
-        .then((res) => res.json())
+      fetchRepertoiresByArtist(artist.id.toString(), locale as 'de' | 'en')
         .then((data) => {
           setRepertoires(data.docs || [])
           setRepertoiresLoading(false)

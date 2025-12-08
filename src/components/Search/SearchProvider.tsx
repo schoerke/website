@@ -13,6 +13,7 @@
 
 'use client'
 
+import { fetchEmployees } from '@/actions/employees'
 import { useRouter } from '@/i18n/navigation'
 import { searchContent, SearchDoc } from '@/services/search'
 import {
@@ -193,7 +194,7 @@ function DynamicSearchActions() {
   const locale = useLocale() as 'de' | 'en'
   const router = useRouter()
   const [searchResults, setSearchResults] = useState<SearchDoc[]>([])
-  const [allEmployees, setAllEmployees] = useState<Array<{ id: string; name: string; email: string }>>([])
+  const [allEmployees, setAllEmployees] = useState<Array<{ id: number; name: string; email: string }>>([])
   const { searchQuery } = useKBar((state) => ({
     searchQuery: state.searchQuery,
   }))
@@ -202,18 +203,15 @@ function DynamicSearchActions() {
   useEffect(() => {
     async function fetchAllEmployees() {
       try {
-        const res = await fetch(`/api/employees?locale=${locale}&limit=100`)
-        if (res.ok) {
-          const data = await res.json()
-          const employees = data.docs
-            .filter((emp: any) => emp.email)
-            .map((emp: any) => ({
-              id: emp.id,
-              name: emp.name,
-              email: emp.email,
-            }))
-          setAllEmployees(employees)
-        }
+        const result = await fetchEmployees({ locale, limit: 100 })
+        const employees = result.docs
+          .filter((emp) => emp.email)
+          .map((emp) => ({
+            id: emp.id,
+            name: emp.name,
+            email: emp.email,
+          }))
+        setAllEmployees(employees)
       } catch (err) {
         console.error('Failed to fetch employees:', err)
       }

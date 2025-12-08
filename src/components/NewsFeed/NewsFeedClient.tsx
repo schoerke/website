@@ -1,5 +1,6 @@
 'use client'
 
+import { fetchPosts } from '@/actions/posts'
 import { Skeleton } from '@/components/ui/Skeleton'
 import type { Image as PayloadImage, Post } from '@/payload-types'
 import { useEffect, useState } from 'react'
@@ -29,27 +30,15 @@ const NewsFeedClient: React.FC<NewsFeedClientProps> = ({
 
   useEffect(() => {
     if (!fetched && loading) {
-      const params = new URLSearchParams()
-      params.set('locale', locale)
-      params.set('where[_status][equals]', 'published')
-
-      if (limit) params.set('limit', limit.toString())
-
-      if (category) {
-        const categories = Array.isArray(category) ? category : [category]
-        categories.forEach((cat) => {
-          params.append('where[categories][contains]', cat)
-        })
-      }
-
-      if (artistId) {
-        params.set('where[artists][equals]', artistId)
-      }
-
-      // Fetch posts and default avatar in parallel
+      // Fetch posts and default avatar in parallel using server actions
       Promise.all([
-        fetch(`/api/posts?${params.toString()}`).then((res) => res.json()),
-        fetch(`/api/media?where[filename][equals]=default-avatar.webp&limit=1`).then((res) => res.json()),
+        fetchPosts({
+          category,
+          artistId,
+          limit,
+          locale: locale as 'de' | 'en',
+        }),
+        fetch(`/api/images?where[filename][equals]=default-avatar.webp&limit=1`).then((res) => res.json()),
       ])
         .then(([postsData, mediaData]) => {
           setPosts(postsData.docs || [])
