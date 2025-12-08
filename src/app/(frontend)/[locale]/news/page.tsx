@@ -5,6 +5,7 @@ import { parsePaginationParams, shouldRedirectToLastPage } from '@/utils/paginat
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 
 type NewsPageProps = {
   params: Promise<{ locale: string }>
@@ -55,7 +56,23 @@ const NewsPage = async ({ params, searchParams }: NewsPageProps) => {
   return (
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
       <h1 className="font-playfair mb-8 text-5xl font-bold sm:mb-12">{t('title')}</h1>
-      <NewsFeed.Server category="news" locale={locale} page={page} limit={limit} basePath={`/${locale}/news`} />
+      <Suspense
+        fallback={
+          <div role="status" aria-live="polite" aria-label={t('loading')}>
+            <NewsFeed.Skeleton count={limit} showPagination={result.totalPages > 1} />
+            <span className="sr-only">{t('loadingPosts')}</span>
+          </div>
+        }
+      >
+        <NewsFeed.Server
+          preloadedData={result}
+          category="news"
+          locale={locale}
+          page={page}
+          limit={limit}
+          basePath={`/${locale}/news`}
+        />
+      </Suspense>
     </main>
   )
 }

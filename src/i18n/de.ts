@@ -94,12 +94,16 @@ const de = {
         title: 'News',
         goBack: 'Zurück',
         allNews: 'Alle News',
+        loading: 'News-Beiträge werden geladen',
+        loadingPosts: 'News-Beiträge werden geladen, bitte warten...',
       },
       projects: {
         learnMore: 'Mehr erfahren',
         title: 'Projekte',
         goBack: 'Zurück',
         allProjects: 'Alle Projekte',
+        loading: 'Projekt-Beiträge werden geladen',
+        loadingPosts: 'Projekt-Beiträge werden geladen, bitte warten...',
       },
       team: {
         title: 'Team',

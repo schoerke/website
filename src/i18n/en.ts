@@ -91,12 +91,16 @@ const en = {
         title: 'News',
         goBack: 'Go back',
         allNews: 'All News',
+        loading: 'Loading news posts',
+        loadingPosts: 'Loading news posts, please wait...',
       },
       projects: {
         learnMore: 'Learn more',
         title: 'Projects',
         goBack: 'Go back',
         allProjects: 'All Projects',
+        loading: 'Loading project posts',
+        loadingPosts: 'Loading project posts, please wait...',
       },
       team: {
         title: 'Team',
