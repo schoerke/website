@@ -1,10 +1,25 @@
+import type { Post } from '@/payload-types'
 import { getDefaultAvatar } from '@/services/media'
 import { getPaginatedPosts } from '@/services/post'
 import NewsFeedList from './NewsFeedList'
 import NewsFeedPagination from './NewsFeedPagination'
 import PostsPerPageSelector from './PostsPerPageSelector'
 
+interface PaginatedResult {
+  docs: Post[]
+  totalDocs: number
+  limit: number
+  totalPages: number
+  page?: number
+  pagingCounter: number
+  hasPrevPage: boolean
+  hasNextPage: boolean
+  prevPage: number | null
+  nextPage: number | null
+}
+
 interface NewsFeedServerProps {
+  preloadedData?: PaginatedResult
   category?: string | string[]
   artistId?: string
   page?: number
@@ -16,6 +31,7 @@ interface NewsFeedServerProps {
 }
 
 const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
+  preloadedData,
   category,
   artistId,
   page = 1,
@@ -25,14 +41,17 @@ const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
   showPagination = true,
   basePath = '/news',
 }) => {
-  const result = await getPaginatedPosts({
-    category,
-    artistId,
-    page,
-    limit,
-    locale,
-    publishedOnly: true,
-  })
+  // Use preloaded data if available, otherwise fetch
+  const result =
+    preloadedData ??
+    (await getPaginatedPosts({
+      category,
+      artistId,
+      page,
+      limit,
+      locale,
+      publishedOnly: true,
+    }))
 
   const defaultImagePath = getDefaultAvatar()
 
@@ -54,8 +73,6 @@ const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
         emptyMessage={emptyMessage}
         category={translationCategory as 'news' | 'projects'}
         defaultImage={defaultImagePath}
-        page={page}
-        limit={limit}
       />
 
       {/* Pagination controls (bottom) */}
