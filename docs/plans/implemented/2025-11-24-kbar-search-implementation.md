@@ -105,17 +105,29 @@ Successfully implemented KBar command palette with dynamic search results. Users
 
 ### Search Index Content Strategy
 
-**Current approach (as of 2025-12-07):**
+**Current approach (as of 2025-12-08):**
 
 - **Artists**: Name + instrument translations only
 - **Employees**: Name only
-- **Pages**: Title + content text
+- **Pages**: Title only (content excluded for legal pages)
 - **Repertoire**: Title + content text
+
+**Legal Page Exclusion:**
+
+Legal pages (impressum, imprint, datenschutz, privacy-policy, privacy) only index their title, not content. This
+prevents legal text (e.g., names in Impressum like "Eva Wagner") from creating false positives in search results.
+Implementation uses hardcoded slug checking in `beforeSyncHook.ts`:
+
+```typescript
+const LEGAL_PAGE_SLUGS = ['impressum', 'imprint', 'datenschutz', 'privacy-policy', 'privacy']
+const isLegalPage = LEGAL_PAGE_SLUGS.some((legalSlug) => documentSlug.toLowerCase().includes(legalSlug))
+```
 
 **Rationale:**
 
 - Command palette search should be **identity-focused** (who/what), not **content-focused** (mentions)
 - Full biography indexing creates false positives (e.g., searching "piano" finds non-pianists who mention pianos)
+- Legal page content indexing creates false positives (e.g., searching "Wagner" finds Impressum page)
 - Biography/discography search may be added later as a separate dedicated search feature
 - Instrument translations (both German and English) enable bilingual instrument search without separate locale indexes
 
@@ -205,6 +217,38 @@ designated shortcut. For example:
 - [ ] Seed static pages (Contact, Team, etc.)
 
 ## Incident Log
+
+### 2025-12-08: Legal Pages Appearing in Search Results
+
+**What happened:**
+
+- Searching for "Wagner" showed the Impressum page in KBar results
+- This was unexpected because users searching for "Wagner" likely want the artist, not the legal page
+
+**Root cause:**
+
+- Impressum page content included "Eva Wagner" (business manager name in legal text)
+- `beforeSyncHook` was indexing full page content for all pages
+- Search matched "wagner" in the legal text
+
+**Solution:**
+
+- Added `LEGAL_PAGE_SLUGS` constant to identify legal pages by slug pattern
+- Modified `beforeSyncHook` to only index page title (not content) for legal pages
+- Legal pages remain searchable by their title (e.g., "Impressum") but not by content
+- Ran reindex to update existing search records
+- Updated `scripts/reindexSearch.ts` to include `dotenv/config` import
+
+**Files changed:**
+
+- `src/utils/search/beforeSyncHook.ts` - Added legal page slug checking
+- `scripts/reindexSearch.ts` - Added missing dotenv import
+
+**Lesson learned:**
+
+- Legal/administrative pages should be treated differently from content pages in search indexing
+- Content creators shouldn't need to manually categorize pages - slug-based detection is simpler
+- In-memory search cache needs to be cleared (dev server restart) after reindexing
 
 ### 2025-12-07: KBar Search Returning No Results - Keywords Issue
 
