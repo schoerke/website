@@ -10,8 +10,6 @@ interface NewsFeedListProps {
   emptyMessage: string
   category?: 'news' | 'projects'
   defaultImage?: string | null
-  page?: number
-  limit?: number
 }
 
 function getImageUrl(img: PayloadImage | null | undefined, defaultImg: string | null | undefined): string {
@@ -52,14 +50,7 @@ function extractTextPreview(content: Post['content'], maxLength: number = 180): 
   return fullText.substring(0, maxLength).trim() + '...'
 }
 
-const NewsFeedList: React.FC<NewsFeedListProps> = ({
-  posts,
-  emptyMessage,
-  category = 'news',
-  defaultImage = null,
-  page = 1,
-  limit = 25,
-}) => {
+const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, category = 'news', defaultImage = null }) => {
   const t = useTranslations(`custom.pages.${category}`)
   const locale = useLocale()
 
@@ -80,7 +71,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({
   }
 
   return (
-    <div className="divide-y divide-gray-200 transition-opacity duration-300 ease-in-out">
+    <div className="divide-y divide-gray-200">
       {posts.map((post) => {
         const img = typeof post.image === 'object' && post.image !== null ? (post.image as PayloadImage) : null
         const imageUrl = getImageUrl(img, defaultImage)
