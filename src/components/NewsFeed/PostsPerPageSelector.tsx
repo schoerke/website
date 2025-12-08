@@ -59,7 +59,6 @@ const PostsPerPageSelector: React.FC<PostsPerPageSelectorProps> = ({ currentLimi
           ))}
         </SelectContent>
       </Select>
-      {isPending && <span className="text-xs text-gray-500">Loading...</span>}
     </div>
   )
 }
