@@ -71,7 +71,7 @@ const KBarTutorial: React.FC = () => {
   const t = content[locale as 'de' | 'en'] || content.en
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-sm animate-slide-up rounded-lg bg-white p-4 shadow-2xl ring-1 ring-gray-200">
+    <div className="animate-slide-up fixed bottom-4 right-4 z-50 max-w-sm rounded-lg bg-white p-4 shadow-2xl ring-1 ring-gray-200">
       <div className="flex items-start justify-between">
         <h3 className="text-sm font-semibold text-gray-900">{t.title}</h3>
         <button

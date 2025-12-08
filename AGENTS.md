@@ -422,6 +422,155 @@ import { BiographyTab, RepertoireTab } from './ArtistTabContent'
 
 **NEVER.** Always follow this pattern unless explicitly instructed otherwise by the user.
 
+## Data Fetching Pattern
+
+**CRITICAL: Use Server Actions for client component data fetching, NEVER use REST API fetch() calls.**
+
+**See `docs/server-actions-pattern.md` for comprehensive guide with examples.**
+
+### Why Server Actions?
+
+- **Better Performance:** Uses Payload's Local API (direct database access) instead of HTTP requests
+- **Type Safety:** Full TypeScript types from services
+- **Relationship Population:** Easy to use `depth` parameter for nested data
+- **Simplified Architecture:** No need to maintain REST API endpoints
+- **Next.js Best Practice:** Follows official Next.js 13+ App Router patterns
+
+### When to Use Server Actions
+
+✅ **Always use server actions for:**
+
+- Client components fetching data on mount
+- Lazy-loaded data (tabs, accordions, infinite scroll)
+- Form submissions
+- Any data operation from a client component
+
+❌ **Never use REST API fetch() for:**
+
+- Data fetching in client components
+- Relationship queries requiring `depth` parameter
+- Operations that could use Local API
+
+### Implementation Pattern
+
+**1. Create a Server Action** (`src/actions/[resource].ts`):
+
+```typescript
+'use server'
+
+import { getResourcesByFilter } from '@/services/resource'
+
+/**
+ * Server action to fetch resources by filter.
+ * Uses Payload Local API for better performance than REST API calls.
+ *
+ * @param options - Filter options
+ * @returns Promise resolving to filtered resources with populated relationships
+ */
+export async function fetchResources(options: { filterId?: string; limit?: number; locale?: 'de' | 'en' }) {
+  return await getResourcesByFilter({
+    filterId: options.filterId,
+    limit: options.limit || 100,
+    locale: options.locale || 'de',
+  })
+}
+```
+
+**2. Use in Client Component:**
+
+```typescript
+'use client'
+
+import { fetchResources } from '@/actions/resources'
+import { useEffect, useState } from 'react'
+
+const ResourceList: React.FC<ResourceListProps> = ({ filterId }) => {
+  const [resources, setResources] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadResources() {
+      try {
+        const result = await fetchResources({ filterId, locale: 'en' })
+        setResources(result.docs)
+      } catch (error) {
+        console.error('Failed to fetch resources:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadResources()
+  }, [filterId])
+
+  // Render resources...
+}
+```
+
+### Service Layer Guidelines
+
+**Always set appropriate `depth` parameter:**
+
+```typescript
+// ✅ CORRECT - Populates image relationships
+export const getFilteredPosts = async (options: FilterOptions) => {
+  const payload = await getPayload({ config })
+  return await payload.find({
+    collection: 'posts',
+    where: buildWhereClause(options),
+    depth: 1, // Populates first level of relationships (images, authors, etc.)
+    locale: options.locale || 'de',
+  })
+}
+
+// ❌ WRONG - Images won't populate, will be IDs only
+export const getFilteredPosts = async (options: FilterOptions) => {
+  const payload = await getPayload({ config })
+  return await payload.find({
+    collection: 'posts',
+    where: buildWhereClause(options),
+    // Missing depth parameter!
+    locale: options.locale || 'de',
+  })
+}
+```
+
+### Real Examples from This Project
+
+**Before (REST API - WRONG):**
+
+```typescript
+// ❌ SearchProvider.tsx (old)
+const res = await fetch(`/api/employees?locale=${locale}&limit=100`)
+const data = await res.json()
+```
+
+**After (Server Action - CORRECT):**
+
+```typescript
+// ✅ SearchProvider.tsx (new)
+import { fetchEmployees } from '@/actions/employees'
+const result = await fetchEmployees({ locale, limit: 100 })
+```
+
+**Benefits:**
+
+- No manual URL construction
+- Type-safe parameters and response
+- Uses Payload Local API internally
+- Automatically handles errors consistently
+
+### Migration Checklist
+
+When converting REST API calls to server actions:
+
+1. ✅ Create server action in `src/actions/[resource].ts`
+2. ✅ Import and call from existing service functions
+3. ✅ Add `depth` parameter if relationships need population
+4. ✅ Update client component to use server action
+5. ✅ Remove REST API endpoint if no longer needed
+6. ✅ Update tests to mock server action instead of fetch()
+7. ✅ Verify relationship data populates correctly
+
 ## Library-Specific Knowledge
 
 ### Payload CMS Search Plugin with Localization
