@@ -5,7 +5,7 @@
  * to existing search records, then generates static JSON files for fallback.
  *
  * Usage:
- *   pnpm payload run scripts/reindexSearch.ts
+ *   pnpm tsx scripts/reindexSearch.ts
  *
  * What it does:
  * 1. Fetches all existing search records
@@ -19,6 +19,8 @@
  * - Uses the DATABASE_URI from .env
  * - Connects to whichever database is configured (local or remote)
  */
+
+import 'dotenv/config'
 
 import config from '@payload-config'
 import fs from 'fs'
