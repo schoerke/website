@@ -115,7 +115,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
                   <time dateTime={post.createdAt} className="lg:hidden">
                     {formatDate(post.createdAt, locale)}
                   </time>
-                  <span className="text-primary-black decoration-primary-yellow group-hover:text-primary-yellow hidden font-medium underline decoration-2 underline-offset-2 transition-colors sm:inline">
+                  <span className="focus-visible:outline-primary-yellow after:bg-primary-yellow relative hidden font-medium text-gray-600 transition duration-150 ease-in-out after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:text-gray-800 group-hover:after:w-full sm:inline">
                     {t('learnMore')}
                   </span>
                 </div>
