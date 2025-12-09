@@ -4,7 +4,7 @@ import type { SearchDoc } from '@/services/search'
  * Filters employees to show relevant email commands based on search context.
  *
  * Three filtering modes:
- * 1. Discovery mode - Query contains "email" or "mail" → show all employees
+ * 1. Discovery mode - Query contains "email", "mail", or "command" → show all employees
  * 2. Direct match - Employee name matches search query → show that employee
  * 3. Contextual - Employee is a contact person for a found artist → show contact persons
  *
@@ -17,6 +17,7 @@ import type { SearchDoc } from '@/services/search'
  * ```typescript
  * // Discovery mode
  * filterEmailCommands('email', employees, []) // Returns all employees
+ * filterEmailCommands('commands', employees, []) // Returns all employees
  *
  * // Direct match
  * filterEmailCommands('wagner', employees, []) // Returns only Eva Wagner
@@ -43,11 +44,15 @@ export function filterEmailCommands(
       doc.contactPersons?.forEach((cp) => contactPersonIds.add(cp.id))
     })
 
-  const isEmailSearch = normalizedQuery.includes('email') || normalizedQuery.includes('mail')
+  const isDiscoveryMode =
+    normalizedQuery.includes('email') ||
+    normalizedQuery.includes('mail') ||
+    normalizedQuery.includes('command') ||
+    normalizedQuery.includes('befehl') // German for "command"
 
   return allEmployees.filter((employee) => {
-    // Discovery mode: show all if searching for "email" or "mail"
-    if (isEmailSearch) return true
+    // Discovery mode: show all if searching for "email", "mail", "command", or "befehl"
+    if (isDiscoveryMode) return true
 
     // Direct match: show if employee name matches search query
     if (employee.name.toLowerCase().includes(normalizedQuery)) return true

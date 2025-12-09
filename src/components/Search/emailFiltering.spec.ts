@@ -10,7 +10,7 @@ describe('Email Command Filtering Logic', () => {
     { id: 1, name: 'Tina Nurnus', email: 't.nurnus@ks-schoerke.de' },
   ]
 
-  describe('Discovery Mode (email/mail searches)', () => {
+  describe('Discovery Mode (email/mail/command searches)', () => {
     it('should return all employees when query includes "email"', () => {
       const result = filterEmailCommands('email', mockEmployees, [])
       expect(result).toHaveLength(4)
@@ -22,8 +22,28 @@ describe('Email Command Filtering Logic', () => {
       expect(result).toHaveLength(4)
     })
 
+    it('should return all employees when query includes "command"', () => {
+      const result = filterEmailCommands('command', mockEmployees, [])
+      expect(result).toHaveLength(4)
+    })
+
+    it('should return all employees when query includes "commands"', () => {
+      const result = filterEmailCommands('show commands', mockEmployees, [])
+      expect(result).toHaveLength(4)
+    })
+
+    it('should return all employees when query includes "befehl" (German)', () => {
+      const result = filterEmailCommands('befehl', mockEmployees, [])
+      expect(result).toHaveLength(4)
+    })
+
     it('should work case-insensitively for "EMAIL"', () => {
       const result = filterEmailCommands('EMAIL', mockEmployees, [])
+      expect(result).toHaveLength(4)
+    })
+
+    it('should work case-insensitively for "COMMANDS"', () => {
+      const result = filterEmailCommands('COMMANDS', mockEmployees, [])
       expect(result).toHaveLength(4)
     })
   })
