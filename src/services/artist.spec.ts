@@ -138,6 +138,7 @@ describe('Artist Service', () => {
           id: true,
           slug: true,
         },
+        depth: 1,
         locale: 'de',
         fallbackLocale: 'de',
         limit: 0,

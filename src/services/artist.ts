@@ -93,6 +93,7 @@ export const getArtistListData = async (locale?: LocaleCode) => {
       id: true,
       slug: true,
     },
+    depth: 1, // Populate image relationship
     locale: locale || 'de',
     fallbackLocale: 'de',
     limit: 0, // Fetch all artists (no limit)

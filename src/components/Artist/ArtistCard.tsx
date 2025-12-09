@@ -26,11 +26,11 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }
   const imageUrl = getImageUrl(img)
 
   // Translate instruments
-  const translatedInstruments = instrument?.map((inst) => t(inst as any)).join(', ') ?? ''
+  const translatedInstruments = instrument?.map((inst) => t(inst as Parameters<typeof t>[0])).join(', ') ?? ''
 
   return slug ? (
     <Link
-      href={`/artists/${slug}` as any}
+      href={{ pathname: '/artists/[slug]', params: { slug } }}
       className="group block overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]"
     >
       <div className="relative h-72 w-full">

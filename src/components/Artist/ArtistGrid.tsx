@@ -3,17 +3,9 @@
 import ArtistCard from '@/components/Artist/ArtistCard'
 import InstrumentFilter from '@/components/Artist/InstrumentFilter'
 import ImageSlider from '@/components/ui/ImageSlider'
-import type { Image } from '@/payload-types'
+import type { Artist, Image } from '@/payload-types'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
-
-type Artist = {
-  id: string
-  name: string
-  image?: Image | null
-  instrument?: string[]
-  slug?: string
-}
 
 interface ArtistGridProps {
   artists: Artist[]
@@ -146,7 +138,9 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
 
     return sliderArtists
       .map((artist) => {
-        const imageUrl = getValidImageUrl(artist.image)
+        // Type guard: ensure image is an Image object, not a number
+        const image = typeof artist.image === 'object' ? artist.image : null
+        const imageUrl = getValidImageUrl(image)
         if (!imageUrl) return null
 
         return {
@@ -155,8 +149,8 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
           bannerText: artist.name,
           link: artist.slug ? `/artists/${artist.slug}` : undefined,
           sizesAttr: '(max-width: 768px) 100vw, 50vw',
-          focalX: artist.image?.focalX ?? null,
-          focalY: artist.image?.focalY ?? null,
+          focalX: image?.focalX ?? null,
+          focalY: image?.focalY ?? null,
         }
       })
       .filter((item): item is NonNullable<typeof item> => item !== null)
