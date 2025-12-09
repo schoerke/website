@@ -8,10 +8,7 @@ export default function Loading() {
         {/* Header skeleton */}
         <div className="mb-8">
           <div className="mb-4 h-12 w-3/4 rounded bg-gray-200"></div>
-          <div className="flex gap-4">
-            <div className="h-4 w-32 rounded bg-gray-200"></div>
-            <div className="h-4 w-32 rounded bg-gray-200"></div>
-          </div>
+          <div className="h-4 w-32 rounded bg-gray-200"></div>
         </div>
 
         {/* Image skeleton */}

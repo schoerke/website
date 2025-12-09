@@ -1,10 +1,9 @@
 import BackButton from '@/components/ui/BackButton'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Link } from '@/i18n/navigation'
-import type { Employee, Image as PayloadImage } from '@/payload-types'
+import type { Image as PayloadImage } from '@/payload-types'
 import { getDefaultAvatar } from '@/services/media'
 import { getFilteredPosts, getPostBySlug } from '@/services/post'
-import { isEmployee } from '@/utils/collection'
 import { validateLocale } from '@/utils/locale'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
@@ -69,10 +68,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.news' })
 
-  const { title, content, createdAt, image, createdBy } = post
+  const { title, content, createdAt, image } = post
   const postImage = isMedia(image) ? image : null
   const imageUrl = getImageUrl(postImage) || defaultImagePath
-  const author = isEmployee(createdBy) ? (createdBy as Employee) : null
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -93,12 +91,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
 
           <div className="flex items-center gap-4 text-sm text-gray-600">
             <time dateTime={createdAt}>{formatDate(createdAt, locale)}</time>
-            {author && (
-              <>
-                <span aria-hidden="true">·</span>
-                <span>{author.name}</span>
-              </>
-            )}
           </div>
         </header>
 
