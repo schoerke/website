@@ -138,6 +138,10 @@ const de = {
       currentPage: 'Aktuelle Seite, Seite {page}',
       morePages: 'Weitere Seiten',
       postsPerPage: 'Beiträge pro Seite',
+      search: 'Suche nach',
+      searchNews: 'News durchsuchen',
+      searchProjects: 'Projekte durchsuchen',
+      searchMinChars: 'Geben Sie mindestens {minChars} Zeichen ein',
     },
   },
 }

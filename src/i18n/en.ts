@@ -135,6 +135,10 @@ const en = {
       currentPage: 'Current page, page {page}',
       morePages: 'More pages',
       postsPerPage: 'Posts per page',
+      search: 'Search',
+      searchNews: 'Search news',
+      searchProjects: 'Search projects',
+      searchMinChars: 'Enter at least {minChars} characters to search',
     },
   },
 }
