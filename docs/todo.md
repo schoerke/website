@@ -1,5 +1,13 @@
 # TODO
 
+## Code Quality
+
+- [ ] **TypeScript/ESLint Cleanup** - Remove all `any` types and fix linting errors
+  - **Status:** 188 problems remaining (down from 224)
+  - **Progress:** See [typescript-cleanup-progress.md](./typescript-cleanup-progress.md) for detailed progress,
+    patterns, and next steps
+  - **Build:** ✅ Passing | **Tests:** ✅ 203/203 passing
+
 ## Data Migration: Posts
 
 - [ ] Migrate posts from old site to new site
