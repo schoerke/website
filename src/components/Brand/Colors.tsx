@@ -8,23 +8,22 @@ interface ColorSectionProps {
   colors: ColorProps[]
 }
 
+function shouldUseWhiteText(name: string): boolean {
+  return ['Raisin Black', 'Success', 'Error'].includes(name)
+}
+
 const ColorCard: React.FC<ColorProps> = ({ name, hex }) => (
   <div
     key={name}
     style={{ backgroundColor: hex }}
     className={`flex min-h-[200px] flex-col items-center justify-center rounded-lg p-6 text-center shadow-lg ${
-      name === 'Background' ? 'border border-gray-200' : ''
+      name === 'White' ? 'border border-gray-200' : ''
     }`}
   >
-    <h3
-      className="font-playfair mb-2 text-xl font-bold"
-      style={{ color: ['Yellow', 'Raisin Black'].includes(name) ? '#ffffff' : '#000000' }}
-    >
+    <h3 className={`font-playfair mb-2 text-xl font-bold ${shouldUseWhiteText(name) ? 'text-white' : 'text-black'}`}>
       {name}
     </h3>
-    <p className="font-inter" style={{ color: ['Yellow', 'Raisin Black'].includes(name) ? '#ffffff' : '#000000' }}>
-      {hex}
-    </p>
+    <p className={`font-inter ${shouldUseWhiteText(name) ? 'text-white' : 'text-black'}`}>{hex}</p>
   </div>
 )
 
@@ -43,6 +42,8 @@ const Colors: React.FC = () => {
     { name: 'Silver', hex: '#ADB2B4' },
     { name: 'Raisin Black', hex: '#222126' },
     { name: 'White', hex: '#FFFFFF' },
+    { name: 'Success', hex: '#4A9D3F' },
+    { name: 'Error', hex: '#DC2626' },
   ]
 
   const secondaryColors = [

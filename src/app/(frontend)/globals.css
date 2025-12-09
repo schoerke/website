@@ -16,6 +16,8 @@
   --color-primary-silver: #adb2b4;
   --color-primary-black: #222126;
   --color-primary-white: #ffffff;
+  --color-primary-success: #4a9d3f;
+  --color-primary-error: #dc2626;
 }
 
 @theme inline {
