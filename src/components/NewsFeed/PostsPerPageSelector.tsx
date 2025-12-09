@@ -46,9 +46,9 @@ const PostsPerPageSelector: React.FC<PostsPerPageSelectorProps> = ({ currentLimi
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-gray-600">{t('postsPerPage')}:</span>
+      <span className="whitespace-nowrap text-sm text-gray-600">Per page:</span>
       <Select value={currentLimit.toString()} onValueChange={handleChange} disabled={isPending}>
-        <SelectTrigger className="w-20">
+        <SelectTrigger className="h-9 w-14 gap-0.5 px-2 py-1">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

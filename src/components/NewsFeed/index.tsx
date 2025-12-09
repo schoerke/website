@@ -1,6 +1,7 @@
 import NewsFeedClient from './NewsFeedClient'
 import NewsFeedList from './NewsFeedList'
 import NewsFeedPagination from './NewsFeedPagination'
+import NewsFeedSearch from './NewsFeedSearch'
 import NewsFeedServer from './NewsFeedServer'
 import NewsFeedSkeleton from './NewsFeedSkeleton'
 import PostsPerPageSelector from './PostsPerPageSelector'
@@ -11,6 +12,7 @@ const NewsFeed = {
   List: NewsFeedList,
   Pagination: NewsFeedPagination,
   PostsPerPageSelector: PostsPerPageSelector,
+  Search: NewsFeedSearch,
   Skeleton: NewsFeedSkeleton,
 }
 
