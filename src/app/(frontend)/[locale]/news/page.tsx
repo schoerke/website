@@ -7,9 +7,10 @@ import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 
+export const dynamic = 'force-dynamic'
 type NewsPageProps = {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string; limit?: string }>
+  searchParams: Promise<{ page?: string; limit?: string; search?: string }>
 }
 
 export async function generateMetadata({ params, searchParams }: NewsPageProps): Promise<Metadata> {
@@ -29,19 +30,24 @@ export async function generateMetadata({ params, searchParams }: NewsPageProps):
 
 const NewsPage = async ({ params, searchParams }: NewsPageProps) => {
   const { locale: localeParam } = await params
-  const { page: pageParam, limit: limitParam } = await searchParams
+  const { page: pageParam, limit: limitParam, search: searchParam } = await searchParams
 
   // Validate locale is one of the supported locales
   const locale = routing.locales.includes(localeParam as any) ? (localeParam as 'de' | 'en') : routing.defaultLocale
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.news' })
+  const tPagination = await getTranslations({ locale, namespace: 'custom.pagination' })
 
   // Parse and validate pagination params
   const { page, limit } = parsePaginationParams(pageParam, limitParam)
 
+  // Get search query (minimum 3 characters)
+  const search = searchParam && searchParam.trim().length >= 3 ? searchParam.trim() : undefined
+
   // Fetch data to validate page number doesn't exceed totalPages
   const result = await getPaginatedPosts({
     category: 'news',
+    search,
     page,
     limit,
     locale,
@@ -50,7 +56,11 @@ const NewsPage = async ({ params, searchParams }: NewsPageProps) => {
 
   // Redirect if page exceeds totalPages
   if (shouldRedirectToLastPage(page, result.totalPages)) {
-    redirect(`/${locale}/news?page=${result.totalPages}&limit=${limit}`)
+    const params = new URLSearchParams()
+    params.set('page', result.totalPages.toString())
+    params.set('limit', limit.toString())
+    if (search) params.set('search', search)
+    redirect(`/${locale}/news?${params.toString()}`)
   }
 
   return (
@@ -67,10 +77,12 @@ const NewsPage = async ({ params, searchParams }: NewsPageProps) => {
         <NewsFeed.Server
           preloadedData={result}
           category="news"
+          search={search}
           locale={locale}
           page={page}
           limit={limit}
           basePath={`/${locale}/news`}
+          searchPlaceholder={tPagination('searchNews')}
         />
       </Suspense>
     </main>
