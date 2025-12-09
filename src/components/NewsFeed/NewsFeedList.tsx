@@ -28,12 +28,17 @@ function formatDate(dateString: string, locale: string): string {
   return date.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
+interface RichTextNode {
+  text?: string
+  children?: RichTextNode[]
+}
+
 function extractTextPreview(content: Post['content'], maxLength: number = 180): string {
   if (!content?.root?.children) return ''
 
   const textParts: string[] = []
 
-  function extractText(node: any): void {
+  function extractText(node: RichTextNode): void {
     if (node.text) {
       textParts.push(node.text)
     }
@@ -42,7 +47,7 @@ function extractTextPreview(content: Post['content'], maxLength: number = 180): 
     }
   }
 
-  content.root.children.forEach(extractText)
+  content.root.children.forEach((child) => extractText(child as RichTextNode))
 
   const fullText = textParts.join(' ').trim()
   if (fullText.length <= maxLength) return fullText
