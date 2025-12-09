@@ -14,6 +14,7 @@
 'use client'
 
 import { fetchEmployees } from '@/actions/employees'
+import { GENERAL_CONTACT } from '@/constants/contact'
 import { useRouter } from '@/i18n/navigation'
 import { searchContent, SearchDoc } from '@/services/search'
 import {
@@ -27,7 +28,8 @@ import {
   useRegisterActions,
 } from 'kbar'
 import { useLocale } from 'next-intl'
-import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import { filterEmailCommands } from './emailFiltering'
 import KBarTutorial from './KBarTutorial'
 
 interface SearchProviderProps {
@@ -37,6 +39,36 @@ interface SearchProviderProps {
 const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const router = useRouter()
   const locale = useLocale() as 'de' | 'en'
+  const [isMobilePhone, setIsMobilePhone] = useState(false)
+
+  // Detect if user is on mobile phone (not tablet)
+  useEffect(() => {
+    const checkMobilePhone = () => {
+      const userAgent = navigator.userAgent.toLowerCase()
+
+      // Exclude tablets (iPad, Android tablets)
+      const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(userAgent)
+      if (isTablet) {
+        setIsMobilePhone(false)
+        return
+      }
+
+      // Check for mobile phones
+      const isMobile = /android.*mobile|webos|iphone|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
+
+      // Additional check: screen size (phones typically < 768px width)
+      const isSmallScreen = window.innerWidth < 768
+
+      // Must be both mobile UA and small screen
+      setIsMobilePhone(isMobile && isSmallScreen)
+    }
+
+    checkMobilePhone()
+
+    // Re-check on window resize
+    window.addEventListener('resize', checkMobilePhone)
+    return () => window.removeEventListener('resize', checkMobilePhone)
+  }, [])
 
   // Static navigation actions (no shortcuts - they interfere with system-wide shortcuts)
   const staticActions = useMemo(() => {
@@ -46,6 +78,15 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     const settingLabel = locale === 'de' ? 'Einstellung' : 'Setting'
 
     const actions = [
+      {
+        id: 'home',
+        name: locale === 'de' ? 'Startseite' : 'Home',
+        keywords: 'home startseite main',
+        section: navigationSection,
+        subtitle: pageLabel,
+        priority: 2, // High priority for home
+        perform: () => router.push('/'),
+      },
       {
         id: 'artists',
         name: locale === 'de' ? 'Künstler' : 'Artists',
@@ -102,8 +143,25 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
       },
     ]
 
+    // Add call office command only on mobile phones (not tablets)
+    if (isMobilePhone) {
+      actions.push({
+        id: 'call-office',
+        name: locale === 'de' ? 'Schoerke Büro anrufen' : 'Call Schoerke Office',
+        keywords: 'call phone anrufen telefon office büro',
+        section: locale === 'de' ? 'Befehle' : 'Commands',
+        subtitle: locale === 'de' ? 'Befehl' : 'Command',
+        priority: 1,
+        perform: () => {
+          // Remove spaces and parentheses from phone number for tel: link
+          const phoneNumber = GENERAL_CONTACT.phone.replace(/[\s()-]/g, '')
+          window.location.href = `tel:${phoneNumber}`
+        },
+      })
+    }
+
     return actions
-  }, [locale, router])
+  }, [locale, router, isMobilePhone])
 
   return (
     <KBarProvider actions={staticActions}>
@@ -195,6 +253,7 @@ function DynamicSearchActions() {
   const router = useRouter()
   const [searchResults, setSearchResults] = useState<SearchDoc[]>([])
   const [allEmployees, setAllEmployees] = useState<Array<{ id: number; name: string; email: string }>>([])
+  const abortControllerRef = useRef<AbortController | null>(null)
   const { searchQuery } = useKBar((state) => ({
     searchQuery: state.searchQuery,
   }))
@@ -219,7 +278,7 @@ function DynamicSearchActions() {
     fetchAllEmployees()
   }, [locale])
 
-  // Debounced search effect
+  // Debounced search effect with race condition protection
   useEffect(() => {
     const currentQuery = searchQuery.trim()
 
@@ -228,33 +287,66 @@ function DynamicSearchActions() {
       return
     }
 
+    // Abort previous search to prevent race conditions
+    abortControllerRef.current?.abort()
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+
     const timeoutId = setTimeout(async () => {
       try {
         const response = await searchContent(currentQuery, locale)
 
-        // Flatten all results into a single array (max 30 total)
-        const allResults = [
-          ...response.results.artists.slice(0, 10),
-          ...response.results.employees.slice(0, 5),
-          ...response.results.pages.slice(0, 5),
-          ...response.results.repertoire.slice(0, 5),
-        ].slice(0, 30)
+        // Only update state if this request wasn't aborted
+        if (!controller.signal.aborted) {
+          // Flatten all results into a single array (max 30 total)
+          const allResults = [
+            ...response.results.artists.slice(0, 10),
+            ...response.results.employees.slice(0, 5),
+            ...response.results.pages.slice(0, 5),
+            ...response.results.repertoire.slice(0, 5),
+          ].slice(0, 30)
 
-        setSearchResults(allResults)
+          setSearchResults(allResults)
+        }
       } catch (error) {
-        console.error('Search error:', error)
-        setSearchResults([])
+        // Only update state if this request wasn't aborted
+        if (!controller.signal.aborted) {
+          console.error('Search error:', error)
+          setSearchResults([])
+        }
       }
     }, 150) // 150ms debounce
 
-    return () => clearTimeout(timeoutId)
+    return () => {
+      clearTimeout(timeoutId)
+      controller.abort()
+    }
   }, [searchQuery, locale])
 
   // Register dynamic actions from search results
   const actions = useMemo(() => {
+    const commandLabel = locale === 'de' ? 'Befehl' : 'Command'
+    const query = searchQuery.trim().toLowerCase()
+
+    // Filter employees for email commands using extracted helper
+    const filteredEmployees = filterEmailCommands(query, allEmployees, searchResults)
+
+    const emailActions = filteredEmployees.map((employee) => ({
+      id: `email-${employee.id}`,
+      name: `${locale === 'de' ? 'E-Mail an' : 'Email'} ${employee.name}`,
+      // Include search query in keywords to prevent KBar from filtering it out
+      keywords: `${searchQuery} email mail e-mail ${employee.name}`,
+      section: locale === 'de' ? 'Befehle' : 'Commands',
+      subtitle: commandLabel,
+      priority: 60, // Lower priority than content, so Commands appear last
+      perform: () => {
+        window.location.href = `mailto:${employee.email}`
+      },
+    }))
+
     // Only show search results if we have them
     if (searchResults.length === 0) {
-      return []
+      return emailActions // Return email actions even if no search results
     }
 
     // Separate results by collection type for proper ordering
@@ -263,56 +355,11 @@ function DynamicSearchActions() {
     const pages = searchResults.filter((doc) => doc.relationTo === 'pages')
     const repertoire = searchResults.filter((doc) => doc.relationTo === 'repertoire')
 
-    // Helper to create action from doc
-    const createAction = (doc: SearchDoc, priority: number) => ({
-      id: `search-${doc.id}`,
-      name: doc.title.substring(0, 100),
-      // Add a unique keyword that includes the search query so KBar doesn't filter it out
-      // Each result gets its own unique keyword combining the query + doc title
-      keywords: `${searchQuery} ${doc.title}`,
-      section: getSection(doc.relationTo, locale),
-      subtitle: getTypeLabel(doc.relationTo, locale),
-      priority,
-      perform: () => {
-        const path = getDocumentPath(doc)
-        router.push(path as any)
-      },
-    })
-
     // Create actions with priorities: Artists (highest), Team, Pages, Repertoire
-    const artistActions = artists.map((doc) => createAction(doc, 100))
-    const employeeActions = employees.map((doc) => createAction(doc, 90))
-    const pageActions = pages.map((doc) => createAction(doc, 80))
-    const repertoireActions = repertoire.map((doc) => createAction(doc, 70))
-
-    console.log(
-      '[SearchProvider] Created actions - artists:',
-      artistActions.length,
-      'employees:',
-      employeeActions.length,
-      'pages:',
-      pageActions.length,
-      'repertoire:',
-      repertoireActions.length,
-    )
-
-    // Add "Email [Name]" commands only when user is searching
-    // This keeps the initial menu clean while keeping email commands accessible via search
-    const commandLabel = locale === 'de' ? 'Befehl' : 'Command'
-    const emailActions =
-      searchQuery.trim().length > 0
-        ? allEmployees.map((employee) => ({
-            id: `email-${employee.id}`,
-            name: `${locale === 'de' ? 'E-Mail an' : 'Email'} ${employee.name}`,
-            keywords: `email mail ${employee.name}`,
-            section: locale === 'de' ? 'Befehle' : 'Commands',
-            subtitle: commandLabel,
-            priority: 60, // Lower priority than content, so Commands appear last
-            perform: () => {
-              window.location.href = `mailto:${employee.email}`
-            },
-          }))
-        : []
+    const artistActions = artists.map((doc) => createSearchAction(doc, searchQuery, locale, router, 100))
+    const employeeActions = employees.map((doc) => createSearchAction(doc, searchQuery, locale, router, 90))
+    const pageActions = pages.map((doc) => createSearchAction(doc, searchQuery, locale, router, 80))
+    const repertoireActions = repertoire.map((doc) => createSearchAction(doc, searchQuery, locale, router, 70))
 
     const totalActions = [...artistActions, ...employeeActions, ...pageActions, ...repertoireActions, ...emailActions]
 
@@ -326,47 +373,63 @@ function DynamicSearchActions() {
 }
 
 /**
- * Renders KBar results
+ * Renders KBar results with empty state
  */
 function RenderResults() {
   const { results } = useMatches()
+  const { searchQuery } = useKBar((state) => ({
+    searchQuery: state.searchQuery,
+  }))
+  const locale = useLocale() as 'de' | 'en'
+
+  // Show empty state if user has typed 3+ characters but no results
+  const shouldShowEmptyState = searchQuery.trim().length >= 3 && results.length === 0
 
   return (
     <div className="overflow-y-auto p-2">
-      <KBarResults
-        items={results}
-        maxHeight={800}
-        onRender={({ item, active }) =>
-          typeof item === 'string' ? (
-            <div className="px-4 py-2 text-xs font-semibold uppercase text-gray-500">{item}</div>
-          ) : (
-            <div
-              style={{
-                padding: '12px 16px',
-                background: active ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <span>{item.name}</span>
-              {item.subtitle && (
-                <span
-                  style={{
-                    fontSize: '12px',
-                    color: '#999',
-                    marginLeft: '16px',
-                    flexShrink: 0,
-                  }}
-                >
-                  {item.subtitle}
-                </span>
-              )}
-            </div>
-          )
-        }
-      />
+      {shouldShowEmptyState ? (
+        <div className="px-4 py-8 text-center text-sm text-gray-500">
+          {locale === 'de' ? `Keine Ergebnisse für "${searchQuery}"` : `No results found for "${searchQuery}"`}
+        </div>
+      ) : (
+        <KBarResults
+          items={results}
+          maxHeight={800}
+          onRender={({ item, active }) => {
+            // Safety check: item can be undefined in some cases
+            if (!item) return <div />
+
+            return typeof item === 'string' ? (
+              <div className="px-4 py-2 text-xs font-semibold uppercase text-gray-500">{item}</div>
+            ) : (
+              <div
+                style={{
+                  padding: '12px 16px',
+                  background: active ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span>{item.name}</span>
+                {item.subtitle && (
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      color: '#999',
+                      marginLeft: '16px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {item.subtitle}
+                  </span>
+                )}
+              </div>
+            )
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -413,6 +476,33 @@ function getDocumentPath(doc: SearchDoc): string {
       return `/repertoire` // Repertoire doesn't have individual pages yet
     default:
       return '/'
+  }
+}
+
+/**
+ * Factory function to create KBar actions from search documents
+ *
+ * @param doc - Search document to create action from
+ * @param searchQuery - Current search query (for keywords)
+ * @param locale - Current locale for section/subtitle labels
+ * @param router - Next.js router for navigation
+ * @param priority - Action priority (higher = appears first)
+ * @returns KBar action object
+ */
+function createSearchAction(doc: SearchDoc, searchQuery: string, locale: 'de' | 'en', router: any, priority: number) {
+  return {
+    id: `search-${doc.id}`,
+    name: doc.title.substring(0, 100),
+    // Add a unique keyword that includes the search query so KBar doesn't filter it out
+    // Each result gets its own unique keyword combining the query + doc title
+    keywords: `${searchQuery} ${doc.title}`,
+    section: getSection(doc.relationTo, locale),
+    subtitle: getTypeLabel(doc.relationTo, locale),
+    priority,
+    perform: () => {
+      const path = getDocumentPath(doc)
+      router.push(path as any)
+    },
   }
 }
 
