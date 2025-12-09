@@ -9,12 +9,29 @@ import NewsFeedClient from './NewsFeedClient'
 // Mock fetch globally
 global.fetch = vi.fn()
 
+// Mock Next.js navigation
+const mockPush = vi.fn()
+const mockPathname = '/en/news'
+const mockSearchParams = new URLSearchParams()
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush }),
+  usePathname: () => mockPathname,
+  useSearchParams: () => mockSearchParams,
+}))
+
 // Mock the server action
 vi.mock('@/actions/posts', () => ({
   fetchPosts: vi.fn(),
 }))
 
+// Mock media actions
+vi.mock('@/actions/media', () => ({
+  fetchDefaultAvatar: vi.fn(),
+}))
+
 // Import the mocked function after the mock
+import { fetchDefaultAvatar } from '@/actions/media'
 import { fetchPosts } from '@/actions/posts'
 
 // Mock NewsFeedList component
@@ -43,6 +60,8 @@ const renderWithIntl = (ui: React.ReactElement) => {
 describe('NewsFeedClient', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Mock fetchDefaultAvatar to return null by default
+    vi.mocked(fetchDefaultAvatar).mockResolvedValue(null)
   })
 
   it('should show loading state initially', async () => {
@@ -53,9 +72,6 @@ describe('NewsFeedClient', () => {
     })
 
     vi.mocked(fetchPosts).mockReturnValue(fetchPostsPromise as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     renderWithIntl(<NewsFeedClient />)
 
@@ -78,9 +94,6 @@ describe('NewsFeedClient', () => {
     const mockPosts = [createMockPost({ title: 'Test Post 1' }), createMockPost({ id: 2, title: 'Test Post 2' })]
 
     vi.mocked(fetchPosts).mockResolvedValue({ docs: mockPosts } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient />)
@@ -94,9 +107,6 @@ describe('NewsFeedClient', () => {
 
   it('should call server action with category filter', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient category="news" />)
@@ -114,9 +124,6 @@ describe('NewsFeedClient', () => {
 
   it('should call server action with multiple category filters', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient category={['news', 'projects']} />)
@@ -134,9 +141,6 @@ describe('NewsFeedClient', () => {
 
   it('should call server action with artist filter', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient artistId="123" />)
@@ -154,9 +158,6 @@ describe('NewsFeedClient', () => {
 
   it('should call server action with limit', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient limit={5} />)
@@ -174,9 +175,6 @@ describe('NewsFeedClient', () => {
 
   it('should call server action with locale', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient locale="en" />)
@@ -194,9 +192,6 @@ describe('NewsFeedClient', () => {
 
   it('should always filter by published status', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient />)
@@ -210,9 +205,6 @@ describe('NewsFeedClient', () => {
 
   it('should handle fetch errors gracefully', async () => {
     vi.mocked(fetchPosts).mockRejectedValue(new Error('Network error'))
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     await act(async () => {
@@ -229,9 +221,6 @@ describe('NewsFeedClient', () => {
 
   it('should not show loading state when showLoadingState is false', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient showLoadingState={false} />)
@@ -247,9 +236,6 @@ describe('NewsFeedClient', () => {
 
   it('should display empty message when no posts', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient emptyMessage="No posts found" />)
@@ -262,9 +248,6 @@ describe('NewsFeedClient', () => {
 
   it('should only fetch once', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({ docs: [] }),
-    } as Response)
 
     let rerender: any
 
@@ -274,9 +257,9 @@ describe('NewsFeedClient', () => {
     })
 
     await waitFor(() => {
-      // Should call fetchPosts once and media fetch once (2 total)
+      // Should call fetchPosts once and fetchDefaultAvatar once
       expect(fetchPosts).toHaveBeenCalledTimes(1)
-      expect(global.fetch).toHaveBeenCalledTimes(1)
+      expect(fetchDefaultAvatar).toHaveBeenCalledTimes(1)
     })
 
     await act(async () => {
@@ -289,6 +272,6 @@ describe('NewsFeedClient', () => {
 
     // Should not fetch again
     expect(fetchPosts).toHaveBeenCalledTimes(1)
-    expect(global.fetch).toHaveBeenCalledTimes(1)
+    expect(fetchDefaultAvatar).toHaveBeenCalledTimes(1)
   })
 })

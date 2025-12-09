@@ -308,6 +308,9 @@ describe('Search API Route', () => {
     })
 
     it('should return 500 if database query fails', async () => {
+      // Mock console.error to suppress error output during test
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
       vi.mocked(mockPayload.find).mockRejectedValueOnce(new Error('Database connection failed'))
 
       const request = new Request('http://localhost:3000/api/search?q=test&locale=de')
@@ -316,6 +319,12 @@ describe('Search API Route', () => {
       expect(response.status).toBe(500)
       const data = await response.json()
       expect(data.error).toBe('Internal server error')
+
+      // Verify error was logged
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Search API error:', expect.any(Error))
+
+      // Restore console.error
+      consoleErrorSpy.mockRestore()
     })
   })
 })

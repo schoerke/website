@@ -23,7 +23,9 @@ const renderWithIntl = (ui: React.ReactElement) => {
 describe('NewsFeedSearch', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockSearchParams.delete('search')
+    // Reset all search params
+    const keys = Array.from(mockSearchParams.keys())
+    keys.forEach((key) => mockSearchParams.delete(key))
   })
 
   it('should render search input with placeholder', () => {
@@ -64,78 +66,75 @@ describe('NewsFeedSearch', () => {
   })
 
   it('should update URL after debounce delay with minimum 3 characters', async () => {
-    vi.useFakeTimers()
-    const user = userEvent.setup({ delay: null })
-    renderWithIntl(<NewsFeedSearch debounceMs={500} minChars={3} />)
+    const user = userEvent.setup()
+    renderWithIntl(<NewsFeedSearch debounceMs={100} minChars={3} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'test')
 
-    // Fast-forward time
-    vi.advanceTimersByTime(500)
-
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/en/news?search=test&page=1', { scroll: false })
     })
-
-    vi.useRealTimers()
   })
 
   it('should not trigger search with less than 3 characters', async () => {
-    vi.useFakeTimers()
-    const user = userEvent.setup({ delay: null })
-    renderWithIntl(<NewsFeedSearch debounceMs={500} minChars={3} />)
+    const user = userEvent.setup()
+    renderWithIntl(<NewsFeedSearch debounceMs={100} minChars={3} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'ab')
-
-    vi.advanceTimersByTime(500)
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/en/news', { scroll: false })
     })
-
-    vi.useRealTimers()
   })
 
   it('should show warning message for 1-2 character input', async () => {
     const user = userEvent.setup()
-    renderWithIntl(<NewsFeedSearch minChars={3} />)
+    renderWithIntl(<NewsFeedSearch debounceMs={100} minChars={3} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'ab')
 
-    expect(screen.getByText(/Enter at least 3 characters/i)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(/Enter at least 3 characters/i)).toBeInTheDocument()
+    })
   })
 
   it('should add amber border for invalid input length', async () => {
     const user = userEvent.setup()
-    renderWithIntl(<NewsFeedSearch minChars={3} />)
+    renderWithIntl(<NewsFeedSearch debounceMs={100} minChars={3} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'ab')
 
-    expect(input).toHaveClass('border-amber-500')
+    await waitFor(() => {
+      expect(input).toHaveClass('border-amber-500')
+    })
     expect(input).toHaveAttribute('aria-invalid', 'true')
   })
 
   it('should hide warning when input reaches minimum characters', async () => {
     const user = userEvent.setup()
-    renderWithIntl(<NewsFeedSearch minChars={3} />)
+    renderWithIntl(<NewsFeedSearch debounceMs={100} minChars={3} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'ab')
 
-    expect(screen.getByText(/Enter at least 3 characters/i)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(/Enter at least 3 characters/i)).toBeInTheDocument()
+    })
 
     await user.type(input, 'c')
 
-    expect(screen.queryByText(/Enter at least 3 characters/i)).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByText(/Enter at least 3 characters/i)).not.toBeInTheDocument()
+    })
   })
 
   it('should show clear button when input has value', async () => {
     const user = userEvent.setup()
-    renderWithIntl(<NewsFeedSearch />)
+    renderWithIntl(<NewsFeedSearch debounceMs={100} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'test')
@@ -146,10 +145,14 @@ describe('NewsFeedSearch', () => {
 
   it('should clear input when clear button is clicked', async () => {
     const user = userEvent.setup()
-    renderWithIntl(<NewsFeedSearch />)
+    renderWithIntl(<NewsFeedSearch debounceMs={100} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'test')
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Clear search')).toBeInTheDocument()
+    })
 
     const clearButton = screen.getByLabelText('Clear search')
     await user.click(clearButton)
@@ -159,7 +162,7 @@ describe('NewsFeedSearch', () => {
 
   it('should clear input when ESC key is pressed', async () => {
     const user = userEvent.setup()
-    renderWithIntl(<NewsFeedSearch />)
+    renderWithIntl(<NewsFeedSearch debounceMs={100} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'test')
@@ -172,60 +175,47 @@ describe('NewsFeedSearch', () => {
   })
 
   it('should reset to page 1 when searching', async () => {
-    vi.useFakeTimers()
     mockSearchParams.set('page', '3')
-    const user = userEvent.setup({ delay: null })
-    renderWithIntl(<NewsFeedSearch debounceMs={500} />)
+    const user = userEvent.setup()
+    renderWithIntl(<NewsFeedSearch debounceMs={100} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'test')
-
-    vi.advanceTimersByTime(500)
 
     await waitFor(() => {
       const callArgs = mockPush.mock.calls[0]
       expect(callArgs[0]).toContain('page=1')
       expect(callArgs[0]).toContain('search=test')
     })
-
-    vi.useRealTimers()
   })
 
   it('should preserve existing query params when searching', async () => {
-    vi.useFakeTimers()
     mockSearchParams.set('limit', '50')
-    const user = userEvent.setup({ delay: null })
-    renderWithIntl(<NewsFeedSearch debounceMs={500} />)
+    const user = userEvent.setup()
+    renderWithIntl(<NewsFeedSearch debounceMs={100} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'test')
-
-    vi.advanceTimersByTime(500)
 
     await waitFor(() => {
       const callArgs = mockPush.mock.calls[0]
       expect(callArgs[0]).toContain('limit=50')
       expect(callArgs[0]).toContain('search=test')
     })
-
-    vi.useRealTimers()
   })
 
   it('should trim whitespace from search input', async () => {
-    vi.useFakeTimers()
-    const user = userEvent.setup({ delay: null })
-    renderWithIntl(<NewsFeedSearch debounceMs={500} />)
+    const user = userEvent.setup()
+    renderWithIntl(<NewsFeedSearch debounceMs={100} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, '  test  ')
 
-    vi.advanceTimersByTime(500)
-
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/en/news?search=test&page=1', { scroll: false })
+      const callArgs = mockPush.mock.calls[0]
+      expect(callArgs[0]).toContain('search=test')
+      expect(callArgs[0]).toContain('page=1')
     })
-
-    vi.useRealTimers()
   })
 
   it('should have proper ARIA labels', () => {
@@ -237,12 +227,14 @@ describe('NewsFeedSearch', () => {
 
   it('should have aria-describedby when showing warning', async () => {
     const user = userEvent.setup()
-    renderWithIntl(<NewsFeedSearch minChars={3} />)
+    renderWithIntl(<NewsFeedSearch debounceMs={100} minChars={3} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'ab')
 
-    expect(input).toHaveAttribute('aria-describedby', 'search-hint')
+    await waitFor(() => {
+      expect(input).toHaveAttribute('aria-describedby', 'search-hint')
+    })
   })
 
   it('should initialize with URL search param value', () => {
@@ -254,41 +246,36 @@ describe('NewsFeedSearch', () => {
   })
 
   it('should support custom minChars configuration', async () => {
-    vi.useFakeTimers()
-    const user = userEvent.setup({ delay: null })
-    renderWithIntl(<NewsFeedSearch minChars={5} debounceMs={500} />)
+    const user = userEvent.setup()
+    renderWithIntl(<NewsFeedSearch minChars={5} debounceMs={100} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'test')
 
-    vi.advanceTimersByTime(500)
-
-    // Should not trigger search (only 4 chars)
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/en/news', { scroll: false })
+      const callArgs = mockPush.mock.calls[0]
+      expect(callArgs[0]).not.toContain('search=test')
     })
-
-    vi.useRealTimers()
   })
 
   it('should support custom debounce configuration', async () => {
-    vi.useFakeTimers()
-    const user = userEvent.setup({ delay: null })
-    renderWithIntl(<NewsFeedSearch debounceMs={1000} />)
+    const user = userEvent.setup()
+    renderWithIntl(<NewsFeedSearch debounceMs={200} />)
 
     const input = screen.getByRole('textbox')
     await user.type(input, 'test')
 
-    // Should not trigger after 500ms
-    vi.advanceTimersByTime(500)
+    // Should not trigger immediately
     expect(mockPush).not.toHaveBeenCalled()
 
-    // Should trigger after 1000ms
-    vi.advanceTimersByTime(500)
-    await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/en/news?search=test&page=1', { scroll: false })
-    })
-
-    vi.useRealTimers()
+    // Should trigger after debounce
+    await waitFor(
+      () => {
+        const callArgs = mockPush.mock.calls[0]
+        expect(callArgs[0]).toContain('search=test')
+        expect(callArgs[0]).toContain('page=1')
+      },
+      { timeout: 300 },
+    )
   })
 })

@@ -35,6 +35,8 @@ const defaultMessages = {
       currentPage: 'Current page, page {page}',
       morePages: 'More pages',
       postsPerPage: 'Posts per page',
+      search: 'Search',
+      searchMinChars: 'Enter at least {minChars} characters to search',
     },
   },
 }

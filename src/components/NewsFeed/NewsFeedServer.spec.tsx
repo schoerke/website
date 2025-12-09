@@ -33,6 +33,11 @@ vi.mock('./PostsPerPageSelector', () => ({
   default: () => <div data-testid="posts-per-page-selector" />,
 }))
 
+// Mock NewsFeedSearch component
+vi.mock('./NewsFeedSearch', () => ({
+  default: () => <div data-testid="newsfeed-search" />,
+}))
+
 describe('NewsFeedServer', () => {
   it('should fetch and render posts with default options', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
