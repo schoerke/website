@@ -131,7 +131,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
         </div>
       )}
       {showDots && (
-        <div className="mt-4 flex justify-center gap-3">
+        <div className="mt-4 hidden justify-center gap-3 sm:flex">
           {images.map((_, idx) => (
             <button
               key={idx}
