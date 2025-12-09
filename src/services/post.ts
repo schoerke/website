@@ -1,4 +1,5 @@
 import config from '@/payload.config'
+import type { Where } from 'payload'
 import { getPayload } from 'payload'
 
 type LocaleCode = 'de' | 'en' | 'all'
@@ -174,6 +175,7 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
  * @param options - Query options
  * @param options.category - Filter by category (single string or array of strings)
  * @param options.artistId - Filter by artist ID
+ * @param options.search - Filter by search text (searches title field, minimum 3 characters)
  * @param options.limit - Maximum number of posts to return (default: 100)
  * @param options.locale - Locale code ('de', 'en', or 'all'). Defaults to 'de'
  * @param options.publishedOnly - Whether to only return published posts (default: true)
@@ -197,17 +199,25 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
  *   category: ['news', 'home'],
  *   limit: 5
  * })
+ *
+ * @example
+ * // Search posts by keyword
+ * const searchResults = await getFilteredPosts({
+ *   search: 'concert',
+ *   category: 'news'
+ * })
  */
 export const getFilteredPosts = async (options: {
   category?: string | string[]
   artistId?: string
+  search?: string
   limit?: number
   locale?: LocaleCode
   publishedOnly?: boolean
 }) => {
   const payload = await getPayload({ config })
 
-  const where: any = {}
+  const where: Where = {}
 
   // Filter by published status (default: true)
   if (options.publishedOnly !== false) {
@@ -222,6 +232,17 @@ export const getFilteredPosts = async (options: {
   // Filter by artist
   if (options.artistId) {
     where.artists = { equals: options.artistId }
+  }
+
+  // Filter by search text (searches title field)
+  if (options.search && options.search.trim().length >= 3) {
+    where.or = [
+      {
+        title: {
+          contains: options.search.trim(),
+        },
+      },
+    ]
   }
 
   return await payload.find({
@@ -241,6 +262,7 @@ export const getFilteredPosts = async (options: {
  * @param options - Query options
  * @param options.category - Filter by category (single string or array of strings)
  * @param options.artistId - Filter by artist ID
+ * @param options.search - Filter by search text (searches title field, minimum 3 characters)
  * @param options.page - Page number (1-indexed, default: 1)
  * @param options.limit - Number of posts per page (default: 25)
  * @param options.locale - Locale code ('de', 'en', or 'all'). Defaults to 'de'
@@ -271,10 +293,20 @@ export const getFilteredPosts = async (options: {
  *   page: 1,
  *   limit: 10
  * })
+ *
+ * @example
+ * // Search posts with pagination
+ * const result = await getPaginatedPosts({
+ *   search: 'concert',
+ *   category: 'news',
+ *   page: 1,
+ *   limit: 25
+ * })
  */
 export const getPaginatedPosts = async (options: {
   category?: string | string[]
   artistId?: string
+  search?: string
   page?: number
   limit?: number
   locale?: LocaleCode
@@ -282,7 +314,7 @@ export const getPaginatedPosts = async (options: {
 }) => {
   const payload = await getPayload({ config })
 
-  const where: any = {}
+  const where: Where = {}
 
   // Filter by published status (default: true)
   if (options.publishedOnly !== false) {
@@ -297,6 +329,17 @@ export const getPaginatedPosts = async (options: {
   // Filter by artist
   if (options.artistId) {
     where.artists = { equals: options.artistId }
+  }
+
+  // Filter by search text (searches title field)
+  if (options.search && options.search.trim().length >= 3) {
+    where.or = [
+      {
+        title: {
+          contains: options.search.trim(),
+        },
+      },
+    ]
   }
 
   return await payload.find({
