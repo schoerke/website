@@ -1,44 +1,34 @@
-import js from '@eslint/js'
-import typescriptEslint from '@typescript-eslint/eslint-plugin'
-import eslintConfigPrettier from 'eslint-config-prettier'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import nextVitals from 'eslint-config-next/core-web-vitals'
+import nextTs from 'eslint-config-next/typescript'
+import prettier from 'eslint-config-prettier'
+import { defineConfig, globalIgnores } from 'eslint/config'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  prettier,
+  // Override default ignores of eslint-config-next
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+    // Additional project-specific ignores:
+    '.tmp',
+    '**/.git',
+    '**/.hg',
+    '**/.pnp.*',
+    '**/.svn',
+    '**/.yarn/**',
+    '**/dist/**',
+    '**/node_modules',
+    '**/temp',
+    'playwright.config.ts',
+    'jest.config.js',
+    'vitest.config.ts',
+    'vitest.setup.ts',
+  ]),
+])
 
-export default [
-  js.configs.recommended,
-  eslintConfigPrettier,
-  {
-    languageOptions: {
-      ecmaVersion: 2022,
-      parserOptions: {
-        ecmaFeatures: { jsx: true },
-        project: ['./tsconfig.json'],
-        sourceType: 'module',
-        tsconfigRootDir: __dirname,
-      },
-      sourceType: 'module',
-    },
-    plugins: {
-      'typescript-eslint': typescriptEslint,
-    },
-  },
-  {
-    ignores: [
-      '.tmp',
-      '**/.git',
-      '**/.hg',
-      '**/.pnp.*',
-      '**/.svn',
-      '**/.yarn/**',
-      '**/build',
-      '**/dist/**',
-      '**/node_modules',
-      '**/temp',
-      'playwright.config.ts',
-      'jest.config.js',
-    ],
-  },
-]
+export default eslintConfig
