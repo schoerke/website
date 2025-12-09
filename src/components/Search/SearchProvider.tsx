@@ -253,6 +253,7 @@ function DynamicSearchActions() {
   const router = useRouter()
   const [searchResults, setSearchResults] = useState<SearchDoc[]>([])
   const [allEmployees, setAllEmployees] = useState<Array<{ id: number; name: string; email: string }>>([])
+  const [isSearching, setIsSearching] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
   const { searchQuery } = useKBar((state) => ({
     searchQuery: state.searchQuery,
@@ -284,8 +285,12 @@ function DynamicSearchActions() {
 
     if (currentQuery.length < 3) {
       setSearchResults([])
+      setIsSearching(false)
       return
     }
+
+    // Set loading immediately when query changes
+    setIsSearching(true)
 
     // Abort previous search to prevent race conditions
     abortControllerRef.current?.abort()
@@ -307,12 +312,14 @@ function DynamicSearchActions() {
           ].slice(0, 30)
 
           setSearchResults(allResults)
+          setIsSearching(false)
         }
       } catch (error) {
         // Only update state if this request wasn't aborted
         if (!controller.signal.aborted) {
           console.error('Search error:', error)
           setSearchResults([])
+          setIsSearching(false)
         }
       }
     }, 150) // 150ms debounce
@@ -327,6 +334,20 @@ function DynamicSearchActions() {
   const actions = useMemo(() => {
     const commandLabel = locale === 'de' ? 'Befehl' : 'Command'
     const query = searchQuery.trim().toLowerCase()
+
+    // Register a special loading marker action so RenderResults can detect loading state
+    if (isSearching) {
+      return [
+        {
+          id: '__loading__',
+          name: '__LOADING_MARKER__',
+          keywords: searchQuery, // Include query to prevent filtering
+          section: '',
+          priority: -1,
+          perform: () => {},
+        },
+      ]
+    }
 
     // Filter employees for email commands using extracted helper
     const filteredEmployees = filterEmailCommands(query, allEmployees, searchResults)
@@ -365,7 +386,7 @@ function DynamicSearchActions() {
 
     // Return in desired order: Artists, Team, Pages, Repertoire, Commands
     return totalActions
-  }, [searchResults, allEmployees, locale, router, searchQuery])
+  }, [searchResults, allEmployees, locale, router, searchQuery, isSearching])
 
   useRegisterActions(actions, [actions])
 
@@ -373,7 +394,7 @@ function DynamicSearchActions() {
 }
 
 /**
- * Renders KBar results with empty state
+ * Renders KBar results with loading and empty states
  */
 function RenderResults() {
   const { results } = useMatches()
@@ -382,12 +403,27 @@ function RenderResults() {
   }))
   const locale = useLocale() as 'de' | 'en'
 
-  // Show empty state if user has typed 3+ characters but no results
-  const shouldShowEmptyState = searchQuery.trim().length >= 3 && results.length === 0
+  const query = searchQuery.trim()
+  const hasMinChars = query.length >= 3
+
+  // Detect loading state by checking for the __loading__ marker action
+  const isSearching = results.some((r) => typeof r !== 'string' && r.id === '__loading__')
+
+  // Check if we have any dynamic search results (not just static navigation actions)
+  const hasDynamicResults = results.some(
+    (r) => typeof r !== 'string' && (r.id?.startsWith('search-') || r.id?.startsWith('email-')),
+  )
+
+  // Show empty state only if: has min chars, not searching, and truly no dynamic results
+  const shouldShowEmptyState = hasMinChars && !isSearching && !hasDynamicResults
 
   return (
     <div className="overflow-y-auto p-2">
-      {shouldShowEmptyState ? (
+      {isSearching ? (
+        <div className="px-4 py-8 text-center text-sm text-gray-500">
+          {locale === 'de' ? 'Suche läuft...' : 'Searching...'}
+        </div>
+      ) : shouldShowEmptyState ? (
         <div className="px-4 py-8 text-center text-sm text-gray-500">
           {locale === 'de' ? `Keine Ergebnisse für "${searchQuery}"` : `No results found for "${searchQuery}"`}
         </div>
