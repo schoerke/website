@@ -18,7 +18,8 @@
  * normalizeText("Müller") // "muller"
  * ```
  */
-export function normalizeText(text: string): string {
+export function normalizeText(text: string | null | undefined): string {
+  if (!text) return ''
   return text
     .toLowerCase()
     .normalize('NFD') // Decompose combined characters (é → e + ́)
