@@ -58,11 +58,15 @@ const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, select
       className="mb-6 flex flex-wrap gap-2"
       aria-label="Filter artists by instrument"
     >
-      {sortedInstruments.map((instrument) => (
-        <ToggleGroupItem key={instrument} value={instrument} aria-label={t(instrument as any)} className="capitalize">
-          {t(instrument as any)}
-        </ToggleGroupItem>
-      ))}
+      {sortedInstruments.map((instrument) => {
+        // Translation key for instrument (type assertion needed for dynamic keys)
+        const translationKey = instrument as Parameters<typeof t>[0]
+        return (
+          <ToggleGroupItem key={instrument} value={instrument} aria-label={t(translationKey)} className="capitalize">
+            {t(translationKey)}
+          </ToggleGroupItem>
+        )
+      })}
     </ToggleGroup>
   )
 }
