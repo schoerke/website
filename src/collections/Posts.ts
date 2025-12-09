@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { categoryOptions } from '@/data/options'
+import { normalizeText } from '@/utils/search/normalizeText'
 import { createSlugHook } from '@/utils/slug'
 
 export const Posts: CollectionConfig = {
@@ -24,6 +25,31 @@ export const Posts: CollectionConfig = {
       type: 'text',
       localized: true,
       required: true,
+    },
+    /**
+     * Normalized version of title for diacritic-insensitive search.
+     * Auto-populated from title field via beforeChange hook.
+     * - Removes diacritics (é → e, ü → u)
+     * - Converts to lowercase
+     * - Hidden from admin UI
+     * - Indexed for fast search performance
+     */
+    {
+      name: 'normalizedTitle',
+      type: 'text',
+      localized: true,
+      index: true,
+      admin: {
+        hidden: true,
+      },
+      hooks: {
+        beforeChange: [
+          ({ siblingData }) => {
+            // Always return a value - empty string if no title
+            return siblingData.title ? normalizeText(siblingData.title) : ''
+          },
+        ],
+      },
     },
     {
       name: 'slug',
