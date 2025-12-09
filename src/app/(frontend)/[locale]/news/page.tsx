@@ -33,7 +33,9 @@ const NewsPage = async ({ params, searchParams }: NewsPageProps) => {
   const { page: pageParam, limit: limitParam, search: searchParam } = await searchParams
 
   // Validate locale is one of the supported locales
-  const locale = routing.locales.includes(localeParam as any) ? (localeParam as 'de' | 'en') : routing.defaultLocale
+  const locale = routing.locales.includes(localeParam as 'de' | 'en')
+    ? (localeParam as 'de' | 'en')
+    : routing.defaultLocale
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.news' })
   const tPagination = await getTranslations({ locale, namespace: 'custom.pagination' })

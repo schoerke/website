@@ -1,3 +1,5 @@
+import { FieldHook } from 'payload'
+
 /**
  * Generate URL-friendly slug from text
  *
@@ -21,13 +23,12 @@ export function generateSlug(text: string): string {
 }
 
 /**
- * Create a beforeValidate hook for auto-generating slugs from a source field
+ * Create a Payload CMS beforeValidate hook that auto-generates slugs from a source field
  *
- * @param sourceField - The field name to generate the slug from (e.g., 'name', 'title')
- * @returns A Payload beforeValidate hook function
+ * @param sourceField - The field name to generate the slug from
+ * @returns A beforeValidate hook function
  *
  * @example
- * // In a Payload collection config:
  * {
  *   name: 'slug',
  *   type: 'text',
@@ -36,8 +37,8 @@ export function generateSlug(text: string): string {
  *   }
  * }
  */
-export function createSlugHook(sourceField: string) {
-  return ({ data, operation, value, req }: any) => {
+export function createSlugHook(sourceField: string): FieldHook {
+  return ({ data, operation, value, req }) => {
     // Only generate slug on create or if slug is empty
     if (operation === 'create' || !value) {
       const sourceValue = data?.[sourceField]
@@ -45,13 +46,13 @@ export function createSlugHook(sourceField: string) {
       if (sourceValue) {
         // Handle localized fields
         if (typeof sourceValue === 'object' && req?.locale) {
-          const localizedValue = sourceValue[req.locale]
-          if (localizedValue) {
+          const localizedValue = (sourceValue as Record<string, unknown>)[req.locale]
+          if (typeof localizedValue === 'string') {
             return generateSlug(localizedValue)
           }
         }
 
-        // Handle non-localized fields
+        // Handle simple string fields
         if (typeof sourceValue === 'string') {
           return generateSlug(sourceValue)
         }
