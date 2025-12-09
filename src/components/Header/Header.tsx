@@ -1,22 +1,18 @@
 'use client'
+
+import { getShortcutDisplay, usePlatform } from '@/hooks/usePlatform'
 import { useKBar } from 'kbar'
 import { Search } from 'lucide-react'
 import { useLocale } from 'next-intl'
-import { useEffect, useState } from 'react'
 import LocaleSwitcher from '../ui/LocaleSwitcher'
 
 const Header: React.FC = () => {
   const { query } = useKBar()
   const locale = useLocale()
-  const [shortcutKey, setShortcutKey] = useState('Ctrl+K') // Default for SSR
+  const platform = usePlatform()
+  const shortcutKey = getShortcutDisplay(platform, 'K')
 
   const searchLabel = locale === 'de' ? 'Suchen' : 'Search'
-
-  // Determine the correct shortcut key on client-side only
-  useEffect(() => {
-    const isMac = navigator.platform.includes('Mac')
-    setShortcutKey(isMac ? '⌘K' : 'Ctrl+K')
-  }, [])
 
   return (
     <header className="w-full">
@@ -28,9 +24,11 @@ const Header: React.FC = () => {
         >
           <Search className="h-4 w-4" />
           <span className="hidden sm:inline">{searchLabel}</span>
-          <kbd className="hidden rounded bg-gray-100 px-1.5 py-0.5 text-xs font-semibold text-gray-600 sm:inline">
-            {shortcutKey}
-          </kbd>
+          {shortcutKey && (
+            <kbd className="hidden rounded bg-gray-100 px-1.5 py-0.5 text-xs font-semibold text-gray-600 sm:inline">
+              {shortcutKey}
+            </kbd>
+          )}
         </button>
 
         <LocaleSwitcher />
