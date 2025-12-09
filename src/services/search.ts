@@ -28,6 +28,7 @@ export interface SearchDoc {
   relationId: string
   slug?: string
   priority: number
+  contactPersons?: Array<{ id: number; name: string; email: string }>
 }
 
 export interface SearchResults {
@@ -202,6 +203,7 @@ async function searchViaAPI(query: string, locale: 'de' | 'en', signal: AbortSig
       relationId: doc.relationId,
       slug: doc.slug,
       priority: doc.priority,
+      contactPersons: doc.contactPersons, // Include contact persons if present
     }
 
     if (doc.relationTo === 'artists') {
