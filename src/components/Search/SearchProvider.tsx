@@ -375,11 +375,13 @@ function RenderResults() {
   // Detect loading state by checking for the __loading__ marker action
   const isSearching = results.some((r) => typeof r !== 'string' && r.id === '__loading__')
 
-  // Check if we have any results at all (including static navigation actions)
-  const hasAnyResults = results.some((r) => typeof r !== 'string')
+  // Check if we have any dynamic search results (not just static navigation actions)
+  const hasDynamicResults = results.some(
+    (r) => typeof r !== 'string' && (r.id?.startsWith('search-') || r.id?.startsWith('email-')),
+  )
 
-  // Show empty state only if: has min chars, not searching, and truly no results
-  const shouldShowEmptyState = hasMinChars && !isSearching && !hasAnyResults
+  // Show empty state only if: has min chars, not searching, and truly no dynamic results
+  const shouldShowEmptyState = hasMinChars && !isSearching && !hasDynamicResults
 
   return (
     <div className="overflow-y-auto p-2">
