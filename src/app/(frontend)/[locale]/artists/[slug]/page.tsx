@@ -9,14 +9,11 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 function isMedia(obj: unknown): obj is { url: string } {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'url' in obj &&
-    typeof (obj as any).url === 'string' &&
-    (obj as any).url !== 'null' &&
-    !(obj as any).url.includes('/null')
-  )
+  if (typeof obj !== 'object' || obj === null) return false
+  if (!('url' in obj)) return false
+
+  const candidate = obj as { url: unknown }
+  return typeof candidate.url === 'string' && candidate.url !== 'null' && !candidate.url.includes('/null')
 }
 
 export default async function ArtistDetailPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
