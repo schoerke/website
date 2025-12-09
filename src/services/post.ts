@@ -1,4 +1,5 @@
 import config from '@/payload.config'
+import { normalizeText } from '@/utils/search/normalizeText'
 import type { Where } from 'payload'
 import { getPayload } from 'payload'
 
@@ -175,7 +176,7 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
  * @param options - Query options
  * @param options.category - Filter by category (single string or array of strings)
  * @param options.artistId - Filter by artist ID
- * @param options.search - Filter by search text (searches title field, minimum 3 characters)
+ * @param options.search - Filter by search text (diacritic-insensitive, minimum 3 characters)
  * @param options.limit - Maximum number of posts to return (default: 100)
  * @param options.locale - Locale code ('de', 'en', or 'all'). Defaults to 'de'
  * @param options.publishedOnly - Whether to only return published posts (default: true)
@@ -238,8 +239,8 @@ export const getFilteredPosts = async (options: {
   if (options.search && options.search.trim().length >= 3) {
     where.or = [
       {
-        title: {
-          contains: options.search.trim(),
+        normalizedTitle: {
+          contains: normalizeText(options.search.trim()),
         },
       },
     ]
@@ -262,7 +263,7 @@ export const getFilteredPosts = async (options: {
  * @param options - Query options
  * @param options.category - Filter by category (single string or array of strings)
  * @param options.artistId - Filter by artist ID
- * @param options.search - Filter by search text (searches title field, minimum 3 characters)
+ * @param options.search - Filter by search text (diacritic-insensitive, minimum 3 characters)
  * @param options.page - Page number (1-indexed, default: 1)
  * @param options.limit - Number of posts per page (default: 25)
  * @param options.locale - Locale code ('de', 'en', or 'all'). Defaults to 'de'
@@ -335,8 +336,8 @@ export const getPaginatedPosts = async (options: {
   if (options.search && options.search.trim().length >= 3) {
     where.or = [
       {
-        title: {
-          contains: options.search.trim(),
+        normalizedTitle: {
+          contains: normalizeText(options.search.trim()),
         },
       },
     ]
