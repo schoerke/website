@@ -1,7 +1,9 @@
 'use client'
 
+import type { Recording } from '@/payload-types'
+
 interface RecordingCardProps {
-  recording: any // Recording type from payload-types
+  recording: Recording
 }
 
 const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {

@@ -1,9 +1,10 @@
 'use client'
 
 import RecordingCard from '@/components/Recording/RecordingCard'
+import type { Recording } from '@/payload-types'
 
 interface RecordingGridProps {
-  recordings: any[] // Recording[] from payload-types
+  recordings: Recording[]
   filterKey?: string | null // Key to trigger re-animation when filter changes
 }
 

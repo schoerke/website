@@ -1,9 +1,10 @@
 'use client'
 
 import RecordingListItem from '@/components/Recording/RecordingListItem'
+import type { Recording } from '@/payload-types'
 
 interface RecordingListProps {
-  recordings: any[] // Recording[] from payload-types
+  recordings: Recording[]
   filterKey?: string | null // Key to trigger re-animation when filter changes
 }
 

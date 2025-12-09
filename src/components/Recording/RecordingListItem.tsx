@@ -1,7 +1,9 @@
 'use client'
 
+import type { Recording } from '@/payload-types'
+
 interface RecordingListItemProps {
-  recording: any // Recording type from payload-types
+  recording: Recording
 }
 
 const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {

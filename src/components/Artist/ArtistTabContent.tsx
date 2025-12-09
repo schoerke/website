@@ -6,7 +6,7 @@ import RoleFilter from '@/components/Recording/RoleFilter'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
-import type { Artist, Repertoire } from '@/payload-types'
+import type { Artist, Recording, Repertoire } from '@/payload-types'
 import React from 'react'
 import VideoAccordion from './VideoAccordion'
 
@@ -174,7 +174,7 @@ export const ConcertDatesTab: React.FC<ConcertDatesTabProps> = ({ externalCalend
 
 // Recordings Tab
 interface RecordingsTabProps {
-  recordings: any[] // Recording[] from payload-types
+  recordings: Recording[]
   loading?: boolean
   emptyMessage: string
   availableRoles: string[]
