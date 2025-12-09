@@ -19,6 +19,7 @@
  *     slug: string (URL slug for artists and posts)
  *     priority: number
  *     locale: string
+ *     contactPersons?: Array<{ id: number, name: string, email: string }> (for artists only)
  *   }>
  *   total: number
  *   limit: number
@@ -30,6 +31,30 @@ import config from '@/payload.config'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
+
+interface ContactPerson {
+  id: number
+  name: string
+  email: string
+}
+
+interface SearchAPIResult {
+  id: string
+  title: string
+  relationTo: string
+  relationId: string
+  slug: string
+  priority: number
+  locale: string
+  contactPersons?: ContactPerson[]
+}
+
+interface SearchAPIResponse {
+  results: SearchAPIResult[]
+  total: number
+  limit: number
+  offset: number
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -60,22 +85,77 @@ export async function GET(request: Request) {
       limit,
       page: Math.floor(offset / limit) + 1,
       sort: '-priority', // Higher priority first
+      depth: 0, // Polymorphic relationships aren't populated by depth
     })
 
-    return NextResponse.json({
-      results: results.docs.map((doc: any) => ({
-        id: doc.id,
-        title: doc.displayTitle || doc.title, // Use displayTitle if available
-        relationTo: doc.doc.relationTo,
-        relationId: doc.doc.value,
-        slug: doc.slug || '', // Include slug for routing
-        priority: doc.priority,
-        locale: doc.locale,
-      })),
+    // Manually populate artist contact persons (depth doesn't work on polymorphic relationships)
+    const artistIds = results.docs
+      .filter((doc: any) => doc.doc.relationTo === 'artists')
+      .map((doc: any) => (typeof doc.doc.value === 'object' ? doc.doc.value.id : doc.doc.value))
+
+    // Fetch all artists with their contact persons
+    const artistsWithContactPersons = new Map()
+    if (artistIds.length > 0) {
+      const artists = await payload.find({
+        collection: 'artists',
+        where: {
+          id: {
+            in: artistIds,
+          },
+        },
+        depth: 1, // Populate contactPersons relationships
+        limit: artistIds.length,
+      })
+
+      artists.docs.forEach((artist: any) => {
+        if (artist.contactPersons && Array.isArray(artist.contactPersons)) {
+          const contactPersons = artist.contactPersons
+            .filter((cp: any) => cp && typeof cp === 'object' && cp.email)
+            .map((cp: any) => ({
+              id: cp.id,
+              name: cp.name,
+              email: cp.email,
+            }))
+
+          if (contactPersons.length > 0) {
+            artistsWithContactPersons.set(artist.id, contactPersons)
+          }
+        }
+      })
+    }
+
+    const response: SearchAPIResponse = {
+      results: results.docs.map((searchDoc: any) => {
+        const relatedDoc = searchDoc.doc
+        const relatedDocData = relatedDoc.value
+
+        const result: SearchAPIResult = {
+          id: searchDoc.id,
+          title: searchDoc.displayTitle || searchDoc.title, // Use displayTitle if available
+          relationTo: relatedDoc.relationTo,
+          relationId: typeof relatedDocData === 'object' ? relatedDocData.id : relatedDocData,
+          slug: searchDoc.slug || '', // Include slug for routing
+          priority: searchDoc.priority,
+          locale: searchDoc.locale,
+        }
+
+        // Attach contact persons from our manual fetch
+        if (relatedDoc.relationTo === 'artists') {
+          const artistId = typeof relatedDocData === 'object' ? relatedDocData.id : relatedDocData
+          const contactPersons = artistsWithContactPersons.get(artistId)
+          if (contactPersons) {
+            result.contactPersons = contactPersons
+          }
+        }
+
+        return result
+      }),
       total: results.totalDocs,
       limit: results.limit,
       offset: ((results.page || 1) - 1) * results.limit,
-    })
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Search API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
