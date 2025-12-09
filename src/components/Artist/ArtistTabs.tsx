@@ -3,7 +3,7 @@
 import { fetchRecordingsByArtist } from '@/actions/recordings'
 import { fetchRepertoiresByArtist } from '@/actions/repertoires'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
-import type { Artist, Repertoire } from '@/payload-types'
+import type { Artist, Recording, Repertoire } from '@/payload-types'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 import NewsFeedClient from '../NewsFeed/NewsFeedClient'
@@ -16,23 +16,35 @@ interface ArtistTabsProps {
   locale: string
 }
 
-const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
+function getInitialTab(hasCalendar: boolean): TabId {
+  if (typeof window === 'undefined') return 'biography'
+  const hash = window.location.hash.slice(1) as TabId
+  const validTabs: TabId[] = [
+    'biography',
+    'repertoire',
+    'discography',
+    'video',
+    'news',
+    'projects',
+    ...(hasCalendar ? (['concertDates'] as const) : []),
+  ]
+  return hash && validTabs.includes(hash) ? hash : 'biography'
+}
+
+/**
+ * Internal component that manages tab state and data fetching.
+ * Uses key prop on parent to reset all state when locale changes.
+ */
+const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const t = useTranslations('custom.pages.artist')
-  const [activeTab, setActiveTab] = useState<TabId>('biography')
-  const [recordings, setRecordings] = useState<any[]>([])
+  const [activeTab, setActiveTab] = useState<TabId>(() => getInitialTab(!!artist.externalCalendarURL))
+  const [recordings, setRecordings] = useState<Recording[]>([])
   const [recordingsLoading, setRecordingsLoading] = useState(false)
   const [recordingsFetched, setRecordingsFetched] = useState(false)
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
   const [repertoires, setRepertoires] = useState<Repertoire[]>([])
   const [repertoiresLoading, setRepertoiresLoading] = useState(false)
   const [repertoiresFetched, setRepertoiresFetched] = useState(false)
-
-  // Reset fetched flags when locale changes
-  useEffect(() => {
-    setRecordingsFetched(false)
-    setRepertoiresFetched(false)
-    setSelectedRole(null)
-  }, [locale])
 
   // Available tabs (Concert Dates is conditional)
   const tabs: TabId[] = [
@@ -45,14 +57,6 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     ...(artist.externalCalendarURL ? (['concertDates'] as const) : []),
   ]
 
-  // Read URL hash on mount
-  useEffect(() => {
-    const hash = window.location.hash.slice(1) as TabId
-    if (hash && tabs.includes(hash)) {
-      setActiveTab(hash)
-    }
-  }, [])
-
   // Update URL hash when tab changes
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab)
@@ -61,37 +65,71 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
 
   // Fetch recordings when discography tab is selected
   useEffect(() => {
-    if (activeTab === 'discography' && !recordingsFetched && !recordingsLoading) {
-      setRecordingsLoading(true)
-      fetchRecordingsByArtist(artist.id.toString(), locale as 'de' | 'en')
-        .then((data) => {
+    if (activeTab !== 'discography' || recordingsFetched || recordingsLoading) {
+      return
+    }
+
+    let cancelled = false
+
+    const loadRecordings = async () => {
+      try {
+        const data = await fetchRecordingsByArtist(artist.id.toString(), locale as 'de' | 'en')
+        if (!cancelled) {
           setRecordings(data.docs || [])
-          setRecordingsLoading(false)
           setRecordingsFetched(true)
-        })
-        .catch((err) => {
+        }
+      } catch (err) {
+        if (!cancelled) {
           console.error('Failed to fetch recordings:', err)
-          setRecordingsLoading(false)
           setRecordingsFetched(true)
-        })
+        }
+      } finally {
+        if (!cancelled) {
+          setRecordingsLoading(false)
+        }
+      }
+    }
+
+    setRecordingsLoading(true)
+    loadRecordings()
+
+    return () => {
+      cancelled = true
     }
   }, [activeTab, artist.id, recordingsFetched, recordingsLoading, locale])
 
   // Fetch repertoires when repertoire tab is selected
   useEffect(() => {
-    if (activeTab === 'repertoire' && !repertoiresFetched && !repertoiresLoading) {
-      setRepertoiresLoading(true)
-      fetchRepertoiresByArtist(artist.id.toString(), locale as 'de' | 'en')
-        .then((data) => {
+    if (activeTab !== 'repertoire' || repertoiresFetched || repertoiresLoading) {
+      return
+    }
+
+    let cancelled = false
+
+    const loadRepertoires = async () => {
+      try {
+        const data = await fetchRepertoiresByArtist(artist.id.toString(), locale as 'de' | 'en')
+        if (!cancelled) {
           setRepertoires(data.docs || [])
-          setRepertoiresLoading(false)
           setRepertoiresFetched(true)
-        })
-        .catch((err) => {
+        }
+      } catch (err) {
+        if (!cancelled) {
           console.error('Failed to fetch repertoires:', err)
-          setRepertoiresLoading(false)
           setRepertoiresFetched(true)
-        })
+        }
+      } finally {
+        if (!cancelled) {
+          setRepertoiresLoading(false)
+        }
+      }
+    }
+
+    setRepertoiresLoading(true)
+    loadRepertoires()
+
+    return () => {
+      cancelled = true
     }
   }, [activeTab, artist.id, repertoiresFetched, repertoiresLoading, locale])
 
@@ -100,7 +138,9 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
 
   // Filter recordings by selected role
   const filteredRecordings =
-    selectedRole === null ? recordings : recordings.filter((recording) => recording.roles?.includes(selectedRole))
+    selectedRole === null
+      ? recordings
+      : recordings.filter((recording) => recording.roles?.includes(selectedRole as Recording['roles'][number]))
 
   return (
     <div className="w-full">
@@ -175,6 +215,14 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
       </div>
     </div>
   )
+}
+
+/**
+ * ArtistTabs component with locale-based reset.
+ * Uses key prop to reset all internal state when locale changes.
+ */
+const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
+  return <ArtistTabsInner key={locale} artist={artist} locale={locale} />
 }
 
 export default ArtistTabs

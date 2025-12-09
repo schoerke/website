@@ -32,52 +32,10 @@ interface NewsFeedClientProps {
 }
 
 /**
- * NewsFeed Client Component
- *
- * Client-side rendered news/project feed with dynamic search and filtering.
- * Uses server actions for data fetching with proper type safety.
- *
- * Features:
- * - Client-side data fetching with React hooks
- * - URL-based search query params
- * - Automatic refetch when search changes
- * - Skeleton loading states
- * - Default avatar fallback via server action
- * - Parallel data fetching (posts + default avatar)
- * - ARIA live regions for search feedback
- * - Responsive search input
- *
- * **Note:** This component fetches data on mount and when search changes.
- * For better performance and SEO, prefer {@link NewsFeedServer} when possible.
- *
- * @example
- * ```tsx
- * // Basic usage
- * <NewsFeed.Client
- *   category="news"
- *   locale="en"
- * />
- *
- * // Artist-specific feed without search
- * <NewsFeed.Client
- *   artistId="artist-123"
- *   showSearch={false}
- *   limit={10}
- * />
- *
- * // Custom search placeholder
- * <NewsFeed.Client
- *   category="projects"
- *   searchPlaceholder="Search projects"
- *   showLoadingState={true}
- * />
- * ```
- *
- * @see {@link NewsFeedServer} for server-side alternative (preferred)
- * @see {@link NewsFeedSearch} for search input component
- * @see {@link fetchPosts} for the server action used for data fetching
+ * Internal component that manages data fetching.
+ * Uses key prop on parent to reset all state when search changes.
  */
-const NewsFeedClient: React.FC<NewsFeedClientProps> = ({
+const NewsFeedClientInner: React.FC<NewsFeedClientProps> = ({
   category,
   artistId,
   limit = 100,
@@ -95,37 +53,48 @@ const NewsFeedClient: React.FC<NewsFeedClientProps> = ({
   const [fetched, setFetched] = useState(false)
 
   useEffect(() => {
-    if (!fetched && loading) {
-      // Fetch posts and default avatar in parallel using server actions
-      Promise.all([
-        fetchPosts({
-          category,
-          artistId,
-          search,
-          limit,
-          locale: locale as 'de' | 'en',
-        }),
-        fetchDefaultAvatar(),
-      ])
-        .then(([postsData, defaultAvatar]) => {
+    if (fetched || !loading) {
+      return
+    }
+
+    let cancelled = false
+
+    const loadData = async () => {
+      try {
+        const [postsData, defaultAvatar] = await Promise.all([
+          fetchPosts({
+            category,
+            artistId,
+            search,
+            limit,
+            locale: locale as 'de' | 'en',
+          }),
+          fetchDefaultAvatar(),
+        ])
+
+        if (!cancelled) {
           setPosts(postsData.docs || [])
           setDefaultImage(defaultAvatar || null)
-          setLoading(false)
           setFetched(true)
-        })
-        .catch((err) => {
+        }
+      } catch (err) {
+        if (!cancelled) {
           console.error('Failed to fetch posts or default image:', err)
-          setLoading(false)
           setFetched(true)
-        })
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadData()
+
+    return () => {
+      cancelled = true
     }
   }, [category, artistId, search, limit, locale, fetched, loading])
-
-  // Reset fetched state when search changes
-  useEffect(() => {
-    setFetched(false)
-    setLoading(true)
-  }, [search])
 
   if (loading && showLoadingState) {
     return (
@@ -173,6 +142,60 @@ const NewsFeedClient: React.FC<NewsFeedClientProps> = ({
       />
     </div>
   )
+}
+
+/**
+ * NewsFeed Client Component
+ *
+ * Client-side rendered news/project feed with dynamic search and filtering.
+ * Uses server actions for data fetching with proper type safety.
+ *
+ * Features:
+ * - Client-side data fetching with React hooks
+ * - URL-based search query params
+ * - Automatic refetch when search changes (via key prop reset)
+ * - Skeleton loading states
+ * - Default avatar fallback via server action
+ * - Parallel data fetching (posts + default avatar)
+ * - ARIA live regions for search feedback
+ * - Responsive search input
+ *
+ * **Note:** This component fetches data on mount and when search changes.
+ * For better performance and SEO, prefer {@link NewsFeedServer} when possible.
+ *
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <NewsFeed.Client
+ *   category="news"
+ *   locale="en"
+ * />
+ *
+ * // Artist-specific feed without search
+ * <NewsFeed.Client
+ *   artistId="artist-123"
+ *   showSearch={false}
+ *   limit={10}
+ * />
+ *
+ * // Custom search placeholder
+ * <NewsFeed.Client
+ *   category="projects"
+ *   searchPlaceholder="Search projects"
+ *   showLoadingState={true}
+ * />
+ * ```
+ *
+ * @see {@link NewsFeedServer} for server-side alternative (preferred)
+ * @see {@link NewsFeedSearch} for search input component
+ * @see {@link fetchPosts} for the server action used for data fetching
+ */
+const NewsFeedClient: React.FC<NewsFeedClientProps> = (props) => {
+  const searchParams = useSearchParams()
+  const search = searchParams.get('search') || ''
+
+  // Use search as key to reset component state when search changes
+  return <NewsFeedClientInner key={search} {...props} />
 }
 
 export default NewsFeedClient
