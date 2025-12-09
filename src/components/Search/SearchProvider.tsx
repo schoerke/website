@@ -39,36 +39,6 @@ interface SearchProviderProps {
 const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const router = useRouter()
   const locale = useLocale() as 'de' | 'en'
-  const [isMobilePhone, setIsMobilePhone] = useState(false)
-
-  // Detect if user is on mobile phone (not tablet)
-  useEffect(() => {
-    const checkMobilePhone = () => {
-      const userAgent = navigator.userAgent.toLowerCase()
-
-      // Exclude tablets (iPad, Android tablets)
-      const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(userAgent)
-      if (isTablet) {
-        setIsMobilePhone(false)
-        return
-      }
-
-      // Check for mobile phones
-      const isMobile = /android.*mobile|webos|iphone|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
-
-      // Additional check: screen size (phones typically < 768px width)
-      const isSmallScreen = window.innerWidth < 768
-
-      // Must be both mobile UA and small screen
-      setIsMobilePhone(isMobile && isSmallScreen)
-    }
-
-    checkMobilePhone()
-
-    // Re-check on window resize
-    window.addEventListener('resize', checkMobilePhone)
-    return () => window.removeEventListener('resize', checkMobilePhone)
-  }, [])
 
   // Static navigation actions (no shortcuts - they interfere with system-wide shortcuts)
   const staticActions = useMemo(() => {
@@ -141,14 +111,10 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
           router.replace(currentPath as any, { locale: newLocale })
         },
       },
-    ]
-
-    // Add call office command only on mobile phones (not tablets)
-    if (isMobilePhone) {
-      actions.push({
+      {
         id: 'call-office',
         name: locale === 'de' ? 'Schoerke Büro anrufen' : 'Call Schoerke Office',
-        keywords: 'call phone anrufen telefon office büro',
+        keywords: 'call phone anrufen telefon office büro command commands befehl befehle',
         section: locale === 'de' ? 'Befehle' : 'Commands',
         subtitle: locale === 'de' ? 'Befehl' : 'Command',
         priority: 1,
@@ -157,11 +123,11 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
           const phoneNumber = GENERAL_CONTACT.phone.replace(/[\s()-]/g, '')
           window.location.href = `tel:${phoneNumber}`
         },
-      })
-    }
+      },
+    ]
 
     return actions
-  }, [locale, router, isMobilePhone])
+  }, [locale, router])
 
   return (
     <KBarProvider actions={staticActions}>
@@ -253,6 +219,7 @@ function DynamicSearchActions() {
   const router = useRouter()
   const [searchResults, setSearchResults] = useState<SearchDoc[]>([])
   const [allEmployees, setAllEmployees] = useState<Array<{ id: number; name: string; email: string }>>([])
+  const [isSearching, setIsSearching] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
   const { searchQuery } = useKBar((state) => ({
     searchQuery: state.searchQuery,
@@ -284,8 +251,12 @@ function DynamicSearchActions() {
 
     if (currentQuery.length < 3) {
       setSearchResults([])
+      setIsSearching(false)
       return
     }
+
+    // Set loading immediately when query changes
+    setIsSearching(true)
 
     // Abort previous search to prevent race conditions
     abortControllerRef.current?.abort()
@@ -299,20 +270,22 @@ function DynamicSearchActions() {
         // Only update state if this request wasn't aborted
         if (!controller.signal.aborted) {
           // Flatten all results into a single array (max 30 total)
+          // Note: Pages excluded - Navigation section already covers these
           const allResults = [
             ...response.results.artists.slice(0, 10),
             ...response.results.employees.slice(0, 5),
-            ...response.results.pages.slice(0, 5),
             ...response.results.repertoire.slice(0, 5),
           ].slice(0, 30)
 
           setSearchResults(allResults)
+          setIsSearching(false)
         }
       } catch (error) {
         // Only update state if this request wasn't aborted
         if (!controller.signal.aborted) {
           console.error('Search error:', error)
           setSearchResults([])
+          setIsSearching(false)
         }
       }
     }, 150) // 150ms debounce
@@ -328,14 +301,28 @@ function DynamicSearchActions() {
     const commandLabel = locale === 'de' ? 'Befehl' : 'Command'
     const query = searchQuery.trim().toLowerCase()
 
+    // Register a special loading marker action so RenderResults can detect loading state
+    if (isSearching) {
+      return [
+        {
+          id: '__loading__',
+          name: '__LOADING_MARKER__',
+          keywords: searchQuery, // Include query to prevent filtering
+          section: '',
+          priority: -1,
+          perform: () => {},
+        },
+      ]
+    }
+
     // Filter employees for email commands using extracted helper
     const filteredEmployees = filterEmailCommands(query, allEmployees, searchResults)
 
     const emailActions = filteredEmployees.map((employee) => ({
       id: `email-${employee.id}`,
       name: `${locale === 'de' ? 'E-Mail an' : 'Email'} ${employee.name}`,
-      // Include search query in keywords to prevent KBar from filtering it out
-      keywords: `${searchQuery} email mail e-mail ${employee.name}`,
+      // Include search query and command keywords to prevent KBar from filtering it out
+      keywords: `${searchQuery} email mail e-mail command commands befehl befehle ${employee.name}`,
       section: locale === 'de' ? 'Befehle' : 'Commands',
       subtitle: commandLabel,
       priority: 60, // Lower priority than content, so Commands appear last
@@ -344,9 +331,9 @@ function DynamicSearchActions() {
       },
     }))
 
-    // Only show search results if we have them
+    // Always return email actions even when no search results (e.g., "email" query shows all employees)
     if (searchResults.length === 0) {
-      return emailActions // Return email actions even if no search results
+      return emailActions // Return email actions, or empty array if none
     }
 
     // Separate results by collection type for proper ordering
@@ -365,7 +352,7 @@ function DynamicSearchActions() {
 
     // Return in desired order: Artists, Team, Pages, Repertoire, Commands
     return totalActions
-  }, [searchResults, allEmployees, locale, router, searchQuery])
+  }, [searchResults, allEmployees, locale, router, searchQuery, isSearching])
 
   useRegisterActions(actions, [actions])
 
@@ -373,7 +360,7 @@ function DynamicSearchActions() {
 }
 
 /**
- * Renders KBar results with empty state
+ * Renders KBar results with loading and empty states
  */
 function RenderResults() {
   const { results } = useMatches()
@@ -382,12 +369,25 @@ function RenderResults() {
   }))
   const locale = useLocale() as 'de' | 'en'
 
-  // Show empty state if user has typed 3+ characters but no results
-  const shouldShowEmptyState = searchQuery.trim().length >= 3 && results.length === 0
+  const query = searchQuery.trim()
+  const hasMinChars = query.length >= 3
+
+  // Detect loading state by checking for the __loading__ marker action
+  const isSearching = results.some((r) => typeof r !== 'string' && r.id === '__loading__')
+
+  // Check if we have any results at all (including static navigation actions)
+  const hasAnyResults = results.some((r) => typeof r !== 'string')
+
+  // Show empty state only if: has min chars, not searching, and truly no results
+  const shouldShowEmptyState = hasMinChars && !isSearching && !hasAnyResults
 
   return (
     <div className="overflow-y-auto p-2">
-      {shouldShowEmptyState ? (
+      {isSearching ? (
+        <div className="px-4 py-8 text-center text-sm text-gray-500">
+          {locale === 'de' ? 'Suche läuft...' : 'Searching...'}
+        </div>
+      ) : shouldShowEmptyState ? (
         <div className="px-4 py-8 text-center text-sm text-gray-500">
           {locale === 'de' ? `Keine Ergebnisse für "${searchQuery}"` : `No results found for "${searchQuery}"`}
         </div>
