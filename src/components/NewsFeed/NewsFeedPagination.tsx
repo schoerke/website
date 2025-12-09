@@ -9,6 +9,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import { useSearchParams } from 'next/navigation'
+import { useCallback } from 'react'
 
 /**
  * Props for the NewsFeedPagination component
@@ -75,12 +77,13 @@ function generatePageNumbers(currentPage: number, totalPages: number): (number |
  * Displays pagination controls for navigating through news/project posts.
  * Shows page numbers with ellipsis for large page counts, plus previous/next buttons.
  * Automatically hides when there's only one page.
+ * Preserves search query parameter when navigating between pages.
  *
  * Features:
  * - Smart page number display with ellipsis
  * - Disabled state for first/last pages
  * - ARIA labels for accessibility
- * - URL-based navigation (preserves limit parameter)
+ * - URL-based navigation (preserves limit and search parameters)
  *
  * @example
  * ```tsx
@@ -93,9 +96,27 @@ function generatePageNumbers(currentPage: number, totalPages: number): (number |
  * ```
  */
 const NewsFeedPagination: React.FC<NewsFeedPaginationProps> = ({ currentPage, totalPages, limit, basePath }) => {
+  const searchParams = useSearchParams()
+
   if (totalPages <= 1) return null
 
-  const createPageUrl = (page: number): string => `${basePath}?page=${page}&limit=${limit}`
+  /**
+   * Creates a URL for a specific page number, preserving existing query parameters.
+   * Memoized with useCallback to avoid recreating the function on every render.
+   *
+   * @param page - The page number to navigate to
+   * @returns Complete URL with page and limit parameters
+   */
+  const createPageUrl = useCallback(
+    (page: number): string => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('page', page.toString())
+      params.set('limit', limit.toString())
+      return `${basePath}?${params.toString()}`
+    },
+    [searchParams, limit, basePath],
+  )
+
   const pageNumbers = generatePageNumbers(currentPage, totalPages)
 
   return (
