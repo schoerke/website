@@ -109,7 +109,10 @@ const NewsFeedSearch: React.FC<NewsFeedSearchProps> = ({ minChars = 3, debounceM
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          className={cn('pl-6 pr-6', showMinCharsWarning && 'border-amber-500')}
+          className={cn(
+            'pl-6 pr-6',
+            showMinCharsWarning && 'border-b-primary-error focus-visible:border-b-primary-error border-b-2',
+          )}
           aria-label={placeholderText}
           aria-invalid={showMinCharsWarning}
           aria-describedby={showMinCharsWarning ? 'search-hint' : undefined}
@@ -125,7 +128,7 @@ const NewsFeedSearch: React.FC<NewsFeedSearchProps> = ({ minChars = 3, debounceM
           </button>
         )}
         {showMinCharsWarning && (
-          <p id="search-hint" className="absolute left-0 top-full mt-1 text-xs text-amber-600">
+          <p id="search-hint" className="text-primary-error absolute left-0 top-full mt-1 text-xs">
             {t('searchMinChars', { minChars })}
           </p>
         )}

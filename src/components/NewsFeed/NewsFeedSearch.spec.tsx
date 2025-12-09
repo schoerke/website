@@ -101,7 +101,7 @@ describe('NewsFeedSearch', () => {
     })
   })
 
-  it('should add amber border for invalid input length', async () => {
+  it('should add error border for invalid input length', async () => {
     const user = userEvent.setup()
     renderWithIntl(<NewsFeedSearch debounceMs={100} minChars={3} />)
 
@@ -109,7 +109,8 @@ describe('NewsFeedSearch', () => {
     await user.type(input, 'ab')
 
     await waitFor(() => {
-      expect(input).toHaveClass('border-amber-500')
+      expect(input).toHaveClass('border-b-primary-error')
+      expect(input).toHaveClass('border-b-2')
     })
     expect(input).toHaveAttribute('aria-invalid', 'true')
   })
