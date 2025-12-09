@@ -60,9 +60,9 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
       {/* CMS-editable content at the top */}
       {page && (
-        <div className="mb-12">
+        <div className="mb-8">
           <h1 className="font-playfair mb-6 text-5xl font-bold">{page.title}</h1>
-          <div className="prose mb-12 max-w-none">
+          <div className="prose max-w-none">
             <PayloadRichText content={page.content} />
           </div>
         </div>
