@@ -59,9 +59,9 @@ remounts in Next.js.
 
 ### Related Documentation
 
-- Next.js App Router navigation: https://nextjs.org/docs/app/getting-started/linking-and-navigating
-- View Transitions API: https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
-- React state preservation: https://react.dev/learn/preserving-and-resetting-state
+- Next.js App Router navigation: <https://nextjs.org/docs/app/getting-started/linking-and-navigating>
+- View Transitions API: <https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API>
+- React state preservation: <https://react.dev/learn/preserving-and-resetting-state>
 
 ---
 
