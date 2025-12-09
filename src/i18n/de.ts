@@ -107,6 +107,8 @@ const de = {
       },
       team: {
         title: 'Team',
+        phone: 'Telefon',
+        mobile: 'Mobil',
       },
       impressum: {
         title: 'Impressum',

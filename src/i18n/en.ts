@@ -104,6 +104,8 @@ const en = {
       },
       team: {
         title: 'Team',
+        phone: 'Phone',
+        mobile: 'Mobile',
       },
       impressum: {
         title: 'Legal Notice',

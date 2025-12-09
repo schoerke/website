@@ -8,7 +8,21 @@ import Image from 'next/image'
 // This page will be dynamically rendered
 export const dynamic = 'force-dynamic'
 
-const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, mobile }) => {
+interface TeamMemberCardProps extends Employee {
+  phoneLabel: string
+  mobileLabel: string
+}
+
+const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
+  name,
+  title,
+  image,
+  email,
+  phone,
+  mobile,
+  phoneLabel,
+  mobileLabel,
+}) => {
   const img = image as PayloadImage | undefined
   const imageUrl = img?.url || '/placeholder.jpg'
 
@@ -33,8 +47,12 @@ const TeamMemberCard: React.FC<Employee> = ({ name, title, image, email, phone, 
             {email}
           </a>
         </p>
-        <p className="text-xs">Telefon: {phone}</p>
-        <p className="text-xs">Mobil: {mobile}</p>
+        <p className="text-xs">
+          {phoneLabel}: {phone}
+        </p>
+        <p className="text-xs">
+          {mobileLabel}: {mobile}
+        </p>
       </div>
     </div>
   )
@@ -74,7 +92,7 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
       {/* Employee list */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {employees.map((employee: Employee) => (
-          <TeamMemberCard key={employee.name} {...employee} />
+          <TeamMemberCard key={employee.name} {...employee} phoneLabel={t('phone')} mobileLabel={t('mobile')} />
         ))}
       </div>
     </main>
