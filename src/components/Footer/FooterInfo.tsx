@@ -24,10 +24,14 @@ const FooterInfo: React.FC<FooterInfoProps> = async ({ locale }) => {
   const t = await getTranslations({ locale, namespace: 'custom.pages' })
   const tFooter = await getTranslations({ locale, namespace: 'custom.footer' })
 
-  const legalLinks = [
-    { text: t('impressum.title'), href: '/impressum' as const, external: false },
-    { text: t('datenschutz.title'), href: '/datenschutz' as const, external: false },
-    { text: t('brand.title'), href: '/brand' as const, external: true },
+  const legalLinks: Array<{
+    text: string
+    href: '/impressum' | '/datenschutz' | '/brand'
+    external: boolean
+  }> = [
+    { text: t('impressum.title'), href: '/impressum', external: false },
+    { text: t('datenschutz.title'), href: '/datenschutz', external: false },
+    { text: t('brand.title'), href: '/brand', external: true },
   ]
 
   return (
@@ -50,7 +54,7 @@ const FooterInfo: React.FC<FooterInfoProps> = async ({ locale }) => {
                   </NextLink>
                 ) : (
                   <Link
-                    href={link.href as any}
+                    href={link.href as '/impressum' | '/datenschutz'}
                     className="text-sm text-gray-600 transition duration-150 ease-in-out hover:text-gray-800"
                   >
                     {link.text}

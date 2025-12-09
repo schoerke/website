@@ -1,13 +1,14 @@
 'use client'
 
 import { useRouter } from '@/i18n/navigation'
-import React from 'react'
+
+type RouterPushHref = Parameters<ReturnType<typeof useRouter>['push']>[0]
 
 interface BackButtonProps {
   label: string
   className?: string
   labelClassName?: string
-  fallbackHref?: string
+  fallbackHref?: RouterPushHref
 }
 
 const BackButton: React.FC<BackButtonProps> = ({ label, className = '', labelClassName = '', fallbackHref = '/' }) => {
@@ -19,7 +20,7 @@ const BackButton: React.FC<BackButtonProps> = ({ label, className = '', labelCla
       router.back()
     } else {
       // router.push from next-intl/navigation is already locale-aware
-      router.push(fallbackHref as any)
+      router.push(fallbackHref)
     }
   }
 
