@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import VideoAccordion from './VideoAccordion'
 
 describe('VideoAccordion', () => {
@@ -10,6 +10,37 @@ describe('VideoAccordion', () => {
     { id: '2', label: 'Performance 2', url: 'https://youtu.be/jNQXAC9IVRw' },
     { id: '3', label: 'Performance 3', url: 'https://www.youtube.com/embed/9bZkp7q19f0' },
   ]
+
+  beforeAll(() => {
+    // Mock iframe element to prevent happy-dom network requests
+    const originalCreateElement = document.createElement.bind(document)
+    document.createElement = function (tagName: string, options?: ElementCreationOptions) {
+      if (tagName.toLowerCase() === 'iframe') {
+        const div = originalCreateElement('div', options) as unknown as HTMLIFrameElement
+        div.setAttribute('data-mock-iframe', 'true')
+        // Intercept src attribute to prevent network requests
+        Object.defineProperty(div, 'src', {
+          get() {
+            return this.getAttribute('src') || ''
+          },
+          set(value: string) {
+            this.setAttribute('src', value)
+          },
+        })
+        // Mock allow attribute
+        Object.defineProperty(div, 'allow', {
+          get() {
+            return this.getAttribute('allow') || ''
+          },
+          set(value: string) {
+            this.setAttribute('allow', value)
+          },
+        })
+        return div
+      }
+      return originalCreateElement(tagName, options)
+    }
+  })
 
   beforeEach(() => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})

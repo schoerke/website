@@ -30,7 +30,6 @@ vi.mock('@/components/Recording/RecordingList', () => ({
 vi.mock('@/components/Recording/RoleFilter', () => ({
   default: ({
     roles,
-    selected,
     onChange,
   }: {
     roles: string[]
