@@ -61,9 +61,9 @@ async function migrateMediaToR2() {
       const newUrl = `${R2_PUBLIC_URL}/${doc.filename}`
 
       // Update sizes URLs
-      const updatedSizes: any = {}
+      const updatedSizes: Record<string, unknown> = {}
       if (doc.sizes) {
-        for (const [sizeName, sizeData] of Object.entries(doc.sizes as any)) {
+        for (const [sizeName, sizeData] of Object.entries(doc.sizes)) {
           if (sizeData && typeof sizeData === 'object' && 'filename' in sizeData) {
             // Only update URL if filename exists (not null/undefined)
             // If filename is null, the size generation failed - keep URL as null

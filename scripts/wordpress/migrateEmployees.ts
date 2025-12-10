@@ -215,7 +215,7 @@ function findMediaId(thumbnailId: string | number | undefined): number | null {
 /**
  * Parse WordPress postmeta into key-value object
  */
-function parsePostMeta(postmeta: any): Record<string, string> {
+function parsePostMeta(postmeta: unknown): Record<string, string> {
   if (!postmeta) return {}
 
   const metaArray = Array.isArray(postmeta) ? postmeta : [postmeta]

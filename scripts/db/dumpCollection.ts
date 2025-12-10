@@ -24,7 +24,8 @@
 import 'dotenv/config'
 import { writeFile } from 'fs/promises'
 import path from 'path'
-import { getPayload } from 'payload'
+import type { SanitizedConfig } from 'payload'
+import { getPayload, type Payload } from 'payload'
 
 /**
  * Dynamically imports and resolves the Payload configuration.
@@ -60,8 +61,8 @@ async function getConfig() {
  * // ['artists', 'documents', 'employees', 'images', 'posts', 'recordings', 'users']
  * ```
  */
-function getValidCollections(config: any): string[] {
-  return (config.collections || []).map((c: any) => c.slug)
+function getValidCollections(config: SanitizedConfig): string[] {
+  return (config.collections || []).map((c) => c.slug)
 }
 
 /**
@@ -85,7 +86,7 @@ function getValidCollections(config: any): string[] {
  * For collections with localized fields (e.g., employees.title), the dump will include
  * all locale data in the format: { de: "German value", en: "English value" }
  */
-async function exportCollection(payload: any, collection: string) {
+async function exportCollection(payload: Payload, collection: string) {
   const result = await payload.find({
     collection,
     locale: 'all', // Include all localized field data
@@ -117,17 +118,20 @@ async function exportCollection(payload: any, collection: string) {
  * // Closed MongoDB connection.
  * ```
  */
-async function closePayloadConnection(payload: any) {
-  if (payload?.mongoClient && typeof payload.mongoClient.close === 'function') {
+async function closePayloadConnection(payload: Payload) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((payload as any)?.mongoClient && typeof (payload as any).mongoClient.close === 'function') {
     console.log('Attempting to close MongoDB connection...')
-    await payload.mongoClient.close()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (payload as any).mongoClient.close()
     console.log('Closed MongoDB connection.')
-  } else if (payload?.db && typeof payload.db.$disconnect === 'function') {
-    console.log('Attempting to disconnect Prisma (Postgres/SQLite) connection...')
-    await payload.db.$disconnect()
-    console.log('Disconnected Prisma (Postgres/SQLite) connection.')
+  } else if (payload?.db && typeof (payload.db as any).$disconnect === 'function') {
+    console.log('Attempting to close Prisma connection...')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (payload.db as any).$disconnect()
+    console.log('Closed Prisma connection.')
   } else {
-    console.log('No known DB connection to close.')
+    console.log('No database connection to close or unsupported database type.')
   }
 }
 

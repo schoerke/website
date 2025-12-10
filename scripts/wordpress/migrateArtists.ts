@@ -73,7 +73,7 @@ interface PayloadArtistData {
   instrument: string[]
   image?: number
   quote?: string
-  biography: any // Lexical format
+  biography: { root: { children: unknown[] } } // Lexical format
   homepageURL?: string
   externalCalendarURL?: string
   facebookURL?: string

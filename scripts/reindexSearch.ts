@@ -64,7 +64,7 @@ async function run() {
 
     // Fetch all search records
     const searchResults = await payload.find({
-      collection: 'search' as any,
+      collection: 'search',
       limit: 0,
       pagination: false,
     })
@@ -74,18 +74,16 @@ async function run() {
     let updated = 0
     for (const searchDoc of searchResults.docs) {
       try {
-        const doc = searchDoc as any
-
         // Re-normalize the title field
-        if (doc.title) {
-          const normalizedTitle = normalizeText(doc.title)
+        if (searchDoc.title) {
+          const normalizedTitle = normalizeText(searchDoc.title)
 
           // Only update if different (though normalization should be idempotent)
           await payload.update({
-            collection: 'search' as any,
-            id: doc.id,
+            collection: 'search',
+            id: searchDoc.id,
             data: {
-              ...doc,
+              ...searchDoc,
               title: normalizedTitle,
             },
           })
@@ -113,7 +111,7 @@ async function run() {
 
       // Query all search documents for this locale
       const results = await payload.find({
-        collection: 'search' as any,
+        collection: 'search',
         locale,
         limit: 1000, // Fetch all documents (increase if needed)
         pagination: false,

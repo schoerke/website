@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Migration Script: Discography to Recordings (Array Structure)
  *
@@ -74,6 +73,11 @@ interface RichTextContent {
   root: {
     children: ParagraphNode[]
   }
+}
+
+interface DiscographyRoleEntry {
+  role: RecordingRole
+  recordings: RichTextContent
 }
 
 type RecordingRole = 'soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist'
@@ -266,13 +270,13 @@ function createDescriptionRichText(parts: string[]) {
   return {
     root: {
       type: 'root',
-      direction: 'ltr' as 'ltr' | 'rtl',
-      format: '' as '',
+      direction: 'ltr' as const,
+      format: '' as const,
       indent: 0,
       version: 1,
       children: parts.map((part) => ({
         type: 'paragraph',
-        format: '' as '',
+        format: '' as const,
         indent: 0,
         version: 1,
         children: [
@@ -348,7 +352,7 @@ async function migrateDiscography() {
 
     // Filter for artists with discography data
     const artistsWithDiscography = artistsDE.docs.filter((artist) => {
-      const discography = artist.discography as any
+      const discography = artist.discography as unknown as DiscographyRoleEntry[]
       return Array.isArray(discography) && discography.length > 0
     })
 
@@ -393,11 +397,11 @@ async function migrateDiscography() {
         })
 
         // Process DE discography (new array structure)
-        const discographyDE = (artistDE.discography as any) || []
+        const discographyDE = (artistDE.discography as unknown as DiscographyRoleEntry[]) || []
         const roleEntriesDE = Array.isArray(discographyDE) ? discographyDE : []
 
         // Process EN discography (new array structure)
-        const discographyEN = (artistEN.discography as any) || []
+        const discographyEN = (artistEN.discography as unknown as DiscographyRoleEntry[]) || []
         const roleEntriesEN = Array.isArray(discographyEN) ? discographyEN : []
 
         if (roleEntriesDE.length === 0 && roleEntriesEN.length === 0) {
@@ -459,7 +463,7 @@ async function migrateDiscography() {
 
             // Now process corresponding EN recording if it exists
             // Try to find matching EN entry with same role
-            const enRoleEntry = roleEntriesEN.find((entry: any) => entry.role === role)
+            const enRoleEntry = roleEntriesEN.find((entry: DiscographyRoleEntry) => entry.role === role)
             const enParagraphs = enRoleEntry?.recordings?.root?.children || []
             const enParagraph = enParagraphs[j]
 

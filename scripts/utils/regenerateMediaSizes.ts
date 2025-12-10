@@ -28,10 +28,11 @@
  * @see src/collections/Images.ts - Images collection configuration
  */
 
+import type { Image } from '@/payload-types'
 import 'dotenv/config'
 import { promises as fs } from 'fs'
 import path from 'path'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 
 /**
  * Load and resolve Payload configuration
@@ -77,7 +78,10 @@ async function downloadImage(url: string, dest: string) {
  * const imageDoc = await payload.findByID({ collection: 'images', id: '123' })
  * await regenerateSizesForImage(payload, imageDoc, 'https://blob.vercel-storage.com')
  */
-async function regenerateSizesForImage(payload: any, imageDoc: any, publicUrl: string) {
+async function regenerateSizesForImage(payload: Payload, imageDoc: Image, publicUrl: string) {
+  if (!imageDoc.filename) {
+    throw new Error('Image document has no filename')
+  }
   const originalUrl = imageDoc.url?.startsWith('http') ? imageDoc.url : `${publicUrl}/${imageDoc.filename}`
   const tmpDir = path.join(process.cwd(), 'tmp')
   await fs.mkdir(tmpDir, { recursive: true })
@@ -111,7 +115,8 @@ async function regenerateSizesForImage(payload: any, imageDoc: any, publicUrl: s
 async function main() {
   const config = await getConfig()
   const payload = await getPayload({ config })
-  const imageSizes = config.collections.find((c: any) => c.slug === 'images')?.upload?.imageSizes || []
+  const imagesCollection = config.collections.find((c) => c.slug === 'images')
+  const imageSizes = imagesCollection?.upload?.imageSizes || []
 
   // Vercel Blob public URL (no longer using R2)
   const publicUrl = 'https://blob.vercel-storage.com'

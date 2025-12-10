@@ -55,6 +55,11 @@ interface ParagraphNode {
 
 interface RichTextContent {
   root: {
+    type?: string
+    direction?: string
+    format?: string
+    indent?: number
+    version?: number
     children: ParagraphNode[]
   }
 }
@@ -89,7 +94,7 @@ function createRichTextFromParagraphs(paragraphs: ParagraphNode[]): RichTextCont
       version: 1,
       children: paragraphs,
     },
-  } as any
+  }
 }
 
 /**
@@ -142,7 +147,7 @@ function groupByRole(nodes: ParagraphNode[]): Array<{ role: RecordingRole; parag
 /**
  * Check if discography is already in new array format
  */
-function isNewFormat(discography: any): boolean {
+function isNewFormat(discography: unknown): boolean {
   return Array.isArray(discography)
 }
 

@@ -25,13 +25,13 @@ import * as path from 'path'
 import { getPayload } from 'payload'
 
 interface OldRepertoire {
-  de?: any
-  en?: any
+  de?: unknown
+  en?: unknown
 }
 
 interface NewRepertoireSection {
   title: string
-  content: any
+  content: unknown
 }
 
 /**
