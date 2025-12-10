@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url'
 // Adapters & Plugins
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { searchPlugin } from '@payloadcms/plugin-search'
+import { s3Storage } from '@payloadcms/storage-s3'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 // Collections
@@ -83,7 +84,7 @@ export default buildConfig({
         admin: {
           group: 'System',
         },
-        fields: ({ defaultFields }) => [
+        fields: ({ defaultFields }: { defaultFields: any }) => [
           ...defaultFields,
           {
             name: 'displayTitle',
@@ -117,13 +118,36 @@ export default buildConfig({
       },
     }),
 
-    // Vercel Blob Storage for Images and Documents collections
+    // Vercel Blob Storage for Images collection only
     vercelBlobStorage({
       collections: {
         images: true,
-        documents: true,
       },
       token: process.env.BLOB_READ_WRITE_TOKEN!,
+    }),
+
+    // Cloudflare R2 Storage for Documents collection (PDFs + ZIPs)
+    s3Storage({
+      bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
+      collections: {
+        documents: {
+          disablePayloadAccessControl: true,
+          generateFileURL: ({ filename, prefix }: { filename: string; prefix?: string }) => {
+            const baseURL = process.env.NEXT_PUBLIC_R2_HOSTNAME ?? ''
+            const path = prefix ? `${prefix}/${filename}` : filename
+            return `${baseURL}/${path}`
+          },
+        },
+      },
+      config: {
+        credentials: {
+          accessKeyId: process.env.CLOUDFLARE_S3_ACCESS_KEY ?? '',
+          secretAccessKey: process.env.CLOUDFLARE_SECRET ?? '',
+        },
+        region: 'auto',
+        endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
+        forcePathStyle: true, // Required for R2
+      },
     }),
 
     payloadCloudPlugin(),
