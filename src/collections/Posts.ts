@@ -44,7 +44,7 @@ export const Posts: CollectionConfig = {
       },
       hooks: {
         beforeChange: [
-          ({ siblingData }) => {
+          ({ siblingData }: { siblingData: { title?: string } }) => {
             // Always return a value - empty string if no title
             return siblingData.title ? normalizeText(siblingData.title) : ''
           },

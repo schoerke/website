@@ -2,6 +2,7 @@ import { INSTRUMENTS } from '@/constants/options'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { createSlugHook } from '@/utils/slug'
 import { validateURL, validateYouTubeURL } from '@/validators/fields'
+import type { TFunction } from '@payloadcms/translations'
 import type { CollectionConfig } from 'payload'
 
 export const Artists: CollectionConfig = {
@@ -37,7 +38,7 @@ export const Artists: CollectionConfig = {
       hasMany: true,
       options: INSTRUMENTS.map((opt) => ({
         value: opt.value,
-        label: ({ t }) => t(`custom:instruments:${opt.value}` as Parameters<typeof t>[0]),
+        label: ({ t }: { t: TFunction }) => t(`custom:instruments:${opt.value}` as Parameters<typeof t>[0]),
       })),
       admin: {
         position: 'sidebar',
@@ -108,7 +109,7 @@ export const Artists: CollectionConfig = {
               relationTo: 'employees',
               hasMany: true,
               maxRows: 2,
-              validate: (value) => {
+              validate: (value: unknown) => {
                 if (Array.isArray(value) && value.length > 2) {
                   return 'You can only select up to 2 contact persons.'
                 }
@@ -180,7 +181,7 @@ export const Artists: CollectionConfig = {
                   RowLabel: './collections/components/RepertoireRowLabel',
                 },
               },
-              validate: (value) => {
+              validate: (value: unknown) => {
                 if (Array.isArray(value) && value.length > 5) {
                   return 'You can only add up to 5 repertoire sections.'
                 }
@@ -264,7 +265,8 @@ export const Artists: CollectionConfig = {
                   required: true,
                   options: RECORDING_ROLES.map((opt) => ({
                     value: opt.value,
-                    label: ({ t }) => t(`custom:recordingRoles:${opt.value}` as Parameters<typeof t>[0]),
+                    label: ({ t }: { t: TFunction }) =>
+                      t(`custom:recordingRoles:${opt.value}` as Parameters<typeof t>[0]),
                   })),
                   label: {
                     en: 'Role',

@@ -1,12 +1,13 @@
+import { authenticated } from '@/access/authenticated'
 import type { CollectionConfig } from 'payload'
 
 export const Images: CollectionConfig = {
   slug: 'images',
   access: {
     read: () => true, // Public read access - no draft status
-    create: ({ req: { user } }) => !!user,
-    update: ({ req: { user } }) => !!user,
-    delete: ({ req: { user } }) => !!user,
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
   },
   admin: {
     group: 'Media',
