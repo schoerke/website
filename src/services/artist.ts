@@ -63,6 +63,7 @@ export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
     collection: 'artists',
     where: { slug: { equals: slug } },
     limit: 1,
+    depth: 1, // Populate image and contactPersons (no need for employee images)
     locale: locale || 'de',
     fallbackLocale: 'de',
   })

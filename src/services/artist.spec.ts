@@ -99,6 +99,7 @@ describe('Artist Service', () => {
         collection: 'artists',
         where: { slug: { equals: 'test-artist' } },
         limit: 1,
+        depth: 1,
         locale: 'de',
         fallbackLocale: 'de',
       })
