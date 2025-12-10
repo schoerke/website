@@ -1,6 +1,9 @@
 'use server'
 
+import type { Employee } from '@/payload-types'
+import config from '@/payload.config'
 import { getEmployees } from '@/services/employee'
+import { getPayload } from 'payload'
 
 /**
  * Server action to fetch all employees.
@@ -27,4 +30,45 @@ export async function fetchEmployees(options?: { locale?: 'de' | 'en'; limit?: n
     ...result,
     docs: limitedDocs,
   }
+}
+
+/**
+ * Server action to fetch multiple employees by their IDs.
+ * Uses Payload Local API for better performance than REST API calls.
+ *
+ * @param ids - Array of employee IDs to fetch
+ * @param options - Optional configuration (locale, depth)
+ * @returns Promise resolving to array of employees with populated image relationships
+ *
+ * @example
+ * ```tsx
+ * // In a client component
+ * const employees = await fetchEmployeesByIds(['123', '456'], { locale: 'en' })
+ * console.log(employees) // Array of Employee objects with images populated
+ * ```
+ */
+export async function fetchEmployeesByIds(
+  ids: string[],
+  options?: {
+    locale?: 'de' | 'en'
+    depth?: number
+  },
+): Promise<Employee[]> {
+  if (!ids || ids.length === 0) return []
+
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'employees',
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+    locale: options?.locale || 'de',
+    depth: options?.depth ?? 1, // Populate first level of relationships (images)
+    limit: ids.length,
+  })
+
+  return result.docs
 }
