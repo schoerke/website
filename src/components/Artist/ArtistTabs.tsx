@@ -65,13 +65,14 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
 
   // Fetch recordings when discography tab is selected
   useEffect(() => {
-    if (activeTab !== 'discography' || recordingsFetched || recordingsLoading) {
+    if (activeTab !== 'discography' || recordingsFetched) {
       return
     }
 
     let cancelled = false
 
     const loadRecordings = async () => {
+      setRecordingsLoading(true)
       try {
         const data = await fetchRecordingsByArtist(artist.id.toString(), locale as 'de' | 'en')
         if (!cancelled) {
@@ -90,23 +91,23 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
       }
     }
 
-    setRecordingsLoading(true)
     loadRecordings()
 
     return () => {
       cancelled = true
     }
-  }, [activeTab, artist.id, recordingsFetched, recordingsLoading, locale])
+  }, [activeTab, artist.id, recordingsFetched, locale])
 
   // Fetch repertoires when repertoire tab is selected
   useEffect(() => {
-    if (activeTab !== 'repertoire' || repertoiresFetched || repertoiresLoading) {
+    if (activeTab !== 'repertoire' || repertoiresFetched) {
       return
     }
 
     let cancelled = false
 
     const loadRepertoires = async () => {
+      setRepertoiresLoading(true)
       try {
         const data = await fetchRepertoiresByArtist(artist.id.toString(), locale as 'de' | 'en')
         if (!cancelled) {
@@ -125,13 +126,12 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
       }
     }
 
-    setRepertoiresLoading(true)
     loadRepertoires()
 
     return () => {
       cancelled = true
     }
-  }, [activeTab, artist.id, repertoiresFetched, repertoiresLoading, locale])
+  }, [activeTab, artist.id, repertoiresFetched, locale])
 
   // Extract unique roles from recordings
   const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort()

@@ -7,7 +7,7 @@ const FooterLogo: React.FC = () => {
 
   return (
     <Link href="/" aria-label="Home">
-      <Image src={logoPath} alt="Logo" width={160} height={40} priority />
+      <Image src={logoPath} alt="Logo" width={160} height={138} priority style={{ height: 'auto' }} />
     </Link>
   )
 }
