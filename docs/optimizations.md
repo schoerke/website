@@ -72,36 +72,34 @@ const nextConfig = {
 
 ---
 
-#### 2. Move Large ZIP Files to Cloudflare R2 (Medium Priority)
+#### 2. ✅ COMPLETE - Move Large ZIP Files to Cloudflare R2 (2025-12-10)
 
-**Current Issue:**
+**Issue (Discovered 2025-11-30):**
 
 - Vercel Blob has 10GB/month bandwidth limit on free tier
 - 21 ZIP files (artist photo galleries) = 721.93 MB
 - Each ZIP is 40-60 MB
 - ~12 full downloads of all galleries would exhaust monthly limit
 
-**Solution:**
+**Solution Implemented:**
 
-- Keep images (JPG, PNG, WEBP) in Vercel Blob (good for Next.js optimization)
-- Keep small PDFs in Vercel Blob (~4 MB total)
-- **Move ZIP files to Cloudflare R2** (unlimited egress bandwidth)
+- Dual storage architecture (see ADR 2025-12-10-dual-storage-r2-vercel-blob.md)
+- **Images** (JPG, PNG, WEBP) → Vercel Blob (Next.js optimization)
+- **Documents** (ZIPs, PDFs) → Cloudflare R2 (unlimited bandwidth)
 
-**Implementation Steps:**
+**Results:**
 
-1. Set up Cloudflare R2 bucket for documents
-2. Create migration script to move ZIPs from Vercel Blob to R2
-3. Update Documents collection to support dual storage (R2 for ZIPs, Vercel Blob for PDFs)
-4. Update database URLs for ZIP files
+- 45 documents migrated to R2 (22 ZIPs + 23 PDFs)
+- 721.93 MB no longer counts against Vercel Blob bandwidth
+- Zero monthly cost (under both free tiers)
+- Downloads verified working
 
 **Storage Cost Comparison:**
 
 - **Vercel Blob:** $0.15/GB storage, 10GB/month bandwidth (free tier)
 - **Cloudflare R2:** $0.015/GB storage, **unlimited egress bandwidth**
 
-**ROI:** For ~700MB of ZIPs with frequent downloads, R2 saves bandwidth costs significantly.
-
-**See Also:** `docs/todo.md` for detailed R2 migration plan
+**ROI:** For ~700MB of ZIPs with frequent downloads, R2 eliminates bandwidth constraints entirely.
 
 ---
 
@@ -187,7 +185,15 @@ Current status (2025-11-30):
 1. ✅ Enable Next.js Image component for all images
 2. ✅ Add responsive `sizes` props
 
-**Phase 2 (High Impact, Medium Effort):** 3. Move ZIP files to Cloudflare R2
+**Phase 2 (High Impact, Medium Effort):**
+
+3. ✅ **COMPLETE (2025-12-10)** - Move ZIP files to Cloudflare R2
+   - **Status:** Dual storage architecture implemented
+   - **Images:** Vercel Blob (Next.js optimization)
+   - **Documents:** Cloudflare R2 (unlimited bandwidth)
+   - **Migration:** 45 documents (22 ZIPs + 23 PDFs) migrated to R2
+   - **Bandwidth:** 721.93 MB of ZIPs no longer count against Vercel Blob limit
+   - **See:** `docs/adr/2025-12-10-dual-storage-r2-vercel-blob.md`
 
 **Phase 3 (Nice to Have):** 4. Consider static imports for core assets (evaluate trade-offs)
 

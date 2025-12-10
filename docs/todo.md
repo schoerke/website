@@ -23,37 +23,31 @@
 
 - can use different blob storage adapters per collection: <https://www.youtube.com/watch?v=HG0kOQiy_EU>
 
-### URGENT: Vercel Blob Bandwidth Concerns
+### ✅ Vercel Blob Bandwidth Concerns - RESOLVED (2025-12-10)
 
-**Issue:** Currently using 866 MB / 10 GB (8.6%) monthly bandwidth, with 721.93 MB stored in ZIP files alone.
+**Issue (Discovered 2025-11-30):** Vercel Blob bandwidth limit (10GB/month) insufficient for large ZIP downloads.
 
-**Current Storage Breakdown:**
+**Solution Implemented:** Dual storage architecture (see ADR 2025-12-10-dual-storage-r2-vercel-blob.md)
 
-- 21 ZIP files: 721.93 MB (artist photo gallery downloads - most are 40-60 MB each)
-- 23 PDF files: 3.85 MB
-- 29 JPG files: 3.13 MB
-- 64 WEBP files: 1.74 MB
-- **Total: 731.55 MB across 139 files**
+- **Images Collection** → Vercel Blob (Next.js optimization, Edge CDN)
+- **Documents Collection** → Cloudflare R2 (unlimited bandwidth)
 
-**Problem:**
+**Migration Results:**
 
-- Every artist gallery download counts against 10 GB/month limit
-- ~12 full downloads of all galleries would exhaust bandwidth
-- Large ZIP files (40-60 MB each) are not suitable for Vercel Blob
+- 45 documents migrated to R2 (22 ZIPs + 23 PDFs)
+- 721.93 MB of ZIPs no longer count against Vercel Blob bandwidth
+- Zero monthly cost (under both free tiers)
+- Downloads tested and verified working
 
-**Recommended Solutions:**
+**Current Storage Architecture:**
 
-1. **Move ZIP files to Cloudflare R2** (10GB free storage, unlimited egress bandwidth)
-   - See: `docs/adr/2025-11-29-storage-migration-vercel-blob.md` (previous R2 setup)
-   - Only keep images in Vercel Blob, move ZIPs to R2
-2. **Alternative:** Remove ZIP downloads if rarely used, or host on WordPress temporarily
-3. **Image optimization:** Ensure all images are WebP, compressed appropriately
+- Vercel Blob: Images only (~8 MB) - for Next.js optimization
+- Cloudflare R2: All documents (731.55 MB) - for unlimited downloads
 
 **References:**
 
-- Analysis script: `tmp/analyzeBlobUsage.ts`
-- Storage breakdown documented: 2025-11-30
-- Related: See AGENTS.md incident log for WordPress filename cleanup
+- ADR: `docs/adr/2025-12-10-dual-storage-r2-vercel-blob.md`
+- Migration script: `tmp/migrateDocumentsToR2.ts` (can be deleted after verification period)
 
 ## Monitoring
 

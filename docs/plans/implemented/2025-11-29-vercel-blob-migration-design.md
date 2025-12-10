@@ -1,8 +1,18 @@
 # Vercel Blob Storage Migration Design
 
 - **Date:** 2025-11-29
-- **Status:** APPROVED
+- **Status:** ✅ IMPLEMENTED → ⚠️ SUPERSEDED by dual storage (2025-12-10)
 - **Supersedes:** 2025-10-26-cloudflare-r2-image-storage-design.md
+
+## Update: Dual Storage Architecture (2025-12-10)
+
+This design documented migration to Vercel Blob for all media. However, Vercel Blob's 10GB/month bandwidth limit proved
+insufficient for large document downloads (722 MB of ZIP files). The final implementation uses **dual storage**:
+
+- **Images** → Vercel Blob (as designed here)
+- **Documents** → Cloudflare R2 (unlimited bandwidth)
+
+**See:** [docs/adr/2025-12-10-dual-storage-r2-vercel-blob.md](../../adr/2025-12-10-dual-storage-r2-vercel-blob.md)
 
 ## 1. Overview & Context
 

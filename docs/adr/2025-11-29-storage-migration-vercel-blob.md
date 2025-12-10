@@ -1,8 +1,20 @@
 # Architectural Decision Record: Storage Migration to Vercel Blob
 
 **Date:** 2025-11-29  
-**Status:** ✅ IMPLEMENTED (Artists & Employees Complete)  
+**Status:** ✅ IMPLEMENTED → ⚠️ SUPERSEDED by
+[2025-12-10-dual-storage-r2-vercel-blob.md](2025-12-10-dual-storage-r2-vercel-blob.md)  
 **Supersedes:** [2025-10-26-cloudflare-r2-image-storage-design.md](../plans/2025-10-26-cloudflare-r2-image-storage-design.md)
+
+## Update: Dual Storage Architecture (2025-12-10)
+
+This ADR documented the migration from R2 to Vercel Blob for all media. However, bandwidth limitations (10GB/month for
+large ZIP downloads) required a **dual storage architecture**:
+
+- **Images** → Vercel Blob (Next.js optimization, as documented here)
+- **Documents** → Cloudflare R2 (unlimited bandwidth for large downloads)
+
+**See:** [2025-12-10-dual-storage-r2-vercel-blob.md](2025-12-10-dual-storage-r2-vercel-blob.md) for the current
+architecture.
 
 ## Context
 
@@ -221,6 +233,8 @@ All collections updated to use `images` and `documents`:
 
 ## Related Documents
 
+- [Dual Storage Architecture ADR](2025-12-10-dual-storage-r2-vercel-blob.md) - **Current implementation** (supersedes
+  this ADR)
 - [Database Selection ADR](2025-10-26-database-selection.md)
 - [Database Backup Strategy](2025-11-23-database-backup-strategy.md)
 - [Vercel Blob Migration Design](../plans/2025-11-29-vercel-blob-migration-design.md) (detailed implementation)
