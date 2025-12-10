@@ -8,7 +8,7 @@ import React from 'react'
 interface NextIntlTestProviderProps {
   children: React.ReactNode
   locale?: string
-  messages?: Record<string, any>
+  messages?: Record<string, unknown>
 }
 
 /**

@@ -20,14 +20,14 @@ export const mockGetTranslations = (mockTranslations: Record<string, string> = {
 /**
  * Mock next/image component for testing
  */
-export const MockImage = ({ src, alt, ...props }: any) => {
+export const MockImage = ({ src, alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
   return <img src={src} alt={alt} {...props} />
 }
 
 /**
  * Mock next-intl Link component for testing
  */
-export const MockLink = ({ href, children, ...props }: any) => {
+export const MockLink = ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
   return (
     <a href={href} {...props}>
       {children}

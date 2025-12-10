@@ -28,7 +28,7 @@ import {
   useRegisterActions,
 } from 'kbar'
 import { useLocale } from 'next-intl'
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { filterEmailCommands } from './emailFiltering'
 import KBarTutorial from './KBarTutorial'
 
@@ -108,7 +108,7 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         perform: () => {
           const newLocale = locale === 'de' ? 'en' : 'de'
           const currentPath = window.location.pathname.replace(`/${locale}`, '')
-          router.replace(currentPath as any, { locale: newLocale })
+          router.replace(currentPath as Parameters<typeof router.replace>[0], { locale: newLocale })
         },
       },
       {
@@ -157,6 +157,16 @@ function SearchInputWithClear({ locale }: { locale: 'de' | 'en' }) {
     visualState: state.visualState,
   }))
 
+  // Use a callback ref to set KBar's input ref without accessing ref during render
+  const handleRefCallback = useCallback(
+    (node: HTMLInputElement | null) => {
+      if (node) {
+        query.inputRefSetter(node)
+      }
+    },
+    [query],
+  )
+
   // Clear search when KBar closes (like Raycast)
   useEffect(() => {
     // Clear on animating-out (ESC pressed) or hidden (after animation completes)
@@ -177,7 +187,7 @@ function SearchInputWithClear({ locale }: { locale: 'de' | 'en' }) {
   return (
     <div className="relative">
       <input
-        ref={query.inputRefSetter}
+        ref={handleRefCallback}
         type="text"
         value={searchQuery}
         onChange={handleChange}
@@ -249,14 +259,17 @@ function DynamicSearchActions() {
   useEffect(() => {
     const currentQuery = searchQuery.trim()
 
-    if (currentQuery.length < 3) {
-      setSearchResults([])
-      setIsSearching(false)
-      return
-    }
+    // Early return if query is too short - clear state asynchronously
+    const shouldSearch = currentQuery.length >= 3
 
-    // Set loading immediately when query changes
-    setIsSearching(true)
+    if (!shouldSearch) {
+      // Use setTimeout to make setState async, avoiding cascading renders
+      const timeoutId = setTimeout(() => {
+        setSearchResults([])
+        setIsSearching(false)
+      }, 0)
+      return () => clearTimeout(timeoutId)
+    }
 
     // Abort previous search to prevent race conditions
     abortControllerRef.current?.abort()
@@ -264,6 +277,9 @@ function DynamicSearchActions() {
     abortControllerRef.current = controller
 
     const timeoutId = setTimeout(async () => {
+      // Set loading state at the start of the async operation
+      setIsSearching(true)
+
       try {
         const response = await searchContent(currentQuery, locale)
 
@@ -489,7 +505,13 @@ function getDocumentPath(doc: SearchDoc): string {
  * @param priority - Action priority (higher = appears first)
  * @returns KBar action object
  */
-function createSearchAction(doc: SearchDoc, searchQuery: string, locale: 'de' | 'en', router: any, priority: number) {
+function createSearchAction(
+  doc: SearchDoc,
+  searchQuery: string,
+  locale: 'de' | 'en',
+  router: ReturnType<typeof useRouter>,
+  priority: number,
+) {
   return {
     id: `search-${doc.id}`,
     name: doc.title.substring(0, 100),
@@ -501,7 +523,7 @@ function createSearchAction(doc: SearchDoc, searchQuery: string, locale: 'de' | 
     priority,
     perform: () => {
       const path = getDocumentPath(doc)
-      router.push(path as any)
+      router.push(path as Parameters<typeof router.push>[0])
     },
   }
 }

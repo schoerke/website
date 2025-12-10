@@ -155,7 +155,7 @@ export const Recordings: CollectionConfig = {
       },
       options: RECORDING_ROLES.map((opt) => ({
         value: opt.value,
-        label: ({ t }) => (t as any)(`custom:recordingRoles:${opt.value}`),
+        label: ({ t }) => t(`custom:recordingRoles:${opt.value}` as Parameters<typeof t>[0]),
       })),
       admin: {
         position: 'sidebar',

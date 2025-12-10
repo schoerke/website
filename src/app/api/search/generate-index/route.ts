@@ -62,7 +62,7 @@ export async function GET() {
     for (const locale of locales) {
       // Fetch ALL search results for this locale (no query filter)
       const results = await payload.find({
-        collection: 'search' as any,
+        collection: 'search',
         locale,
         limit: 1000, // High limit to get all results
         sort: '-priority',
@@ -83,31 +83,51 @@ export async function GET() {
         },
       }
 
-      for (const doc of results.docs as any[]) {
-        const searchDoc: SearchDoc = {
-          id: doc.id,
-          title: doc.displayTitle || doc.title, // Use displayTitle for proper case
-          relationTo: doc.doc.relationTo,
-          relationId: doc.doc.value,
-          slug: doc.slug || undefined,
-          priority: doc.priority,
-        }
+      for (const doc of results.docs) {
+        if (
+          typeof doc === 'object' &&
+          doc !== null &&
+          'id' in doc &&
+          'title' in doc &&
+          'doc' in doc &&
+          typeof doc.doc === 'object' &&
+          doc.doc !== null &&
+          'relationTo' in doc.doc &&
+          'value' in doc.doc
+        ) {
+          const docId = typeof doc.id === 'number' ? String(doc.id) : (doc.id as string)
+          const docValue =
+            typeof doc.doc.value === 'object' && doc.doc.value !== null && 'id' in doc.doc.value
+              ? String(doc.doc.value.id)
+              : String(doc.doc.value)
 
-        // Group by collection/category
-        const relationTo = doc.doc.relationTo
+          const searchDoc: SearchDoc = {
+            id: docId,
+            title: ('displayTitle' in doc && typeof doc.displayTitle === 'string'
+              ? doc.displayTitle
+              : doc.title) as string,
+            relationTo: doc.doc.relationTo as string,
+            relationId: docValue,
+            slug: 'slug' in doc && typeof doc.slug === 'string' ? doc.slug : undefined,
+            priority: 'priority' in doc && typeof doc.priority === 'number' ? doc.priority : 0,
+          }
 
-        if (relationTo === 'artists') {
-          index.results.artists.push(searchDoc)
-        } else if (relationTo === 'recordings') {
-          index.results.recordings.push(searchDoc)
-        } else if (relationTo === 'employees') {
-          index.results.employees.push(searchDoc)
-        } else if (relationTo === 'posts') {
-          // TODO: Categorize posts by category (news vs projects)
-          // For now, treat all posts as news
-          index.results.news.push(searchDoc)
-        } else if (relationTo === 'pages') {
-          index.results.pages.push(searchDoc)
+          // Group by collection/category
+          const relationTo = doc.doc.relationTo as string
+
+          if (relationTo === 'artists') {
+            index.results.artists.push(searchDoc)
+          } else if (relationTo === 'recordings') {
+            index.results.recordings.push(searchDoc)
+          } else if (relationTo === 'employees') {
+            index.results.employees.push(searchDoc)
+          } else if (relationTo === 'posts') {
+            // TODO: Categorize posts by category (news vs projects)
+            // For now, treat all posts as news
+            index.results.news.push(searchDoc)
+          } else if (relationTo === 'pages') {
+            index.results.pages.push(searchDoc)
+          }
         }
       }
 

@@ -3,20 +3,19 @@ import { extractLexicalText } from './extractLexicalText'
 import { filterStopwords } from './filterStopwords'
 import { normalizeText } from './normalizeText'
 
-// Type definitions from @payloadcms/plugin-search
+// Type definitions based on @payloadcms/plugin-search official types
+// Source: node_modules/@payloadcms/plugin-search/dist/types.d.ts
 interface DocToSync {
   title: string
   doc: {
     relationTo: string
     value: string
   }
-  [key: string]: any
+  [key: string]: unknown
 }
 
 type BeforeSync = (args: {
-  originalDoc: {
-    [key: string]: any
-  }
+  originalDoc: Record<string, unknown>
   payload: Payload
   searchDoc: DocToSync
 }) => DocToSync | Promise<DocToSync>
@@ -57,12 +56,12 @@ const LEGAL_PAGE_SLUGS = ['impressum', 'imprint', 'datenschutz', 'privacy-policy
  * @returns Modified search data with enhanced searchableContent and locale
  */
 export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, payload }) => {
-  const doc = originalDoc as any
+  const doc = originalDoc
 
   // The plugin passes the document with locale already resolved
   // For localized collections, doc contains the localized content
   // For non-localized collections, we default to 'de'
-  const locale = doc.locale || 'de'
+  const locale = (doc.locale as string | undefined) || 'de'
 
   let documentTitle = ''
   let additionalContent = ''
@@ -72,16 +71,16 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
   switch (searchDoc.doc.relationTo) {
     case 'artists': {
       // Get artist name (non-localized)
-      documentTitle = doc.name || ''
+      documentTitle = (doc.name as string) || ''
       // Get artist slug (non-localized)
-      documentSlug = doc.slug || ''
+      documentSlug = (doc.slug as string) || ''
 
       // Instruments (non-localized array)
       // Add BOTH German and English instrument names to searchable content
       // so "Klavier" and "Piano" both find pianists
       if (Array.isArray(doc.instrument) && doc.instrument.length > 0) {
-        doc.instrument.forEach((instrumentKey: string) => {
-          const translations = INSTRUMENT_TRANSLATIONS[instrumentKey] || [instrumentKey]
+        doc.instrument.forEach((instrumentKey: unknown) => {
+          const translations = INSTRUMENT_TRANSLATIONS[instrumentKey as string] || [instrumentKey as string]
           // Add all translations for this instrument
           additionalContent += ` ${translations.join(' ')}`
         })
@@ -96,7 +95,7 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
 
     case 'employees': {
       // Get employee name (non-localized)
-      documentTitle = doc.name || ''
+      documentTitle = (doc.name as string) || ''
       // Employees don't have slugs
 
       // Note: Employee bio is intentionally excluded to keep search focused on names
@@ -106,9 +105,9 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
 
     case 'pages': {
       // Get page title (localized)
-      documentTitle = doc.title || ''
+      documentTitle = (doc.title as string) || ''
       // Get page slug (localized)
-      documentSlug = doc.slug || ''
+      documentSlug = (doc.slug as string) || ''
 
       // Only index content for non-legal pages
       // Legal pages (impressum, privacy policy, etc.) are only searchable by title
@@ -116,7 +115,7 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
       const isLegalPage = LEGAL_PAGE_SLUGS.some((legalSlug) => documentSlug.toLowerCase().includes(legalSlug))
 
       if (doc.content && !isLegalPage) {
-        const contentText = extractLexicalText(doc.content)
+        const contentText = extractLexicalText(doc.content as Parameters<typeof extractLexicalText>[0])
         additionalContent += ` ${contentText}`
       }
 
@@ -125,12 +124,12 @@ export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, paylo
 
     case 'repertoire': {
       // Get repertoire title (localized)
-      documentTitle = doc.title || ''
+      documentTitle = (doc.title as string) || ''
       // Repertoire doesn't have slugs (accessed via artist pages)
 
       // Content (localized richText)
       if (doc.content) {
-        const contentText = extractLexicalText(doc.content)
+        const contentText = extractLexicalText(doc.content as Parameters<typeof extractLexicalText>[0])
         additionalContent += ` ${contentText}`
       }
 

@@ -98,8 +98,6 @@ function generatePageNumbers(currentPage: number, totalPages: number): (number |
 const NewsFeedPagination: React.FC<NewsFeedPaginationProps> = ({ currentPage, totalPages, limit, basePath }) => {
   const searchParams = useSearchParams()
 
-  if (totalPages <= 1) return null
-
   /**
    * Creates a URL for a specific page number, preserving existing query parameters.
    * Memoized with useCallback to avoid recreating the function on every render.
@@ -118,6 +116,9 @@ const NewsFeedPagination: React.FC<NewsFeedPaginationProps> = ({ currentPage, to
   )
 
   const pageNumbers = generatePageNumbers(currentPage, totalPages)
+
+  // Early return after all hooks have been called
+  if (totalPages <= 1) return null
 
   return (
     <Pagination>

@@ -27,6 +27,7 @@
  * }
  */
 
+import type { Artist, Employee, Search as SearchDocument } from '@/payload-types'
 import config from '@/payload.config'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { NextResponse } from 'next/server'
@@ -39,13 +40,13 @@ interface ContactPerson {
 }
 
 interface SearchAPIResult {
-  id: string
+  id: string | number
   title: string
   relationTo: string
-  relationId: string
+  relationId: string | number
   slug: string
-  priority: number
-  locale: string
+  priority?: number | null
+  locale?: string | null
   contactPersons?: ContactPerson[]
 }
 
@@ -75,7 +76,7 @@ export async function GET(request: Request) {
 
     // Search the search collection
     const results = await payload.find({
-      collection: 'search' as any,
+      collection: 'search',
       locale, // Pass locale to get localized 'title' field
       where: {
         title: {
@@ -90,8 +91,14 @@ export async function GET(request: Request) {
 
     // Manually populate artist contact persons (depth doesn't work on polymorphic relationships)
     const artistIds = results.docs
-      .filter((doc: any) => doc.doc.relationTo === 'artists')
-      .map((doc: any) => (typeof doc.doc.value === 'object' ? doc.doc.value.id : doc.doc.value))
+      .filter((doc: SearchDocument) => doc.doc.relationTo === 'artists')
+      .map((doc: SearchDocument) => {
+        if (doc.doc.relationTo === 'artists') {
+          return typeof doc.doc.value === 'object' ? doc.doc.value.id : doc.doc.value
+        }
+        return null
+      })
+      .filter((id): id is number => id !== null)
 
     // Fetch all artists with their contact persons
     const artistsWithContactPersons = new Map()
@@ -107,11 +114,11 @@ export async function GET(request: Request) {
         limit: artistIds.length,
       })
 
-      artists.docs.forEach((artist: any) => {
+      artists.docs.forEach((artist: Artist) => {
         if (artist.contactPersons && Array.isArray(artist.contactPersons)) {
           const contactPersons = artist.contactPersons
-            .filter((cp: any) => cp && typeof cp === 'object' && cp.email)
-            .map((cp: any) => ({
+            .filter((cp): cp is Employee => cp !== null && typeof cp === 'object' && 'email' in cp && !!cp.email)
+            .map((cp) => ({
               id: cp.id,
               name: cp.name,
               email: cp.email,
@@ -125,13 +132,13 @@ export async function GET(request: Request) {
     }
 
     const response: SearchAPIResponse = {
-      results: results.docs.map((searchDoc: any) => {
+      results: results.docs.map((searchDoc: SearchDocument) => {
         const relatedDoc = searchDoc.doc
         const relatedDocData = relatedDoc.value
 
         const result: SearchAPIResult = {
           id: searchDoc.id,
-          title: searchDoc.displayTitle || searchDoc.title, // Use displayTitle if available
+          title: searchDoc.displayTitle || searchDoc.title || '',
           relationTo: relatedDoc.relationTo,
           relationId: typeof relatedDocData === 'object' ? relatedDocData.id : relatedDocData,
           slug: searchDoc.slug || '', // Include slug for routing

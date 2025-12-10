@@ -117,19 +117,20 @@ export async function searchContent(query: string, locale: 'de' | 'en'): Promise
   try {
     // Try API first with 2000ms timeout (more generous for dev environment)
     const apiPromise = searchViaAPI(sanitizedQuery, locale, controller.signal)
+    let timeoutId: NodeJS.Timeout | undefined
     const timeoutPromise = new Promise<SearchResults>((_, reject) => {
-      const timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         controller.abort() // Abort the fetch when timeout occurs
         reject(new Error('API timeout after 2000ms'))
       }, 2000)
-      // Store timeout ID so we can clear it if API succeeds
-      ;(apiPromise as any).timeoutId = timeoutId
     })
 
     const apiResults = await Promise.race([apiPromise, timeoutPromise])
 
     // API succeeded - clear the timeout
-    clearTimeout((apiPromise as any).timeoutId)
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId)
+    }
 
     // Cache and return
     searchCache.set(cacheKey, apiResults)

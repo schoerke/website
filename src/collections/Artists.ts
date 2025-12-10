@@ -37,7 +37,7 @@ export const Artists: CollectionConfig = {
       hasMany: true,
       options: INSTRUMENTS.map((opt) => ({
         value: opt.value,
-        label: ({ t }) => (t as any)(`custom:instruments:${opt.value}`),
+        label: ({ t }) => t(`custom:instruments:${opt.value}` as Parameters<typeof t>[0]),
       })),
       admin: {
         position: 'sidebar',
@@ -264,7 +264,7 @@ export const Artists: CollectionConfig = {
                   required: true,
                   options: RECORDING_ROLES.map((opt) => ({
                     value: opt.value,
-                    label: ({ t }) => (t as any)(`custom:recordingRoles:${opt.value}`),
+                    label: ({ t }) => t(`custom:recordingRoles:${opt.value}` as Parameters<typeof t>[0]),
                   })),
                   label: {
                     en: 'Role',
