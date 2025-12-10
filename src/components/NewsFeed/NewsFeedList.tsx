@@ -104,6 +104,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
                   alt={post.title}
                   fill
                   className="object-cover transition-opacity group-hover:opacity-75"
+                  sizes="(max-width: 640px) 80px, 112px"
                 />
               </div>
 

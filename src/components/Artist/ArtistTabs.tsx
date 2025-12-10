@@ -96,7 +96,7 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     return () => {
       cancelled = true
     }
-  }, [activeTab, artist.id, recordingsFetched, locale])
+  }, [activeTab, artist.id, locale, recordingsFetched])
 
   // Fetch repertoires when repertoire tab is selected
   useEffect(() => {
@@ -131,7 +131,7 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     return () => {
       cancelled = true
     }
-  }, [activeTab, artist.id, repertoiresFetched, locale])
+  }, [activeTab, artist.id, locale, repertoiresFetched])
 
   // Extract unique roles from recordings
   const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort()
