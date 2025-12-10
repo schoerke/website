@@ -25,6 +25,10 @@ const defaultMessages = {
         title: 'Projects',
         learnMore: 'Read more →',
       },
+      artists: {
+        title: 'Artists',
+        discoverMore: 'Discover More',
+      },
     },
     pagination: {
       previous: 'Previous',
