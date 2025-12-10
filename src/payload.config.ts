@@ -1,7 +1,7 @@
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, type Field } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
@@ -84,7 +84,7 @@ export default buildConfig({
         admin: {
           group: 'System',
         },
-        fields: ({ defaultFields }: { defaultFields: any }) => [
+        fields: ({ defaultFields }: { defaultFields: Field[] }) => [
           ...defaultFields,
           {
             name: 'displayTitle',
