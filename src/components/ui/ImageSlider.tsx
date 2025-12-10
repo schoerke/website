@@ -1,8 +1,8 @@
 'use client'
 
+import { Link } from '@/i18n/navigation'
 import Autoplay from 'embla-carousel-autoplay'
 import useEmblaCarousel from 'embla-carousel-react'
-import Link from 'next/link'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import ImageSlide, { ImageSlideData } from './ImageSlide'
@@ -13,6 +13,7 @@ interface ImageSliderProps {
   interval?: number
   showArrows?: boolean
   showDots?: boolean
+  eagerLoadCount?: number
 }
 
 const ImageSlider: React.FC<ImageSliderProps> = ({
@@ -21,6 +22,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   interval = 4000,
   showArrows = true,
   showDots = true,
+  eagerLoadCount = 2,
 }) => {
   // Create autoplay plugin instance
   const autoplayPlugin = useMemo(
@@ -61,7 +63,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
       if (emblaApi) {
         emblaApi.scrollTo(idx)
         // Reset timer by stopping and restarting autoplay
-        if (autoplayPlugin) {
+        if (autoplayPlugin?.play && autoplayPlugin?.stop) {
           autoplayPlugin.stop()
           autoplayPlugin.play()
         }
@@ -74,7 +76,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
     if (emblaApi) {
       emblaApi.scrollPrev()
       // Reset timer by stopping and restarting autoplay
-      if (autoplayPlugin) {
+      if (autoplayPlugin?.play && autoplayPlugin?.stop) {
         autoplayPlugin.stop()
         autoplayPlugin.play()
       }
@@ -85,7 +87,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
     if (emblaApi) {
       emblaApi.scrollNext()
       // Reset timer by stopping and restarting autoplay
-      if (autoplayPlugin) {
+      if (autoplayPlugin?.play && autoplayPlugin?.stop) {
         autoplayPlugin.stop()
         autoplayPlugin.play()
       }
@@ -102,13 +104,28 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
       <div className="overflow-hidden rounded-lg" ref={emblaRef}>
         <div className="flex">
           {images.map((img, idx) => (
-            <div className="min-w-0 flex-[0_0_100%] px-2 sm:flex-[0_0_50%]" key={img.src + idx}>
-              {img.link ? (
-                <Link href={img.link} tabIndex={-1} aria-label={img.bannerText || img.alt}>
-                  <ImageSlide image={img} isActive={selectedIndex === idx} />
+            <div
+              className="min-w-0 flex-[0_0_100%] px-2 md:flex-[0_0_66%] md:px-1 lg:flex-[0_0_50%]"
+              key={img.src + idx}
+            >
+              {img.slug ? (
+                <Link
+                  href={{ pathname: '/artists/[slug]', params: { slug: img.slug } }}
+                  tabIndex={-1}
+                  aria-label={img.bannerText || img.alt}
+                >
+                  <ImageSlide
+                    image={img}
+                    isActive={selectedIndex === idx}
+                    loading={idx < eagerLoadCount ? 'eager' : 'lazy'}
+                  />
                 </Link>
               ) : (
-                <ImageSlide image={img} isActive={selectedIndex === idx} />
+                <ImageSlide
+                  image={img}
+                  isActive={selectedIndex === idx}
+                  loading={idx < eagerLoadCount ? 'eager' : 'lazy'}
+                />
               )}
             </div>
           ))}

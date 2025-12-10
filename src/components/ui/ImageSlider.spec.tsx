@@ -31,10 +31,18 @@ vi.mock('embla-carousel-autoplay', () => ({
 
 // Mock ImageSlide component
 vi.mock('./ImageSlide', () => ({
-  default: ({ image, isActive }: { image: { src: string; alt: string; bannerText?: string }; isActive: boolean }) => (
-    <div data-testid="image-slide" data-active={isActive}>
+  default: ({
+    image,
+    isActive,
+    loading = 'lazy',
+  }: {
+    image: { src: string; alt: string; bannerText?: string }
+    isActive: boolean
+    loading?: 'eager' | 'lazy'
+  }) => (
+    <div data-testid="image-slide" data-active={isActive} data-loading={loading}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={image.src} alt={image.alt} />
+      <img src={image.src} alt={image.alt} loading={loading} />
       {image.bannerText && <span>{image.bannerText}</span>}
     </div>
   ),
@@ -42,11 +50,21 @@ vi.mock('./ImageSlide', () => ({
 
 // Mock next-intl navigation
 vi.mock('@/i18n/navigation', () => ({
-  Link: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
-    <a href={href} {...props}>
-      {children}
-    </a>
-  ),
+  Link: ({
+    children,
+    href,
+    ...props
+  }: {
+    children: React.ReactNode
+    href: string | { pathname: string; params: Record<string, string> }
+  }) => {
+    const hrefString = typeof href === 'string' ? href : `/de${href.pathname.replace('[slug]', href.params.slug || '')}`
+    return (
+      <a href={hrefString} {...props}>
+        {children}
+      </a>
+    )
+  },
 }))
 
 const mockImages: ImageSlideData[] = [
@@ -54,19 +72,19 @@ const mockImages: ImageSlideData[] = [
     src: '/image1.jpg',
     alt: 'Image 1',
     bannerText: 'Artist 1',
-    link: '/artist/1',
+    slug: 'artist-1',
   },
   {
     src: '/image2.jpg',
     alt: 'Image 2',
     bannerText: 'Artist 2',
-    link: '/artist/2',
+    slug: 'artist-2',
   },
   {
     src: '/image3.jpg',
     alt: 'Image 3',
     bannerText: 'Artist 3',
-    link: '/artist/3',
+    slug: 'artist-3',
   },
 ]
 
@@ -86,11 +104,11 @@ describe('ImageSlider', () => {
       render(<ImageSlider images={mockImages} />)
       const links = screen.getAllByRole('link')
       expect(links).toHaveLength(3)
-      expect(links[0]).toHaveAttribute('href', '/artist/1')
+      expect(links[0]).toHaveAttribute('href', '/de/artists/artist-1')
     })
 
     it('should render images without links when not provided', () => {
-      const imagesWithoutLinks = mockImages.map((img) => ({ ...img, link: undefined }))
+      const imagesWithoutLinks = mockImages.map((img) => ({ ...img, slug: undefined }))
       render(<ImageSlider images={imagesWithoutLinks} />)
       const links = screen.queryAllByRole('link')
       expect(links).toHaveLength(0)
@@ -238,7 +256,8 @@ describe('ImageSlider', () => {
       const slides = container.querySelectorAll('.flex > div')
       slides.forEach((slide) => {
         expect(slide).toHaveClass('flex-[0_0_100%]') // Mobile: full width
-        expect(slide).toHaveClass('sm:flex-[0_0_50%]') // Desktop: half width
+        expect(slide).toHaveClass('md:flex-[0_0_66%]') // Medium: 66% width
+        expect(slide).toHaveClass('lg:flex-[0_0_50%]') // Large: 50% width
       })
     })
   })
@@ -304,6 +323,40 @@ describe('ImageSlider', () => {
       render(<ImageSlider images={minimalImages} />)
       const slides = screen.getAllByTestId('image-slide')
       expect(slides).toHaveLength(2)
+    })
+  })
+
+  describe('Eager Loading Optimization', () => {
+    it('should eager load first 2 slides by default', () => {
+      const { container } = render(<ImageSlider images={mockImages} />)
+      const images = container.querySelectorAll('img')
+      expect(images[0]).toHaveAttribute('loading', 'eager')
+      expect(images[1]).toHaveAttribute('loading', 'eager')
+      expect(images[2]).toHaveAttribute('loading', 'lazy')
+    })
+
+    it('should respect custom eagerLoadCount', () => {
+      const { container } = render(<ImageSlider images={mockImages} eagerLoadCount={1} />)
+      const images = container.querySelectorAll('img')
+      expect(images[0]).toHaveAttribute('loading', 'eager')
+      expect(images[1]).toHaveAttribute('loading', 'lazy')
+      expect(images[2]).toHaveAttribute('loading', 'lazy')
+    })
+
+    it('should eager load all slides when eagerLoadCount is greater than image count', () => {
+      const { container } = render(<ImageSlider images={mockImages} eagerLoadCount={10} />)
+      const images = container.querySelectorAll('img')
+      images.forEach((img) => {
+        expect(img).toHaveAttribute('loading', 'eager')
+      })
+    })
+
+    it('should lazy load all slides when eagerLoadCount is 0', () => {
+      const { container } = render(<ImageSlider images={mockImages} eagerLoadCount={0} />)
+      const images = container.querySelectorAll('img')
+      images.forEach((img) => {
+        expect(img).toHaveAttribute('loading', 'lazy')
+      })
     })
   })
 })

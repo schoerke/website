@@ -102,7 +102,8 @@ describe('ImageSlide', () => {
     it('should have correct container dimensions', () => {
       const { container } = render(<ImageSlide image={mockImage} isActive={true} />)
       const slideDiv = container.firstChild as HTMLElement
-      expect(slideDiv).toHaveClass('h-96')
+      expect(slideDiv).toHaveClass('h-72') // Mobile height
+      expect(slideDiv).toHaveClass('md:h-96') // Desktop height
       expect(slideDiv).toHaveClass('w-full')
     })
 
@@ -143,8 +144,20 @@ describe('ImageSlide', () => {
   })
 
   describe('Performance Attributes', () => {
-    it('should use lazy loading', () => {
+    it('should use lazy loading by default', () => {
       const { container } = render(<ImageSlide image={mockImage} isActive={true} />)
+      const img = container.querySelector('img') as HTMLImageElement
+      expect(img).toHaveAttribute('loading', 'lazy')
+    })
+
+    it('should use eager loading when specified', () => {
+      const { container } = render(<ImageSlide image={mockImage} isActive={true} loading="eager" />)
+      const img = container.querySelector('img') as HTMLImageElement
+      expect(img).toHaveAttribute('loading', 'eager')
+    })
+
+    it('should use lazy loading when specified', () => {
+      const { container } = render(<ImageSlide image={mockImage} isActive={true} loading="lazy" />)
       const img = container.querySelector('img') as HTMLImageElement
       expect(img).toHaveAttribute('loading', 'lazy')
     })

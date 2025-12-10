@@ -147,7 +147,7 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
           src: imageUrl,
           alt: artist.name,
           bannerText: artist.name,
-          link: artist.slug ? `/artists/${artist.slug}` : undefined,
+          slug: artist.slug || undefined,
           sizesAttr: '(max-width: 768px) 100vw, 50vw',
           focalX: image?.focalX ?? null,
           focalY: image?.focalY ?? null,
@@ -183,7 +183,14 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
       {showSlider && (
         <div className="mt-16">
           <h2 className="font-playfair mb-6 text-3xl font-bold">{t('discoverMore')}</h2>
-          <ImageSlider images={sliderImages} autoAdvance interval={6000} showArrows={false} showDots />
+          <ImageSlider
+            images={sliderImages}
+            autoAdvance
+            interval={6000}
+            showArrows={false}
+            showDots
+            eagerLoadCount={2}
+          />
         </div>
       )}
     </>
