@@ -21,6 +21,7 @@ export const mockGetTranslations = (mockTranslations: Record<string, string> = {
  * Mock next/image component for testing
  */
 export const MockImage = ({ src, alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
+  // eslint-disable-next-line @next/next/no-img-element
   return <img src={src} alt={alt} {...props} />
 }
 

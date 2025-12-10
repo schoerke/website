@@ -33,6 +33,7 @@ vi.mock('embla-carousel-autoplay', () => ({
 vi.mock('./ImageSlide', () => ({
   default: ({ image, isActive }: { image: { src: string; alt: string; bannerText?: string }; isActive: boolean }) => (
     <div data-testid="image-slide" data-active={isActive}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={image.src} alt={image.alt} />
       {image.bannerText && <span>{image.bannerText}</span>}
     </div>
