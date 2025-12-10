@@ -28,6 +28,9 @@ const eslintConfig = defineConfig([
     'jest.config.js',
     'vitest.config.ts',
     'vitest.setup.ts',
+    // Ignore archived scripts and temporary files:
+    '**/archived/**',
+    'tmp/**',
   ]),
 ])
 

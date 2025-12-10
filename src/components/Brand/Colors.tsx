@@ -4,7 +4,6 @@ interface ColorProps {
 }
 
 interface ColorSectionProps {
-  title: string
   colors: ColorProps[]
 }
 
@@ -27,7 +26,7 @@ const ColorCard: React.FC<ColorProps> = ({ name, hex }) => (
   </div>
 )
 
-const ColorSection: React.FC<ColorSectionProps> = ({ title, colors }) => (
+const ColorSection: React.FC<ColorSectionProps> = ({ colors }) => (
   <div className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
     {colors.map((color) => (
       <ColorCard key={color.name} {...color} />
@@ -46,18 +45,10 @@ const Colors: React.FC = () => {
     { name: 'Error', hex: '#DC2626' },
   ]
 
-  const secondaryColors = [
-    { name: 'Sage', hex: '#94A187' },
-    { name: 'Dusty Blue', hex: '#7C9CBC' },
-    { name: 'Mauve', hex: '#A67F8E' },
-    { name: 'Warm Gray', hex: '#9A8F97' },
-    { name: 'Olive', hex: '#8B8B6B' },
-  ]
-
   return (
     <main>
       <h1 className="font-playfair my-8 text-5xl font-bold">Colors</h1>
-      <ColorSection title="Primary" colors={primaryColors} />
+      <ColorSection colors={primaryColors} />
     </main>
   )
 }

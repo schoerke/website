@@ -122,7 +122,7 @@ describe('Post Service', () => {
 
   describe('getAllNewsPostsByArtist', () => {
     it('should fetch news posts filtered by artist ID', async () => {
-      const newsPost = createMockPost({ categories: ['news'], artists: [1] as any })
+      const newsPost = createMockPost({ categories: ['news'], artists: [1] as never })
       vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([newsPost]))
 
       await getAllNewsPostsByArtist('1')
@@ -156,7 +156,7 @@ describe('Post Service', () => {
 
   describe('getAllProjectPostsByArtist', () => {
     it('should fetch project posts filtered by artist ID', async () => {
-      const projectPost = createMockPost({ categories: ['projects'], artists: [1] as any })
+      const projectPost = createMockPost({ categories: ['projects'], artists: [1] as never })
       vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([projectPost]))
 
       await getAllProjectPostsByArtist('1')

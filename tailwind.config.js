@@ -38,10 +38,6 @@ const config = {
       }),
     },
   },
-}
-
-export default {
-  ...config,
   plugins: [
     typography,
     function ({ addUtilities }) {
@@ -61,3 +57,5 @@ export default {
     },
   ],
 }
+
+export default config

@@ -15,7 +15,7 @@ vi.mock('@/services/media', () => ({
 
 // Mock NewsFeedList component
 vi.mock('./NewsFeedList', () => ({
-  default: ({ posts, emptyMessage }: any) => (
+  default: ({ posts, emptyMessage }: { posts: Array<{ id: number }>; emptyMessage?: string }) => (
     <div data-testid="newsfeed-list">
       <span data-testid="post-count">{posts.length}</span>
       <span data-testid="empty-message">{emptyMessage}</span>
@@ -46,7 +46,7 @@ describe('NewsFeedServer', () => {
     const mockAvatar = createMockMedia({ filename: 'default-avatar.webp' })
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(createMockPaginatedDocs(mockPosts))
-    vi.mocked(getDefaultAvatar).mockResolvedValue(mockAvatar as any)
+    vi.mocked(getDefaultAvatar).mockResolvedValue(mockAvatar as never)
 
     const component = await NewsFeedServer({})
 

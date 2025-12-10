@@ -31,7 +31,7 @@ vi.mock('embla-carousel-autoplay', () => ({
 
 // Mock ImageSlide component
 vi.mock('./ImageSlide', () => ({
-  default: ({ image, isActive }: any) => (
+  default: ({ image, isActive }: { image: { src: string; alt: string; bannerText?: string }; isActive: boolean }) => (
     <div data-testid="image-slide" data-active={isActive}>
       <img src={image.src} alt={image.alt} />
       {image.bannerText && <span>{image.bannerText}</span>}
@@ -41,7 +41,7 @@ vi.mock('./ImageSlide', () => ({
 
 // Mock next-intl navigation
 vi.mock('@/i18n/navigation', () => ({
-  Link: ({ children, href, ...props }: any) => (
+  Link: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
     <a href={href} {...props}>
       {children}
     </a>

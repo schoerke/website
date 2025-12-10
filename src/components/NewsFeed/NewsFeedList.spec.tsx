@@ -7,7 +7,7 @@ import NewsFeedList from './NewsFeedList'
 
 // Mock next/image
 vi.mock('next/image', () => ({
-  default: ({ src, alt }: any) => <img src={src} alt={alt} />,
+  default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }))
 
 // Mock @/i18n/navigation
@@ -42,7 +42,7 @@ describe('NewsFeedList', () => {
     const mockMedia = createMockMedia({ url: 'https://example.com/image.jpg' })
     const post = createMockPost({
       title: 'Post with image',
-      image: mockMedia as any,
+      image: mockMedia as never,
     })
 
     renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" />)
@@ -55,7 +55,7 @@ describe('NewsFeedList', () => {
   it('should render post without image with placeholder', () => {
     const post = createMockPost({
       title: 'Post without image',
-      image: null as any,
+      image: null as never,
     })
 
     renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" />)
@@ -106,12 +106,12 @@ describe('NewsFeedList', () => {
 
   it('should handle image URL from R2 endpoint', () => {
     const mockMedia = createMockMedia({
-      url: undefined as any,
+      url: undefined as never,
       filename: 'test-image.jpg',
     })
     const post = createMockPost({
       title: 'Post with R2 image',
-      image: mockMedia as any,
+      image: mockMedia as never,
     })
 
     renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" />)

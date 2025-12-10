@@ -55,7 +55,7 @@ const LEGAL_PAGE_SLUGS = ['impressum', 'imprint', 'datenschutz', 'privacy-policy
  * @param args - The beforeSync hook arguments
  * @returns Modified search data with enhanced searchableContent and locale
  */
-export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc, payload }) => {
+export const beforeSyncHook: BeforeSync = async ({ originalDoc, searchDoc }) => {
   const doc = originalDoc
 
   // The plugin passes the document with locale already resolved

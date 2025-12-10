@@ -36,9 +36,9 @@ import { fetchPosts } from '@/actions/posts'
 
 // Mock NewsFeedList component
 vi.mock('./NewsFeedList', () => ({
-  default: ({ posts, emptyMessage }: any) => (
+  default: ({ posts, emptyMessage }: { posts: Array<{ id: number; title: string }>; emptyMessage?: string }) => (
     <div data-testid="newsfeed-list">
-      {posts.map((post: any) => (
+      {posts.map((post) => (
         <div key={post.id} data-testid="post">
           {post.title}
         </div>
@@ -50,7 +50,7 @@ vi.mock('./NewsFeedList', () => ({
 
 // Mock Skeleton component
 vi.mock('@/components/ui/Skeleton', () => ({
-  Skeleton: ({ className }: any) => <div data-testid="skeleton" className={className} />,
+  Skeleton: ({ className }: { className?: string }) => <div data-testid="skeleton" className={className} />,
 }))
 
 const renderWithIntl = (ui: React.ReactElement) => {
@@ -71,7 +71,7 @@ describe('NewsFeedClient', () => {
       resolveFetchPosts = resolve
     })
 
-    vi.mocked(fetchPosts).mockReturnValue(fetchPostsPromise as any)
+    vi.mocked(fetchPosts).mockReturnValue(fetchPostsPromise as never)
 
     renderWithIntl(<NewsFeedClient />)
 
@@ -93,7 +93,7 @@ describe('NewsFeedClient', () => {
   it('should fetch and display posts', async () => {
     const mockPosts = [createMockPost({ title: 'Test Post 1' }), createMockPost({ id: 2, title: 'Test Post 2' })]
 
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: mockPosts } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: mockPosts } as never)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient />)
@@ -106,7 +106,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should call server action with category filter', async () => {
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient category="news" />)
@@ -123,7 +123,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should call server action with multiple category filters', async () => {
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient category={['news', 'projects']} />)
@@ -140,7 +140,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should call server action with artist filter', async () => {
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient artistId="123" />)
@@ -157,7 +157,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should call server action with limit', async () => {
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient limit={5} />)
@@ -174,7 +174,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should call server action with locale', async () => {
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient locale="en" />)
@@ -191,7 +191,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should always filter by published status', async () => {
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient />)
@@ -220,7 +220,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should not show loading state when showLoadingState is false', async () => {
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient showLoadingState={false} />)
@@ -235,7 +235,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should display empty message when no posts', async () => {
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
     await act(async () => {
       renderWithIntl(<NewsFeedClient emptyMessage="No posts found" />)
@@ -247,7 +247,7 @@ describe('NewsFeedClient', () => {
   })
 
   it('should only fetch once', async () => {
-    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as any)
+    vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
     let rerender: any
 

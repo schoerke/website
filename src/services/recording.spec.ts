@@ -84,7 +84,7 @@ describe('Recording Service', () => {
 
   describe('getRecordingsByArtist', () => {
     it('should fetch published recordings by artist ID', async () => {
-      const mockRecording = createMockRecording({ artists: [1] as any })
+      const mockRecording = createMockRecording({ artists: [1] as never })
       vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockRecording]))
 
       const result = await getRecordingsByArtist('1')

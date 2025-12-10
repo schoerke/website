@@ -3,7 +3,6 @@ import ContactPersons from '@/components/Artist/ContactPersons'
 import { Link } from '@/i18n/navigation'
 import { getArtistBySlug } from '@/services/artist'
 import { isEmployee } from '@/utils/collection'
-import { getQuoteMarks } from '@/utils/content'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -27,7 +26,6 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
   if (!artist) return notFound()
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.artist' })
-  const [openQuote, closeQuote] = getQuoteMarks(locale)
 
   const { name, image, contactPersons } = artist
 
