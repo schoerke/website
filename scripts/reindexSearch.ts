@@ -38,8 +38,6 @@ function normalizeText(text: string): string {
     .replace(/[\u0300-\u036f]/g, '') // Remove combining diacritical marks
 }
 
-const collections = ['artists', 'posts', 'recordings', 'employees', 'pages', 'repertoire'] as const
-
 interface MinimalSearchDoc {
   displayTitle: string
   slug: string

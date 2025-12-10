@@ -127,7 +127,7 @@ function parseInlineHTML(html: string): LexicalNode[] {
   const nodes: LexicalNode[] = []
 
   // First pass: decode HTML entities and convert <br> to newlines
-  let processed = html
+  const processed = html
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')

@@ -66,7 +66,7 @@ export function extractQuote(html: string): string {
   if (!html) return ''
 
   // Remove blockquote elements first
-  let cleaned = html.replace(/<\/?blockquote[^>]*>/g, '').trim()
+  const cleaned = html.replace(/<\/?blockquote[^>]*>/g, '').trim()
 
   // Get first non-empty line (skip empty lines and &nbsp; entities)
   const lines = cleaned.split('\n')
@@ -119,7 +119,7 @@ export function cleanBiographyHTML(html: string): string {
   if (!html) return ''
 
   // Remove blockquote elements first
-  let cleaned = html.replace(/<\/?blockquote[^>]*>/g, '').trim()
+  const cleaned = html.replace(/<\/?blockquote[^>]*>/g, '').trim()
 
   // Split into lines to find where the quote is
   const lines = cleaned.split('\n')

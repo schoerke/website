@@ -26,14 +26,9 @@
 
 import { XMLParser } from 'fast-xml-parser'
 import * as fs from 'fs/promises'
-import { getPayload } from 'payload'
 
 export const migratePosts = async () => {
   console.log('Starting migration:')
-
-  const awaitConfig = await import('../../src/payload.config')
-  const config = awaitConfig.default
-  const payload = await getPayload({ config })
 
   // TODO: Load images-id-map.json
   // const imagesIdMap = JSON.parse(await fs.readFile('./scripts/wordpress/data/images-id-map.json', 'utf-8'))

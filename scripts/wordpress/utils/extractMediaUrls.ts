@@ -52,7 +52,6 @@ async function extractMediaUrls() {
 
   for (const item of allMedia) {
     if (item['wp:post_type'] === 'attachment') {
-      // @ts-ignore - wp:attachment_url exists for attachments
       const attachmentUrl = item['wp:attachment_url']
       if (attachmentUrl) {
         mediaIdMap.set(String(item['wp:post_id']), attachmentUrl)
