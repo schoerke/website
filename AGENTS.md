@@ -190,6 +190,15 @@ grep -E "CLOUDFLARE|R2|S3_" .env
   - Use ES module syntax; imports are auto-organized by Prettier
   - Group order: external dependencies, then internal imports (@ aliases)
 - **Types:** Use TypeScript for all new code
+  - **NEVER use `any` type** - it defeats the purpose of TypeScript's type safety
+  - **NEVER use `as any` casts** - this bypasses type checking and hides errors
+  - Define proper interfaces for complex types instead of using `any`
+  - For test data with intentionally missing fields, use empty strings or create proper partial types
+  - Examples of what NOT to do:
+    - ❌ `href: any` - Define proper interface instead
+    - ❌ `content?: any` - Use actual type from payload-types
+    - ❌ `undefined as any` - Use empty strings for falsy validation tests
+    - ❌ `value as any` - Use proper type narrowing or type guards
 - **React Components:** See dedicated "React Component Pattern" section below for detailed guidelines.
 - **Naming:** Use descriptive, camelCase for variables/functions, PascalCase for types/components
 - **Error Handling:** Prefer explicit error handling; avoid silent failures
