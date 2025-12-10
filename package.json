@@ -14,6 +14,7 @@
     "generate:search-index": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/reindexSearch.ts",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:artists": "payload run scripts/wordpress/migrateArtists.ts",
     "migrate:employees": "payload run scripts/wordpress/migrateEmployees.ts",
