@@ -48,7 +48,8 @@ describe('ContactPersons', () => {
 
   describe('Field validation', () => {
     it('renders general contact when employee missing name', () => {
-      const incomplete = createMockEmployee({ name: undefined as any })
+      const baseEmployee = createMockEmployee()
+      const incomplete = { ...baseEmployee, name: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
       expect(screen.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
@@ -56,28 +57,32 @@ describe('ContactPersons', () => {
     })
 
     it('renders general contact when employee missing title', () => {
-      const incomplete = createMockEmployee({ title: undefined as any })
+      const baseEmployee = createMockEmployee()
+      const incomplete = { ...baseEmployee, title: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
       expect(screen.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
     })
 
     it('renders general contact when employee missing email', () => {
-      const incomplete = createMockEmployee({ email: undefined as any })
+      const baseEmployee = createMockEmployee()
+      const incomplete = { ...baseEmployee, email: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
       expect(screen.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
     })
 
     it('renders general contact when employee missing phone', () => {
-      const incomplete = createMockEmployee({ phone: undefined as any })
+      const baseEmployee = createMockEmployee()
+      const incomplete = { ...baseEmployee, phone: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
       expect(screen.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
     })
 
     it('renders general contact when employee missing mobile', () => {
-      const incomplete = createMockEmployee({ mobile: undefined as any })
+      const baseEmployee = createMockEmployee()
+      const incomplete = { ...baseEmployee, mobile: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
       expect(screen.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
@@ -85,7 +90,8 @@ describe('ContactPersons', () => {
 
     it('renders general contact when any employee in array is incomplete', () => {
       const complete = createMockEmployee({ id: 1, name: 'Complete Person' })
-      const incomplete = createMockEmployee({ id: 2, name: 'Incomplete Person', email: undefined as any })
+      const baseIncomplete = createMockEmployee({ id: 2, name: 'Incomplete Person' })
+      const incomplete = { ...baseIncomplete, email: '' }
 
       render(<ContactPersons employees={[complete, incomplete]} />)
 

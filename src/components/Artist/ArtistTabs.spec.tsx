@@ -25,8 +25,20 @@ vi.mock('../NewsFeed/NewsFeedClient', () => ({
 }))
 
 // Mock ArtistTabContent components
+interface BiographyContent {
+  root: {
+    type: string
+    children: unknown[]
+    direction: ('ltr' | 'rtl') | null
+    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+    indent: number
+    version: number
+  }
+  [k: string]: unknown
+}
+
 vi.mock('./ArtistTabContent', () => ({
-  BiographyTab: ({ content, quote }: { content?: any; quote?: string }) => (
+  BiographyTab: ({ content, quote }: { content?: BiographyContent; quote?: string | null }) => (
     <div data-testid="biography-tab">
       Biography: {content ? 'Has content' : 'No bio'} - Quote: {quote || 'No quote'}
     </div>

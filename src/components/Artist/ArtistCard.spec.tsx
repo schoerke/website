@@ -24,8 +24,14 @@ vi.mock('next/image', () => ({
 }))
 
 // Mock @/i18n/navigation
+interface LinkHref {
+  params?: {
+    slug?: string
+  }
+}
+
 vi.mock('@/i18n/navigation', () => ({
-  Link: ({ href, children, className }: { href: any; children: React.ReactNode; className?: string }) => (
+  Link: ({ href, children, className }: { href: string | LinkHref; children: React.ReactNode; className?: string }) => (
     <a href={typeof href === 'string' ? href : `/artists/${href.params?.slug}`} className={className}>
       {children}
     </a>

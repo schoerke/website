@@ -1,11 +1,8 @@
 # Onboarding Screen Recording Scripts Plan
 
-**Date:** December 10, 2025
-**Purpose:** Comprehensive video documentation for employee onboarding from WordPress to Payload CMS
-**Audience:** Non-technical content/marketing team members
-**Format:** Hybrid approach with quick task videos (2-5 min) and workflow videos (8-12 min)
-**Language:** English only
-**Distribution:** YouTube (private/unlisted)
+**Date:** December 10, 2025 **Purpose:** Comprehensive video documentation for employee onboarding from WordPress to
+Payload CMS **Audience:** Non-technical content/marketing team members **Format:** Hybrid approach with quick task
+videos (2-5 min) and workflow videos (8-12 min) **Language:** English only **Distribution:** YouTube (private/unlisted)
 
 ---
 
