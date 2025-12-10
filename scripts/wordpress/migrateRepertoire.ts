@@ -2,16 +2,23 @@
  * WordPress to Payload CMS Repertoire Migration Script
  */
 
-import config from '@payload-config'
 import 'dotenv/config'
 import path from 'path'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 import { fileURLToPath } from 'url'
+import config from '../../src/payload.config.js'
 import { htmlToLexical } from './utils/lexicalConverter'
 import { parseWordPressXML } from './utils/xmlParser'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+interface WordPressItem {
+  category?: unknown
+  'wp:post_name': string
+  title: string
+  'content:encoded'?: string
+}
 
 interface RepertoireData {
   slug: string
@@ -34,23 +41,18 @@ function translateTitle(deTitle: string): string {
     .replace(/Duo/g, 'Duo')
 }
 
-interface RepertoireData {
-  slug: string
-  title: string
-  content: string
-  categories: string[]
-}
-
 /**
  * Extract categories from WordPress item
  */
-function extractCategories(item: any): string[] {
+function extractCategories(item: WordPressItem): string[] {
   const cats = item.category
   if (!cats) return []
   if (Array.isArray(cats)) {
-    return cats.map((c: any) => (typeof c === 'string' ? c : c['#text'] || '')).filter(Boolean)
+    return cats
+      .map((c: unknown) => (typeof c === 'string' ? c : (c as { '#text'?: string })['#text'] || ''))
+      .filter(Boolean)
   }
-  return [typeof cats === 'string' ? cats : cats['#text'] || ''].filter(Boolean)
+  return [typeof cats === 'string' ? cats : (cats as { '#text'?: string })['#text'] || ''].filter(Boolean)
 }
 
 /**
@@ -168,7 +170,7 @@ function generateTitle(artistNames: string[], slug: string, wpTitle: string): st
 /**
  * Find artist by name
  */
-async function findArtist(payload: any, name: string): Promise<string | null> {
+async function findArtist(payload: Payload, name: string): Promise<string | number | null> {
   const result = await payload.find({
     collection: 'artists',
     where: { name: { equals: name } },
@@ -325,7 +327,7 @@ async function migrateRepertoire() {
             collection: 'repertoire',
             data: {
               title,
-              content: lexContent as any,
+              content: lexContent,
               artists: artistIds,
               roles: roles.length > 0 ? roles : undefined,
             },
@@ -341,7 +343,7 @@ async function migrateRepertoire() {
               id: doc.id,
               data: {
                 title: enTitle,
-                content: lexContentEn as any,
+                content: lexContentEn,
                 artists: artistIds,
                 roles: roles.length > 0 ? roles : undefined,
               },
@@ -355,7 +357,7 @@ async function migrateRepertoire() {
               id: doc.id,
               data: {
                 title: enTitle,
-                content: lexContent as any, // Copy DE content
+                content: lexContent, // Copy DE content
                 artists: artistIds,
                 roles: roles.length > 0 ? roles : undefined,
               },

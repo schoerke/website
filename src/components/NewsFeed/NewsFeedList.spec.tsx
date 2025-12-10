@@ -12,7 +12,7 @@ vi.mock('next/image', () => ({
 
 // Mock @/i18n/navigation
 vi.mock('@/i18n/navigation', () => ({
-  Link: ({ href, children }: any) => <a href={href}>{children}</a>,
+  Link: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a>,
 }))
 
 const renderWithIntl = (ui: React.ReactElement) => {

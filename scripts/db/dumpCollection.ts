@@ -125,6 +125,7 @@ async function closePayloadConnection(payload: Payload) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (payload as any).mongoClient.close()
     console.log('Closed MongoDB connection.')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } else if (payload?.db && typeof (payload.db as any).$disconnect === 'function') {
     console.log('Attempting to close Prisma connection...')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

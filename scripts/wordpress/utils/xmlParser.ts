@@ -37,7 +37,7 @@ export async function parseWordPressXML(filePath: string): Promise<WordPressItem
 /**
  * Parse WordPress postmeta into key-value object
  */
-export function parsePostMeta(postmeta: any): Record<string, string | number> {
+export function parsePostMeta(postmeta: unknown): Record<string, string | number> {
   if (!postmeta) return {}
 
   const metaArray = Array.isArray(postmeta) ? postmeta : [postmeta]

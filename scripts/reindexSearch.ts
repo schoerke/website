@@ -120,12 +120,16 @@ async function run() {
       console.log(`   Found ${results.docs.length} documents`)
 
       // Transform to minimal format
-      const minimalDocs: MinimalSearchDoc[] = results.docs.map((doc: any) => ({
-        displayTitle: doc.displayTitle || doc.title || 'Untitled',
-        slug: doc.slug || '',
-        relationTo: doc.doc?.relationTo || 'unknown',
-        category: doc.category || undefined, // Include category for posts
-      }))
+      const minimalDocs: MinimalSearchDoc[] = results.docs.map((doc: unknown) => {
+        const record = doc as Record<string, unknown>
+        const docRelation = record.doc as Record<string, unknown> | undefined
+        return {
+          displayTitle: (record.displayTitle as string) || (record.title as string) || 'Untitled',
+          slug: (record.slug as string) || '',
+          relationTo: (docRelation?.relationTo as string) || 'unknown',
+          category: record.category as string | undefined, // Include category for posts
+        }
+      })
 
       // Create search index object
       const searchIndex: SearchIndex = {

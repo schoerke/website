@@ -37,18 +37,26 @@ interface NewRepertoireSection {
 /**
  * Check if richText content is empty (only contains empty paragraphs)
  */
-function isRichTextEmpty(richText: any): boolean {
+function isRichTextEmpty(richText: unknown): boolean {
   if (!richText) return true
-  if (!richText.root) return true
-  if (!richText.root.children || richText.root.children.length === 0) return true
+  const rt = richText as Record<string, unknown>
+  if (!rt.root) return true
+  const root = rt.root as Record<string, unknown>
+  const children = root.children as unknown[]
+  if (!children || children.length === 0) return true
 
   // Check if all children are empty paragraphs
-  return richText.root.children.every((child: any) => {
+  return children.every((child: unknown) => {
+    const c = child as Record<string, unknown>
+    const childChildren = c.children as unknown[]
     return (
-      child.type === 'paragraph' &&
-      (!child.children ||
-        child.children.length === 0 ||
-        child.children.every((c: any) => !c.text || c.text.trim() === ''))
+      c.type === 'paragraph' &&
+      (!childChildren ||
+        childChildren.length === 0 ||
+        childChildren.every((cc: unknown) => {
+          const ccRec = cc as Record<string, unknown>
+          return !ccRec.text || (typeof ccRec.text === 'string' && ccRec.text.trim() === '')
+        }))
     )
   })
 }
@@ -117,7 +125,7 @@ async function run() {
   let skippedCount = 0
 
   for (const artist of artists.docs) {
-    const oldRepertoire = artist.repertoire as any
+    const oldRepertoire = artist.repertoire as OldRepertoire | null | undefined
 
     // Transform to new structure
     const newRepertoire = transformRepertoire(oldRepertoire)
@@ -147,7 +155,7 @@ async function run() {
                   title: 'Repertoire',
                   content: oldRepertoire.de,
                 },
-              ] as any,
+              ] as never,
             },
           })
         }
@@ -164,7 +172,7 @@ async function run() {
                   title: 'Repertoire',
                   content: oldRepertoire.en,
                 },
-              ] as any,
+              ] as never,
             },
           })
         }

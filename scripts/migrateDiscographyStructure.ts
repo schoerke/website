@@ -154,7 +154,7 @@ function isNewFormat(discography: unknown): boolean {
 /**
  * Convert old richText format to new array format
  */
-function convertToNewFormat(oldDiscography: RichTextContent): any[] {
+function convertToNewFormat(oldDiscography: RichTextContent): unknown[] {
   const nodes = oldDiscography?.root?.children || []
 
   if (nodes.length === 0) {
@@ -241,7 +241,7 @@ async function migrateDiscographyStructure() {
           collection: 'artists',
           id: artistDE.id,
           data: {
-            discography: newDiscographyDE,
+            discography: newDiscographyDE as never,
           },
           locale: 'de',
         })
@@ -251,7 +251,7 @@ async function migrateDiscographyStructure() {
           collection: 'artists',
           id: artistDE.id,
           data: {
-            discography: newDiscographyEN.length > 0 ? newDiscographyEN : newDiscographyDE,
+            discography: (newDiscographyEN.length > 0 ? newDiscographyEN : newDiscographyDE) as never,
           },
           locale: 'en',
         })

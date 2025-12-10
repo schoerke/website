@@ -210,7 +210,7 @@ describe('Search API Route', () => {
       }
 
       vi.mocked(mockPayload.find)
-        .mockResolvedValueOnce(mockSearchResults as any)
+        .mockResolvedValueOnce(mockSearchResults as never)
         .mockResolvedValueOnce(mockArtistResults as never)
 
       const request = new Request('http://localhost:3000/api/search?q=fellner&locale=de&limit=10')
@@ -276,7 +276,7 @@ describe('Search API Route', () => {
       }
 
       vi.mocked(mockPayload.find)
-        .mockResolvedValueOnce(mockSearchResults as any)
+        .mockResolvedValueOnce(mockSearchResults as never)
         .mockResolvedValueOnce(mockArtistResults as never)
 
       const request = new Request('http://localhost:3000/api/search?q=piano&locale=de&limit=10')

@@ -17,7 +17,7 @@
 interface LexicalNode {
   type: string
   version: number
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface LexicalRoot {

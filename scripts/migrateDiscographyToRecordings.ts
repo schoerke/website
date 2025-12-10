@@ -83,30 +83,6 @@ interface DiscographyRoleEntry {
 type RecordingRole = 'soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist'
 
 /**
- * Convert description parts to richText format with proper Lexical structure
- */
-function parseRoleFromHeading(headingText: string): RecordingRole | null {
-  const text = headingText.toLowerCase().trim()
-
-  // Soloist
-  if (text === 'soloist' || text === 'solist') return 'soloist'
-
-  // Conductor
-  if (text === 'conductor' || text === 'dirigent') return 'conductor'
-
-  // Accompanist
-  if (text === 'accompanist' || text === 'begleiter') return 'accompanist'
-
-  // Chamber Musician
-  if (text === 'chamber musician' || text === 'kammermusiker') return 'chamber_musician'
-
-  // Ensemble Member
-  if (text === 'ensemble member' || text === 'ensemblemitglied') return 'ensemble_member'
-
-  return null
-}
-
-/**
  * Parse a label/catalog string with optional year
  * Returns { label, catalogNumber, year } or null if no match
  *
@@ -289,45 +265,6 @@ function createDescriptionRichText(parts: string[]) {
       })),
     },
   }
-}
-
-/**
- * Group paragraphs by role based on H1 headings
- */
-function groupRecordingsByRole(nodes: ParagraphNode[]): Map<RecordingRole, ParagraphNode[]> {
-  const groups = new Map<RecordingRole, ParagraphNode[]>()
-  let currentRole: RecordingRole = 'soloist' // Default role
-
-  for (const node of nodes) {
-    // Check if this is an H1 or H2 heading
-    if (node.type === 'heading' && (node.tag === 'h1' || node.tag === 'h2')) {
-      // Extract text from heading
-      const headingText = node.children
-        .filter((child) => child.type === 'text' && child.text)
-        .map((child) => child.text)
-        .join(' ')
-
-      const role = parseRoleFromHeading(headingText)
-      if (role) {
-        currentRole = role
-        console.log(`   📋 Found role section: ${headingText} → ${currentRole}`)
-      } else {
-        console.log(`   ⚠️  Unknown role heading: "${headingText}" - continuing with ${currentRole}`)
-      }
-      continue
-    }
-
-    // Skip non-paragraph nodes
-    if (node.type !== 'paragraph') continue
-
-    // Add paragraph to current role group
-    if (!groups.has(currentRole)) {
-      groups.set(currentRole, [])
-    }
-    groups.get(currentRole)!.push(node)
-  }
-
-  return groups
 }
 
 async function migrateDiscography() {

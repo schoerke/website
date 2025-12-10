@@ -37,12 +37,20 @@
 import 'dotenv/config'
 import fs from 'fs/promises'
 import path from 'path'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 import { fileURLToPath } from 'url'
 import config from '../../src/payload.config.js'
 import { cleanWordPressFilename, findEmployeeByName, mapInstruments, validateAndCleanURL } from './utils/fieldMappers'
 import { htmlToLexical } from './utils/lexicalConverter'
 import { cleanBiographyHTML, extractQuote, parsePostMeta, parseWordPressXML } from './utils/xmlParser'
+
+interface WordPressArtist {
+  'wp:post_name': string
+  'wp:status': string
+  'wp:postmeta'?: unknown
+  'content:encoded'?: string
+  title: string
+}
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -129,7 +137,6 @@ async function loadAttachmentMap() {
     for (const item of items) {
       if (item['wp:post_type'] === 'attachment') {
         const attachmentId = item['wp:post_id']
-        // @ts-ignore - wp:attachment_url is not in interface but exists for attachments
         const attachmentUrl = item['wp:attachment_url']
         if (attachmentId && attachmentUrl) {
           attachmentMap.set(String(attachmentId), String(attachmentUrl))
@@ -160,7 +167,7 @@ async function findMediaByFilename(
   const encodedFilename = encodeURIComponent(filename)
 
   // Try both encoded and decoded versions
-  let mediaId = idMap[filename] || idMap[encodedFilename]
+  const mediaId = idMap[filename] || idMap[encodedFilename]
 
   if (!mediaId) {
     console.warn(`  ⚠️  Media not found in ${collection} map: ${filename}`)
@@ -200,7 +207,7 @@ async function findMediaId(wpMediaId: string | number, dryRun: boolean = false):
 
     // Artist featured images are always in 'images' collection
     return await findMediaByFilename(filename, 'images', dryRun)
-  } catch (error) {
+  } catch {
     console.warn(`  ⚠️  Invalid attachment URL: ${attachmentUrl}`)
     return null
   }
@@ -210,9 +217,9 @@ async function findMediaId(wpMediaId: string | number, dryRun: boolean = false):
  * Map WordPress artist data to Payload artist schema
  */
 async function mapArtistData(
-  wpArtist: any,
+  wpArtist: WordPressArtist,
   _locale: 'en' | 'de',
-  payload: any,
+  payload: Payload,
   dryRun: boolean = false,
 ): Promise<PayloadArtistData> {
   const meta = parsePostMeta(wpArtist['wp:postmeta'])
@@ -284,7 +291,7 @@ async function mapArtistData(
             const pdfId = await findMediaByFilename(filename, 'documents', dryRun)
             if (pdfId) downloads.biographyPDF = pdfId
           }
-        } catch (error) {
+        } catch {
           console.warn(`  ⚠️  Invalid biography PDF URL: ${pdfUrl}`)
         }
       }
@@ -300,7 +307,7 @@ async function mapArtistData(
             const zipId = await findMediaByFilename(filename, 'documents', dryRun)
             if (zipId) downloads.galleryZIP = zipId
           }
-        } catch (error) {
+        } catch {
           console.warn(`  ⚠️  Invalid gallery ZIP URL: ${zipUrl}`)
         }
       }
@@ -321,7 +328,7 @@ async function migrateArtist(
   name: string,
   enData: PayloadArtistData,
   deData: PayloadArtistData,
-  payload: any,
+  payload: Payload,
   stats: MigrationStats,
 ): Promise<void> {
   try {
@@ -559,7 +566,7 @@ async function runMigration() {
     console.log(`✅ Loaded ${deArtists.length} DE artists\n`)
 
     // Map EN artists by slug
-    const enMap = new Map<string, any>()
+    const enMap = new Map<string, PayloadArtistData>()
     for (const wpArtist of enArtists) {
       if (wpArtist['wp:status'] === 'publish') {
         const slug = wpArtist['wp:post_name']
@@ -569,7 +576,7 @@ async function runMigration() {
     }
 
     // Map DE artists by slug
-    const deMap = new Map<string, any>()
+    const deMap = new Map<string, PayloadArtistData>()
     for (const wpArtist of deArtists) {
       if (wpArtist['wp:status'] === 'publish') {
         const slug = wpArtist['wp:post_name']

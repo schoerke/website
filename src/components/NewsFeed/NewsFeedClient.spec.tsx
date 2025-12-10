@@ -66,7 +66,7 @@ describe('NewsFeedClient', () => {
 
   it('should show loading state initially', async () => {
     // Use a promise we can control to keep the component in loading state
-    let resolveFetchPosts: (value: any) => void
+    let resolveFetchPosts: (value: unknown) => void
     const fetchPostsPromise = new Promise((resolve) => {
       resolveFetchPosts = resolve
     })
@@ -249,7 +249,7 @@ describe('NewsFeedClient', () => {
   it('should only fetch once', async () => {
     vi.mocked(fetchPosts).mockResolvedValue({ docs: [] } as never)
 
-    let rerender: any
+    let rerender: ((ui: React.ReactElement) => void) | undefined
 
     await act(async () => {
       const result = renderWithIntl(<NewsFeedClient />)
@@ -263,7 +263,7 @@ describe('NewsFeedClient', () => {
     })
 
     await act(async () => {
-      rerender(
+      rerender!(
         <NextIntlTestProvider>
           <NewsFeedClient />
         </NextIntlTestProvider>,

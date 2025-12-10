@@ -36,7 +36,7 @@ import 'dotenv/config'
 import { XMLParser } from 'fast-xml-parser'
 import * as fs from 'fs/promises'
 import path from 'path'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 import { fileURLToPath } from 'url'
 import config from '../../src/payload.config.js'
 import { cleanWordPressFilename } from './utils/fieldMappers.js'
@@ -293,7 +293,6 @@ async function mapEmployeeData(
   wpEmployee: WordPressEmployee,
   locale: 'en' | 'de',
   xmlOrder: number,
-  payload: any,
 ): Promise<PayloadEmployeeData> {
   const meta = parsePostMeta(wpEmployee['wp:postmeta'])
   const parsed = parseEmployeeContent(wpEmployee['content:encoded'] || '')
@@ -382,7 +381,7 @@ async function migrateEmployee(
   name: string,
   enData: PayloadEmployeeData,
   deData: PayloadEmployeeData,
-  payload: any,
+  payload: Payload,
   stats: MigrationStats,
 ): Promise<void> {
   try {
@@ -536,7 +535,7 @@ async function runMigration() {
     let order = 1
     for (const wpEmployee of enEmployees) {
       if (wpEmployee['wp:status'] === 'publish') {
-        const data = await mapEmployeeData(wpEmployee, 'en', order, payload)
+        const data = await mapEmployeeData(wpEmployee, 'en', order)
         enMap.set(wpEmployee.title, { data, wpData: wpEmployee })
         order++
       }
@@ -547,7 +546,7 @@ async function runMigration() {
     order = 1
     for (const wpEmployee of deEmployees) {
       if (wpEmployee['wp:status'] === 'publish') {
-        const data = await mapEmployeeData(wpEmployee, 'de', order, payload)
+        const data = await mapEmployeeData(wpEmployee, 'de', order)
         deMap.set(wpEmployee.title, { data, wpData: wpEmployee })
         order++
       }

@@ -4,6 +4,8 @@
  * Maps WordPress custom fields to Payload CMS schema
  */
 
+import type { Payload } from 'payload'
+
 /**
  * Map WordPress instrument names to Payload instrument values
  */
@@ -64,7 +66,7 @@ export function validateAndCleanURL(url: string | number | undefined): string | 
 /**
  * Map WordPress contact person name to Payload employee ID
  */
-export async function findEmployeeByName(payload: any, name: string | number | undefined): Promise<number | null> {
+export async function findEmployeeByName(payload: Payload, name: string | number | undefined): Promise<number | null> {
   if (!name || typeof name !== 'string') return null
 
   const trimmed = name.trim()
@@ -80,7 +82,7 @@ export async function findEmployeeByName(payload: any, name: string | number | u
     })
 
     if (result.totalDocs > 0) {
-      return result.docs[0].id
+      return result.docs[0].id as number
     }
 
     console.warn(`Could not find employee: ${trimmed}`)
@@ -100,11 +102,11 @@ export async function findEmployeeByName(payload: any, name: string | number | u
  * @see scripts/wordpress/utils/uploadLocalMedia.ts
  */
 export async function downloadAndUploadMedia(
-  payload: any,
+  payload: Payload,
   url: string | number | undefined,
   altText?: string,
   maxSizeMB: number = 60, // Temporarily increased for migration
-): Promise<number | null> {
+): Promise<string | number | null> {
   if (!url || typeof url !== 'string') return null
 
   const trimmed = url.trim()
