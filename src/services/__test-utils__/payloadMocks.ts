@@ -1,4 +1,4 @@
-import type { Artist, Employee, Image, Post, Recording } from '@/payload-types'
+import type { Artist, Employee, Image, Post, Recording, Repertoire } from '@/payload-types'
 import type { PaginatedDocs } from '@/types/payload'
 
 /**
@@ -111,6 +111,33 @@ export function createMockEmployee(overrides?: Partial<Employee>): Employee {
     updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
   } as Employee
+}
+
+/**
+ * Creates a mock Repertoire object for testing purposes.
+ *
+ * @param overrides - Optional partial Repertoire properties to override defaults
+ * @returns A complete mock Repertoire object with sensible defaults
+ */
+export function createMockRepertoire(overrides?: Partial<Repertoire>): Repertoire {
+  return {
+    id: 1,
+    title: 'Test Repertoire',
+    artists: [],
+    content: {
+      root: {
+        type: 'root',
+        children: [],
+        direction: null,
+        format: '' as const,
+        indent: 0,
+        version: 1,
+      },
+    },
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+    ...overrides,
+  } as Repertoire
 }
 
 /**
