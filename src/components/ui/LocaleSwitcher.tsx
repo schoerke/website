@@ -37,7 +37,7 @@ const LocaleSwitcher: React.FC = () => {
   }
 
   return (
-    <nav aria-label="Language selector" className="flex items-center gap-1">
+    <nav aria-label="Language selector" className="flex items-center gap-3">
       {SUPPORTED_LOCALES.map(({ code, label }) => {
         const isCurrent = code === currentLocale
 
@@ -47,8 +47,8 @@ const LocaleSwitcher: React.FC = () => {
             onClick={() => handleLocaleChange(code)}
             aria-current={isCurrent ? 'page' : undefined}
             disabled={isCurrent}
-            className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-              isCurrent ? 'pointer-events-none bg-gray-800 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            className={`text-sm transition-colors ${
+              isCurrent ? 'pointer-events-none font-bold text-gray-900' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             {label}
