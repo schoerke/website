@@ -48,7 +48,9 @@ const LocaleSwitcher: React.FC = () => {
             aria-current={isCurrent ? 'page' : undefined}
             disabled={isCurrent}
             className={`text-sm transition-colors ${
-              isCurrent ? 'pointer-events-none font-bold text-gray-900' : 'text-gray-600 hover:text-gray-900'
+              isCurrent
+                ? 'pointer-events-none font-bold text-gray-900'
+                : 'text-gray-600 hover:text-gray-900 hover:underline'
             }`}
           >
             {label}
