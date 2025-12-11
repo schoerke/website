@@ -47,10 +47,10 @@ const LocaleSwitcher: React.FC = () => {
             onClick={() => handleLocaleChange(code)}
             aria-current={isCurrent ? 'page' : undefined}
             disabled={isCurrent}
-            className={`text-sm transition-colors ${
+            className={`relative text-base transition duration-150 ease-in-out ${
               isCurrent
                 ? 'pointer-events-none font-bold text-gray-900'
-                : 'text-gray-600 hover:text-gray-900 hover:underline'
+                : 'text-gray-600 after:absolute after:-bottom-2 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:bg-gray-900 after:transition-all after:duration-300 hover:text-gray-900 hover:after:w-full'
             }`}
           >
             {label}
