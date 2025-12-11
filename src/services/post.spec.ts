@@ -10,6 +10,7 @@ import {
   getAllProjectPostsByArtist,
   getFilteredPosts,
   getPaginatedPosts,
+  getPostBySlug,
 } from './post'
 
 // Mock getPayload at the module level
@@ -327,6 +328,40 @@ describe('Post Service', () => {
         }),
       )
     })
+
+    it('should filter by search text when search is 3+ characters', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ search: 'test search' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            or: [
+              {
+                normalizedTitle: {
+                  contains: expect.any(String),
+                },
+              },
+            ],
+          }),
+        }),
+      )
+    })
+
+    it('should not filter by search text when search is less than 3 characters', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ search: 'ab' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.not.objectContaining({
+            or: expect.anything(),
+          }),
+        }),
+      )
+    })
   })
 
   describe('getPaginatedPosts', () => {
@@ -459,6 +494,105 @@ describe('Post Service', () => {
           sort: '-createdAt',
         }),
       )
+    })
+
+    it('should filter by search text when search is 3+ characters', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news', search: 'test search' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            or: [
+              {
+                normalizedTitle: {
+                  contains: expect.any(String),
+                },
+              },
+            ],
+          }),
+        }),
+      )
+    })
+
+    it('should not filter by search text when search is less than 3 characters', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news', search: 'ab' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.not.objectContaining({
+            or: expect.anything(),
+          }),
+        }),
+      )
+    })
+  })
+
+  describe('getPostBySlug', () => {
+    it('should fetch post by slug with default locale', async () => {
+      const mockPost = createMockPost({ slug: 'test-post' })
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        ...createMockPaginatedDocs([mockPost]),
+        limit: 1,
+      })
+
+      const result = await getPostBySlug('test-post')
+
+      expect(result).toEqual(mockPost)
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: {
+          slug: { equals: 'test-post' },
+        },
+        limit: 1,
+        locale: 'de',
+      })
+    })
+
+    it('should fetch post by slug with specified locale', async () => {
+      const mockPost = createMockPost({ slug: 'test-post' })
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        ...createMockPaginatedDocs([mockPost]),
+        limit: 1,
+      })
+
+      await getPostBySlug('test-post', 'en')
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: {
+          slug: { equals: 'test-post' },
+        },
+        limit: 1,
+        locale: 'en',
+      })
+    })
+
+    it('should return null when post is not found', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        ...createMockPaginatedDocs([]),
+        limit: 1,
+      })
+
+      const result = await getPostBySlug('nonexistent-slug')
+
+      expect(result).toBeNull()
+    })
+
+    it('should return first post when multiple matches exist', async () => {
+      const mockPosts = [createMockPost({ id: 1, slug: 'test' }), createMockPost({ id: 2, slug: 'test' })]
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        ...createMockPaginatedDocs(mockPosts),
+        limit: 1,
+      })
+
+      const result = await getPostBySlug('test')
+
+      expect(result).toEqual(mockPosts[0])
+      expect(result?.id).toBe(1)
     })
   })
 })
