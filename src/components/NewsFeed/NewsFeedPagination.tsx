@@ -40,7 +40,7 @@ interface NewsFeedPaginationProps {
  * generatePageNumbers(1, 3)  // [1, 2, 3]
  * ```
  */
-function generatePageNumbers(currentPage: number, totalPages: number): (number | 'ellipsis')[] {
+export function generatePageNumbers(currentPage: number, totalPages: number): (number | 'ellipsis')[] {
   const pages: (number | 'ellipsis')[] = []
   const showPages = 5 // Maximum page numbers to show
 
