@@ -13,7 +13,21 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', '.next/', 'dist/', '**/*.d.ts', '**/*.config.*', '**/mockData', 'coverage/'],
+      exclude: [
+        'node_modules/',
+        '.next/',
+        'dist/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/mockData',
+        'coverage/',
+        // Collections are declarative Payload CMS configs (no testable logic)
+        // All collection hooks/functions are tested in their source files:
+        // - authenticated, authenticatedOrPublished (src/access/*.spec.ts)
+        // - normalizeText (src/utils/search/normalizeText.spec.ts)
+        // - createSlugHook (src/utils/slug.spec.ts)
+        'src/collections/**',
+      ],
     },
   },
   resolve: {
