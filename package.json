@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm generate:search-index && cross-env NODE_OPTIONS=--no-deprecation next build --webpack",
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --webpack",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "format": "pnpm exec prettier . --write",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
