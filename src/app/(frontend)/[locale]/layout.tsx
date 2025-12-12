@@ -31,7 +31,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages()
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body className="font-inter text-primary-black flex min-h-screen flex-col antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <SearchProvider>
