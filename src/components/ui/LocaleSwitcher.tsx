@@ -118,7 +118,7 @@ const LocaleSwitcher: React.FC = () => {
                   onClick={() => handleLocaleChange(code)}
                   aria-current={isCurrent ? 'page' : undefined}
                   lang={code}
-                  className={`relative whitespace-nowrap text-sm transition duration-150 ease-in-out ${
+                  className={`relative cursor-pointer whitespace-nowrap text-sm transition duration-150 ease-in-out ${
                     isCurrent
                       ? 'font-bold text-gray-900'
                       : 'text-gray-600 after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:bg-gray-900 after:transition-all after:duration-300 hover:text-gray-900 hover:after:w-full'
@@ -134,7 +134,7 @@ const LocaleSwitcher: React.FC = () => {
         {/* Language code button - shows all options with active one bolded */}
         <button
           onClick={() => setOpen(!open)}
-          className="flex shrink-0 items-center justify-center gap-1"
+          className="flex shrink-0 cursor-pointer items-center justify-center gap-1 transition-colors hover:text-gray-900"
           aria-label={`Select language (current: ${SUPPORTED_LOCALES.find((l) => l.code === currentLocale)?.label})`}
           aria-expanded={open}
         >

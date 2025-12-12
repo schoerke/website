@@ -25,7 +25,7 @@ const AppControls: React.FC = () => {
       {/* Kbar Search Button - right side */}
       <button
         onClick={() => query.toggle()}
-        className="flex h-full items-center gap-2 px-4 text-gray-600 transition-colors"
+        className="flex h-full cursor-pointer items-center gap-2 px-4 text-gray-600 transition-colors hover:text-gray-900"
         aria-label={searchLabel}
         title={`${searchLabel} (${shortcutKey})`}
       >
