@@ -16,19 +16,10 @@ interface ArtistTabsProps {
   locale: string
 }
 
-function getInitialTab(hasCalendar: boolean): TabId {
-  if (typeof window === 'undefined') return 'biography'
-  const hash = window.location.hash.slice(1) as TabId
-  const validTabs: TabId[] = [
-    'biography',
-    'repertoire',
-    'discography',
-    'video',
-    'news',
-    'projects',
-    ...(hasCalendar ? (['concertDates'] as const) : []),
-  ]
-  return hash && validTabs.includes(hash) ? hash : 'biography'
+// Always return 'biography' for initial render to avoid hydration mismatch
+// The hash will be read and applied in useEffect after hydration
+function getInitialTab(): TabId {
+  return 'biography'
 }
 
 /**
@@ -37,13 +28,11 @@ function getInitialTab(hasCalendar: boolean): TabId {
  */
 const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const t = useTranslations('custom.pages.artist')
-  const [activeTab, setActiveTab] = useState<TabId>(() => getInitialTab(!!artist.externalCalendarURL))
+  const [activeTab, setActiveTab] = useState<TabId>(getInitialTab)
   const [recordings, setRecordings] = useState<Recording[]>([])
-  const [recordingsLoading, setRecordingsLoading] = useState(false)
   const [recordingsFetched, setRecordingsFetched] = useState(false)
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
   const [repertoires, setRepertoires] = useState<Repertoire[]>([])
-  const [repertoiresLoading, setRepertoiresLoading] = useState(false)
   const [repertoiresFetched, setRepertoiresFetched] = useState(false)
 
   // Available tabs (Concert Dates is conditional)
@@ -56,6 +45,17 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     'projects',
     ...(artist.externalCalendarURL ? (['concertDates'] as const) : []),
   ]
+
+  // Read hash from URL after hydration to set initial tab
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.slice(1) as TabId
+      if (hash && tabs.includes(hash)) {
+        setActiveTab(hash)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once after mount
 
   // Update URL hash when tab changes
   const handleTabChange = (tab: TabId) => {
@@ -72,7 +72,6 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     let cancelled = false
 
     const loadRecordings = async () => {
-      setRecordingsLoading(true)
       try {
         const data = await fetchRecordingsByArtist(artist.id.toString(), locale as 'de' | 'en')
         if (!cancelled) {
@@ -83,10 +82,6 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
         if (!cancelled) {
           console.error('Failed to fetch recordings:', err)
           setRecordingsFetched(true)
-        }
-      } finally {
-        if (!cancelled) {
-          setRecordingsLoading(false)
         }
       }
     }
@@ -107,7 +102,6 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     let cancelled = false
 
     const loadRepertoires = async () => {
-      setRepertoiresLoading(true)
       try {
         const data = await fetchRepertoiresByArtist(artist.id.toString(), locale as 'de' | 'en')
         if (!cancelled) {
@@ -118,10 +112,6 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
         if (!cancelled) {
           console.error('Failed to fetch repertoires:', err)
           setRepertoiresFetched(true)
-        }
-      } finally {
-        if (!cancelled) {
-          setRepertoiresLoading(false)
         }
       }
     }
@@ -141,6 +131,10 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
     selectedRole === null
       ? recordings
       : recordings.filter((recording) => recording.roles?.includes(selectedRole as Recording['roles'][number]))
+
+  // Compute loading states: show loading if tab is active but data not yet fetched
+  const shouldShowRepertoireLoading = activeTab === 'repertoire' && !repertoiresFetched
+  const shouldShowRecordingsLoading = activeTab === 'discography' && !recordingsFetched
 
   return (
     <div className="w-full">
@@ -190,12 +184,16 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
       <div key={activeTab} className="animate-in fade-in duration-300">
         {activeTab === 'biography' && <BiographyTab content={artist.biography} quote={artist.quote} />}
         {activeTab === 'repertoire' && (
-          <RepertoireTab repertoires={repertoires} loading={repertoiresLoading} emptyMessage={t('empty.repertoire')} />
+          <RepertoireTab
+            repertoires={repertoires}
+            loading={shouldShowRepertoireLoading}
+            emptyMessage={t('empty.repertoire')}
+          />
         )}
         {activeTab === 'discography' && (
           <RecordingsTab
             recordings={filteredRecordings}
-            loading={recordingsLoading}
+            loading={shouldShowRecordingsLoading}
             emptyMessage={t('empty.discography')}
             availableRoles={availableRoles}
             selectedRole={selectedRole}
