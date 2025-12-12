@@ -392,6 +392,7 @@ function RenderResults() {
 
   const query = searchQuery.trim()
   const hasMinChars = query.length >= 3
+  const isTooShort = query.length > 0 && query.length < 3
 
   // Detect loading state by checking for the __loading__ marker action
   const isSearching = results.some((r) => typeof r !== 'string' && r.id === '__loading__')
@@ -404,7 +405,11 @@ function RenderResults() {
 
   return (
     <div className="overflow-y-auto p-2">
-      {isSearching ? (
+      {isTooShort ? (
+        <div className="text-primary-silver px-4 py-8 text-center text-sm">
+          {locale === 'de' ? 'Bitte geben Sie mindestens 3 Zeichen ein...' : 'Please enter at least 3 characters...'}
+        </div>
+      ) : isSearching ? (
         <div className="text-primary-silver px-4 py-8 text-center text-sm">
           {locale === 'de' ? 'Suche läuft...' : 'Searching...'}
         </div>
