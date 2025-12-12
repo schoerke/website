@@ -1,6 +1,6 @@
+import { createMockPaginatedDocs, createMockPost } from '@/tests/utils/payloadMocks'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMockPaginatedDocs, createMockPost } from '@/tests/utils/payloadMocks'
 import {
   getAllHomepagePosts,
   getAllNewsPosts,
@@ -549,6 +549,7 @@ describe('Post Service', () => {
         },
         limit: 1,
         locale: 'de',
+        depth: 1,
       })
     })
 
@@ -568,6 +569,7 @@ describe('Post Service', () => {
         },
         limit: 1,
         locale: 'en',
+        depth: 1,
       })
     })
 
@@ -593,6 +595,47 @@ describe('Post Service', () => {
 
       expect(result).toEqual(mockPosts[0])
       expect(result?.id).toBe(1)
+    })
+
+    it('should populate artist relationships with depth: 1', async () => {
+      const { createMockArtist } = await import('@/tests/utils/payloadMocks')
+      const mockArtist = createMockArtist({ id: 123, name: 'John Doe', slug: 'john-doe' })
+      const mockPost = createMockPost({
+        slug: 'test-post',
+        artists: [mockArtist], // Populated artist object, not just ID
+      })
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        ...createMockPaginatedDocs([mockPost]),
+        limit: 1,
+      })
+
+      const result = await getPostBySlug('test-post')
+
+      expect(result?.artists).toBeDefined()
+      expect(Array.isArray(result?.artists)).toBe(true)
+      expect(result?.artists?.[0]).toHaveProperty('name')
+      expect(result?.artists?.[0]).toHaveProperty('slug')
+      expect(typeof result?.artists?.[0]).toBe('object')
+    })
+
+    it('should populate image relationship with depth: 1', async () => {
+      const { createMockImage } = await import('@/tests/utils/payloadMocks')
+      const mockImage = createMockImage({ id: 1, url: '/api/images/file/test.jpg', alt: 'Test Image' })
+      const mockPost = createMockPost({
+        slug: 'test-post',
+        image: mockImage, // Populated image object, not just ID
+      })
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        ...createMockPaginatedDocs([mockPost]),
+        limit: 1,
+      })
+
+      const result = await getPostBySlug('test-post')
+
+      expect(result?.image).toBeDefined()
+      expect(typeof result?.image).toBe('object')
+      expect(result?.image).toHaveProperty('url')
+      expect(result?.image).toHaveProperty('alt')
     })
   })
 })

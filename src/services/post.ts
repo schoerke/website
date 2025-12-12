@@ -376,6 +376,7 @@ export const getPostBySlug = async (slug: string, locale: LocaleCode = 'de') => 
     },
     limit: 1,
     locale,
+    depth: 1, // Populate relationships (image, artists, createdBy)
   })
 
   return result.docs.length > 0 ? result.docs[0] : null
