@@ -248,7 +248,15 @@ describe('LocaleSwitcher', () => {
       const user = userEvent.setup()
       const { useRouter } = await import('@/i18n/navigation')
       const mockReplace = vi.fn()
-      vi.mocked(useRouter).mockReturnValue({ replace: mockReplace } as any)
+      const mockRouter = {
+        push: vi.fn(),
+        replace: mockReplace,
+        prefetch: vi.fn(),
+        back: vi.fn(),
+        forward: vi.fn(),
+        refresh: vi.fn(),
+      }
+      vi.mocked(useRouter).mockReturnValue(mockRouter)
 
       render(<LocaleSwitcher />)
 
@@ -269,7 +277,15 @@ describe('LocaleSwitcher', () => {
       const user = userEvent.setup()
       const { useRouter } = await import('@/i18n/navigation')
       const mockReplace = vi.fn()
-      vi.mocked(useRouter).mockReturnValue({ replace: mockReplace } as any)
+      const mockRouter = {
+        push: vi.fn(),
+        replace: mockReplace,
+        prefetch: vi.fn(),
+        back: vi.fn(),
+        forward: vi.fn(),
+        refresh: vi.fn(),
+      }
+      vi.mocked(useRouter).mockReturnValue(mockRouter)
 
       render(<LocaleSwitcher />)
 
@@ -283,7 +299,15 @@ describe('LocaleSwitcher', () => {
       const user = userEvent.setup()
       const { useRouter } = await import('@/i18n/navigation')
       const mockReplace = vi.fn()
-      vi.mocked(useRouter).mockReturnValue({ replace: mockReplace } as any)
+      const mockRouter = {
+        push: vi.fn(),
+        replace: mockReplace,
+        prefetch: vi.fn(),
+        back: vi.fn(),
+        forward: vi.fn(),
+        refresh: vi.fn(),
+      }
+      vi.mocked(useRouter).mockReturnValue(mockRouter)
 
       render(<LocaleSwitcher />)
 
