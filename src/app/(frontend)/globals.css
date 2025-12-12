@@ -20,6 +20,17 @@
   --color-primary-error: #dc2626;
 }
 
+/* KBar responsive padding - defined at :root level to support media queries */
+:root {
+  --kbar-padding-top: 16px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --kbar-padding-top: 14vh;
+  }
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

@@ -133,7 +133,12 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     <KBarProvider actions={staticActions}>
       <DynamicSearchActions />
       <KBarPortal>
-        <KBarPositioner className="z-50 bg-black/50 p-4 backdrop-blur-sm md:p-0">
+        <KBarPositioner
+          className="z-50 bg-black/50 backdrop-blur-sm"
+          style={{
+            padding: 'var(--kbar-padding-top) 16px 16px',
+          }}
+        >
           <KBarAnimator className="w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-2xl md:rounded-xl">
             <SearchInputWithClear locale={locale} />
             <RenderResults />
