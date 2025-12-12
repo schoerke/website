@@ -1,5 +1,6 @@
 import ArtistTabs from '@/components/Artist/ArtistTabs'
 import ContactPersons from '@/components/Artist/ContactPersons'
+import ArtistLinks from '@/components/ArtistLinks'
 import { Link } from '@/i18n/navigation'
 import { getArtistBySlug } from '@/services/artist'
 import { isEmployee } from '@/utils/collection'
@@ -20,7 +21,18 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.artist' })
 
-  const { name, image, contactPersons } = artist
+  const {
+    name,
+    image,
+    contactPersons,
+    homepageURL,
+    facebookURL,
+    instagramURL,
+    twitterURL,
+    youtubeURL,
+    spotifyURL,
+    downloads,
+  } = artist
   const imageUrl = isImageObject(image) ? getImageUrl(image) : null
 
   // Filter contactPersons to only include fully populated Employee objects
@@ -46,20 +58,41 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
             </div>
           </div>
         )}
-        {employees && employees.length > 0 && (
-          <div className="md:w-1/4">
-            <ContactPersons employees={employees} />
-          </div>
-        )}
+        <div className="md:w-1/4 md:space-y-6">
+          {employees && employees.length > 0 && <ContactPersons employees={employees} />}
+          <ArtistLinks
+            className="hidden md:block"
+            homepageURL={homepageURL}
+            facebookURL={facebookURL}
+            instagramURL={instagramURL}
+            twitterURL={twitterURL}
+            youtubeURL={youtubeURL}
+            spotifyURL={spotifyURL}
+            downloads={downloads}
+          />
+        </div>
       </div>
 
       {/* Artist Tabs - Biography, Repertoire, Discography, Video, News, Projects, Concert Dates */}
       <ArtistTabs artist={artist} locale={locale} />
 
+      {/* Show ArtistLinks below tabs on small screens */}
+      <div className="mt-8 border-t border-gray-200 pt-8 md:hidden">
+        <ArtistLinks
+          homepageURL={homepageURL}
+          facebookURL={facebookURL}
+          instagramURL={instagramURL}
+          twitterURL={twitterURL}
+          youtubeURL={youtubeURL}
+          spotifyURL={spotifyURL}
+          downloads={downloads}
+        />
+      </div>
+
       <div className="mt-8">
         <Link
           href="/artists"
-          className="inline-flex items-center gap-2 rounded bg-white px-4 py-2 font-medium text-gray-900 transition-colors hover:bg-gray-100"
+          className="focus-visible:outline-primary-yellow after:bg-primary-yellow text-primary-black hover:text-primary-black/70 relative inline-flex items-center gap-2 transition duration-150 ease-in-out after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 hover:after:w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
         >
           <span aria-hidden="true">&larr;</span> {t('backButton')}
         </Link>

@@ -1,4 +1,4 @@
-import { createMockEmployee, createMockPaginatedDocs } from '@/services/__test-utils__/payloadMocks'
+import { createMockEmployee, createMockPaginatedDocs } from '@/tests/utils/payloadMocks'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchEmployees, fetchEmployeesByIds } from './employees'

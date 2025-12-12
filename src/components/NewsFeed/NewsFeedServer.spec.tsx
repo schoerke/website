@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { createMockMedia, createMockPaginatedDocs, createMockPost } from '@/services/__test-utils__/payloadMocks'
+import { createMockMedia, createMockPaginatedDocs, createMockPost } from '@/tests/utils/payloadMocks'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import NewsFeedServer from './NewsFeedServer'

@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { NextIntlTestProvider } from '@/components/__test-utils__/NextIntlProvider'
+import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
 import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import PostsPerPageSelector from './PostsPerPageSelector'

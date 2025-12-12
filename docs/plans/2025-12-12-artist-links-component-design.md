@@ -6,7 +6,8 @@
 
 ## Overview
 
-New component for the artist detail page sidebar that displays the artist's homepage, social media links, and downloadable resources (Biography PDF, Photo Gallery ZIP). Positioned below ContactPersons in the sidebar.
+New component for the artist detail page sidebar that displays the artist's homepage, social media links, and
+downloadable resources (Biography PDF, Photo Gallery ZIP). Positioned below ContactPersons in the sidebar.
 
 ## Requirements
 
@@ -38,6 +39,7 @@ src/components/ArtistLinks/
 ```
 
 **Why compound pattern:**
+
 - Each sub-component handles one concern
 - Highly testable in isolation
 - Clear separation of conditional rendering logic
@@ -48,6 +50,7 @@ src/components/ArtistLinks/
 ### Main Component (`index.tsx`)
 
 **Props:**
+
 ```typescript
 interface ArtistLinksProps {
   homepageURL?: string | null
@@ -67,6 +70,7 @@ interface ArtistLinksProps {
 ```
 
 **Behavior:**
+
 - Returns `null` if no homepage, no social URLs, and no downloads exist
 - Composes three sub-components with consistent spacing (`space-y-4` or `space-y-6`)
 - Matches ContactPersons styling: `<section className="sm:text-left md:text-right">`
@@ -76,6 +80,7 @@ interface ArtistLinksProps {
 **Props:** `homepageURL?: string | null`, `locale?: 'de' | 'en'`
 
 **Rendering:**
+
 - Only renders if `homepageURL` exists
 - Header: "Homepage" (translatable via next-intl)
 - Link with `ExternalLink` icon (lucide-react)
@@ -84,6 +89,7 @@ interface ArtistLinksProps {
 - Right-aligned on desktop, left-aligned mobile
 
 **Helper Function:**
+
 ```typescript
 function formatDomain(url: string): string {
   return url.replace(/^https?:\/\/(www\.)?/, '')
@@ -95,6 +101,7 @@ function formatDomain(url: string): string {
 **Props:** `socialMedia` object with 5 platform URLs
 
 **Rendering:**
+
 - Filters to only existing URLs
 - Returns `null` if no URLs exist
 - Horizontal row: `flex flex-wrap gap-3` (wraps naturally on mobile)
@@ -103,6 +110,7 @@ function formatDomain(url: string): string {
 - **Accessibility:** aria-labels for screen readers only
 
 **Icons (lucide-react):**
+
 - Facebook → `Facebook`
 - Twitter/X → `Twitter`
 - Instagram → `Instagram`
@@ -110,6 +118,7 @@ function formatDomain(url: string): string {
 - Spotify → `Music`
 
 **Icon Styling:**
+
 - Size: `w-6 h-6` or `w-5 h-5`
 - Hover: Color transition + slight scale
 - **No visible text labels** - icons are self-explanatory
@@ -120,6 +129,7 @@ function formatDomain(url: string): string {
 **Props:** `downloads` object, `locale?: 'de' | 'en'`
 
 **Rendering:**
+
 - Checks if each download is valid Document object (not just ID)
 - Returns `null` if no valid downloads
 - Vertical list: `flex flex-col gap-2`
@@ -127,10 +137,12 @@ function formatDomain(url: string): string {
 - Right-aligned on desktop
 
 **Icons (lucide-react):**
+
 - Biography PDF → `FileText`
 - Gallery ZIP → `FileArchive`
 
 **Helper Function:**
+
 ```typescript
 function isDocumentObject(doc: unknown): doc is Document {
   return typeof doc === 'object' && doc !== null && 'url' in doc
@@ -138,22 +150,26 @@ function isDocumentObject(doc: unknown): doc is Document {
 ```
 
 **Labels (translatable):**
+
 - biographyPDF: "Biography PDF"
 - galleryZIP: "Photo Gallery"
 
 ## Styling
 
 **Consistency with ContactPersons:**
+
 - Same section wrapper styling
 - Same text alignment (right on desktop, left mobile)
 - Similar spacing and typography scale
 
 **Responsive Behavior:**
+
 - Mobile: All components stack naturally, left-aligned
 - Desktop: Right-aligned within `md:w-1/4` sidebar column
 - Social icons use `flex-wrap` so they adapt gracefully
 
 **Accessibility:**
+
 - All links have descriptive `aria-label` attributes
 - External links include context about new tab
 - Focus states with visible outline/ring
@@ -211,6 +227,7 @@ artistLinks: {
 4. Each sub-component handles its own conditional rendering
 
 **Type Safety:**
+
 - Import `Artist`, `Document` types from `@/payload-types`
 - All URLs validated in CMS schema (component assumes valid or null)
 - Helper functions for type guards (Document validation)
@@ -218,6 +235,7 @@ artistLinks: {
 ## Testing Strategy
 
 **Unit Tests (each sub-component):**
+
 - Renders correctly with all fields populated
 - Renders correctly with some fields populated
 - Returns null when no data
@@ -225,16 +243,19 @@ artistLinks: {
 - Document validation works correctly
 
 **Integration Tests:**
+
 - Main component composes sub-components correctly
 - Empty state (all null) renders nothing
 - Various combinations of data render appropriately
 
 **Accessibility Tests:**
+
 - All links have aria-labels
 - Focus states work correctly
 - Screen reader announces correctly
 
 **Responsive Tests:**
+
 - Snapshot tests for mobile/desktop layouts
 - Social icons wrap correctly on narrow screens
 
@@ -249,10 +270,12 @@ artistLinks: {
 ## Dependencies
 
 **New:**
+
 - `lucide-react` icons (already in project)
 - Translation keys in next-intl
 
 **Existing:**
+
 - `@/payload-types` for Artist and Document types
 - `@/i18n` for translations
 - Next.js Link component for navigation

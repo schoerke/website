@@ -1,6 +1,6 @@
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMockPaginatedDocs, createMockPost } from './__test-utils__/payloadMocks'
+import { createMockPaginatedDocs, createMockPost } from '@/tests/utils/payloadMocks'
 import {
   getAllHomepagePosts,
   getAllNewsPosts,

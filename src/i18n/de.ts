@@ -85,6 +85,22 @@ const de = {
         concertDates: {
           button: 'Kalender ansehen',
         },
+        artistLinks: {
+          homepage: 'Homepage',
+          downloads: {
+            heading: 'Downloads',
+            biography: 'Biografie PDF',
+            gallery: 'Fotogalerie',
+          },
+          ariaLabels: {
+            visitHomepage: 'Homepage des Künstlers besuchen',
+            facebook: 'Facebook-Profil besuchen',
+            instagram: 'Instagram-Profil besuchen',
+            twitter: 'Twitter/X-Profil besuchen',
+            youtube: 'YouTube-Kanal besuchen',
+            spotify: 'Auf Spotify anhören',
+          },
+        },
       },
       contact: {
         title: 'Kontakt',

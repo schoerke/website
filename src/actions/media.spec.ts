@@ -1,4 +1,4 @@
-import { createMockImage, createMockPaginatedDocs } from '@/services/__test-utils__/payloadMocks'
+import { createMockImage, createMockPaginatedDocs } from '@/tests/utils/payloadMocks'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchDefaultAvatar } from './media'
