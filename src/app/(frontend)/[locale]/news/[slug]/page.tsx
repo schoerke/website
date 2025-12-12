@@ -1,30 +1,14 @@
 import BackButton from '@/components/ui/BackButton'
 import PayloadRichText from '@/components/ui/PayloadRichText'
-import { Link } from '@/i18n/navigation'
-import type { Image as PayloadImage } from '@/payload-types'
-import { getDefaultAvatar } from '@/services/media'
+import SchoerkeLink from '@/components/ui/SchoerkeLink'
 import { getFilteredPosts, getPostBySlug } from '@/services/post'
+import { getValidImageUrl } from '@/utils/image'
 import { validateLocale } from '@/utils/locale'
+import { formatDate, getRelatedArtists } from '@/utils/post'
+import { ChevronLeft } from 'lucide-react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-
-function isMedia(obj: unknown): obj is PayloadImage {
-  return typeof obj === 'object' && obj !== null && 'url' in obj
-}
-
-function getImageUrl(img: PayloadImage | null | undefined): string {
-  return img?.url || ''
-}
-
-function formatDate(dateString: string, locale: string): string {
-  const date = new Date(dateString)
-  return date.toLocaleDateString(locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
 
 export async function generateStaticParams() {
   try {
@@ -62,26 +46,20 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
   setRequestLocale(locale)
 
   const post = await getPostBySlug(slug, locale)
-  const defaultImagePath = getDefaultAvatar()
 
   if (!post) return notFound()
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.news' })
 
-  const { title, content, createdAt, image } = post
-  const postImage = isMedia(image) ? image : null
-  const imageUrl = getImageUrl(postImage) || defaultImagePath
+  const { title, content, createdAt, image, artists } = post
+  const imageUrl = getValidImageUrl(image)
+  const relatedArtists = getRelatedArtists(artists)
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* Back button */}
       <div className="mb-8">
-        <BackButton
-          label={t('goBack')}
-          fallbackHref="/news"
-          className="group inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
-          labelClassName="underline decoration-transparent underline-offset-4 transition-all group-hover:decoration-gray-900"
-        />
+        <BackButton label={t('goBack')} fallbackHref="/news" className="text-sm" />
       </div>
 
       {/* Article header */}
@@ -114,28 +92,32 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
         </div>
       </article>
 
+      {/* Related Artists */}
+      {relatedArtists.length > 0 && (
+        <div className="mt-12 border-t border-gray-200 pt-8">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">
+            {relatedArtists.length === 1 ? t('relatedArtist') : t('relatedArtists')}
+          </h2>
+          <ul className="flex flex-wrap gap-3">
+            {relatedArtists.map((artist) => (
+              <li key={artist.id}>
+                <SchoerkeLink href={`/artists/${artist.slug}`} variant="with-icon" className="text-sm">
+                  {artist.name}
+                </SchoerkeLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* All News link at bottom */}
-      <div className="mt-12 border-t border-gray-200 pt-8">
-        <Link
-          href="/news"
-          className="inline-flex items-center gap-2 rounded bg-white px-4 py-2 font-medium text-gray-900 transition-colors hover:bg-gray-100"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="rotate-180"
-          >
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-          {t('allNews')}
-        </Link>
+      <div className={relatedArtists.length > 0 ? 'mt-8' : 'mt-12 border-t border-gray-200 pt-8'}>
+        <SchoerkeLink href="/news" variant="with-icon" className="font-semibold">
+          <ChevronLeft className="h-4 w-4" aria-hidden={true} />
+          <span className="after:bg-primary-yellow relative after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:after:w-full">
+            {t('allNews')}
+          </span>
+        </SchoerkeLink>
       </div>
     </main>
   )
