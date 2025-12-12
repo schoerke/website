@@ -59,8 +59,8 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
       },
       {
         id: 'artists',
-        name: locale === 'de' ? 'Künstler' : 'Artists',
-        keywords: 'artists musicians künstler musiker',
+        name: locale === 'de' ? 'Künstler:innen' : 'Artists',
+        keywords: 'artists musicians künstler musiker künstlerinnen',
         section: navigationSection,
         subtitle: pageLabel,
         perform: () => router.push('/artists'),
