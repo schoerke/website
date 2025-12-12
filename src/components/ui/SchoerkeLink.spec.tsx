@@ -1,9 +1,32 @@
 // @vitest-environment happy-dom
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import SchoerkeLink from './SchoerkeLink'
 
+// Mock the i18n Link component
+vi.mock('@/i18n/navigation', () => ({
+  Link: ({ href, children, className, ...props }: { href: string; children: React.ReactNode; className?: string }) => (
+    <a href={href} className={className} {...props}>
+      {children}
+    </a>
+  ),
+}))
+
 describe('SchoerkeLink', () => {
+  describe('internal vs external links', () => {
+    it('uses Next.js Link for internal paths', () => {
+      render(<SchoerkeLink href="/artists">Internal Link</SchoerkeLink>)
+      const link = screen.getByRole('link', { name: 'Internal Link' })
+      expect(link).toHaveAttribute('href', '/artists')
+    })
+
+    it('uses anchor tag for external URLs', () => {
+      render(<SchoerkeLink href="https://example.com">External Link</SchoerkeLink>)
+      const link = screen.getByRole('link', { name: 'External Link' })
+      expect(link).toHaveAttribute('href', 'https://example.com')
+    })
+  })
+
   describe('animated variant (default)', () => {
     it('renders with animated underline classes', () => {
       render(<SchoerkeLink href="/test">Click me</SchoerkeLink>)
@@ -121,11 +144,18 @@ describe('SchoerkeLink', () => {
   })
 
   describe('href attribute', () => {
-    it('renders with correct href', () => {
+    it('renders with correct href for internal links', () => {
       render(<SchoerkeLink href="/artists">Artists</SchoerkeLink>)
       const link = screen.getByRole('link')
 
       expect(link).toHaveAttribute('href', '/artists')
+    })
+
+    it('renders with correct href for external links', () => {
+      render(<SchoerkeLink href="https://example.com">Example</SchoerkeLink>)
+      const link = screen.getByRole('link')
+
+      expect(link).toHaveAttribute('href', 'https://example.com')
     })
   })
 })

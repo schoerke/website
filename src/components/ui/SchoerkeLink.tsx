@@ -1,7 +1,11 @@
+import { Link } from '@/i18n/navigation'
 import { clsx } from 'clsx'
+import type { ComponentProps } from 'react'
 import React from 'react'
 
-interface SchoerkeLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+type NextIntlLinkProps = ComponentProps<typeof Link>
+
+interface SchoerkeLinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   /**
    * Link style variant
    * - 'animated': Text link with animated yellow underline (default)
@@ -9,36 +13,47 @@ interface SchoerkeLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement
    * - 'icon-only': Icon-only link, no underline
    */
   variant?: 'animated' | 'with-icon' | 'icon-only'
+  /**
+   * Link destination. Internal links (starting with /) use Next.js Link,
+   * external links use native anchor tags.
+   */
+  href: string
   children: React.ReactNode
 }
 
+function isInternalLink(href: string): boolean {
+  return href.startsWith('/')
+}
+
 /**
- * Standard link component for schoerke.com with consistent styling.
+ * Standard link component with consistent styling.
  *
  * Features:
+ * - Automatically detects internal vs external links
+ * - Internal links use Next.js Link for client-side navigation
+ * - External links use native anchor tags
  * - Primary black text with subtle hover dimming
  * - Optional animated yellow underline (emanates from center)
  * - Yellow focus outline for accessibility
- * - External link support (target, rel attributes)
  *
  * @example
- * // Text link with animated underline
+ * // Internal link with animated underline
  * <SchoerkeLink href="/artists">View Artists</SchoerkeLink>
  *
  * @example
- * // Link with icon (no underline)
- * <SchoerkeLink href="/download.pdf" variant="with-icon">
+ * // External link with icon (no underline)
+ * <SchoerkeLink href="https://example.com/download.pdf" variant="with-icon">
  *   <Download className="h-4 w-4" />
  *   <span>Download PDF</span>
  * </SchoerkeLink>
  *
  * @example
- * // Icon-only link
+ * // Icon-only external link
  * <SchoerkeLink href="https://facebook.com" variant="icon-only" aria-label="Facebook">
  *   <Facebook className="h-6 w-6" />
  * </SchoerkeLink>
  */
-const SchoerkeLink: React.FC<SchoerkeLinkProps> = ({ variant = 'animated', className, children, ...props }) => {
+const SchoerkeLink: React.FC<SchoerkeLinkProps> = ({ variant = 'animated', className, href, children, ...props }) => {
   const baseClasses = 'text-primary-black transition duration-150 ease-in-out hover:text-primary-black/70'
 
   const focusClasses =
@@ -53,8 +68,20 @@ const SchoerkeLink: React.FC<SchoerkeLinkProps> = ({ variant = 'animated', class
     'icon-only': '',
   }
 
+  const combinedClasses = clsx(baseClasses, focusClasses, variantClasses[variant], className)
+
+  // Use Next.js Link for internal navigation
+  if (isInternalLink(href)) {
+    return (
+      <Link href={href as NextIntlLinkProps['href']} className={combinedClasses} {...props}>
+        {children}
+      </Link>
+    )
+  }
+
+  // Use native anchor tag for external links
   return (
-    <a className={clsx(baseClasses, focusClasses, variantClasses[variant], className)} {...props}>
+    <a href={href} className={combinedClasses} {...props}>
       {children}
     </a>
   )
