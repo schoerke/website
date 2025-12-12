@@ -1,4 +1,3 @@
-import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig, type Field } from 'payload'
@@ -16,6 +15,7 @@ import { Artists } from './collections/Artists'
 import { Documents } from './collections/Documents'
 import { Employees } from './collections/Employees'
 import { Images } from './collections/Images'
+import { Issues } from './collections/Issues'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Recordings } from './collections/Recordings'
@@ -42,7 +42,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Images, Documents],
+  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Images, Documents, Issues],
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URI!,
@@ -149,8 +149,6 @@ export default buildConfig({
         forcePathStyle: true, // Required for R2
       },
     }),
-
-    payloadCloudPlugin(),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   sharp,
