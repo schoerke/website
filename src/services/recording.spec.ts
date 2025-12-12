@@ -1,6 +1,6 @@
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMockPaginatedDocs, createMockRecording } from './__test-utils__/payloadMocks'
+import { createMockPaginatedDocs, createMockRecording } from '@/tests/utils/payloadMocks'
 import { getAllRecordings, getRecordingById, getRecordingsByArtist } from './recording'
 
 // Mock getPayload at the module level

@@ -1,4 +1,4 @@
-import { createMockPaginatedDocs, createMockRecording } from '@/services/__test-utils__/payloadMocks'
+import { createMockPaginatedDocs, createMockRecording } from '@/tests/utils/payloadMocks'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchRecordingsByArtist } from './recordings'
 

@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
-import { NextIntlTestProvider } from '@/components/__test-utils__/NextIntlProvider'
 import type { Artist, Recording, Repertoire } from '@/payload-types'
+import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

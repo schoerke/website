@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
-import { NextIntlTestProvider } from '@/components/__test-utils__/NextIntlProvider'
-import { createMockPost } from '@/services/__test-utils__/payloadMocks'
+import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
+import { createMockPost } from '@/tests/utils/payloadMocks'
 import { render, screen, waitFor } from '@testing-library/react'
 import { act } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
