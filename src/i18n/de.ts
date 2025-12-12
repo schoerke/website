@@ -91,7 +91,7 @@ const de = {
           downloads: {
             heading: 'Downloads',
             biography: 'Biografie PDF',
-            gallery: 'Fotogalerie',
+            gallery: 'Fotogalerie ZIP',
           },
           ariaLabels: {
             visitHomepage: 'Homepage des Künstlers besuchen',
@@ -114,6 +114,8 @@ const de = {
         allNews: 'Alle News',
         loading: 'News-Beiträge werden geladen',
         loadingPosts: 'News-Beiträge werden geladen, bitte warten...',
+        relatedArtist: 'Zugehörige:r Künstler:in',
+        relatedArtists: 'Zugehörige Künstler:innen',
       },
       projects: {
         learnMore: 'Mehr erfahren',
@@ -122,6 +124,8 @@ const de = {
         allProjects: 'Alle Projekte',
         loading: 'Projekt-Beiträge werden geladen',
         loadingPosts: 'Projekt-Beiträge werden geladen, bitte warten...',
+        relatedArtist: 'Zugehörige:r Künstler:in',
+        relatedArtists: 'Zugehörige Künstler:innen',
       },
       team: {
         title: 'Team',

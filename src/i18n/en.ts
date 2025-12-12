@@ -88,7 +88,7 @@ const en = {
           downloads: {
             heading: 'Downloads',
             biography: 'Biography PDF',
-            gallery: 'Photo Gallery',
+            gallery: 'Photo Gallery ZIP',
           },
           ariaLabels: {
             visitHomepage: 'Visit artist homepage',
@@ -111,6 +111,8 @@ const en = {
         allNews: 'All News',
         loading: 'Loading news posts',
         loadingPosts: 'Loading news posts, please wait...',
+        relatedArtist: 'Related Artist',
+        relatedArtists: 'Related Artists',
       },
       projects: {
         learnMore: 'Learn more',
@@ -119,6 +121,8 @@ const en = {
         allProjects: 'All Projects',
         loading: 'Loading project posts',
         loadingPosts: 'Loading project posts, please wait...',
+        relatedArtist: 'Related Artist',
+        relatedArtists: 'Related Artists',
       },
       team: {
         title: 'Team',
