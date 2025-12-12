@@ -28,6 +28,8 @@ const eslintConfig = defineConfig([
     'jest.config.js',
     'vitest.config.ts',
     'vitest.setup.ts',
+    // Ignore test coverage output:
+    'coverage/**',
     // Ignore archived scripts and temporary files:
     '**/archived/**',
     'tmp/**',
