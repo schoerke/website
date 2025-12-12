@@ -361,15 +361,15 @@ function DynamicSearchActions() {
     const artists = searchResults.filter((doc) => doc.relationTo === 'artists')
     const employees = searchResults.filter((doc) => doc.relationTo === 'employees')
     const pages = searchResults.filter((doc) => doc.relationTo === 'pages')
-    const repertoire = searchResults.filter((doc) => doc.relationTo === 'repertoire')
+    // Repertoire filtering removed
 
     // Create actions with priorities: Artists (highest), Team, Pages, Repertoire
     const artistActions = artists.map((doc) => createSearchAction(doc, searchQuery, locale, router, 100))
     const employeeActions = employees.map((doc) => createSearchAction(doc, searchQuery, locale, router, 90))
     const pageActions = pages.map((doc) => createSearchAction(doc, searchQuery, locale, router, 80))
-    const repertoireActions = repertoire.map((doc) => createSearchAction(doc, searchQuery, locale, router, 70))
+    // Removed repertoireActions as repertoire is excluded
 
-    const totalActions = [...artistActions, ...employeeActions, ...pageActions, ...repertoireActions, ...emailActions]
+    const totalActions = [...artistActions, ...employeeActions, ...pageActions, ...emailActions] // Removed repertoireActions
 
     // Return in desired order: Artists, Team, Pages, Repertoire, Commands
     return totalActions
@@ -421,7 +421,7 @@ function RenderResults() {
             if (!item) return <div />
 
             return typeof item === 'string' ? (
-              <div className="px-4 py-2 text-xs font-semibold uppercase text-gray-500">{item}</div>
+              <div className="text-primary-black px-4 py-2 text-xs font-semibold uppercase">{item}</div>
             ) : (
               <div
                 style={{
