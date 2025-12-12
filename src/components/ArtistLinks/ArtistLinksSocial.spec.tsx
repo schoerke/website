@@ -2,8 +2,17 @@
 
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import ArtistLinksSocial from './ArtistLinksSocial'
+
+// Mock the i18n Link component (used by SchoerkeLink)
+vi.mock('@/i18n/navigation', () => ({
+  Link: ({ href, children, className, ...props }: { href: string; children: React.ReactNode; className?: string }) => (
+    <a href={href} className={className} {...props}>
+      {children}
+    </a>
+  ),
+}))
 
 const testMessages = {
   custom: {
@@ -77,7 +86,7 @@ describe('ArtistLinksSocial', () => {
         </NextIntlTestProvider>,
       )
 
-      expect(screen.getByText('artist-website.com/portfolio')).toBeInTheDocument()
+      expect(screen.getByText('artist-website.com')).toBeInTheDocument()
     })
 
     it('formats domain correctly (removes http:// without www.)', () => {

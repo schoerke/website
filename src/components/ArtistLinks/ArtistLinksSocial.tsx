@@ -16,7 +16,14 @@ interface ArtistLinksSocialProps {
 }
 
 function formatDomain(url: string): string {
-  return url.replace(/^https?:\/\/(www\.)?/, '')
+  try {
+    const urlObj = new URL(url)
+    // Remove www. prefix from hostname
+    return urlObj.hostname.replace(/^www\./, '')
+  } catch {
+    // Fallback to string manipulation if URL parsing fails
+    return url.replace(/^https?:\/\/(www\.)?/, '').replace(/[/?#].*$/, '')
+  }
 }
 
 const ArtistLinksSocial: React.FC<ArtistLinksSocialProps> = ({
@@ -86,10 +93,13 @@ const ArtistLinksSocial: React.FC<ArtistLinksSocialProps> = ({
             href={homepageURL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-sm"
+            className="group inline-flex items-center gap-1 text-sm"
+            variant="with-icon"
             aria-label={t('ariaLabels.visitHomepage')}
           >
-            {formatDomain(homepageURL)}
+            <span className="after:bg-primary-yellow relative after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:after:w-full">
+              {formatDomain(homepageURL)}
+            </span>
             <ExternalLink className="h-3 w-3" aria-hidden="true" />
           </SchoerkeLink>
         </div>
