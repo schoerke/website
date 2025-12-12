@@ -26,6 +26,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
     image,
     contactPersons,
     homepageURL,
+    externalCalendarURL,
     facebookURL,
     instagramURL,
     twitterURL,
@@ -63,6 +64,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
           <ArtistLinks
             className="hidden md:block"
             homepageURL={homepageURL}
+            externalCalendarURL={externalCalendarURL}
             facebookURL={facebookURL}
             instagramURL={instagramURL}
             twitterURL={twitterURL}
@@ -80,6 +82,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
       <div className="mt-8 border-t border-gray-200 pt-8 md:hidden">
         <ArtistLinks
           homepageURL={homepageURL}
+          externalCalendarURL={externalCalendarURL}
           facebookURL={facebookURL}
           instagramURL={instagramURL}
           twitterURL={twitterURL}

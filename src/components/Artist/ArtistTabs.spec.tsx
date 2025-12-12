@@ -72,11 +72,6 @@ vi.mock('./ArtistTabContent', () => ({
   VideoTab: ({ videos, emptyMessage }: { videos?: Array<{ url: string }>; emptyMessage: string }) => (
     <div data-testid="video-tab">{videos && videos.length > 0 ? `${videos.length} videos` : emptyMessage}</div>
   ),
-  ConcertDatesTab: ({ externalCalendarURL, buttonText }: { externalCalendarURL: string; buttonText: string }) => (
-    <div data-testid="concert-dates-tab">
-      Calendar: {externalCalendarURL} - {buttonText}
-    </div>
-  ),
 }))
 
 const testMessages = {
@@ -90,7 +85,6 @@ const testMessages = {
           video: 'Video',
           news: 'News',
           projects: 'Projects',
-          concertDates: 'Concert Dates',
         },
         empty: {
           repertoire: 'No repertoire available',
@@ -98,9 +92,6 @@ const testMessages = {
           video: 'No videos available',
           news: 'No news available',
           projects: 'No projects available',
-        },
-        concertDates: {
-          button: 'View Calendar',
         },
       },
     },
@@ -194,20 +185,6 @@ describe('ArtistTabs', async () => {
       expect(screen.getAllByText('Video')).toHaveLength(2)
       expect(screen.getAllByText('News')).toHaveLength(2)
       expect(screen.getAllByText('Projects')).toHaveLength(2)
-    })
-
-    it('should render concert dates tab when externalCalendarURL is provided', () => {
-      const artist = createMockArtist({ externalCalendarURL: 'https://calendar.example.com' })
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
-
-      expect(screen.getAllByText('Concert Dates')).toHaveLength(2) // Desktop + Mobile
-    })
-
-    it('should not render concert dates tab when externalCalendarURL is missing', () => {
-      const artist = createMockArtist({ externalCalendarURL: undefined })
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
-
-      expect(screen.queryByText('Concert Dates')).not.toBeInTheDocument()
     })
   })
 
@@ -498,24 +475,6 @@ describe('ArtistTabs', async () => {
 
       expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
     })
-
-    it('should handle concertDates hash when calendar URL exists', () => {
-      window.location.hash = '#concertDates'
-      const artist = createMockArtist({ externalCalendarURL: 'https://calendar.example.com' })
-
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
-
-      expect(screen.getByTestId('concert-dates-tab')).toBeInTheDocument()
-    })
-
-    it('should default to biography for concertDates hash without calendar URL', () => {
-      window.location.hash = '#concertDates'
-      const artist = createMockArtist({ externalCalendarURL: undefined })
-
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
-
-      expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
-    })
   })
 
   describe('Locale-based reset', () => {
@@ -594,22 +553,6 @@ describe('ArtistTabs', async () => {
 
       await waitFor(() => {
         expect(screen.getByTestId('newsfeed-projects')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Concert dates integration', () => {
-    it('should render concert dates tab with calendar URL', async () => {
-      const user = userEvent.setup()
-      const artist = createMockArtist({ externalCalendarURL: 'https://calendar.example.com' })
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
-
-      const concertDatesTabs = screen.getAllByText('Concert Dates')
-      await user.click(concertDatesTabs[0])
-
-      await waitFor(() => {
-        expect(screen.getByTestId('concert-dates-tab')).toBeInTheDocument()
-        expect(screen.getByText(/Calendar: https:\/\/calendar\.example\.com/)).toBeInTheDocument()
       })
     })
   })

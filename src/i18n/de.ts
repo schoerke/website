@@ -86,6 +86,7 @@ const de = {
           button: 'Kalender ansehen',
         },
         artistLinks: {
+          links: 'Links',
           homepage: 'Homepage',
           downloads: {
             heading: 'Downloads',
@@ -94,6 +95,7 @@ const de = {
           },
           ariaLabels: {
             visitHomepage: 'Homepage des Künstlers besuchen',
+            calendar: 'Konzerttermine ansehen',
             facebook: 'Facebook-Profil besuchen',
             instagram: 'Instagram-Profil besuchen',
             twitter: 'Twitter/X-Profil besuchen',

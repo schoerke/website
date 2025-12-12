@@ -1,11 +1,11 @@
 import type { Document } from '@/payload-types'
 import React from 'react'
 import ArtistLinksDownloads from './ArtistLinksDownloads'
-import ArtistLinksHomepage from './ArtistLinksHomepage'
 import ArtistLinksSocial from './ArtistLinksSocial'
 
 interface ArtistLinksProps {
   homepageURL?: string | null
+  externalCalendarURL?: string | null
   facebookURL?: string | null
   instagramURL?: string | null
   twitterURL?: string | null
@@ -20,6 +20,7 @@ interface ArtistLinksProps {
 
 const ArtistLinks: React.FC<ArtistLinksProps> = ({
   homepageURL,
+  externalCalendarURL,
   facebookURL,
   instagramURL,
   twitterURL,
@@ -29,19 +30,21 @@ const ArtistLinks: React.FC<ArtistLinksProps> = ({
   className,
 }) => {
   // Check if there's any content to display
-  const hasHomepage = Boolean(homepageURL)
-  const hasSocialMedia = Boolean(facebookURL || instagramURL || twitterURL || youtubeURL || spotifyURL)
+  const hasSocialLinks = Boolean(
+    homepageURL || externalCalendarURL || facebookURL || instagramURL || twitterURL || youtubeURL || spotifyURL,
+  )
   const hasDownloads = Boolean(downloads?.biographyPDF || downloads?.galleryZIP)
 
   // Return null if no content
-  if (!hasHomepage && !hasSocialMedia && !hasDownloads) {
+  if (!hasSocialLinks && !hasDownloads) {
     return null
   }
 
   return (
     <section className={`space-y-6 sm:text-left md:text-right ${className || ''}`}>
-      <ArtistLinksHomepage homepageURL={homepageURL} />
       <ArtistLinksSocial
+        homepageURL={homepageURL}
+        externalCalendarURL={externalCalendarURL}
         facebookURL={facebookURL}
         instagramURL={instagramURL}
         twitterURL={twitterURL}

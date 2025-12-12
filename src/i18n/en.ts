@@ -83,6 +83,7 @@ const en = {
           button: 'View Calendar',
         },
         artistLinks: {
+          links: 'Links',
           homepage: 'Homepage',
           downloads: {
             heading: 'Downloads',
@@ -91,6 +92,7 @@ const en = {
           },
           ariaLabels: {
             visitHomepage: 'Visit artist homepage',
+            calendar: 'View concert dates',
             facebook: 'Visit Facebook profile',
             instagram: 'Visit Instagram profile',
             twitter: 'Visit Twitter/X profile',

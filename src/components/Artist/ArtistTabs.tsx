@@ -7,9 +7,9 @@ import type { Artist, Recording, Repertoire } from '@/payload-types'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 import NewsFeedClient from '../NewsFeed/NewsFeedClient'
-import { BiographyTab, ConcertDatesTab, RecordingsTab, RepertoireTab, VideoTab } from './ArtistTabContent'
+import { BiographyTab, RecordingsTab, RepertoireTab, VideoTab } from './ArtistTabContent'
 
-type TabId = 'biography' | 'repertoire' | 'discography' | 'video' | 'news' | 'projects' | 'concertDates'
+type TabId = 'biography' | 'repertoire' | 'discography' | 'video' | 'news' | 'projects'
 
 interface ArtistTabsProps {
   artist: Artist
@@ -35,16 +35,8 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const [repertoires, setRepertoires] = useState<Repertoire[]>([])
   const [repertoiresFetched, setRepertoiresFetched] = useState(false)
 
-  // Available tabs (Concert Dates is conditional)
-  const tabs: TabId[] = [
-    'biography',
-    'repertoire',
-    'discography',
-    'video',
-    'news',
-    'projects',
-    ...(artist.externalCalendarURL ? (['concertDates'] as const) : []),
-  ]
+  // Available tabs
+  const tabs: TabId[] = ['biography', 'repertoire', 'discography', 'video', 'news', 'projects']
 
   // Read hash from URL after hydration to set initial tab
   useEffect(() => {
@@ -206,9 +198,6 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
         )}
         {activeTab === 'projects' && (
           <NewsFeedClient category="projects" artistId={artist.id.toString()} emptyMessage={t('empty.projects')} />
-        )}
-        {activeTab === 'concertDates' && artist.externalCalendarURL && (
-          <ConcertDatesTab externalCalendarURL={artist.externalCalendarURL} buttonText={t('concertDates.button')} />
         )}
       </div>
     </div>
