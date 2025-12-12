@@ -78,14 +78,14 @@ async function run() {
         if (searchDoc.title) {
           const normalizedTitle = normalizeText(searchDoc.title)
 
-          // Only update if different (though normalization should be idempotent)
+          // Only update the title field
           await payload.update({
             collection: 'search',
             id: searchDoc.id,
             data: {
-              ...searchDoc,
               title: normalizedTitle,
             },
+            overrideAccess: true,
           })
 
           updated++
