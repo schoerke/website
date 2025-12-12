@@ -1,13 +1,11 @@
 import { Link } from '@/i18n/navigation'
-import { getLogoIcon } from '@/services/media'
+import { LOGO_PATH } from '@/services/media'
 import Image from 'next/image'
 
 const FooterLogo: React.FC = () => {
-  const logoPath = getLogoIcon()
-
   return (
     <Link href="/" aria-label="Home">
-      <Image src={logoPath} alt="Logo" width={160} height={138} priority style={{ height: 'auto' }} />
+      <Image src={LOGO_PATH} alt="Logo" width={400} height={120} priority style={{ width: 'auto', height: 'auto' }} />
     </Link>
   )
 }
