@@ -139,7 +139,7 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
             padding: 'var(--kbar-padding-top) 16px 16px',
           }}
         >
-          <KBarAnimator className="w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-2xl md:rounded-xl">
+          <KBarAnimator className="font-inter w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-2xl md:rounded-xl">
             <SearchInputWithClear locale={locale} />
             <RenderResults />
           </KBarAnimator>
@@ -197,13 +197,13 @@ function SearchInputWithClear({ locale }: { locale: 'de' | 'en' }) {
         value={searchQuery}
         onChange={handleChange}
         placeholder={locale === 'de' ? 'Suchen oder Befehl eingeben...' : 'Search or type a command...'}
-        className="w-full border-b border-gray-200 px-4 py-3 pr-12 text-base outline-none placeholder:text-gray-400 md:py-4"
+        className="border-primary-platinum text-primary-black placeholder:text-primary-silver w-full border-b px-4 py-3 pr-12 text-base outline-none md:py-4"
         autoFocus
       />
       {searchQuery && (
         <button
           onClick={handleClear}
-          className="absolute right-4 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          className="text-primary-silver hover:bg-primary-platinum hover:text-primary-black absolute right-4 top-1/2 -translate-y-1/2 rounded p-1 transition-colors duration-150"
           aria-label={locale === 'de' ? 'Suche löschen' : 'Clear search'}
         >
           <svg
@@ -405,11 +405,11 @@ function RenderResults() {
   return (
     <div className="overflow-y-auto p-2">
       {isSearching ? (
-        <div className="px-4 py-8 text-center text-sm text-gray-500">
+        <div className="text-primary-silver px-4 py-8 text-center text-sm">
           {locale === 'de' ? 'Suche läuft...' : 'Searching...'}
         </div>
       ) : shouldShowEmptyState ? (
-        <div className="px-4 py-8 text-center text-sm text-gray-500">
+        <div className="text-primary-silver px-4 py-8 text-center text-sm">
           {locale === 'de' ? `Keine Ergebnisse für "${searchQuery}"` : `No results found for "${searchQuery}"`}
         </div>
       ) : (
@@ -421,30 +421,16 @@ function RenderResults() {
             if (!item) return <div />
 
             return typeof item === 'string' ? (
-              <div className="text-primary-black px-4 py-2 text-xs font-semibold uppercase">{item}</div>
+              <div className="text-primary-black px-4 py-2 text-xs font-semibold uppercase tracking-wider">{item}</div>
             ) : (
               <div
-                style={{
-                  padding: '12px 16px',
-                  background: active ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
+                className={`flex cursor-pointer items-center justify-between px-4 py-3 transition-colors duration-150 ${
+                  active ? 'bg-primary-platinum' : 'transparent'
+                }`}
               >
-                <span>{item.name}</span>
+                <span className="text-primary-black">{item.name}</span>
                 {item.subtitle && (
-                  <span
-                    style={{
-                      fontSize: '12px',
-                      color: '#999',
-                      marginLeft: '16px',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {item.subtitle}
-                  </span>
+                  <span className="text-primary-silver ml-4 flex-shrink-0 text-xs">{item.subtitle}</span>
                 )}
               </div>
             )
