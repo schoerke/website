@@ -18,7 +18,7 @@ export async function generateMetadata({ params, searchParams }: ProjectsPagePro
   const { page: pageParam } = await searchParams
   const { page } = parsePaginationParams(pageParam)
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://schoerke.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ks-schoerke.de'
   const canonicalUrl = page === 1 ? `${baseUrl}/${locale}/projects` : `${baseUrl}/${locale}/projects?page=${page}`
 
   return {
