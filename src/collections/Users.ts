@@ -6,7 +6,7 @@ import { authenticated } from '@/access/authenticated'
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
-    useAsTitle: 'email',
+    useAsTitle: 'name',
     group: 'Organization',
   },
   auth: true,
