@@ -1,5 +1,5 @@
 import type { Document } from '@/payload-types'
-import { Download } from 'lucide-react'
+import { FileArchive, FileText } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
@@ -44,7 +44,7 @@ const ArtistLinksDownloads: React.FC<ArtistLinksDownloadsProps> = ({ downloads }
               rel="noopener noreferrer"
               className="text-primary-black hover:text-primary-black/70 focus-visible:outline-primary-yellow group inline-flex items-center gap-2 transition duration-150 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
             >
-              <Download className="h-4 w-4" aria-hidden={true} />
+              <FileText className="h-4 w-4" aria-hidden={true} />
               <span>{t('biography')}</span>
             </a>
           </li>
@@ -57,7 +57,7 @@ const ArtistLinksDownloads: React.FC<ArtistLinksDownloadsProps> = ({ downloads }
               rel="noopener noreferrer"
               className="text-primary-black hover:text-primary-black/70 focus-visible:outline-primary-yellow group inline-flex items-center gap-2 transition duration-150 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
             >
-              <Download className="h-4 w-4" aria-hidden={true} />
+              <FileArchive className="h-4 w-4" aria-hidden={true} />
               <span>{t('gallery')}</span>
             </a>
           </li>
