@@ -37,6 +37,7 @@
     "@aws-sdk/client-s3": "^3.948.0",
     "@libsql/client": "^0.15.15",
     "@payloadcms/db-sqlite": "^3.68.3",
+    "@payloadcms/email-resend": "^3.68.3",
     "@payloadcms/next": "^3.68.3",
     "@payloadcms/payload-cloud": "^3.68.3",
     "@payloadcms/plugin-search": "^3.68.3",
@@ -67,6 +68,8 @@
     "payload": "^3.68.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.6.0",
+    "server-only": "^0.0.1",
     "sharp": "0.34.5",
     "tailwind-merge": "^3.4.0",
     "yaml": "^2.8.1"

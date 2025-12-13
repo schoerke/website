@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url'
 
 // Adapters & Plugins
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
@@ -50,6 +51,11 @@ export default buildConfig({
     },
   }),
   editor: lexicalEditor(),
+  email: resendAdapter({
+    defaultFromAddress: process.env.EMAIL_FROM || 'noreply@example.com',
+    defaultFromName: 'Schörke Artist Management',
+    apiKey: process.env.RESEND_API_KEY || '',
+  }),
   i18n: {
     supportedLanguages: { de, en },
     translations: { de, en },
