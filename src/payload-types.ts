@@ -245,6 +245,10 @@ export interface Artist {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Drag to reorder how projects appear on this artist's page. Projects are automatically added when linked from Posts.
+   */
+  projects?: (number | Post)[] | null;
   downloads?: {
     biographyPDF?: (number | null) | Document;
     galleryZIP?: (number | null) | Document;
@@ -263,10 +267,6 @@ export interface Artist {
   twitterURL?: string | null;
   youtubeURL?: string | null;
   spotifyURL?: string | null;
-  /**
-   * Drag to reorder how projects appear on this artist's page. Projects are automatically added when linked from Posts.
-   */
-  projects?: (number | Post)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -340,36 +340,6 @@ export interface Employee {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
- */
-export interface Document {
-  id: number;
-  /**
-   * Document title for identification
-   */
-  title: string;
-  /**
-   * Optional description of the document contents
-   */
-  description?: string | null;
-  /**
-   * File size in bytes (auto-populated)
-   */
-  fileSize?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts".
  */
 export interface Post {
@@ -402,6 +372,36 @@ export interface Post {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: number;
+  /**
+   * Document title for identification
+   */
+  title: string;
+  /**
+   * Optional description of the document contents
+   */
+  description?: string | null;
+  /**
+   * File size in bytes (auto-populated)
+   */
+  fileSize?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -756,6 +756,7 @@ export interface ArtistsSelect<T extends boolean = true> {
         recordings?: T;
         id?: T;
       };
+  projects?: T;
   downloads?:
     | T
     | {
@@ -776,7 +777,6 @@ export interface ArtistsSelect<T extends boolean = true> {
   twitterURL?: T;
   youtubeURL?: T;
   spotifyURL?: T;
-  projects?: T;
   updatedAt?: T;
   createdAt?: T;
 }

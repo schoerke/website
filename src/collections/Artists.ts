@@ -301,6 +301,42 @@ export const Artists: CollectionConfig = {
         },
         {
           label: {
+            en: 'Projects',
+            de: 'Projekte',
+          },
+          fields: [
+            {
+              name: 'projects',
+              type: 'relationship',
+              relationTo: 'posts',
+              hasMany: true,
+              maxRows: 10,
+              label: {
+                en: 'Featured Projects',
+                de: 'Vorgestellte Projekte',
+              },
+              admin: {
+                description: {
+                  en: "Drag to reorder how projects appear on this artist's page. Projects are automatically added when linked from Posts.",
+                  de: 'Ziehen zum Sortieren, wie Projekte auf der Seite dieses Künstlers erscheinen. Projekte werden automatisch hinzugefügt, wenn sie von Beiträgen verknüpft werden.',
+                },
+              },
+              filterOptions: {
+                categories: {
+                  in: ['projects'],
+                },
+              },
+              validate: (value: unknown) => {
+                if (Array.isArray(value) && value.length > 10) {
+                  return 'Maximum 10 projects allowed per artist.'
+                }
+                return true
+              },
+            },
+          ],
+        },
+        {
+          label: {
             de: 'Medien',
             en: 'Media',
           },
@@ -437,42 +473,6 @@ export const Artists: CollectionConfig = {
                 allowedDomains: ['spotify.com', 'open.spotify.com'],
                 message: 'Please enter a valid Spotify URL',
               }),
-            },
-          ],
-        },
-        {
-          label: {
-            en: 'Projects',
-            de: 'Projekte',
-          },
-          fields: [
-            {
-              name: 'projects',
-              type: 'relationship',
-              relationTo: 'posts',
-              hasMany: true,
-              maxRows: 10,
-              label: {
-                en: 'Featured Projects',
-                de: 'Vorgestellte Projekte',
-              },
-              admin: {
-                description: {
-                  en: "Drag to reorder how projects appear on this artist's page. Projects are automatically added when linked from Posts.",
-                  de: 'Ziehen zum Sortieren, wie Projekte auf der Seite dieses Künstlers erscheinen. Projekte werden automatisch hinzugefügt, wenn sie von Beiträgen verknüpft werden.',
-                },
-              },
-              filterOptions: {
-                categories: {
-                  in: ['projects'],
-                },
-              },
-              validate: (value: unknown) => {
-                if (Array.isArray(value) && value.length > 10) {
-                  return 'Maximum 10 projects allowed per artist.'
-                }
-                return true
-              },
             },
           ],
         },
