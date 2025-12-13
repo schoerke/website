@@ -1,4 +1,5 @@
 import { authenticated } from '@/access/authenticated'
+import { sendIssueNotification } from '@/collections/hooks/sendIssueNotification'
 import { lexicalEditor, UploadFeature } from '@payloadcms/richtext-lexical'
 import type { CollectionConfig } from 'payload'
 
@@ -27,31 +28,7 @@ export const Issues: CollectionConfig = {
     defaultColumns: ['title', 'reporter', 'status', 'createdAt', 'updatedAt'],
   },
   hooks: {
-    afterChange: [
-      async ({ doc, operation, req }) => {
-        // Send email notification when a new issue is created
-        if (operation === 'create' && req.payload.email) {
-          try {
-            await req.payload.sendEmail({
-              to: process.env.ISSUES_EMAIL_TO || 'admin@yourdomain.com',
-              subject: `New Issue: ${doc.title}`,
-              html: `
-                <h2>New Issue Reported</h2>
-                <p><strong>Title:</strong> ${doc.title}</p>
-                <p><strong>Status:</strong> ${doc.status}</p>
-                <p><strong>Reporter:</strong> ${req.user?.name || req.user?.email || 'Unknown'}</p>
-                <p><strong>Description:</strong></p>
-                <div>${doc.description ? JSON.stringify(doc.description) : 'No description provided'}</div>
-                <br/>
-                <p><a href="${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'}/admin/collections/issues/${doc.id}">View Issue in Admin</a></p>
-              `,
-            })
-          } catch (error) {
-            req.payload.logger.error(`Failed to send issue notification email: ${error}`)
-          }
-        }
-      },
-    ],
+    afterChange: [sendIssueNotification],
   },
   fields: [
     {
