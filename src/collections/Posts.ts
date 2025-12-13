@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
 import { categoryOptions } from '@/data/options'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { createSlugHook } from '@/utils/slug'
@@ -129,6 +130,9 @@ export const Posts: CollectionConfig = {
       defaultValue: 1, // Eva Wagner
     },
   ],
+  hooks: {
+    afterChange: [syncArtistProjects],
+  },
   versions: {
     drafts: {
       autosave: {
