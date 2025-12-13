@@ -5,8 +5,10 @@ import { getPageBySlug } from '@/services/page'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 
-// This page will be dynamically rendered
-export const dynamic = 'force-dynamic'
+// Static generation for both locales
+export async function generateStaticParams() {
+  return [{ locale: 'en' }, { locale: 'de' }]
+}
 
 interface TeamMemberCardProps extends Employee {
   phoneLabel: string
