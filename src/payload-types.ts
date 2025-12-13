@@ -263,6 +263,10 @@ export interface Artist {
   twitterURL?: string | null;
   youtubeURL?: string | null;
   spotifyURL?: string | null;
+  /**
+   * Drag to reorder how projects appear on this artist's page. Projects are automatically added when linked from Posts.
+   */
+  projects?: (number | Post)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -366,36 +370,6 @@ export interface Document {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: number;
-  title: string;
-  /**
-   * URL path for this page (e.g. "impressum" for DE, "imprint" for EN)
-   */
-  slug: string;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts".
  */
 export interface Post {
@@ -425,6 +399,36 @@ export interface Post {
   artists?: (number | Artist)[] | null;
   image?: (number | null) | Image;
   createdBy: number | Employee;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * URL path for this page (e.g. "impressum" for DE, "imprint" for EN)
+   */
+  slug: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -772,6 +776,7 @@ export interface ArtistsSelect<T extends boolean = true> {
   twitterURL?: T;
   youtubeURL?: T;
   spotifyURL?: T;
+  projects?: T;
   updatedAt?: T;
   createdAt?: T;
 }
