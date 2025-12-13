@@ -28,7 +28,7 @@ const ArtistsPage = async ({ params }: { params: Promise<{ locale: string }> }) 
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
-      <h1 className="font-playfair mb-8 text-5xl font-bold sm:mb-12">{t('title')}</h1>
+      <h1 className="font-playfair mb-8 text-5xl font-bold sm:mb-12 sm:text-6xl lg:text-7xl">{t('title')}</h1>
       {error && <div className="text-primary-error">{error}</div>}
       {!error && artists && artists.length === 0 && <div className="text-gray-500">No artists found.</div>}
       {!error && artists && artists.length > 0 && <ArtistGrid artists={artists} instruments={instruments} />}

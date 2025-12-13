@@ -81,7 +81,7 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
       {/* CMS-editable content at the top */}
       {page && (
         <div className="mb-8">
-          <h1 className="font-playfair mb-6 text-5xl font-bold">{page.title}</h1>
+          <h1 className="font-playfair mb-6 text-5xl font-bold sm:text-6xl lg:text-7xl">{page.title}</h1>
           <div className="prose max-w-none">
             <PayloadRichText content={page.content} />
           </div>
@@ -89,7 +89,9 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
       )}
 
       {/* Fallback title if no page exists */}
-      {!page && <h1 className="font-playfair mb-8 text-5xl font-bold sm:mb-12">{t('title')}</h1>}
+      {!page && (
+        <h1 className="font-playfair mb-8 text-5xl font-bold sm:mb-12 sm:text-6xl lg:text-7xl">{t('title')}</h1>
+      )}
 
       {/* Employee list */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
