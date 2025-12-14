@@ -86,3 +86,65 @@ export const validateQuote = (value: unknown): true | string => {
   const quoteRegex = /^["""''']|["""''']$/
   return quoteRegex.test(value) ? 'Please avoid starting or ending the quote with quotation marks' : true
 }
+
+/**
+ * Password validation constants
+ */
+const MIN_PASSWORD_LENGTH = 12
+const MAX_PASSWORD_LENGTH = 128
+const SPECIAL_CHARS_REGEX = /[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/
+const SPECIAL_CHARS_LIST = '!@#$%^&*()_+-=[]{}|;:,.<>?'
+
+/**
+ * Validates password strength for user authentication
+ * Enforces industry best practices for secure passwords
+ *
+ * Requirements:
+ * - Minimum 12 characters, maximum 128 characters
+ * - At least one uppercase letter (A-Z)
+ * - At least one lowercase letter (a-z)
+ * - At least one number (0-9)
+ * - At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)
+ * - Cannot be empty or only whitespace
+ */
+export const validatePassword = (value: unknown): true | string => {
+  // Allow undefined/null (field not being changed)
+  if (value === undefined || value === null) return true
+
+  // Type guard
+  if (typeof value !== 'string') return 'Password must be a string'
+
+  // Trim whitespace for validation
+  const trimmed = value.trim()
+
+  // Empty check
+  if (trimmed === '') return 'Password cannot be empty'
+
+  // Length checks
+  if (trimmed.length < MIN_PASSWORD_LENGTH) {
+    return `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`
+  }
+
+  if (trimmed.length > MAX_PASSWORD_LENGTH) {
+    return `Password must not exceed ${MAX_PASSWORD_LENGTH} characters`
+  }
+
+  // Character requirement checks
+  if (!/[A-Z]/.test(trimmed)) {
+    return 'Password must contain at least one uppercase letter'
+  }
+
+  if (!/[a-z]/.test(trimmed)) {
+    return 'Password must contain at least one lowercase letter'
+  }
+
+  if (!/[0-9]/.test(trimmed)) {
+    return 'Password must contain at least one number'
+  }
+
+  if (!SPECIAL_CHARS_REGEX.test(trimmed)) {
+    return `Password must contain at least one special character (${SPECIAL_CHARS_LIST})`
+  }
+
+  return true
+}
