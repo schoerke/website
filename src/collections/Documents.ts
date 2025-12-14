@@ -3,6 +3,16 @@ import type { CollectionConfig } from 'payload'
 
 export const Documents: CollectionConfig = {
   slug: 'documents',
+  labels: {
+    singular: {
+      de: 'Dokument',
+      en: 'Document',
+    },
+    plural: {
+      de: 'Dokumente',
+      en: 'Documents',
+    },
+  },
   access: {
     read: () => true, // Public read access - no draft status
     create: authenticated,
@@ -22,15 +32,29 @@ export const Documents: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      label: {
+        de: 'Titel',
+        en: 'Title',
+      },
       admin: {
-        description: 'Document title for identification',
+        description: {
+          de: 'Dokumenttitel zur Identifizierung',
+          en: 'Document title for identification',
+        },
       },
     },
     {
       name: 'description',
       type: 'textarea',
+      label: {
+        de: 'Beschreibung',
+        en: 'Description',
+      },
       admin: {
-        description: 'Optional description of the document contents',
+        description: {
+          de: 'Optionale Beschreibung des Dokumentinhalts',
+          en: 'Optional description of the document contents',
+        },
       },
     },
     {

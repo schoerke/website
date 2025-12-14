@@ -3,6 +3,16 @@ import type { CollectionConfig } from 'payload'
 
 export const Images: CollectionConfig = {
   slug: 'images',
+  labels: {
+    singular: {
+      de: 'Bild',
+      en: 'Image',
+    },
+    plural: {
+      de: 'Bilder',
+      en: 'Images',
+    },
+  },
   access: {
     read: () => true, // Public read access - no draft status
     create: authenticated,

@@ -9,11 +9,11 @@ export const Artists: CollectionConfig = {
   slug: 'artists',
   labels: {
     singular: {
-      de: 'Kunstler',
+      de: 'Künstler:in',
       en: 'Artist',
     },
     plural: {
-      de: 'Künstler',
+      de: 'Künstler:innen',
       en: 'Artists',
     },
   },
