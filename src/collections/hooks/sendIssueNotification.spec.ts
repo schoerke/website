@@ -148,6 +148,7 @@ describe('sendIssueNotification hook', () => {
         id: 456,
         email: 'reporter@example.com',
         name: 'John Doe',
+        password: '', // Required field for User type
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
@@ -172,6 +173,7 @@ describe('sendIssueNotification hook', () => {
         id: 789,
         email: 'fetched@example.com',
         name: 'Jane Smith',
+        password: '', // Required field for User type
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
@@ -227,6 +229,7 @@ describe('sendIssueNotification hook', () => {
         id: 999,
         email: '',
         name: '',
+        password: '', // Required field for User type
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
