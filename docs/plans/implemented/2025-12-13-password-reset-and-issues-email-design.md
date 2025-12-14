@@ -1,7 +1,7 @@
 # Password Reset and Issue Notification Email Design
 
-**Date:** 2025-12-13 **Status:** ✅ COMPLETE - All phases implemented and tested **Related Files:** Issues collection,
-Users collection, email service
+**Date:** 2025-12-13 (Initial) / 2025-12-14 (Updated with improvements) **Status:** ✅ COMPLETE - All phases
+implemented, tested, and refined **Related Files:** Issues collection, Users collection, email service
 
 ## Implementation Status
 
@@ -10,9 +10,10 @@ Users collection, email service
 - ✅ Phase 3: Service layer implemented with security utilities
 - ✅ Phase 4: Integrated with Payload config and Issues collection
 - ✅ Phase 5: Security hardening (XSS prevention, URL sanitization, input validation)
-- ✅ Phase 6: Comprehensive testing (79 tests total: 10 email, 15 HTML utils, 14 Lexical utils, 15 hook tests, 25
-  email-related tests)
+- ✅ Phase 6: Comprehensive testing (53 tests total: 10 email, 15 hook tests, 28 Lexical utils)
 - ✅ Phase 7: Code review fixes and documentation
+- ✅ Phase 8: Email styling improvements and inline screenshots (2025-12-14)
+- ✅ Phase 9: Security vulnerability fix in URL sanitization (2025-12-14)
 
 ## Overview
 
@@ -586,6 +587,30 @@ pnpm add resend @payloadcms/email-resend
 - **Resolution:** Deleted migrations folder - SQLite auto-generates schema on startup
 - **Lesson:** Migrations are only needed for production databases (PostgreSQL, etc.)
 
+### 9. Inline Screenshots Architecture (2025-12-14)
+
+- **Challenge:** Original implementation parsed Lexical JSON in the hook and separated text from images
+- **Problem:** Images displayed at end of email, losing context
+- **Solution:** Pass raw Lexical JSON to email service and convert to HTML with images inline
+- **Key Insight:** Let the email service handle rendering - hooks should just pass data
+- **Result:** Better separation of concerns and improved user experience
+
+### 10. URL Sanitization Order Matters (2025-12-14)
+
+- **Bug:** Sanitizing URLs after prepending baseUrl bypassed security checks
+- **Example:** `javascript:alert(1)` → `http://localhost:3000javascript:alert(1)` (bypassed check)
+- **Fix:** Sanitize BEFORE prepending baseUrl
+- **Lesson:** Always sanitize user input at the earliest possible point in the data flow
+- **Detection:** Discovered by comprehensive test suite during code review
+
+### 11. Centralized Constants for Branding (2025-12-14)
+
+- **Pattern:** Use `GENERAL_CONTACT` constant for company name across all email templates
+- **Files:** `src/constants/contact.ts` (single source of truth)
+- **Usage:** Email sender name, logo alt text, any branding references
+- **Benefit:** One place to update if company name changes
+- **Implementation:** Import in `payload.config.ts`, `email.ts`, and any components using company info
+
 ## Files Created/Modified
 
 ### New Files
@@ -596,14 +621,15 @@ pnpm add resend @payloadcms/email-resend
 - `src/collections/hooks/sendIssueNotification.spec.ts` - Hook tests (15 tests, all passing)
 - `src/utils/html.ts` - HTML escaping and URL sanitization utilities
 - `src/utils/html.spec.ts` - Security utility tests (15 tests, all passing)
-- `src/utils/lexical.ts` - Lexical JSON parsing utility (115 lines)
-- `src/utils/lexical.spec.ts` - Lexical utility tests (14 tests, all passing)
+- `src/utils/lexical.ts` - Lexical JSON parsing and HTML conversion utility (238 lines, includes `lexicalToHtml()`)
+- `src/utils/lexical.spec.ts` - Lexical utility tests (28 tests, all passing - includes 17 tests for `lexicalToHtml()`)
 - `public/logo.png` - Logo for emails
 
 ### Modified Files
 
 - `src/collections/Issues.ts` - Added `sendIssueNotification` hook to `afterChange`
-- `src/payload.config.ts` - Configured Resend adapter with `@payloadcms/email-resend`
+- `src/payload.config.ts` - Configured Resend adapter with `@payloadcms/email-resend`, uses `GENERAL_CONTACT.name`
+- `src/constants/contact.ts` - Single source of truth for company name (used in emails)
 - `.env.example` - Documented email environment variables
 - `vitest.setup.ts` - Fixed to not override .env values
 - `package.json` - Added dependencies
@@ -617,29 +643,115 @@ pnpm add resend @payloadcms/email-resend
 - Error handling (2 tests)
 - All use real Resend API with integration testing approach
 
-### HTML Security Tests (15 tests)
-
-- XSS prevention with HTML escaping
-- URL sanitization (block javascript:, data:, vbscript:)
-- Email validation
-- HTTPS enforcement in production
-
-### Lexical Parsing Tests (14 tests)
-
-- Text extraction from nested structures
-- Image URL extraction from upload nodes
-- Multiple images handling
-- Edge cases (empty content, invalid JSON, string input)
-
 ### Hook Tests (15 tests)
 
 - Operation filtering (create vs update)
 - Reporter information handling (populated vs ID)
-- Lexical content parsing integration
+- Lexical content passing (raw JSON, not parsed)
 - Error handling (email service failures)
 - Status handling
 
-**Total:** 54 new tests, all passing ✅
+### Lexical Parsing & HTML Conversion Tests (28 tests)
+
+- Text extraction from nested structures (11 tests)
+- Image URL extraction from upload nodes
+- Multiple images handling
+- Edge cases (empty content, invalid JSON, string input)
+- **`lexicalToHtml()` function (17 new tests):**
+  - Simple paragraph to HTML with styling
+  - Inline images with proper styling
+  - Alt text truncation (200 char limit)
+  - XSS prevention (HTML escaping in text and attributes)
+  - URL sanitization (dangerous protocols blocked)
+  - Multiple paragraphs with interspersed images
+  - Empty content handling
+  - Real-world Payload Lexical structures
+  - Absolute vs relative URL handling
+
+**Total:** 53 tests, all passing ✅
+
+## Recent Improvements (2025-12-14)
+
+### Email Styling Updates
+
+1. **Branding Consistency:**
+   - Changed button color from yellow (#fcc302) to dark gray (#333333) with white text
+   - Added company logo (Künstlersekretariat Astrid Schoerke GmbH) to both email templates
+   - Logo displays at 400px width, left-aligned
+   - Centralized company name in `GENERAL_CONTACT` constant from `src/constants/contact.ts`
+
+2. **Password Reset Email:**
+   - Updated header to "Password Reset" (simplified)
+   - Changed content to match Payload's original messaging for accuracy
+   - Removed personalized greeting (userName parameter) for consistency
+   - Improved text: "Please click here to complete the process"
+   - All text uses consistent dark color (#222126) - no silver/gray text
+
+3. **Issue Notification Email:**
+   - Status and Reporter fields use standard text color (#222126) instead of light gray for better readability
+   - Logo consistently styled across both templates
+
+### Inline Screenshots Feature
+
+**Problem:** Original implementation grouped all screenshots at the end of email, losing context.
+
+**Solution:** Refactored to render images inline with description text, preserving the natural flow of content.
+
+**Implementation:**
+
+- Created `lexicalToHtml()` function in `src/utils/lexical.ts`
+- Converts Lexical JSON to HTML while preserving image positions
+- Images render exactly where they appear in the rich text editor
+- Updated `sendIssueNotificationEmail()` to accept Lexical JSON instead of parsing it in the hook
+- Hook now passes raw Lexical data directly to email service
+
+**Benefits:**
+
+- Screenshots appear in context with surrounding text
+- Better user experience for reading issue reports
+- Cleaner architecture (hook doesn't need to know about email rendering)
+
+### Critical Security Fix
+
+**Vulnerability Discovered:** URL sanitization was checking protocols AFTER prepending base URL.
+
+**Attack Vector:**
+
+```typescript
+// Before fix: javascript:alert(1) became http://localhost:3000javascript:alert(1)
+// This bypassed sanitization check for dangerous protocols
+```
+
+**Fix Applied:**
+
+```typescript
+// Sanitize URL BEFORE prepending baseUrl
+const sanitizedUrl = sanitizeUrl(n.value.url)
+const fullImageUrl =
+  sanitizedUrl.startsWith('http') || sanitizedUrl === '#' ? sanitizedUrl : `${baseUrl}${sanitizedUrl}`
+```
+
+**Impact:**
+
+- Prevents XSS attacks via malicious image URLs
+- Comprehensive test coverage added (28 lexical tests including security cases)
+- All dangerous protocols (javascript:, data:, vbscript:) now properly blocked
+
+### Code Review Outcomes
+
+**Issues Found and Fixed:**
+
+1. ✅ TypeScript compilation errors (userName parameter removal)
+2. ✅ Hook tests updated to expect Lexical JSON (not plain text + images array)
+3. ✅ Added 17 new tests for `lexicalToHtml()` function (0% → 100% coverage)
+4. ✅ Fixed URL sanitization security vulnerability
+5. ⚠️ Email client compatibility noted (no display:block needed, works without it)
+
+**Test Results:** 53/53 passing
+
+- `email.spec.ts`: 10/10
+- `sendIssueNotification.spec.ts`: 15/15
+- `lexical.spec.ts`: 28/28 (17 new tests for lexicalToHtml)
 
 ## Success Criteria
 
