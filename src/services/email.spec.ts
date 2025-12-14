@@ -31,7 +31,6 @@ describe('email service - integration tests', () => {
         payload,
         to: 'delivered@resend.dev',
         resetLink: 'https://example.com/reset?token=test-token-123',
-        userName: 'Test User',
       })
 
       expect(result).toHaveProperty('id')
@@ -56,7 +55,6 @@ describe('email service - integration tests', () => {
         payload,
         to: 'delivered@resend.dev',
         resetLink: 'https://example.com/reset?token=test-token-789',
-        userName: 'Logo Test User',
       })
 
       expect(result).toHaveProperty('id')
@@ -132,21 +130,34 @@ describe('email service - integration tests', () => {
       expect(result.id.length).toBeGreaterThan(0)
     })
 
-    it('should include multiple screenshots in email', async () => {
+    it('should handle Lexical JSON description with inline images', async () => {
+      const lexicalDescription = {
+        root: {
+          children: [
+            {
+              type: 'paragraph',
+              children: [{ type: 'text', text: 'Description with inline image' }],
+            },
+            {
+              type: 'upload',
+              value: {
+                url: 'https://example.com/screenshot.jpg',
+                alt: 'Test screenshot',
+              },
+            },
+          ],
+        },
+      }
+
       const result: ResendResponse = await sendIssueNotificationEmail({
         payload,
         to: 'delivered@resend.dev',
-        title: 'Issue with Screenshots',
-        description: 'This issue has multiple screenshots attached.',
+        title: 'Issue with Inline Screenshots',
+        description: lexicalDescription,
         status: 'open',
         reporterName: 'Test User',
         reporterEmail: 'test@example.com',
-        issueId: 'test-issue-images',
-        images: [
-          'https://example.com/screenshot1.jpg',
-          'https://example.com/screenshot2.jpg',
-          'https://example.com/screenshot3.jpg',
-        ],
+        issueId: 'test-issue-lexical',
       })
 
       expect(result).toHaveProperty('id')
