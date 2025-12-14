@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
+import { validatePassword } from '@/validators/fields'
 
 // REFACTOR: Extract access helpers
 export const Users: CollectionConfig = {
@@ -32,6 +33,16 @@ export const Users: CollectionConfig = {
       name: 'name',
       required: true,
       type: 'text',
+    },
+    {
+      name: 'password',
+      type: 'text',
+      required: true,
+      validate: validatePassword,
+      hidden: true, // Prevents duplication in admin panel
+      admin: {
+        description: 'Must be 12-128 characters with uppercase, lowercase, number, and special character',
+      },
     },
     {
       name: 'role',
