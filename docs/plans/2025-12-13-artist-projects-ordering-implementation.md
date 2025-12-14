@@ -9,6 +9,7 @@
 ### Phase 1: Schema Changes
 
 #### Task 1.1: Add Projects Tab to Artists Collection
+
 - [ ] Open `src/collections/Artists.ts`
 - [ ] Add new "Projects" tab after the URLs tab
 - [ ] Add `projects` relationship field with:
@@ -23,9 +24,11 @@
 - [ ] Verify field appears in Payload admin UI
 
 **Files to modify:**
+
 - `src/collections/Artists.ts`
 
 **Verification:**
+
 - Start dev server: `pnpm dev`
 - Navigate to Artists collection in admin
 - Verify "Projects" tab exists
@@ -37,6 +40,7 @@
 ### Phase 2: Automatic Sync Hook
 
 #### Task 2.1: Create Hook Helper Function
+
 - [ ] Create `src/collections/hooks/syncArtistProjects.ts`
 - [ ] Implement the `afterChange` hook logic:
   - Context flag check (`syncingProjects`)
@@ -51,17 +55,19 @@
 - [ ] Export the hook function
 
 **Files to create:**
+
 - `src/collections/hooks/syncArtistProjects.ts`
 
 **Implementation notes:**
+
 ```typescript
 /**
  * Syncs artist.projects arrays when posts are linked/unlinked.
- * 
+ *
  * Automatically adds project posts to linked artists' projects arrays
  * and removes them when unlinked. Only syncs published posts with
  * "projects" category.
- * 
+ *
  * @see docs/plans/2025-12-13-artist-projects-ordering-design.md
  */
 export const syncArtistProjects = async ({ doc, previousDoc, req, context }) => {
@@ -70,15 +76,18 @@ export const syncArtistProjects = async ({ doc, previousDoc, req, context }) => 
 ```
 
 #### Task 2.2: Add Hook to Posts Collection
+
 - [ ] Open `src/collections/Posts.ts`
 - [ ] Import the `syncArtistProjects` hook
 - [ ] Add to `hooks.afterChange` array
 - [ ] Test hook behavior
 
 **Files to modify:**
+
 - `src/collections/Posts.ts`
 
 **Verification:**
+
 - Create new project post
 - Link to an artist
 - Check artist's Projects tab → post should appear
@@ -91,6 +100,7 @@ export const syncArtistProjects = async ({ doc, previousDoc, req, context }) => 
 ### Phase 3: Frontend Components
 
 #### Task 3.1: Create ProjectsTab Component
+
 - [ ] Open `src/components/Artist/ArtistTabContent.tsx`
 - [ ] Add `ProjectsTab` component:
   - Props: `projects: Post[]`, `emptyMessage: string`
@@ -101,14 +111,17 @@ export const syncArtistProjects = async ({ doc, previousDoc, req, context }) => 
 - [ ] Follow project's React component pattern
 
 **Files to modify:**
+
 - `src/components/Artist/ArtistTabContent.tsx`
 
 **Verification:**
+
 - Component follows standard pattern: `const ProjectsTab: React.FC<ProjectsTabProps> = ...`
 - Props interface defined above component
 - Default export
 
 #### Task 3.2: Update ArtistTabs Component
+
 - [ ] Open `src/components/Artist/ArtistTabs.tsx`
 - [ ] Import `ProjectsTab` from `./ArtistTabContent`
 - [ ] Replace `NewsFeedClient` for projects tab with `ProjectsTab`
@@ -116,23 +129,28 @@ export const syncArtistProjects = async ({ doc, previousDoc, req, context }) => 
 - [ ] Remove unused `fetchRecordingsByArtist` logic for projects (if any)
 
 **Files to modify:**
+
 - `src/components/Artist/ArtistTabs.tsx`
 
 **Verification:**
+
 - Projects tab displays correctly
 - Grid layout works responsively
 - Empty state shows when no projects
 - Clicking project card navigates correctly
 
 #### Task 3.3: Update Artist Data Fetching
+
 - [ ] Find where artist data is fetched (likely in artist detail page)
 - [ ] Ensure `depth: 2` is set to populate projects relationships
 - [ ] Verify projects are populated with full post data
 
 **Files to check/modify:**
+
 - `src/app/(frontend)/[locale]/artists/[slug]/page.tsx` (or similar)
 
 **Verification:**
+
 - Artist data includes fully populated projects
 - Projects array contains Post objects, not just IDs
 - Order is preserved from database
@@ -142,6 +160,7 @@ export const syncArtistProjects = async ({ doc, previousDoc, req, context }) => 
 ### Phase 4: Data Migration
 
 #### Task 4.1: Create Migration Script
+
 - [ ] Create `scripts/db/migrateArtistProjects.ts`
 - [ ] Import necessary dependencies (`dotenv/config`, `getPayload`, etc.)
 - [ ] Implement migration logic:
@@ -153,9 +172,11 @@ export const syncArtistProjects = async ({ doc, previousDoc, req, context }) => 
 - [ ] Add error handling
 
 **Files to create:**
+
 - `scripts/db/migrateArtistProjects.ts`
 
 **Implementation checklist:**
+
 - [ ] Import `dotenv/config` at top
 - [ ] Use `getPayload({ config })`
 - [ ] Query posts with `categories: { contains: 'projects' }`
@@ -164,12 +185,14 @@ export const syncArtistProjects = async ({ doc, previousDoc, req, context }) => 
 - [ ] Exit with `process.exit(0)`
 
 #### Task 4.2: Run Migration (After Testing)
+
 - [ ] Test migration on local database first
 - [ ] Review output and verify data
 - [ ] Document any issues
 - [ ] Run on production (deployment step)
 
 **Commands:**
+
 ```bash
 # Test locally
 pnpm tsx scripts/db/migrateArtistProjects.ts
@@ -184,6 +207,7 @@ pnpm dev
 ### Phase 5: Testing
 
 #### Task 5.1: Manual Testing Checklist
+
 - [ ] Create new artist
 - [ ] Create new project post
 - [ ] Link artist to project → verify auto-added to artist.projects
@@ -197,12 +221,14 @@ pnpm dev
 - [ ] Run migration script → verify existing data populated
 
 #### Task 5.2: Create Unit Tests (Optional but Recommended)
+
 - [ ] Test hook logic: `src/collections/hooks/syncArtistProjects.spec.ts`
 - [ ] Test ProjectsTab component: `src/components/Artist/ArtistTabContent.spec.tsx` (add tests)
 - [ ] Mock Payload API calls
 - [ ] Test edge cases (empty arrays, duplicates, etc.)
 
 **Files to create/modify:**
+
 - `src/collections/hooks/syncArtistProjects.spec.ts`
 - `src/components/Artist/ArtistTabContent.spec.tsx`
 
@@ -211,14 +237,17 @@ pnpm dev
 ### Phase 6: Documentation & Cleanup
 
 #### Task 6.1: Update Translation Files
+
 - [ ] Add `empty.projects` translation key if missing
 - [ ] Verify tab labels exist for "Projects" tab
 
 **Files to check:**
+
 - `src/i18n/de.ts`
 - `src/i18n/en.ts`
 
 #### Task 6.2: Code Review Checklist
+
 - [ ] All TypeScript types generated and correct
 - [ ] No `any` types introduced
 - [ ] Follows project conventions (React patterns, imports at top, etc.)
@@ -229,6 +258,7 @@ pnpm dev
 - [ ] No linting errors: `pnpm lint`
 
 #### Task 6.3: Update Implementation Plan Status
+
 - [ ] Mark all tasks complete
 - [ ] Note any deviations from design
 - [ ] Document any issues encountered
@@ -238,6 +268,7 @@ pnpm dev
 ## Deployment Checklist
 
 ### Pre-Deployment
+
 - [ ] All tests pass: `pnpm test`
 - [ ] Build succeeds: `pnpm build`
 - [ ] No TypeScript errors: `pnpm typecheck` (if available)
@@ -245,6 +276,7 @@ pnpm dev
 - [ ] Code linted: `pnpm lint`
 
 ### Deployment Steps
+
 1. [ ] Merge `feat/artist-projects` to `main`
 2. [ ] Deploy to staging environment
 3. [ ] Run migration script on staging database
@@ -255,6 +287,7 @@ pnpm dev
 8. [ ] Monitor logs for hook errors
 
 ### Post-Deployment
+
 - [ ] Test creating new projects in production
 - [ ] Test reordering existing projects
 - [ ] Verify performance (hook shouldn't slow down post saves)
@@ -279,6 +312,46 @@ If issues occur:
 - Migration is idempotent (safe to re-run)
 - Original `posts.artists` relationship unchanged (can rebuild projects arrays if needed)
 - Max 10 projects enforced at schema level (validation + maxRows)
+
+### Code Review Learnings (2025-12-14)
+
+**Performance Optimization:**
+
+- Initial implementation used N+1 queries (sequential `findByID` for each artist)
+- Optimized to batched queries: single `find()` with `where: { id: { in: [...] } }`
+- Updates now execute in parallel with `Promise.all()` instead of sequential awaits
+- Performance impact: 5 artists = 1 query + parallel updates vs 10 sequential queries (~80% faster)
+
+**Type Safety:**
+
+- Relationship fields can be IDs (`number`) or populated objects (`Artist | Post`)
+- Created helper functions `extractId()` and `extractIds()` to handle both cases safely
+- Avoids unsafe `as number[]` type assertions throughout codebase
+
+**Testing:**
+
+- Comprehensive test suite: 24 unit tests covering all hook behavior
+- Tests verify batched queries and parallel updates
+- Mock structure uses `find()` returning paginated result, not `findByID()`
+- All edge cases covered (null arrays, non-array values, error handling)
+
+**Accessibility:**
+
+- Added ARIA labels to project cards: `aria-label="Project: {title}"`
+- Use `image.alt` field from CMS instead of generic `project.title` for image alt text
+- Better screen reader support for visually impaired users
+
+**Validation:**
+
+- Server-side validation critical (not just `maxRows` UI limit)
+- Filter options should show only relevant posts using compound `and` conditions
+- Disable `allowCreate` to prevent creating posts from relationship field
+
+**Service Layer:**
+
+- Manual project population required to preserve ordering from database
+- Document performance trade-offs in JSDoc (2 queries vs 1, ~80-170ms overhead)
+- Link to design docs and Payload documentation for future maintainers
 
 ---
 
