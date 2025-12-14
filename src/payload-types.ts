@@ -246,7 +246,7 @@ export interface Artist {
       }[]
     | null;
   /**
-   * Drag to reorder how projects appear on this artist's page. Projects are automatically added when linked from Posts.
+   * Projects are automatically added when linked from Posts. Drag to reorder. Maximum 10 projects per artist.
    */
   projects?: (number | Post)[] | null;
   downloads?: {
@@ -366,6 +366,9 @@ export interface Post {
     [k: string]: unknown;
   };
   categories?: ('news' | 'projects' | 'home')[] | null;
+  /**
+   * Link artists to this post.
+   */
   artists?: (number | Artist)[] | null;
   image?: (number | null) | Image;
   createdBy: number | Employee;

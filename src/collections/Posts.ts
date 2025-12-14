@@ -101,6 +101,10 @@ export const Posts: CollectionConfig = {
       },
       admin: {
         position: 'sidebar',
+        description: {
+          en: 'Link artists to this post.',
+          de: 'Künstler mit diesem Beitrag verknüpfen.',
+        },
       },
     },
     {

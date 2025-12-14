@@ -317,21 +317,21 @@ export const Artists: CollectionConfig = {
               },
               admin: {
                 description: {
-                  en: "Drag to reorder how projects appear on this artist's page. Projects are automatically added when linked from Posts.",
-                  de: 'Ziehen zum Sortieren, wie Projekte auf der Seite dieses Künstlers erscheinen. Projekte werden automatisch hinzugefügt, wenn sie von Beiträgen verknüpft werden.',
+                  en: 'Projects are automatically added when linked from Posts. Drag to reorder. Maximum 10 projects per artist.',
+                  de: 'Projekte werden automatisch hinzugefügt, wenn sie von Beiträgen verknüpft werden. Ziehen zum Sortieren. Maximal 10 Projekte pro Künstler.',
                 },
-              },
-              filterOptions: {
-                categories: {
-                  in: ['projects'],
-                },
+                allowCreate: false,
               },
               validate: (value: unknown) => {
                 if (Array.isArray(value) && value.length > 10) {
-                  return 'Maximum 10 projects allowed per artist.'
+                  return 'Maximum 10 projects allowed per artist. Please remove some before adding more.'
                 }
                 return true
               },
+              filterOptions: ({ id }) =>
+                ({
+                  and: [{ categories: { contains: 'projects' } }, { artists: { contains: id } }],
+                }) as const,
             },
           ],
         },
