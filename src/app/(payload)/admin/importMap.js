@@ -26,6 +26,9 @@ import { default as default_928531666893cf88abf7ab97274178fa } from '../../../co
 import { default as default_070c4ea0e52f4d5bcdbcd141ace9ea9e } from '../../../collections/components/YouTubeLinkRowLabel'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
+import { default as default_c6286fbc7f62f2ce3ef9c604e9c02147 } from '../../../components/graphics/Icon'
+import { default as default_e577ad08317d2e8977edf3e679038fc8 } from '../../../components/graphics/Logo'
+import { default as default_a1eeeec2736090de4650c7935efda071 } from '../../../components/admin/LocaleSwitcherHider'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -58,6 +61,9 @@ export const importMap = {
   "./collections/components/YouTubeLinkRowLabel#default": default_070c4ea0e52f4d5bcdbcd141ace9ea9e,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
+  "/components/graphics/Icon#default": default_c6286fbc7f62f2ce3ef9c604e9c02147,
+  "/components/graphics/Logo#default": default_e577ad08317d2e8977edf3e679038fc8,
+  "/components/admin/LocaleSwitcherHider#default": default_a1eeeec2736090de4650c7935efda071,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

@@ -45,6 +45,13 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     user: Users.slug,
+    components: {
+      graphics: {
+        Logo: '/components/graphics/Logo',
+        Icon: '/components/graphics/Icon',
+      },
+      actions: ['/components/admin/LocaleSwitcherHider'],
+    },
   },
   collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Images, Documents, Issues],
   db: sqliteAdapter({
@@ -92,6 +99,16 @@ export default buildConfig({
       searchOverrides: {
         admin: {
           group: 'System',
+        },
+        labels: {
+          singular: {
+            de: 'Suchergebnis',
+            en: 'Search Result',
+          },
+          plural: {
+            de: 'Suchergebnisse',
+            en: 'Search Results',
+          },
         },
         fields: ({ defaultFields }: { defaultFields: Field[] }) => [
           ...defaultFields,
