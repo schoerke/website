@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { extractLexicalImages, extractLexicalText, parseLexicalContent } from './lexical'
+import { extractLexicalImages, extractLexicalText, lexicalToHtml, parseLexicalContent } from './lexical'
 
 describe('Lexical parsing utilities', () => {
   describe('parseLexicalContent', () => {
@@ -356,6 +356,264 @@ describe('Lexical parsing utilities', () => {
       const images = extractLexicalImages(lexicalData)
 
       expect(images).toEqual([])
+    })
+  })
+
+  describe('lexicalToHtml', () => {
+    it('should convert simple paragraph to HTML with styling', () => {
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'paragraph',
+              children: [{ type: 'text', text: 'Hello world' }],
+            },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical)
+      expect(html).toContain('<p style="color: #222126')
+      expect(html).toContain('Hello world')
+      expect(html).toContain('</p>')
+    })
+
+    it('should render inline images with proper styling and sanitization', () => {
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'upload',
+              value: {
+                url: '/api/images/test.jpg',
+                alt: 'Test image',
+              },
+            },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical, 'https://example.com')
+      expect(html).toContain('<img src="https://example.com/api/images/test.jpg"')
+      expect(html).toContain('alt="Test image"')
+      expect(html).toContain('max-width: 100%')
+      expect(html).toContain('border: 1px solid #e3e3e3')
+      expect(html).toContain('<div style="margin: 16px 0;">')
+    })
+
+    it('should truncate long alt text to 200 characters', () => {
+      const longAlt = 'a'.repeat(250)
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'upload',
+              value: { url: '/test.jpg', alt: longAlt },
+            },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical)
+      expect(html).toContain('alt="' + 'a'.repeat(197) + '..."')
+      expect(html).not.toContain('alt="' + longAlt + '"')
+    })
+
+    it('should escape HTML in text nodes', () => {
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'paragraph',
+              children: [{ type: 'text', text: '<script>alert("XSS")</script>' }],
+            },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical)
+      expect(html).toContain('&lt;script&gt;')
+      expect(html).not.toContain('<script>')
+    })
+
+    it('should escape HTML in alt attributes', () => {
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'upload',
+              value: { url: '/test.jpg', alt: '" onload="alert(1)' },
+            },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical)
+      // The alt attribute is escaped, so onload= appears as &quot;onload=&quot;
+      expect(html).toContain('&quot;')
+      expect(html).toContain('alt="&quot; onload=&quot;alert(1)"')
+    })
+
+    it('should handle multiple paragraphs with images interspersed', () => {
+      const lexical = {
+        root: {
+          children: [
+            { type: 'paragraph', children: [{ type: 'text', text: 'First' }] },
+            { type: 'upload', value: { url: '/img1.jpg' } },
+            { type: 'paragraph', children: [{ type: 'text', text: 'Second' }] },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical)
+      expect(html).toContain('First')
+      expect(html).toContain('<img')
+      expect(html).toContain('Second')
+      expect(html.indexOf('First')).toBeLessThan(html.indexOf('<img'))
+      expect(html.indexOf('<img')).toBeLessThan(html.indexOf('Second'))
+    })
+
+    it('should handle empty content gracefully', () => {
+      const lexical = { root: { children: [] } }
+      const html = lexicalToHtml(lexical)
+      expect(html).toBe(
+        '<p style="color: #222126; font-size: 14px; margin: 0; line-height: 1.6;">No description provided</p>',
+      )
+    })
+
+    it('should sanitize dangerous URL protocols when used as absolute URLs', () => {
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'upload',
+              value: { url: 'javascript:alert(1)', alt: 'Malicious' },
+            },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical)
+      expect(html).toContain('src="#"')
+      expect(html).not.toContain('javascript:')
+    })
+
+    it('should throw error for invalid JSON string', () => {
+      expect(() => lexicalToHtml('not-valid-json')).toThrow('Invalid Lexical JSON')
+    })
+
+    it('should validate serverUrl parameter is valid HTTP URL', () => {
+      const lexical = { root: { children: [] } }
+      expect(() => lexicalToHtml(lexical, 'not-a-url')).toThrow('serverUrl must be a valid HTTP(S) URL')
+    })
+
+    it('should handle absolute image URLs without serverUrl', () => {
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'upload',
+              value: { url: 'https://cdn.example.com/image.jpg', alt: 'External' },
+            },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical)
+      expect(html).toContain('src="https://cdn.example.com/image.jpg"')
+    })
+
+    it('should handle real-world Payload Lexical structure', () => {
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'paragraph',
+              children: [
+                {
+                  type: 'text',
+                  text: 'Issue description',
+                  detail: 0,
+                  format: 0,
+                  mode: 'normal',
+                  style: '',
+                  version: 1,
+                },
+              ],
+              direction: null,
+              format: '',
+              indent: 0,
+              version: 1,
+              textFormat: 0,
+              textStyle: '',
+            },
+            {
+              type: 'upload',
+              version: 3,
+              format: '',
+              id: '123abc',
+              fields: null,
+              relationTo: 'images',
+              value: {
+                id: 60,
+                alt: 'Screenshot',
+                url: '/api/images/file/screenshot.jpg',
+                thumbnailURL: '/api/images/file/screenshot-400x300.webp',
+                filename: 'screenshot.jpg',
+                mimeType: 'image/jpeg',
+                filesize: 176639,
+                width: 1710,
+                height: 342,
+              },
+            },
+          ],
+          direction: null,
+          format: '',
+          indent: 0,
+          type: 'root',
+          version: 1,
+        },
+      }
+
+      const html = lexicalToHtml(lexical, 'https://example.com')
+      expect(html).toContain('Issue description')
+      expect(html).toContain('<img src="https://example.com/api/images/file/screenshot.jpg"')
+      expect(html).toContain('alt="Screenshot"')
+    })
+
+    it('should handle multiple text nodes in a paragraph', () => {
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'paragraph',
+              children: [
+                { type: 'text', text: 'First part ' },
+                { type: 'text', text: 'second part' },
+              ],
+            },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical)
+      expect(html).toContain('First part second part')
+    })
+
+    it('should use default localhost URL when serverUrl not provided', () => {
+      const lexical = {
+        root: {
+          children: [
+            {
+              type: 'upload',
+              value: { url: '/api/images/test.jpg' },
+            },
+          ],
+        },
+      }
+
+      const html = lexicalToHtml(lexical)
+      expect(html).toContain('src="http://localhost:3000/api/images/test.jpg"')
     })
   })
 })
