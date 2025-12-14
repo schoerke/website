@@ -89,12 +89,21 @@ describe('sendIssueNotification hook', () => {
         payload: req.payload,
         to: 'admin@example.com',
         title: 'Test Issue',
-        description: 'Test description',
+        description: {
+          root: {
+            type: 'root',
+            children: [
+              {
+                type: 'paragraph',
+                children: [{ type: 'text', text: 'Test description' }],
+              },
+            ],
+          },
+        },
         status: 'open',
         reporterName: undefined,
         reporterEmail: undefined,
         issueId: 123,
-        images: [],
       })
       expect(req.payload.logger.info).toHaveBeenCalledWith('Issue notification email sent for: Test Issue')
     })
@@ -239,20 +248,21 @@ describe('sendIssueNotification hook', () => {
   })
 
   describe('Lexical content parsing', () => {
-    it('should extract text from Lexical description', async () => {
+    it('should pass Lexical JSON description to email service', async () => {
       const req = createMockRequest()
+      const lexicalDescription = {
+        root: {
+          type: 'root',
+          children: [
+            {
+              type: 'paragraph',
+              children: [{ type: 'text', text: 'This is the issue description.' }],
+            },
+          ],
+        },
+      }
       const doc = createMockIssue({
-        description: {
-          root: {
-            type: 'root',
-            children: [
-              {
-                type: 'paragraph',
-                children: [{ type: 'text', text: 'This is the issue description.' }],
-              },
-            ],
-          },
-        } as unknown as Issue['description'],
+        description: lexicalDescription as unknown as Issue['description'],
       })
 
       await sendIssueNotification({
@@ -263,39 +273,40 @@ describe('sendIssueNotification hook', () => {
 
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
-          description: 'This is the issue description.',
+          description: lexicalDescription,
         }),
       )
     })
 
-    it('should extract images from Lexical upload nodes', async () => {
+    it('should pass Lexical JSON with images to email service', async () => {
       const req = createMockRequest()
+      const lexicalWithImages = {
+        root: {
+          type: 'root',
+          children: [
+            {
+              type: 'paragraph',
+              children: [{ type: 'text', text: 'Screenshot attached' }],
+            },
+            {
+              type: 'upload',
+              value: {
+                url: '/media/screenshot1.jpg',
+              },
+              relationTo: 'images',
+            },
+            {
+              type: 'upload',
+              value: {
+                url: '/media/screenshot2.jpg',
+              },
+              relationTo: 'images',
+            },
+          ],
+        },
+      }
       const doc = createMockIssue({
-        description: {
-          root: {
-            type: 'root',
-            children: [
-              {
-                type: 'paragraph',
-                children: [{ type: 'text', text: 'Screenshot attached' }],
-              },
-              {
-                type: 'upload',
-                value: {
-                  url: '/media/screenshot1.jpg',
-                },
-                relationTo: 'images',
-              },
-              {
-                type: 'upload',
-                value: {
-                  url: '/media/screenshot2.jpg',
-                },
-                relationTo: 'images',
-              },
-            ],
-          },
-        } as unknown as Issue['description'],
+        description: lexicalWithImages as unknown as Issue['description'],
       })
 
       await sendIssueNotification({
@@ -306,12 +317,12 @@ describe('sendIssueNotification hook', () => {
 
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
-          images: ['http://localhost:3000/media/screenshot1.jpg', 'http://localhost:3000/media/screenshot2.jpg'],
+          description: lexicalWithImages,
         }),
       )
     })
 
-    it('should use default description if parsing fails', async () => {
+    it('should use default description if description is invalid', async () => {
       const req = createMockRequest()
       const doc = createMockIssue({
         description: 'invalid-lexical-format' as unknown as Issue['description'],
@@ -323,11 +334,9 @@ describe('sendIssueNotification hook', () => {
         req,
       } as HookArgs)
 
-      expect(req.payload.logger.warn).toHaveBeenCalledWith(expect.stringContaining('Failed to parse issue description'))
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
-          description: 'No description provided',
-          images: [],
+          description: 'invalid-lexical-format',
         }),
       )
     })
@@ -345,7 +354,6 @@ describe('sendIssueNotification hook', () => {
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           description: 'No description provided',
-          images: [],
         }),
       )
     })
