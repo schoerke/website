@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { validateQuote, validateURL, validateYouTubeURL } from './fields'
+import { validatePassword, validateQuote, validateURL, validateYouTubeURL } from './fields'
 
 describe('validateYouTubeURL', () => {
   describe('valid URLs', () => {
@@ -352,6 +352,172 @@ describe('validateQuote', () => {
     it('should reject quote with only quotation mark', () => {
       expect(validateQuote('"')).toBe('Please avoid starting or ending the quote with quotation marks')
       expect(validateQuote("'")).toBe('Please avoid starting or ending the quote with quotation marks')
+    })
+  })
+})
+
+describe('validatePassword', () => {
+  describe('valid passwords', () => {
+    it('should accept password with all requirements', () => {
+      expect(validatePassword('Test123!Pass')).toBe(true)
+    })
+
+    it('should accept password at minimum length', () => {
+      expect(validatePassword('Abcdef123!@#')).toBe(true)
+    })
+
+    it('should accept password with multiple special characters', () => {
+      expect(validatePassword('P@ssw0rd!#$%')).toBe(true)
+    })
+
+    it('should accept password at maximum length', () => {
+      const maxPassword = 'A'.repeat(60) + 'a'.repeat(60) + '123456!@'
+      expect(validatePassword(maxPassword)).toBe(true)
+    })
+
+    it('should accept password with various special characters', () => {
+      expect(validatePassword('Pass123!word')).toBe(true)
+      expect(validatePassword('Pass123@word')).toBe(true)
+      expect(validatePassword('Pass123#word')).toBe(true)
+      expect(validatePassword('Pass123$word')).toBe(true)
+      expect(validatePassword('Pass123%word')).toBe(true)
+      expect(validatePassword('Pass123^word')).toBe(true)
+      expect(validatePassword('Pass123&word')).toBe(true)
+      expect(validatePassword('Pass123*word')).toBe(true)
+    })
+
+    it('should accept password with leading/trailing whitespace (trimmed)', () => {
+      expect(validatePassword('  Test123!Pass  ')).toBe(true)
+      expect(validatePassword('\tTest123!Pass\t')).toBe(true)
+    })
+
+    it('should allow undefined (field not being changed)', () => {
+      expect(validatePassword(undefined)).toBe(true)
+    })
+
+    it('should allow null (field not being changed)', () => {
+      expect(validatePassword(null)).toBe(true)
+    })
+  })
+
+  describe('invalid passwords', () => {
+    it('should reject non-string values', () => {
+      expect(validatePassword(123)).toBe('Password must be a string')
+      expect(validatePassword({})).toBe('Password must be a string')
+      expect(validatePassword([])).toBe('Password must be a string')
+      expect(validatePassword(true)).toBe('Password must be a string')
+    })
+
+    it('should reject empty string', () => {
+      expect(validatePassword('')).toBe('Password cannot be empty')
+    })
+
+    it('should reject whitespace-only password', () => {
+      expect(validatePassword('   ')).toBe('Password cannot be empty')
+      expect(validatePassword('\t\n')).toBe('Password cannot be empty')
+    })
+
+    it('should reject password shorter than 12 characters', () => {
+      expect(validatePassword('Test123!')).toBe('Password must be at least 12 characters long')
+      expect(validatePassword('Aa1!')).toBe('Password must be at least 12 characters long')
+    })
+
+    it('should reject password longer than 128 characters', () => {
+      const tooLong = 'A'.repeat(129) + 'a1!'
+      expect(validatePassword(tooLong)).toBe('Password must not exceed 128 characters')
+    })
+
+    it('should reject password without uppercase letter', () => {
+      expect(validatePassword('test123!pass')).toBe('Password must contain at least one uppercase letter')
+    })
+
+    it('should reject password without lowercase letter', () => {
+      expect(validatePassword('TEST123!PASS')).toBe('Password must contain at least one lowercase letter')
+    })
+
+    it('should reject password without number', () => {
+      expect(validatePassword('TestPass!word')).toBe('Password must contain at least one number')
+    })
+
+    it('should reject password without special character', () => {
+      expect(validatePassword('TestPass1word')).toContain('special character')
+    })
+  })
+
+  describe('edge cases', () => {
+    it('should handle password with emoji', () => {
+      // Emojis count toward length and don't satisfy character requirements
+      expect(validatePassword('Test123!😀😀😀')).toBe(true)
+    })
+
+    it('should handle password with accented characters', () => {
+      expect(validatePassword('Tëst123!Pass')).toBe(true)
+    })
+
+    it('should handle password with spaces in middle', () => {
+      expect(validatePassword('Test 123! Pass')).toBe(true)
+    })
+
+    it('should handle password with all special characters', () => {
+      const allSpecials = 'Abc123!@#$%^&*()_+-=[]{}|;:,.<>?'
+      expect(validatePassword(allSpecials)).toBe(true)
+    })
+
+    it('should show correct special character list in error', () => {
+      const result = validatePassword('TestPass1word')
+      expect(result).toBe('Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)')
+    })
+
+    it('should handle password exactly at 12 characters', () => {
+      expect(validatePassword('Abcdef123!@#')).toBe(true) // 12 chars
+      expect(validatePassword('Abcdef1234!@')).toBe(true) // 12 chars
+      expect(validatePassword('Abcdef123!')).toBe('Password must be at least 12 characters long') // 11 chars
+    })
+
+    it('should handle password exactly at 128 characters', () => {
+      const exactly128 = 'A'.repeat(60) + 'a'.repeat(60) + '12345678'
+      expect(validatePassword(exactly128)).toBe(
+        'Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)',
+      )
+
+      const exactly128Valid = 'A'.repeat(60) + 'a'.repeat(60) + '1234567!'
+      expect(validatePassword(exactly128Valid)).toBe(true)
+
+      const exactly129 = 'A'.repeat(60) + 'a'.repeat(61) + '1234567!'
+      expect(validatePassword(exactly129)).toBe('Password must not exceed 128 characters')
+    })
+
+    it('should treat trimmed length for validation', () => {
+      // Test123! trimmed is 8 characters, which is less than 12
+      expect(validatePassword('  Test123!  ')).toBe('Password must be at least 12 characters long')
+    })
+  })
+
+  describe('requirements checking order', () => {
+    it('should fail on empty before checking character requirements', () => {
+      expect(validatePassword('')).toBe('Password cannot be empty')
+      // Not "Password must contain at least one uppercase letter"
+    })
+
+    it('should fail on length before checking character requirements', () => {
+      expect(validatePassword('short')).toBe('Password must be at least 12 characters long')
+      // Not "Password must contain at least one uppercase letter"
+    })
+
+    it('should check uppercase before lowercase', () => {
+      expect(validatePassword('alllowercase123!')).toBe('Password must contain at least one uppercase letter')
+    })
+
+    it('should check lowercase after uppercase', () => {
+      expect(validatePassword('ALLUPPERCASE123!')).toBe('Password must contain at least one lowercase letter')
+    })
+
+    it('should check number after case requirements', () => {
+      expect(validatePassword('NoNumbersHere!')).toBe('Password must contain at least one number')
+    })
+
+    it('should check special character last', () => {
+      expect(validatePassword('NoSpecialChar1')).toContain('special character')
     })
   })
 })
