@@ -1,4 +1,6 @@
+import { GENERAL_CONTACT } from '@/constants/contact'
 import { escapeHtml, sanitizeUrl } from '@/utils/html'
+import { lexicalToHtml } from '@/utils/lexical'
 import type { Payload } from 'payload'
 
 /**
@@ -12,19 +14,17 @@ interface SendResetPasswordEmailParams {
   payload: Payload
   to: string
   resetLink: string
-  userName?: string
 }
 
 interface SendIssueNotificationEmailParams {
   payload: Payload
   to: string
   title: string
-  description: string
+  description: string | object // Lexical JSON data or plain text
   status: string
   reporterName?: string
   reporterEmail?: string
   issueId: string
-  images?: string[]
 }
 
 /**
@@ -35,11 +35,10 @@ interface SendIssueNotificationEmailParams {
  * @param params.payload - Payload instance
  * @param params.to - Recipient email address
  * @param params.resetLink - Password reset link with token
- * @param params.userName - Optional user name for personalization
  * @returns Resend API response with email ID
  */
 export async function sendResetPasswordEmail(params: SendResetPasswordEmailParams): Promise<ResendResponse> {
-  const { payload, to, resetLink, userName } = params
+  const { payload, to, resetLink } = params
 
   // Validate recipient email
   if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
@@ -51,38 +50,43 @@ export async function sendResetPasswordEmail(params: SendResetPasswordEmailParam
     payload.logger.warn('Reset link should use HTTPS in production')
   }
 
-  // Validate userName length if provided
-  if (userName && userName.length > 100) {
-    throw new Error('User name exceeds maximum length (100 characters)')
-  }
-
-  const logoUrl = process.env.NEXT_PUBLIC_SERVER_URL ? `${process.env.NEXT_PUBLIC_SERVER_URL}/logo.png` : undefined
+  const adminPanelUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+  const logoUrl = `${adminPanelUrl}/logo.png`
 
   // Build HTML with proper escaping to prevent XSS
   const html = `
-    <div style="font-family: Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-      ${
-        logoUrl
-          ? `<div style="text-align: center; margin-bottom: 32px;">
-               <img src="${escapeHtml(logoUrl)}" alt="Logo" style="max-width: 200px; height: auto;" />
-             </div>`
-          : ''
-      }
-      <h1 style="color: #222126; font-size: 24px; margin-bottom: 16px; font-weight: 600;">
-        Password Reset Request
-      </h1>
-      ${userName ? `<p style="color: #222126; font-size: 16px; margin-bottom: 24px;">Hi ${escapeHtml(userName)},</p>` : ''}
-      <p style="color: #222126; font-size: 16px; margin-bottom: 24px; line-height: 1.5;">
-        We received a request to reset your password. Click the button below to create a new password:
-      </p>
-      <a href="${sanitizeUrl(resetLink)}" style="display: inline-block; background-color: #fcc302; color: #222126; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: 500; margin-bottom: 24px;">
-        Reset Password
-      </a>
-      <p style="color: #adb2b4; font-size: 14px; margin-top: 24px; line-height: 1.5;">
-        If you didn't request this password reset, you can safely ignore this email.
-      </p>
-      <p style="color: #adb2b4; font-size: 14px; line-height: 1.5;">This link will expire in 1 hour.</p>
-    </div>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <!--[if mso]>
+      <style type="text/css">
+        body, table, td {font-family: Arial, Helvetica, sans-serif !important;}
+      </style>
+      <![endif]-->
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f4f4f4;">
+      <div style="font-family: Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #ffffff;">
+        <div style="margin-bottom: 32px;">
+          <img src="${escapeHtml(logoUrl)}" alt="${escapeHtml(GENERAL_CONTACT.name)}" style="max-width: 400px; height: auto; display: block;" />
+        </div>
+        <h1 style="color: #222126; font-size: 24px; margin-bottom: 24px; font-weight: 600;">
+          Password Reset
+        </h1>
+        <p style="color: #222126; font-size: 16px; margin-bottom: 24px; line-height: 1.5;">
+          You are receiving this because you (or someone else) have requested the reset of the password for your account. Please click here to complete the process:
+        </p>
+        <a href="${sanitizeUrl(process.env.NEXT_PUBLIC_SERVER_URL ? `${process.env.NEXT_PUBLIC_SERVER_URL}${new URL(resetLink).pathname}` : resetLink)}" style="display: inline-block; background-color: #333333; color: #ffffff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: 500; margin-bottom: 24px;">
+          Reset Password
+        </a>
+        <p style="color: #222126; font-size: 14px; margin-top: 24px; line-height: 1.5;">
+          If you did not request this, please ignore this email and your password will remain unchanged.
+        </p>
+      </div>
+    </body>
+    </html>
   `
 
   const emailFrom = process.env.EMAIL_FROM
@@ -118,7 +122,7 @@ export async function sendResetPasswordEmail(params: SendResetPasswordEmailParam
  * @returns Resend API response with email ID
  */
 export async function sendIssueNotificationEmail(params: SendIssueNotificationEmailParams): Promise<ResendResponse> {
-  const { payload, to, title, description, status, reporterName, reporterEmail, issueId, images = [] } = params
+  const { payload, to, title, description, status, reporterName, reporterEmail, issueId } = params
 
   // Validate recipient email
   if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
@@ -130,48 +134,66 @@ export async function sendIssueNotificationEmail(params: SendIssueNotificationEm
     throw new Error('Title exceeds maximum length (200 characters)')
   }
 
-  if (description.length > 5000) {
-    throw new Error('Description exceeds maximum length (5000 characters)')
+  // Validate description size
+  if (typeof description === 'string' && description.length > 50000) {
+    throw new Error('Description exceeds maximum length (50,000 characters)')
+  }
+
+  if (typeof description === 'object') {
+    const jsonSize = JSON.stringify(description).length
+    if (jsonSize > 100000) {
+      throw new Error('Description JSON exceeds maximum size (100KB)')
+    }
   }
 
   const adminPanelUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
   const issueUrl = `${adminPanelUrl}/admin/collections/issues/${issueId}`
+  const logoUrl = `${adminPanelUrl}/logo.png`
+
+  // Convert Lexical content to HTML (preserves inline images)
+  const descriptionHtml =
+    typeof description === 'object'
+      ? lexicalToHtml(description, adminPanelUrl)
+      : `<p style="color: #222126; font-size: 14px; margin: 0; line-height: 1.6;">${escapeHtml(description)}</p>`
 
   // Build HTML with proper escaping to prevent XSS
   const html = `
-    <div style="font-family: Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-      <h1 style="color: #222126; font-size: 24px; margin-bottom: 24px; font-weight: 600;">
-        New Issue Report
-      </h1>
-      <div style="margin-bottom: 24px;">
-        <h2 style="color: #222126; font-size: 18px; margin-bottom: 8px; font-weight: 600;">${escapeHtml(title)}</h2>
-        <p style="color: #adb2b4; font-size: 14px; margin-bottom: 4px;">
-          Status: <strong style="color: #222126;">${escapeHtml(status)}</strong>
-        </p>
-        ${reporterName || reporterEmail ? `<p style="color: #adb2b4; font-size: 14px;">Reporter: ${reporterName ? escapeHtml(reporterName) : ''}${reporterName && reporterEmail ? ' (' : ''}${reporterEmail ? escapeHtml(reporterEmail) : ''}${reporterName && reporterEmail ? ')' : ''}</p>` : ''}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <!--[if mso]>
+      <style type="text/css">
+        body, table, td {font-family: Arial, Helvetica, sans-serif !important;}
+      </style>
+      <![endif]-->
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f4f4f4;">
+      <div style="font-family: Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #ffffff;">
+        <div style="margin-bottom: 32px;">
+          <img src="${escapeHtml(logoUrl)}" alt="${escapeHtml(GENERAL_CONTACT.name)}" style="max-width: 400px; height: auto; display: block;" />
+        </div>
+        <h1 style="color: #222126; font-size: 24px; margin-bottom: 24px; font-weight: 600;">
+          New Issue Report
+        </h1>
+        <div style="margin-bottom: 24px;">
+          <h2 style="color: #222126; font-size: 18px; margin-bottom: 8px; font-weight: 600;">${escapeHtml(title)}</h2>
+          <p style="color: #222126; font-size: 14px; margin-bottom: 4px;">
+            Status: <strong style="color: #222126;">${escapeHtml(status)}</strong>
+          </p>
+          ${reporterName || reporterEmail ? `<p style="color: #222126; font-size: 14px;">Reporter: ${reporterName ? escapeHtml(reporterName) : ''}${reporterName && reporterEmail ? ' (' : ''}${reporterEmail ? escapeHtml(reporterEmail) : ''}${reporterName && reporterEmail ? ')' : ''}</p>` : ''}
+        </div>
+        <div style="margin-bottom: 24px; padding: 16px 0; border-top: 1px solid #e3e3e3; border-bottom: 1px solid #e3e3e3;">
+          ${descriptionHtml}
+        </div>
+        <a href="${sanitizeUrl(issueUrl)}" style="display: inline-block; background-color: #333333; color: #ffffff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: 500;">
+          View Issue in Admin Panel
+        </a>
       </div>
-      <div style="margin-bottom: 24px; padding: 16px 0; border-top: 1px solid #e3e3e3; border-bottom: 1px solid #e3e3e3;">
-        <p style="color: #222126; font-size: 14px; margin: 0; line-height: 1.6;">${escapeHtml(description)}</p>
-      </div>
-      ${
-        images.length > 0
-          ? `<div style="margin-bottom: 24px;">
-               <h3 style="color: #222126; font-size: 16px; margin-bottom: 12px; font-weight: 600;">Screenshots (${images.length})</h3>
-               ${images
-                 .map(
-                   (imageUrl) =>
-                     `<div style="margin-bottom: 16px;">
-                       <img src="${sanitizeUrl(imageUrl)}" alt="Issue screenshot" style="max-width: 100%; height: auto; border: 1px solid #e3e3e3; border-radius: 4px;" />
-                     </div>`,
-                 )
-                 .join('')}
-             </div>`
-          : ''
-      }
-      <a href="${sanitizeUrl(issueUrl)}" style="display: inline-block; background-color: #fcc302; color: #222126; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: 500;">
-        View Issue in Admin Panel
-      </a>
-    </div>
+    </body>
+    </html>
   `
 
   const emailFrom = process.env.EMAIL_FROM

@@ -1,6 +1,5 @@
 import type { User } from '@/payload-types'
 import { sendIssueNotificationEmail } from '@/services/email'
-import { parseLexicalContent } from '@/utils/lexical'
 import type { CollectionAfterChangeHook } from 'payload'
 
 /**
@@ -51,20 +50,8 @@ export const sendIssueNotification: CollectionAfterChangeHook = async ({ doc, op
       }
     }
 
-    // Extract text and images from Lexical description using utility
-    let description = 'No description provided'
-    let images: string[] = []
-
-    if (doc.description) {
-      try {
-        const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-        const result = parseLexicalContent(doc.description, serverUrl)
-        description = result.text
-        images = result.images
-      } catch (error) {
-        req.payload.logger.warn(`Failed to parse issue description: ${error}`)
-      }
-    }
+    // Pass Lexical description directly to email service (which will convert to HTML)
+    const description = doc.description || 'No description provided'
 
     await sendIssueNotificationEmail({
       payload: req.payload,
@@ -75,7 +62,6 @@ export const sendIssueNotification: CollectionAfterChangeHook = async ({ doc, op
       reporterName,
       reporterEmail,
       issueId: doc.id,
-      images,
     })
 
     req.payload.logger.info(`Issue notification email sent for: ${doc.title}`)

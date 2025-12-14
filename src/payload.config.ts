@@ -23,6 +23,9 @@ import { Recordings } from './collections/Recordings'
 import { Repertoire } from './collections/Repertoire'
 import { Users } from './collections/Users'
 
+// Constants
+import { GENERAL_CONTACT } from './constants/contact'
+
 // v2: Newsletter Contact Management
 // import { NewsletterContacts } from './collections/NewsletterContacts'
 
@@ -53,7 +56,7 @@ export default buildConfig({
   editor: lexicalEditor(),
   email: resendAdapter({
     defaultFromAddress: process.env.EMAIL_FROM || 'noreply@example.com',
-    defaultFromName: 'Schörke Artist Management',
+    defaultFromName: GENERAL_CONTACT.name,
     apiKey: process.env.RESEND_API_KEY || '',
   }),
   i18n: {

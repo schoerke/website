@@ -1,3 +1,5 @@
+import { escapeHtml, sanitizeUrl } from './html'
+
 /**
  * Lexical JSON parsing utilities
  *
@@ -5,14 +7,42 @@
  */
 
 interface LexicalNode {
+  // Text content
   text?: string
+  detail?: number
+  format?: number
+  mode?: string
+  style?: string
+
+  // Node structure
   children?: unknown[]
   root?: unknown
   type?: string
+
+  // Upload node specific
   value?: {
+    id?: number
     url?: string
     alt?: string
+    filename?: string
+    mimeType?: string
+    width?: number
+    height?: number
+    thumbnailURL?: string
+    sizes?: Record<string, unknown>
   }
+
+  // Lexical metadata
+  direction?: string | null
+  indent?: number
+  version?: number
+  textFormat?: number
+  textStyle?: string
+
+  // Relations (for upload nodes)
+  relationTo?: string
+  fields?: unknown
+  id?: string
 }
 
 interface LexicalParseResult {
@@ -44,11 +74,25 @@ interface LexicalParseResult {
  * ```
  */
 export function parseLexicalContent(lexicalData: string | object, serverUrl?: string): LexicalParseResult {
+  // Validate serverUrl if provided
+  if (serverUrl && !/^https?:\/\/.+/.test(serverUrl)) {
+    throw new Error('serverUrl must be a valid HTTP(S) URL')
+  }
+
   const images: string[] = []
   const baseUrl = serverUrl || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
-  // Parse string to object if needed
-  const data = typeof lexicalData === 'string' ? JSON.parse(lexicalData) : lexicalData
+  // Parse string to object if needed with error handling
+  let data: object
+  if (typeof lexicalData === 'string') {
+    try {
+      data = JSON.parse(lexicalData)
+    } catch (error) {
+      throw new Error(`Invalid Lexical JSON: ${error instanceof Error ? error.message : 'Unable to parse JSON string'}`)
+    }
+  } else {
+    data = lexicalData
+  }
 
   /**
    * Recursively extract content from Lexical nodes
@@ -115,4 +159,82 @@ export function extractLexicalText(lexicalData: string | object): string {
  */
 export function extractLexicalImages(lexicalData: string | object, serverUrl?: string): string[] {
   return parseLexicalContent(lexicalData, serverUrl).images
+}
+
+/**
+ * Convert Lexical JSON to HTML, preserving inline images in their original positions.
+ * Useful for email templates where you want to maintain the context of screenshots.
+ *
+ * @param lexicalData - The Lexical JSON data (can be string or object)
+ * @param serverUrl - Base server URL for constructing full image URLs
+ * @returns HTML string with text and inline images
+ *
+ * @example
+ * ```typescript
+ * const html = lexicalToHtml(lexicalData, 'https://example.com')
+ * // => '<p>Description text</p><img src="https://example.com/api/images/file/screenshot.jpg" alt="Screenshot" /><p>More text</p>'
+ * ```
+ */
+export function lexicalToHtml(lexicalData: string | object, serverUrl?: string): string {
+  // Validate serverUrl if provided
+  if (serverUrl && !/^https?:\/\/.+/.test(serverUrl)) {
+    throw new Error('serverUrl must be a valid HTTP(S) URL')
+  }
+
+  const baseUrl = serverUrl || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+
+  // Parse string to object if needed with error handling
+  let data: object
+  if (typeof lexicalData === 'string') {
+    try {
+      data = JSON.parse(lexicalData)
+    } catch (error) {
+      throw new Error(`Invalid Lexical JSON: ${error instanceof Error ? error.message : 'Unable to parse JSON string'}`)
+    }
+  } else {
+    data = lexicalData
+  }
+
+  /**
+   * Recursively convert Lexical nodes to HTML
+   */
+  const convertNode = (node: unknown): string => {
+    if (typeof node !== 'object' || node === null) return ''
+
+    const n = node as LexicalNode
+
+    // Handle upload nodes (images)
+    if (n.type === 'upload' && n.value?.url) {
+      // Sanitize URL first before prepending baseUrl to catch dangerous protocols
+      const sanitizedUrl = sanitizeUrl(n.value.url)
+      const fullImageUrl =
+        sanitizedUrl.startsWith('http') || sanitizedUrl === '#' ? sanitizedUrl : `${baseUrl}${sanitizedUrl}`
+      const rawAlt = n.value.alt || 'Screenshot'
+      // Validate and truncate alt text to prevent excessively long attributes
+      const alt = rawAlt.length > 200 ? rawAlt.substring(0, 197) + '...' : rawAlt
+      return `<div style="margin: 16px 0;"><img src="${fullImageUrl}" alt="${escapeHtml(alt)}" style="max-width: 100%; height: auto; border: 1px solid #e3e3e3; border-radius: 4px;" /></div>`
+    }
+
+    // Handle paragraph nodes
+    if (n.type === 'paragraph') {
+      const content = n.children ? n.children.map(convertNode).join('') : ''
+      return content
+        ? `<p style="color: #222126; font-size: 14px; margin: 12px 0; line-height: 1.6;">${content}</p>`
+        : ''
+    }
+
+    // Handle text nodes
+    if (n.text) return escapeHtml(n.text)
+
+    // Handle nodes with children
+    if (n.children) return n.children.map(convertNode).join('')
+
+    // Handle root node
+    if (n.root) return convertNode(n.root)
+
+    return ''
+  }
+
+  const html = convertNode(data).trim()
+  return html || '<p style="color: #222126; font-size: 14px; margin: 0; line-height: 1.6;">No description provided</p>'
 }
