@@ -43,8 +43,8 @@ export function sanitizeUrl(url: string): string {
     return '#'
   }
 
-  // Only allow http(s) and mailto
-  if (!/^(https?|mailto):/i.test(trimmed)) {
+  // Allow http(s), mailto, and relative paths starting with /
+  if (!/^(https?|mailto):/i.test(trimmed) && !trimmed.startsWith('/')) {
     return '#'
   }
 

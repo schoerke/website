@@ -65,4 +65,15 @@ describe('sanitizeUrl', () => {
     expect(sanitizeUrl('ftp://example.com')).toBe('#')
     expect(sanitizeUrl('file:///etc/passwd')).toBe('#')
   })
+
+  it('should allow relative paths starting with /', () => {
+    expect(sanitizeUrl('/admin/collections/issues/123')).toBe('/admin/collections/issues/123')
+    expect(sanitizeUrl('/api/images/file/screenshot.jpg')).toBe('/api/images/file/screenshot.jpg')
+  })
+
+  it('should block relative paths not starting with /', () => {
+    expect(sanitizeUrl('../../../etc/passwd')).toBe('#')
+    expect(sanitizeUrl('../../sensitive/file')).toBe('#')
+    expect(sanitizeUrl('relative/path')).toBe('#')
+  })
 })
