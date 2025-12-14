@@ -3,11 +3,11 @@
 import { fetchRecordingsByArtist } from '@/actions/recordings'
 import { fetchRepertoiresByArtist } from '@/actions/repertoires'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
-import type { Artist, Recording, Repertoire } from '@/payload-types'
+import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 import NewsFeedClient from '../NewsFeed/NewsFeedClient'
-import { BiographyTab, RecordingsTab, RepertoireTab, VideoTab } from './ArtistTabContent'
+import { BiographyTab, ProjectsTab, RecordingsTab, RepertoireTab, VideoTab } from './ArtistTabContent'
 
 type TabId = 'biography' | 'repertoire' | 'discography' | 'video' | 'news' | 'projects'
 
@@ -197,7 +197,10 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           <NewsFeedClient category="news" artistId={artist.id.toString()} emptyMessage={t('empty.news')} />
         )}
         {activeTab === 'projects' && (
-          <NewsFeedClient category="projects" artistId={artist.id.toString()} emptyMessage={t('empty.projects')} />
+          <ProjectsTab
+            projects={(artist.projects || []).filter((p): p is Post => typeof p === 'object')}
+            emptyMessage={t('empty.projects')}
+          />
         )}
       </div>
     </div>

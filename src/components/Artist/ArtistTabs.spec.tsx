@@ -72,6 +72,9 @@ vi.mock('./ArtistTabContent', () => ({
   VideoTab: ({ videos, emptyMessage }: { videos?: Array<{ url: string }>; emptyMessage: string }) => (
     <div data-testid="video-tab">{videos && videos.length > 0 ? `${videos.length} videos` : emptyMessage}</div>
   ),
+  ProjectsTab: ({ projects, emptyMessage }: { projects: unknown[]; emptyMessage: string }) => (
+    <div data-testid="projects-tab">{projects.length > 0 ? `${projects.length} projects` : emptyMessage}</div>
+  ),
 }))
 
 const testMessages = {
@@ -543,7 +546,7 @@ describe('ArtistTabs', async () => {
       })
     })
 
-    it('should render news feed for projects tab', async () => {
+    it('should render projects tab', async () => {
       const user = userEvent.setup()
       const artist = createMockArtist()
       renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
@@ -552,7 +555,7 @@ describe('ArtistTabs', async () => {
       await user.click(projectsTabs[0])
 
       await waitFor(() => {
-        expect(screen.getByTestId('newsfeed-projects')).toBeInTheDocument()
+        expect(screen.getByTestId('projects-tab')).toBeInTheDocument()
       })
     })
   })

@@ -12,6 +12,15 @@ import {
   VideoTab,
 } from './ArtistTabContent'
 
+// Mock next-intl navigation (required for Link component in ProjectsTab)
+vi.mock('@/i18n/navigation', () => ({
+  Link: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+}))
+
 // Mock child components
 vi.mock('@/components/ui/PayloadRichText', () => ({
   default: ({ content }: { content: unknown }) => <div data-testid="rich-text">{JSON.stringify(content)}</div>,

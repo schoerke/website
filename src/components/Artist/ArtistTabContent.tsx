@@ -6,7 +6,10 @@ import RoleFilter from '@/components/Recording/RoleFilter'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
-import type { Artist, Recording, Repertoire } from '@/payload-types'
+import { Link } from '@/i18n/navigation'
+import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
+import { getValidImageUrl } from '@/utils/image'
+import Image from 'next/image'
 import React from 'react'
 import VideoAccordion from './VideoAccordion'
 
@@ -220,5 +223,87 @@ export const RecordingsTab: React.FC<RecordingsTabProps> = ({
         <RecordingList recordings={recordings} filterKey={selectedRole} />
       )}
     </>
+  )
+}
+
+// Projects Tab
+interface ProjectsTabProps {
+  projects: Post[]
+  emptyMessage: string
+}
+
+function extractTextPreview(content: Post['content'], maxLength: number = 180): string {
+  if (!content?.root?.children) return ''
+
+  const textParts: string[] = []
+
+  function extractText(node: { text?: string; children?: unknown[] }): void {
+    if (node.text) {
+      textParts.push(node.text)
+    }
+    if (node.children && Array.isArray(node.children)) {
+      node.children.forEach((child) => extractText(child as { text?: string; children?: unknown[] }))
+    }
+  }
+
+  content.root.children.forEach((child) => extractText(child as { text?: string; children?: unknown[] }))
+
+  const fullText = textParts.join(' ').trim()
+  if (fullText.length <= maxLength) return fullText
+
+  return fullText.substring(0, maxLength).trim() + '...'
+}
+
+export const ProjectsTab: React.FC<ProjectsTabProps> = ({ projects, emptyMessage }) => {
+  if (!projects || projects.length === 0) {
+    return (
+      <div className="py-12 text-center text-gray-500">
+        <p>{emptyMessage}</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="divide-y divide-gray-200">
+      {projects.map((project) => {
+        const imageUrl = getValidImageUrl(project.image)
+        const preview = extractTextPreview(project.content)
+        const postPath = `/projects/${project.slug}`
+        const image = typeof project.image === 'object' ? project.image : null
+        const imageAlt = image?.alt || project.title || 'Project image'
+
+        return (
+          <article
+            key={project.id}
+            className="group flex gap-4 py-6 first:pt-0 sm:gap-6"
+            aria-label={`Project: ${project.title}`}
+          >
+            {/* Image */}
+            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden sm:h-28 sm:w-28">
+              <Image
+                src={imageUrl}
+                alt={imageAlt}
+                fill
+                className="object-cover transition-opacity group-hover:opacity-75"
+                sizes="(max-width: 640px) 80px, 112px"
+              />
+            </div>
+
+            {/* Text content */}
+            <Link
+              href={postPath as Parameters<typeof Link>['0']['href']}
+              className="flex flex-1 flex-col justify-center"
+            >
+              <h3 className="font-playfair group-hover:text-primary-black mb-2 text-lg font-bold leading-tight text-gray-900 transition-colors sm:text-xl">
+                {project.title}
+              </h3>
+              {preview && (
+                <p className="hidden text-sm leading-relaxed text-gray-600 sm:block sm:text-base">{preview}</p>
+              )}
+            </Link>
+          </article>
+        )
+      })}
+    </div>
   )
 }
