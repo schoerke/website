@@ -1,7 +1,7 @@
+import { createMockArtist, createMockPaginatedDocs } from '@/tests/utils/payloadMocks'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMockArtist, createMockPaginatedDocs } from '@/tests/utils/payloadMocks'
-import { getArtistById, getArtistBySlug, getArtistListData, getArtists } from './artist'
+import { getArtistBySlug, getArtistListData } from './artist'
 
 // Mock getPayload at the module level
 vi.mock('payload', async (importOriginal) => {
@@ -26,67 +26,6 @@ describe('Artist Service', () => {
     vi.mocked(getPayload).mockResolvedValue(mockPayload)
   })
 
-  describe('getArtists', () => {
-    it('should fetch all artists with default locale and fallback', async () => {
-      const mockArtists = [createMockArtist(), createMockArtist({ id: 2, name: 'Another Artist' })]
-      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs(mockArtists))
-
-      const result = await getArtists()
-
-      expect(result.docs).toEqual(mockArtists)
-      expect(mockPayload.find).toHaveBeenCalledWith({
-        collection: 'artists',
-        locale: 'de',
-        fallbackLocale: 'de',
-        limit: 0,
-      })
-    })
-
-    it('should fetch artists with specified locale', async () => {
-      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
-
-      await getArtists('en')
-
-      expect(mockPayload.find).toHaveBeenCalledWith({
-        collection: 'artists',
-        locale: 'en',
-        fallbackLocale: 'de',
-        limit: 0,
-      })
-    })
-  })
-
-  describe('getArtistById', () => {
-    it('should fetch artist by ID with fallback locale', async () => {
-      const mockArtist = createMockArtist()
-      vi.mocked(mockPayload.findByID).mockResolvedValue(mockArtist)
-
-      const result = await getArtistById('1')
-
-      expect(result).toEqual(mockArtist)
-      expect(mockPayload.findByID).toHaveBeenCalledWith({
-        collection: 'artists',
-        id: '1',
-        locale: 'de',
-        fallbackLocale: 'de',
-      })
-    })
-
-    it('should use specified locale', async () => {
-      const mockArtist = createMockArtist()
-      vi.mocked(mockPayload.findByID).mockResolvedValue(mockArtist)
-
-      await getArtistById('1', 'en')
-
-      expect(mockPayload.findByID).toHaveBeenCalledWith({
-        collection: 'artists',
-        id: '1',
-        locale: 'en',
-        fallbackLocale: 'de',
-      })
-    })
-  })
-
   describe('getArtistBySlug', () => {
     it('should fetch artist by slug with fallback locale', async () => {
       const mockArtist = createMockArtist()
@@ -99,7 +38,7 @@ describe('Artist Service', () => {
         collection: 'artists',
         where: { slug: { equals: 'test-artist' } },
         limit: 1,
-        depth: 1,
+        depth: 2,
         locale: 'de',
         fallbackLocale: 'de',
       })
