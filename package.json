@@ -45,7 +45,7 @@
     "@payloadcms/storage-s3": "^3.68.3",
     "@payloadcms/storage-vercel-blob": "^3.68.3",
     "@payloadcms/translations": "^3.68.3",
-    "@payloadcms/ui": "^3.68.3",
+    "@payloadcms/ui": "^3.68.5",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-toggle": "^1.1.10",
