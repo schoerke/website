@@ -529,7 +529,7 @@ export interface Repertoire {
 export interface User {
   id: number;
   name: string;
-  password?: string | null;
+  password: string | null;
   role?: ('admin' | 'editor') | null;
   updatedAt: string;
   createdAt: string;

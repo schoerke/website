@@ -37,6 +37,7 @@ export const Users: CollectionConfig = {
     {
       name: 'password',
       type: 'text',
+      required: true,
       validate: validatePassword,
       hidden: true, // Prevents duplication in admin panel
       admin: {
