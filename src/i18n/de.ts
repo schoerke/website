@@ -141,6 +141,11 @@ const de = {
       brand: {
         title: 'Branding',
       },
+      notFound: {
+        title: 'Seite nicht gefunden',
+        description: 'Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.',
+        returnHome: 'Zur Startseite',
+      },
     },
     footer: {
       copyright: 'Alle Rechte vorbehalten.',
