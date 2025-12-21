@@ -19,9 +19,26 @@
  * @see https://next-intl.dev/docs/routing/middleware
  */
 import createMiddleware from 'next-intl/middleware'
+import { type NextRequest } from 'next/server'
 import { routing } from './src/i18n/routing'
 
-export default createMiddleware(routing)
+const intlMiddleware = createMiddleware(routing)
+
+export default function middleware(request: NextRequest) {
+  const response = intlMiddleware(request)
+
+  // Extract locale from URL path and add as header for global-not-found page
+  const pathname = request.nextUrl.pathname
+  const localeMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/)
+  if (localeMatch) {
+    const locale = localeMatch[1]
+    if (routing.locales.includes(locale as any)) {
+      response.headers.set('x-locale', locale)
+    }
+  }
+
+  return response
+}
 
 export const config = {
   matcher: '/((?!api|admin|_next|_vercel|.*\\..*).*)',
