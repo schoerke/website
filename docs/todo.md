@@ -7,6 +7,36 @@
   - All `any` types replaced with proper types
   - **Build:** ✅ Passing | **Tests:** ✅ 203/203 passing
 
+### 404 Error Handling - Code Review Follow-ups (2025-12-21)
+
+- [x] **Critical Issues** - ✅ **COMPLETE** (2025-12-21)
+  - Added missing translation keys to `en.ts` and `de.ts`
+  - Fixed type safety violations in `global-not-found.tsx` (removed all `any` types)
+  - Verified font handling (Inter font loaded via globals.css)
+  - Audited redundant not-found files (converted `(frontend)/not-found.tsx` to redirect)
+  - Added Accept-Language fallback for better international UX
+
+- [ ] **Medium Priority** - Code quality improvements
+  - [ ] Make home URL construction more robust
+    - **Current:** `<a href={`/${locale}`}>` hardcodes `localePrefix: 'always'`
+    - **Issue:** Would break if routing configuration changes
+    - **Fix:** Extract to helper function that respects `routing.localePrefix` config
+    - **Effort:** ~15 minutes
+  - [ ] Create integration tests for 404 behavior
+    - Test locale detection (x-locale header, cookie, Accept-Language)
+    - Test redirect behavior from non-localized URLs
+    - Verify correct HTTP status codes (404)
+    - Test translation loading for both locales
+    - **Effort:** ~1-2 hours
+  - [ ] Add comprehensive documentation for 404 architecture
+    - Document which not-found file handles which scenario
+    - Explain when `global-not-found.tsx` vs `[locale]/not-found.tsx` vs `(frontend)/not-found.tsx` renders
+    - Document locale detection fallback chain
+    - Add architecture diagram if helpful
+    - **Location:** Create `docs/404-architecture.md` or add to existing docs
+    - **Effort:** ~30 minutes
+
+
 ## Data Migration: Posts
 
 - [ ] Migrate posts from old site to new site
@@ -63,7 +93,11 @@
 
 - Add "Back to top" button
 - Enhance image slider banner (news title)
-- Localized 404 page
+- [x] Localized 404 page - ✅ **COMPLETE** (2025-12-21)
+  - Implemented `global-not-found.tsx` with `experimental.globalNotFound`
+  - Added proper locale detection (x-locale, cookie, Accept-Language, default)
+  - Consistent branded 404 with header/footer across all locales
+  - Redirect from non-localized URLs to localized versions
 
 ### Pages
 
