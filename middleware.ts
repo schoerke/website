@@ -32,7 +32,7 @@ export default function middleware(request: NextRequest) {
   const localeMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/)
   if (localeMatch) {
     const locale = localeMatch[1]
-    if (routing.locales.includes(locale as any)) {
+    if (routing.locales.includes(locale as (typeof routing.locales)[number])) {
       response.headers.set('x-locale', locale)
     }
   }
