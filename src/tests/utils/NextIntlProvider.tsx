@@ -28,6 +28,9 @@ const defaultMessages = {
       artists: {
         title: 'Artists',
         discoverMore: 'Discover More',
+        noArtistsFound: 'No artists found.',
+        noArtistsForInstruments: 'No artists found for these instruments.',
+        filterByInstrument: 'Filter artists by instrument',
       },
     },
     pagination: {

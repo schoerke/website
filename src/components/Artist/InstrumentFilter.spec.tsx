@@ -20,6 +20,11 @@ const testMessages = {
       'chamber-music': 'Chamber Music',
       harpsichord: 'Harpsichord',
     },
+    pages: {
+      artists: {
+        filterByInstrument: 'Filter artists by instrument',
+      },
+    },
   },
 }
 
