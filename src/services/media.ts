@@ -1,5 +1,3 @@
-import type { Image as PayloadImage } from '@/payload-types'
-
 /**
  * Common media asset paths served from Vercel Blob via Payload CMS.
  * These assets were uploaded to the database and are now served through the API.
@@ -39,26 +37,3 @@ export const getLogoIcon = (): string => LOGO_ICON_PATH
  * @deprecated Use DEFAULT_AVATAR_PATH constant instead
  */
 export const getDefaultAvatar = (): string => DEFAULT_AVATAR_PATH
-
-/**
- * Fetches an image from Payload by filename.
- * Useful for dynamically loading assets that are stored in Vercel Blob.
- *
- * @param filename - The filename to search for (e.g., 'logo.png')
- * @returns The image record from Payload, or null if not found
- *
- * @example
- * ```ts
- * const avatar = await getImageByFilename('default-avatar.webp')
- * if (avatar) {
- *   <Image src={avatar.url} alt={avatar.alt} />
- * }
- * ```
- */
-export async function getImageByFilename(filename: string): Promise<PayloadImage | null> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/api/images?where[filename][equals]=${filename}&limit=1`,
-  )
-  const data = await response.json()
-  return data.docs?.[0] || null
-}

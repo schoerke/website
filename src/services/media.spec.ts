@@ -1,20 +1,28 @@
+import { createMockImage } from '@/tests/utils/payloadMocks'
+import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  DEFAULT_AVATAR_PATH,
-  LOGO_ICON_PATH,
-  LOGO_PATH,
-  getDefaultAvatar,
-  getImageByFilename,
-  getLogo,
-  getLogoIcon,
-} from './media'
+import { DEFAULT_AVATAR_PATH, LOGO_ICON_PATH, LOGO_PATH, getDefaultAvatar, getLogo, getLogoIcon } from './media'
+import { getImageByFilename } from './media.server'
 
-// Mock global fetch
-global.fetch = vi.fn()
+// Mock getPayload at the module level
+vi.mock('payload', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('payload')>()
+  return {
+    ...actual,
+    getPayload: vi.fn(),
+  }
+})
 
 describe('media service', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
+  let mockPayload: Payload
+
+  beforeEach(async () => {
+    mockPayload = {
+      find: vi.fn(),
+    } as unknown as Payload
+
+    const { getPayload } = await import('payload')
+    vi.mocked(getPayload).mockResolvedValue(mockPayload)
   })
 
   describe('constants', () => {
@@ -50,146 +58,78 @@ describe('media service', () => {
 
   describe('getImageByFilename', () => {
     it('should fetch image by filename and return first result', async () => {
-      const mockImage = {
-        id: 'img-123',
-        filename: 'test-image.jpg',
-        url: 'https://example.com/test-image.jpg',
-        alt: 'Test Image',
-      }
+      const mockImage = createMockImage({ filename: 'test-image.jpg', alt: 'Test Image' })
 
-      const mockFetch = vi.mocked(fetch)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          docs: [mockImage],
-          totalDocs: 1,
-        }),
-      } as Response)
+      vi.mocked(mockPayload.find).mockResolvedValueOnce({
+        docs: [mockImage],
+        totalDocs: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+        limit: 1,
+        nextPage: null,
+        page: 1,
+        pagingCounter: 1,
+        prevPage: null,
+        totalPages: 1,
+      })
 
       const result = await getImageByFilename('test-image.jpg')
 
       expect(result).toEqual(mockImage)
-      expect(mockFetch).toHaveBeenCalledWith('/api/images?where[filename][equals]=test-image.jpg&limit=1')
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'images',
+        where: { filename: { equals: 'test-image.jpg' } },
+        limit: 1,
+      })
     })
 
     it('should return null when image is not found', async () => {
-      const mockFetch = vi.mocked(fetch)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          docs: [],
-          totalDocs: 0,
-        }),
-      } as Response)
+      vi.mocked(mockPayload.find).mockResolvedValueOnce({
+        docs: [],
+        totalDocs: 0,
+        hasNextPage: false,
+        hasPrevPage: false,
+        limit: 1,
+        nextPage: null,
+        page: 1,
+        pagingCounter: 1,
+        prevPage: null,
+        totalPages: 0,
+      })
 
       const result = await getImageByFilename('nonexistent.jpg')
 
       expect(result).toBeNull()
-      expect(mockFetch).toHaveBeenCalledWith('/api/images?where[filename][equals]=nonexistent.jpg&limit=1')
-    })
-
-    it('should return null when docs array is undefined', async () => {
-      const mockFetch = vi.mocked(fetch)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          totalDocs: 0,
-        }),
-      } as Response)
-
-      const result = await getImageByFilename('test.jpg')
-
-      expect(result).toBeNull()
-    })
-
-    it('should use NEXT_PUBLIC_SERVER_URL if set', async () => {
-      const originalEnv = process.env.NEXT_PUBLIC_SERVER_URL
-      process.env.NEXT_PUBLIC_SERVER_URL = 'https://example.com'
-
-      const mockFetch = vi.mocked(fetch)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          docs: [],
-          totalDocs: 0,
-        }),
-      } as Response)
-
-      await getImageByFilename('test.jpg')
-
-      expect(mockFetch).toHaveBeenCalledWith('https://example.com/api/images?where[filename][equals]=test.jpg&limit=1')
-
-      // Restore original env immediately
-      if (originalEnv === undefined) {
-        delete process.env.NEXT_PUBLIC_SERVER_URL
-      } else {
-        process.env.NEXT_PUBLIC_SERVER_URL = originalEnv
-      }
-    })
-
-    it('should handle filenames with special characters', async () => {
-      const mockFetch = vi.mocked(fetch)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          docs: [],
-          totalDocs: 0,
-        }),
-      } as Response)
-
-      await getImageByFilename('image with spaces.jpg')
-
-      expect(mockFetch).toHaveBeenCalledWith('/api/images?where[filename][equals]=image with spaces.jpg&limit=1')
     })
 
     it('should return first doc when multiple results exist', async () => {
-      const mockImages = [
-        {
-          id: 'img-1',
-          filename: 'duplicate.jpg',
-          url: 'https://example.com/duplicate-1.jpg',
-          alt: 'First Image',
-        },
-        {
-          id: 'img-2',
-          filename: 'duplicate.jpg',
-          url: 'https://example.com/duplicate-2.jpg',
-          alt: 'Second Image',
-        },
-      ]
+      const mockImage1 = createMockImage({ id: 1, filename: 'duplicate.jpg', alt: 'First Image' })
+      const mockImage2 = createMockImage({ id: 2, filename: 'duplicate.jpg', alt: 'Second Image' })
 
-      const mockFetch = vi.mocked(fetch)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          docs: mockImages,
-          totalDocs: 2,
-        }),
-      } as Response)
+      vi.mocked(mockPayload.find).mockResolvedValueOnce({
+        docs: [mockImage1, mockImage2],
+        totalDocs: 2,
+        hasNextPage: false,
+        hasPrevPage: false,
+        limit: 1,
+        nextPage: null,
+        page: 1,
+        pagingCounter: 1,
+        prevPage: null,
+        totalPages: 1,
+      })
 
       const result = await getImageByFilename('duplicate.jpg')
 
-      expect(result).toEqual(mockImages[0])
-      expect(result?.id).toBe('img-1')
+      expect(result).toEqual(mockImage1)
+      expect(result?.id).toBe(1)
     })
 
-    it('should handle fetch errors gracefully', async () => {
-      const mockFetch = vi.mocked(fetch)
-      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+    it('should throw when the Local API call fails', async () => {
+      vi.spyOn(console, 'error').mockImplementationOnce(() => {})
+      vi.mocked(mockPayload.find).mockRejectedValueOnce(new Error('Database error'))
 
-      await expect(getImageByFilename('test.jpg')).rejects.toThrow('Network error')
-    })
-
-    it('should handle JSON parsing errors gracefully', async () => {
-      const mockFetch = vi.mocked(fetch)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => {
-          throw new Error('Invalid JSON')
-        },
-      } as unknown as Response)
-
-      await expect(getImageByFilename('test.jpg')).rejects.toThrow('Invalid JSON')
+      await expect(getImageByFilename('test.jpg')).rejects.toThrow('Failed to fetch image: Database error')
     })
   })
 })
