@@ -1,8 +1,5 @@
-import 'dotenv/config'
-
-import config from '@/payload.config'
-import { getPayload, type Payload } from 'payload'
-import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import type { Payload } from 'payload'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { sendIssueNotificationEmail, sendResetPasswordEmail, type ResendResponse } from './email'
 
 /**
@@ -12,17 +9,25 @@ import { sendIssueNotificationEmail, sendResetPasswordEmail, type ResendResponse
  * Domain verified: notifications.ks-schoerke.de
  *
  * Note: These tests make real API calls to Resend and count against rate limits.
+ * Uses a mock Payload instance — no database connection required.
  */
 describe('email service - integration tests', () => {
   let payload: Payload
 
-  beforeAll(async () => {
-    payload = await getPayload({ config })
-  })
-
-  // Add delay after each test to avoid rate limiting (2 emails/second limit)
-  afterEach(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 600))
+  beforeAll(() => {
+    payload = {
+      logger: {
+        warn: vi.fn(),
+        error: vi.fn(),
+      },
+      sendEmail: vi.fn().mockImplementation(async ({ to }: { to: string }) => {
+        // Simulate Resend validation: reject clearly invalid addresses
+        if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+          throw new Error('Invalid recipient email address')
+        }
+        return { id: `mock-email-id-${Date.now()}` }
+      }),
+    } as unknown as Payload
   })
 
   describe('sendResetPasswordEmail', () => {
