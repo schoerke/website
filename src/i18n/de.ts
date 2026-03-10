@@ -56,6 +56,9 @@ const de = {
       artists: {
         title: 'Künstler:innen',
         discoverMore: 'Weitere Künstler:innen entdecken',
+        noArtistsFound: 'Keine Künstler:innen gefunden.',
+        noArtistsForInstruments: 'Keine Künstler:innen für diese Instrumente gefunden.',
+        filterByInstrument: 'Künstler:innen nach Instrument filtern',
       },
       artist: {
         backButton: 'Zurück',
@@ -157,6 +160,9 @@ const de = {
         visitTwitter: 'Besuchen Sie uns auf Twitter',
         visitYouTube: 'Besuchen Sie uns auf YouTube',
       },
+    },
+    accessibility: {
+      skipToMainContent: 'Zum Hauptinhalt springen',
     },
     pagination: {
       previous: 'Zurück',

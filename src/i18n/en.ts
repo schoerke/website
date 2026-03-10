@@ -53,6 +53,9 @@ const en = {
       artists: {
         title: 'Artists',
         discoverMore: 'Discover More Artists',
+        noArtistsFound: 'No artists found.',
+        noArtistsForInstruments: 'No artists found for these instruments.',
+        filterByInstrument: 'Filter artists by instrument',
       },
       artist: {
         backButton: 'Back to Artists',
@@ -154,6 +157,9 @@ const en = {
         visitTwitter: 'Visit us on Twitter',
         visitYouTube: 'Visit us on YouTube',
       },
+    },
+    accessibility: {
+      skipToMainContent: 'Skip to main content',
     },
     pagination: {
       previous: 'Previous',
