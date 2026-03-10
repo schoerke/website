@@ -10,6 +10,7 @@ const LOCALIZED_ROUTES = [
   '/admin/collections/posts',
   '/admin/collections/recordings',
   '/admin/collections/repertoire',
+  '/admin/globals/home-page',
 ]
 
 function isLocalizedRoute(pathname: string): boolean {

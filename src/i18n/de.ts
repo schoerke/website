@@ -52,6 +52,18 @@ const de = {
     pages: {
       home: {
         title: 'Start',
+        newsHeading: 'Aktuelles',
+        artistsHeading: 'Unsere Künstler:innen',
+        artistsBlurb:
+          'Unser Roster vereint international gefragte Solist:innen, Kammermusiker:innen und Ensembles auf höchstem Niveau. Jede Künstlerin und jeder Künstler wird von uns persönlich betreut – mit dem Ziel, die richtige Begegnung zwischen Talent und Bühne zu schaffen.',
+        artistsCta: 'Alle Künstler:innen',
+        teamHeading: 'Unser Team',
+        teamTagline:
+          'Hinter jedem Künstler steht ein engagiertes Team, das mit Leidenschaft und jahrelanger Erfahrung arbeitet. Wir begleiten unsere Künstler:innen auf ihrem Weg – von der ersten Anfrage bis zum letzten Applaus.',
+        teamCta: 'Zum Team',
+        contactHeading: 'Kontakt',
+        contactTagline: 'Wir freuen uns von Ihnen zu hören',
+        contactCta: 'Kontakt aufnehmen',
       },
       artists: {
         title: 'Künstler:innen',

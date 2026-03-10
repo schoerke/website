@@ -23,6 +23,9 @@ import { Recordings } from './collections/Recordings'
 import { Repertoire } from './collections/Repertoire'
 import { Users } from './collections/Users'
 
+// Globals
+import { HomePageGlobal } from './globals/HomePage'
+
 // Constants
 import { GENERAL_CONTACT } from './constants/contact'
 
@@ -51,6 +54,7 @@ export default buildConfig({
     },
   },
   collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Images, Documents, Issues],
+  globals: [HomePageGlobal],
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URI!,

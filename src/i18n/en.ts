@@ -49,6 +49,18 @@ const en = {
     pages: {
       home: {
         title: 'Home',
+        newsHeading: 'Latest News',
+        artistsHeading: 'Our Artists',
+        artistsBlurb:
+          'Our roster brings together internationally sought-after soloists, chamber musicians, and ensembles at the highest level. Each artist receives our personal attention — with the goal of creating the right match between talent and stage.',
+        artistsCta: 'View All Artists',
+        teamHeading: 'Meet the Team',
+        teamTagline:
+          'Behind every artist is a dedicated team working with passion and years of experience. We accompany our artists every step of the way — from the first enquiry to the final applause.',
+        teamCta: 'Learn More',
+        contactHeading: 'Get in Touch',
+        contactTagline: "We'd love to hear from you",
+        contactCta: 'Contact Us',
       },
       artists: {
         title: 'Artists',

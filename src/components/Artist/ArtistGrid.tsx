@@ -5,6 +5,7 @@ import { INSTRUMENT_PRIORITY } from '@/components/Artist/artistConstants'
 import InstrumentFilter from '@/components/Artist/InstrumentFilter'
 import ImageSlider from '@/components/ui/ImageSlider'
 import type { Artist, Image } from '@/payload-types'
+import { shuffleArray } from '@/utils/array'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 
@@ -53,18 +54,6 @@ function sortArtists(artists: Artist[]): Artist[] {
     const lastNameB = getLastName(b.name)
     return lastNameA.localeCompare(lastNameB)
   })
-}
-
-/**
- * Randomize array order
- */
-function shuffleArray<T>(array: T[]): T[] {
-  const arr = [...array]
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
-  }
-  return arr
 }
 
 /**
