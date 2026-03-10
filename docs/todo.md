@@ -36,7 +36,6 @@
     - **Location:** Create `docs/404-architecture.md` or add to existing docs
     - **Effort:** ~30 minutes
 
-
 ## Data Migration: Posts
 
 - [ ] Migrate posts from old site to new site
@@ -98,11 +97,6 @@
   - Added proper locale detection (x-locale, cookie, Accept-Language, default)
   - Consistent branded 404 with header/footer across all locales
   - Redirect from non-localized URLs to localized versions
-
-### Pages
-
-- [ ] Add Impressum page
-- [ ] Add Datenschutz page
 
 ### Artist Feature Enhancements (Optional)
 
