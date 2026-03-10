@@ -66,7 +66,7 @@ const ProjectsPage = async ({ params, searchParams }: ProjectsPageProps) => {
   }
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
+    <div className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
       <h1 className="font-playfair mb-8 text-5xl font-bold sm:mb-12 sm:text-6xl lg:text-7xl">{t('title')}</h1>
       <Suspense
         fallback={
@@ -87,7 +87,7 @@ const ProjectsPage = async ({ params, searchParams }: ProjectsPageProps) => {
           searchPlaceholder={tPagination('searchProjects')}
         />
       </Suspense>
-    </main>
+    </div>
   )
 }
 

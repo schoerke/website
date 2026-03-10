@@ -77,7 +77,7 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
   const employees = employeesResult.docs
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
+    <div className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
       {/* CMS-editable content at the top */}
       {page && (
         <div className="mb-8">
@@ -99,7 +99,7 @@ const TeamPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
           <TeamMemberCard key={employee.name} {...employee} phoneLabel={t('phone')} mobileLabel={t('mobile')} />
         ))}
       </div>
-    </main>
+    </div>
   )
 }
 

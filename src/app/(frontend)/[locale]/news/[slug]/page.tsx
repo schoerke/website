@@ -56,7 +56,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
   const relatedArtists = getRelatedArtists(artists)
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* Back button */}
       <div className="mb-8">
         <BackButton label={t('goBack')} fallbackHref="/news" className="text-sm" />
@@ -119,6 +119,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
           </span>
         </SchoerkeLink>
       </div>
-    </main>
+    </div>
   )
 }

@@ -38,7 +38,7 @@ const ContactPage = async ({ params }: { params: Promise<{ locale: string }> }) 
   const wiesbadenImage = imageResult.docs[0] as PayloadImage | undefined
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
+    <div className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
       <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold sm:text-6xl lg:text-7xl">{page.title}</h1>
       <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-8 lg:gap-12">
         <div className="prose max-w-none md:w-1/2">
@@ -59,7 +59,7 @@ const ContactPage = async ({ params }: { params: Promise<{ locale: string }> }) 
           </div>
         )}
       </div>
-    </main>
+    </div>
   )
 }
 
