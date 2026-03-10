@@ -241,9 +241,11 @@ export default ComponentName
    - This is a critical rule for code organization
 
 2. **Component Declaration:**
-   - Always use: `const ComponentName: React.FC<PropsType> = (props) => { ... }`
+   - Client components and sync server components: `const ComponentName: React.FC<PropsType> = (props) => { ... }`
+   - Async server components (data-fetching): `const ComponentName = async (props: PropsType) => { ... }`
    - Never use function declarations: `function ComponentName() { ... }`
    - Never export inline: `export const ComponentName = ...`
+   - Note: `React.FC` cannot be used with `async` components — omit it and type props inline or via interface
 
 3. **Props Interface:**
    - Always define a named interface: `ComponentNameProps`

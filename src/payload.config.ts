@@ -26,9 +26,6 @@ import { Users } from './collections/Users'
 // Constants
 import { GENERAL_CONTACT } from './constants/contact'
 
-// v2: Newsletter Contact Management
-// import { NewsletterContacts } from './collections/NewsletterContacts'
-
 // Translations
 import de from './i18n/de'
 import en from './i18n/en'
