@@ -3,7 +3,7 @@
 A modern, TypeScript-based web application for the Schoerke project, built with [Next.js](https://nextjs.org/) and
 [Payload CMS](https://payloadcms.com/). This repository provides a robust, maintainable, and extensible platform for
 managing content, media, and team information, with a focus on developer experience, code quality, and clear
-documentation.
+documentation. <https://www.youtube.com/watch?v=n_f4E50Qrqo&t=2524s>
 
 ---
 

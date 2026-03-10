@@ -33,7 +33,7 @@
     "dump:recordings": "pnpm dump recordings"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1004.0",
+    "@aws-sdk/client-s3": "^3.1005.0",
     "@libsql/client": "^0.17.0",
     "@payloadcms/db-sqlite": "^3.79.0",
     "@payloadcms/email-resend": "^3.79.0",
@@ -82,10 +82,10 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^25.3.5",
+    "@types/node": "^25.4.0",
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
-    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/eslint-plugin": "^8.57.0",
     "@vitejs/plugin-react": "^5.1.4",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
