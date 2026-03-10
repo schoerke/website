@@ -1,24 +1,13 @@
 'use client'
 
+import { INSTRUMENT_PRIORITY } from '@/components/Artist/artistConstants'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import { useTranslations } from 'next-intl'
 
-type InstrumentFilterProps = {
+interface InstrumentFilterProps {
   instruments: string[]
   selected: string[]
   onChange: (instruments: string[]) => void
-}
-
-// Define instrument category priority using the database keys (lowercase)
-const INSTRUMENT_PRIORITY: { [key: string]: number } = {
-  conductor: 1,
-  piano: 2,
-  'piano-forte': 2, // Same priority as piano
-  violin: 3,
-  cello: 4,
-  viola: 5,
-  bass: 6,
-  // All other instruments (winds, chamber music, etc.) get category 7
 }
 
 /**
@@ -41,11 +30,7 @@ function sortInstruments(instruments: string[]): string[] {
 
 const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, selected, onChange }) => {
   const t = useTranslations('custom.instruments')
-
-  // Multi-select: value is array, onValueChange gives array
-  const handleValueChange = (values: string[]) => {
-    onChange(values)
-  }
+  const tArtists = useTranslations('custom.pages.artists')
 
   // Sort instruments before rendering
   const sortedInstruments = sortInstruments(instruments)
@@ -54,9 +39,9 @@ const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, select
     <ToggleGroup
       type="multiple"
       value={selected}
-      onValueChange={handleValueChange}
+      onValueChange={onChange}
       className="mb-6 flex flex-wrap gap-2"
-      aria-label="Filter artists by instrument"
+      aria-label={tArtists('filterByInstrument')}
     >
       {sortedInstruments.map((instrument) => {
         // Translation key for instrument (type assertion needed for dynamic keys)

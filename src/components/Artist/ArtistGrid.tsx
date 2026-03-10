@@ -1,6 +1,7 @@
 'use client'
 
 import ArtistCard from '@/components/Artist/ArtistCard'
+import { INSTRUMENT_PRIORITY } from '@/components/Artist/artistConstants'
 import InstrumentFilter from '@/components/Artist/InstrumentFilter'
 import ImageSlider from '@/components/ui/ImageSlider'
 import type { Artist, Image } from '@/payload-types'
@@ -12,18 +13,6 @@ interface ArtistGridProps {
   instruments: string[]
 }
 
-// Define instrument category priority using the database keys (lowercase)
-const INSTRUMENT_PRIORITY: { [key: string]: number } = {
-  conductor: 1,
-  piano: 2,
-  'piano-forte': 2, // Same priority as piano
-  violin: 3,
-  cello: 4,
-  viola: 5,
-  bass: 6,
-  // All other instruments (winds, chamber music, etc.) get category 7
-}
-
 /**
  * Get the highest priority (lowest number) for an artist's instruments
  */
@@ -32,9 +21,7 @@ function getArtistPriority(artist: Artist): number {
     return 999 // Artists with no instrument go last
   }
 
-  const priorities = artist.instrument
-    .map((inst) => INSTRUMENT_PRIORITY[inst] ?? 7) // Default to 7 for winds and others
-    .filter((p) => p !== undefined)
+  const priorities = artist.instrument.map((inst) => INSTRUMENT_PRIORITY[inst] ?? 7) // Default to 7 for winds and others
 
   return priorities.length > 0 ? Math.min(...priorities) : 999
 }
@@ -161,7 +148,7 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
       <div>
         <InstrumentFilter instruments={instruments} selected={selectedInstruments} onChange={setSelectedInstruments} />
         {sortedArtists.length === 0 ? (
-          <div className="text-gray-500">No artists found for these instruments.</div>
+          <div className="text-gray-500">{t('noArtistsForInstruments')}</div>
         ) : (
           <div
             key={selectedInstruments.join(',')}
