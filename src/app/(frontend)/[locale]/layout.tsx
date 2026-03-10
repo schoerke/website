@@ -1,3 +1,4 @@
+import ErrorBoundary from '@/components/ErrorBoundary'
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
 import SearchProvider from '@/components/Search/SearchProvider'
@@ -34,11 +35,15 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale} suppressHydrationWarning>
       <body className="font-inter text-primary-black flex min-h-screen flex-col antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <SearchProvider>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer locale={locale} />
-          </SearchProvider>
+          <ErrorBoundary>
+            <SearchProvider>
+              <Header />
+              <main id="main-content" className="flex-1">
+                {children}
+              </main>
+              <Footer locale={locale} />
+            </SearchProvider>
+          </ErrorBoundary>
         </NextIntlClientProvider>
       </body>
     </html>
