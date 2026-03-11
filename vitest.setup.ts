@@ -11,5 +11,6 @@ process.env.EMAIL_FROM = process.env.EMAIL_FROM || 'test@example.com'
 import React from 'react'
 import { vi } from 'vitest'
 vi.mock('@/i18n/navigation', () => ({
-  Link: ({ href, children, ...props }) => React.createElement('a', { href, ...props }, children),
+  Link: ({ href, children, ...props }: { href: string; children: React.ReactNode; [key: string]: unknown }) =>
+    React.createElement('a', { href, ...props }, children),
 }))
