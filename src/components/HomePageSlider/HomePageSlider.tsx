@@ -89,15 +89,13 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
   return (
     <div
       className="relative w-full overflow-hidden rounded-lg"
-      style={{ height: 500 }}
+      style={{ aspectRatio: '4 / 3' }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* All slides stacked — crossfade via opacity */}
       {slides.map((slide, idx) => {
         const isActive = idx === activeIndex
-        const objectPosition =
-          slide.focalX != null && slide.focalY != null ? `${slide.focalX}% ${slide.focalY}%` : 'center'
 
         return (
           <Link
@@ -117,8 +115,7 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
               src={slide.src}
               alt={slide.alt}
               fill
-              className="object-cover"
-              style={{ objectPosition }}
+              className="object-cover object-top"
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
               priority={idx === 0}
             />

@@ -92,7 +92,7 @@ const HomePage = async ({ params }: HomePageProps) => {
       )}
 
       {/* Meet the Team + Contact CTA — stacked, 2-col at lg */}
-      <div className="mb-8 flex flex-col gap-16 lg:flex-row">
+      <div className="my-8 flex flex-col gap-16 lg:flex-row">
         {/* Meet the Team */}
         <section className="flex flex-1 flex-col items-start sm:items-center lg:items-center">
           <h2 className="font-playfair mb-4 text-4xl font-bold sm:text-center sm:text-5xl">{t('teamHeading')}</h2>
