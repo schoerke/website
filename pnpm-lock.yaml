@@ -194,8 +194,8 @@ importers:
         specifier: ^5.6.0
         version: 5.6.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3)
       happy-dom:
-        specifier: ^20.8.3
-        version: 20.8.3
+        specifier: ^20.8.4
+        version: 20.8.4
       postcss:
         specifier: ^8.5.8
         version: 8.5.8
@@ -225,7 +225,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.18
-        version: 4.0.18(@types/node@25.4.0)(@vitest/ui@4.0.18)(happy-dom@20.8.3)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.31.1)(sass@1.77.4)(tsx@4.21.0)(yaml@2.8.2)
+        version: 4.0.18(@types/node@25.4.0)(@vitest/ui@4.0.18)(happy-dom@20.8.4)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.31.1)(sass@1.77.4)(tsx@4.21.0)(yaml@2.8.2)
 
 packages:
 
@@ -633,8 +633,13 @@ packages:
     peerDependencies:
       '@csstools/css-tokenizer': ^4.0.0
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.0':
-    resolution: {integrity: sha512-H4tuz2nhWgNKLt1inYpoVCfbJbMwX/lQKp3g69rrrIMIYlFD9+zTykOKhNR8uGrAmbS/kT9n6hTFkmDkxLgeTA==}
+  '@csstools/css-syntax-patches-for-csstree@1.1.1':
+    resolution: {integrity: sha512-BvqN0AMWNAnLk9G8jnUT77D+mUbY/H2b3uDTvg2isJkHaOufUE2R3AOwxWo7VBQKT1lOdwdvorddo2B/lk64+w==}
+    peerDependencies:
+      css-tree: ^3.2.1
+    peerDependenciesMeta:
+      css-tree:
+        optional: true
 
   '@csstools/css-tokenizer@4.0.0':
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
@@ -3767,9 +3772,8 @@ packages:
   dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
 
-  dompurify@3.3.2:
-    resolution: {integrity: sha512-6obghkliLdmKa56xdbLOpUZ43pAR6xFy1uOrxBaIDjT+yaRuuybLjGS9eVBoSR/UPU5fq3OXClEHLJNGvbxKpQ==}
-    engines: {node: '>=20'}
+  dompurify@3.3.3:
+    resolution: {integrity: sha512-Oj6pzI2+RqBfFG+qOaOLbFXLQ90ARpcGG6UePL82bJLtdsa6CYJD7nmiU8MW9nQNOtCHV3lZ/Bzq1X0QYbBZCA==}
 
   dotenv@17.3.1:
     resolution: {integrity: sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA==}
@@ -4353,8 +4357,8 @@ packages:
     resolution: {integrity: sha512-gGgrVCoDKlIZ8fIqXBBb0pPKqDgki0Z/FSKNiQzSGj2uEYHr1tq5wmBegGwJx6QB5S5cM0khSBpi/JFHMCvsmQ==}
     engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
 
-  happy-dom@20.8.3:
-    resolution: {integrity: sha512-lMHQRRwIPyJ70HV0kkFT7jH/gXzSI7yDkQFe07E2flwmNDFoWUTRMKpW2sglsnpeA7b6S2TJPp98EbQxai8eaQ==}
+  happy-dom@20.8.4:
+    resolution: {integrity: sha512-GKhjq4OQCYB4VLFBzv8mmccUadwlAusOZOI7hC1D9xDIT5HhzkJK17c4el2f6R6C715P9xB4uiMxeKUa2nHMwQ==}
     engines: {node: '>=20.0.0'}
 
   has-bigints@1.1.0:
@@ -4848,8 +4852,8 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
-  lru-cache@11.2.6:
-    resolution: {integrity: sha512-ESL2CrkS/2wTPfuend7Zhkzo2u0daGJ/A2VucJOgQ/C48S/zB8MMeMHSGKYpXhIjbPxfuezITkaBH1wqv00DDQ==}
+  lru-cache@11.2.7:
+    resolution: {integrity: sha512-aY/R+aEsRelme17KGQa/1ZSIpLpNYYrhcrepKTZgE+W3WM16YMCaPwOHLHsmopZHELU0Ojin1lPVxKR0MihncA==}
     engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
@@ -5844,11 +5848,11 @@ packages:
     resolution: {integrity: sha512-PSkbLUoxOFRzJYjjxHJt9xro7D+iilgMX/C9lawzVuYiIdcihh9DXmVibBe8lmcFrRi/VzlPjBxbN7rH24q8/Q==}
     engines: {node: '>=14.0.0'}
 
-  tldts-core@7.0.25:
-    resolution: {integrity: sha512-ZjCZK0rppSBu7rjHYDYsEaMOIbbT+nWF57hKkv4IUmZWBNrBWBOjIElc0mKRgLM8bm7x/BBlof6t2gi/Oq/Asw==}
+  tldts-core@7.0.26:
+    resolution: {integrity: sha512-5WJ2SqFsv4G2Dwi7ZFVRnz6b2H1od39QME1lc2y5Ew3eWiZMAeqOAfWpRP9jHvhUl881406QtZTODvjttJs+ew==}
 
-  tldts@7.0.25:
-    resolution: {integrity: sha512-keinCnPbwXEUG3ilrWQZU+CqcTTzHq9m2HhoUP2l7Xmi8l1LuijAXLpAJ5zRW+ifKTNscs4NdCkfkDCBYm352w==}
+  tldts@7.0.26:
+    resolution: {integrity: sha512-WiGwQjr0qYdNNG8KpMKlSvpxz652lqa3Rd+/hSaDcY4Uo6SKWZq2LAF+hsAhUewTtYhXlorBKgNF3Kk8hnjGoQ==}
     hasBin: true
 
   to-no-case@1.0.2:
@@ -5872,8 +5876,8 @@ packages:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}
     engines: {node: '>=6'}
 
-  tough-cookie@6.0.0:
-    resolution: {integrity: sha512-kXuRi1mtaKMrsLUxz3sQYvVl37B0Ns6MzfrtV5DvJceE9bPyspOqk9xxv7XbZWcfLWbFmm997vl83qUWVJA64w==}
+  tough-cookie@6.0.1:
+    resolution: {integrity: sha512-LktZQb3IeoUWB9lqR5EWTHgW/VTITCXg4D21M+lvybRVdylLrRMnqaIONLVb5mav8vM19m44HIcGq4qASeu2Qw==}
     engines: {node: '>=16'}
 
   tr46@0.0.3:
@@ -6307,7 +6311,7 @@ snapshots:
       '@csstools/css-color-parser': 4.0.2(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-tokenizer': 4.0.0
-      lru-cache: 11.2.6
+      lru-cache: 11.2.7
     optional: true
 
   '@asamuzakjp/dom-selector@6.8.1':
@@ -6316,7 +6320,7 @@ snapshots:
       bidi-js: 1.0.3
       css-tree: 3.2.1
       is-potential-custom-element-name: 1.0.1
-      lru-cache: 11.2.6
+      lru-cache: 11.2.7
     optional: true
 
   '@asamuzakjp/nwsapi@2.3.9':
@@ -7253,7 +7257,9 @@ snapshots:
       '@csstools/css-tokenizer': 4.0.0
     optional: true
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.0':
+  '@csstools/css-syntax-patches-for-csstree@1.1.1(css-tree@3.2.1)':
+    optionalDependencies:
+      css-tree: 3.2.1
     optional: true
 
   '@csstools/css-tokenizer@4.0.0':
@@ -8006,7 +8012,7 @@ snapshots:
 
   '@lexical/headless@0.41.0':
     dependencies:
-      happy-dom: 20.8.3
+      happy-dom: 20.8.4
       lexical: 0.41.0
     transitivePeerDependencies:
       - bufferutil
@@ -9914,7 +9920,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.18(@types/node@25.4.0)(@vitest/ui@4.0.18)(happy-dom@20.8.3)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.31.1)(sass@1.77.4)(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.18(@types/node@25.4.0)(@vitest/ui@4.0.18)(happy-dom@20.8.4)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.31.1)(sass@1.77.4)(tsx@4.21.0)(yaml@2.8.2)
 
   '@vitest/expect@4.0.18':
     dependencies:
@@ -9959,7 +9965,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.18(@types/node@25.4.0)(@vitest/ui@4.0.18)(happy-dom@20.8.3)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.31.1)(sass@1.77.4)(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.18(@types/node@25.4.0)(@vitest/ui@4.0.18)(happy-dom@20.8.4)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.31.1)(sass@1.77.4)(tsx@4.21.0)(yaml@2.8.2)
 
   '@vitest/utils@4.0.18':
     dependencies:
@@ -10304,9 +10310,9 @@ snapshots:
   cssstyle@5.3.7:
     dependencies:
       '@asamuzakjp/css-color': 4.1.2
-      '@csstools/css-syntax-patches-for-csstree': 1.1.0
+      '@csstools/css-syntax-patches-for-csstree': 1.1.1(css-tree@3.2.1)
       css-tree: 3.2.1
-      lru-cache: 11.2.6
+      lru-cache: 11.2.7
     optional: true
 
   csstype@3.1.3: {}
@@ -10408,7 +10414,7 @@ snapshots:
       '@babel/runtime': 7.28.6
       csstype: 3.2.3
 
-  dompurify@3.3.2:
+  dompurify@3.3.3:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -11153,7 +11159,7 @@ snapshots:
 
   graphql@16.13.1: {}
 
-  happy-dom@20.8.3:
+  happy-dom@20.8.4:
     dependencies:
       '@types/node': 25.4.0
       '@types/whatwg-mimetype': 3.0.2
@@ -11484,7 +11490,7 @@ snapshots:
       parse5: 8.0.0
       saxes: 6.0.0
       symbol-tree: 3.2.4
-      tough-cookie: 6.0.0
+      tough-cookie: 6.0.1
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-encoding: 3.1.1
@@ -11662,7 +11668,7 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
-  lru-cache@11.2.6:
+  lru-cache@11.2.7:
     optional: true
 
   lru-cache@5.1.1:
@@ -11955,7 +11961,7 @@ snapshots:
 
   monaco-editor@0.55.1:
     dependencies:
-      dompurify: 3.3.2
+      dompurify: 3.3.3
       marked: 14.0.0
 
   mrmime@2.0.1: {}
@@ -12850,12 +12856,12 @@ snapshots:
 
   tinyrainbow@3.0.3: {}
 
-  tldts-core@7.0.25:
+  tldts-core@7.0.26:
     optional: true
 
-  tldts@7.0.25:
+  tldts@7.0.26:
     dependencies:
-      tldts-core: 7.0.25
+      tldts-core: 7.0.26
     optional: true
 
   to-no-case@1.0.2: {}
@@ -12880,9 +12886,9 @@ snapshots:
 
   totalist@3.0.1: {}
 
-  tough-cookie@6.0.0:
+  tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.0.25
+      tldts: 7.0.26
     optional: true
 
   tr46@0.0.3: {}
@@ -13140,7 +13146,7 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.2
 
-  vitest@4.0.18(@types/node@25.4.0)(@vitest/ui@4.0.18)(happy-dom@20.8.3)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.31.1)(sass@1.77.4)(tsx@4.21.0)(yaml@2.8.2):
+  vitest@4.0.18(@types/node@25.4.0)(@vitest/ui@4.0.18)(happy-dom@20.8.4)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.31.1)(sass@1.77.4)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.18
       '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@25.4.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass@1.77.4)(tsx@4.21.0)(yaml@2.8.2))
@@ -13165,7 +13171,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 25.4.0
       '@vitest/ui': 4.0.18(vitest@4.0.18)
-      happy-dom: 20.8.3
+      happy-dom: 20.8.4
       jsdom: 27.2.0
     transitivePeerDependencies:
       - jiti
