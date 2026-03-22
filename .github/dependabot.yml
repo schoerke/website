@@ -4,7 +4,15 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+      timezone: 'Europe/Berlin'
+    labels:
+      - 'dependabot'
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+      timezone: 'Europe/Berlin'
+    labels:
+      - 'dependabot'
