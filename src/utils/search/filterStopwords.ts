@@ -18,7 +18,7 @@ export const filterStopwords = (text: string, locale: 'de' | 'en'): string => {
     .split(/\s+/)
     .filter((word) => {
       // Remove punctuation from word for comparison
-      const cleanWord = word.replace(/[.,!?;:()"\[\]{}]/g, '')
+      const cleanWord = word.replace(/[.,!?;:()"[\]{}]/g, '')
       return cleanWord.length > 0 && !stopwords.has(cleanWord)
     })
 
