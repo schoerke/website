@@ -84,21 +84,11 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
         const postPath = getPostPath(post)
 
         return (
-          <article
-            key={post.id}
-            className="group grid grid-cols-1 gap-4 py-6 first:pt-0 lg:grid-cols-[140px_1fr_auto] lg:gap-8"
-          >
-            {/* Date column - only visible on large screens */}
-            <div className="hidden lg:block">
-              <time dateTime={post.createdAt} className="text-sm font-medium text-gray-500">
-                {formatDate(post.createdAt, locale)}
-              </time>
-            </div>
-
+          <article key={post.id} className="group py-6 first:pt-0">
             {/* Content column */}
-            <Link href={postPath as Parameters<typeof Link>['0']['href']} className="flex gap-4 sm:gap-6 lg:contents">
-              {/* Image - start on mobile/tablet, end on large screens */}
-              <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden sm:h-28 sm:w-28 lg:order-last">
+            <Link href={postPath as Parameters<typeof Link>['0']['href']} className="flex gap-4 sm:gap-6">
+              {/* Image - always on the left */}
+              <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden sm:h-28 sm:w-28">
                 <Image
                   src={imageUrl}
                   alt={post.title}
@@ -109,19 +99,20 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
               </div>
 
               {/* Text content */}
-              <div className="flex flex-1 flex-col justify-center">
-                <h3 className="font-playfair group-hover:text-primary-black mb-2 text-lg font-bold leading-tight text-gray-900 transition-colors sm:text-xl">
+              <div className="flex min-w-0 flex-1 flex-col justify-center">
+                <h3 className="font-playfair group-hover:text-primary-black mb-2 line-clamp-2 break-words overflow-hidden text-lg font-bold leading-tight text-gray-900 transition-colors sm:text-xl">
                   {post.title}
                 </h3>
                 {preview && (
                   <p className="mb-2 hidden text-sm leading-relaxed text-gray-600 sm:block sm:text-base">{preview}</p>
                 )}
                 <div className="flex items-center gap-3 text-xs text-gray-500 sm:text-sm">
-                  {/* Date shown inline on mobile/tablet */}
-                  <time dateTime={post.createdAt} className="lg:hidden">
-                    {formatDate(post.createdAt, locale)}
-                  </time>
-                  <span className="focus-visible:outline-primary-yellow after:bg-primary-yellow relative hidden font-medium text-gray-600 transition duration-150 ease-in-out after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:text-gray-800 group-hover:after:w-full sm:inline">
+                  {/* Date shown inline */}
+                  <time dateTime={new Date(post.createdAt).toISOString()}>{formatDate(post.createdAt, locale)}</time>
+                  <span
+                    aria-hidden="true"
+                    className="focus-visible:outline-primary-yellow after:bg-primary-yellow relative hidden font-medium text-gray-600 transition duration-150 ease-in-out after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:text-gray-800 group-hover:after:w-full sm:inline"
+                  >
                     {t('learnMore')}
                   </span>
                 </div>
