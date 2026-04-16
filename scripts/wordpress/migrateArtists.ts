@@ -119,6 +119,28 @@ const CONFIG: MigrationConfig = {
 let imagesIdMap: Record<string, number> = {}
 let documentsIdMap: Record<string, number> = {}
 
+interface ArtistOverride {
+  instruments?: string
+  reason: string
+}
+
+/**
+ * Per-artist overrides for data missing or incorrect in the WordPress export.
+ * Loaded from artist-overrides.json. Keys are artist display names.
+ */
+let artistOverrides: Record<string, ArtistOverride> = {}
+
+async function loadArtistOverrides(): Promise<void> {
+  try {
+    const overridesPath = path.join(process.cwd(), 'scripts/wordpress/data/artist-overrides.json')
+    const content = await fs.readFile(overridesPath, 'utf-8')
+    artistOverrides = JSON.parse(content)
+    console.log(`📋 Loaded ${Object.keys(artistOverrides).length} artist override(s)`)
+  } catch {
+    console.warn('⚠️  Could not load artist-overrides.json, proceeding without overrides')
+  }
+}
+
 /**
  * Get WordPress attachment URL from all-en.xml
  * This is used to resolve _thumbnail_id to actual media filename
@@ -232,11 +254,21 @@ async function mapArtistData(
   const biographyHTML = quote ? cleanBiographyHTML(content) : content
   const biography = htmlToLexical(biographyHTML)
 
+  // Apply per-artist overrides from artist-overrides.json for data missing in WordPress
+  const override = artistOverrides[wpArtist.title]
+  const instrumentsRaw = (meta.instruments as string) || override?.instruments || ''
+
+  if (!meta.instruments && override?.instruments) {
+    console.log(
+      `ℹ️  Applying instrument override for "${wpArtist.title}": ${override.instruments} (${override.reason})`
+    )
+  }
+
   // Basic fields
   const artistData: PayloadArtistData = {
     name: wpArtist.title,
     slug: wpArtist['wp:post_name'],
-    instrument: mapInstruments(meta.instruments as string),
+    instrument: mapInstruments(instrumentsRaw),
     biography,
   }
 
@@ -553,6 +585,9 @@ async function runMigration() {
       await loadAttachmentMap()
     }
 
+    // Load artist overrides
+    await loadArtistOverrides()
+
     // Load both XML files
     console.log('📥 Loading WordPress exports...')
     const allEnItems = await parseWordPressXML(CONFIG.xmlPathEn)
@@ -597,6 +632,14 @@ async function runMigration() {
 
       const deData = deMap.get(slug) || enData // Fallback to EN if DE not found
       await migrateArtist(name, enData, deData, payload, stats)
+    }
+
+    // Warn about any overrides that didn't match any artist (likely a name mismatch)
+    const processedNames = new Set([...enMap.values()].map((d) => d.name))
+    const unusedOverrides = Object.keys(artistOverrides).filter((name) => !processedNames.has(name))
+    if (unusedOverrides.length > 0) {
+      console.warn(`\n⚠️  Artist overrides defined but no matching artist found: ${unusedOverrides.join(', ')}`)
+      console.warn('   Check for name mismatches in artist-overrides.json')
     }
 
     // Print summary
