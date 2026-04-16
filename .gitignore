@@ -71,3 +71,6 @@ next-env.d.ts
 # Payload auto-generated files
 src/payload-generated-schema.ts
 .env.vercel
+
+# opencode
+.opencode
