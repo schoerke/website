@@ -65,7 +65,9 @@ export const validateURL =
 
       // Check allowed domains if specified
       if (options?.allowedDomains && options.allowedDomains.length > 0) {
-        const isAllowed = options.allowedDomains.some((domain) => url.hostname.endsWith(domain))
+        const isAllowed = options.allowedDomains.some(
+          (domain) => url.hostname === domain || url.hostname.endsWith(`.${domain}`)
+        )
         if (!isAllowed) {
           return options?.message || `URL must be from one of these domains: ${options.allowedDomains.join(', ')}`
         }

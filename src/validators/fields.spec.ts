@@ -177,8 +177,8 @@ describe('validateURL', () => {
     it('should reject URLs from non-allowed domains', () => {
       const validator = validateURL({ allowedDomains: ['example.com'] })
       expect(validator('https://other.com')).toBe('URL must be from one of these domains: example.com')
-      // notexample.com ends with 'example.com', so it's allowed (endsWith behavior)
-      expect(validator('https://notexample.com')).toBe(true)
+      // notexample.com should be rejected — it is not example.com nor a subdomain of example.com
+      expect(validator('https://notexample.com')).toBe('URL must be from one of these domains: example.com')
     })
 
     it('should show multiple allowed domains in error message', () => {
