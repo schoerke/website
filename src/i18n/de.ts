@@ -94,6 +94,13 @@ const de = {
           concertDates: 'Keine anstehenden Termine.',
         },
         loading: 'Laden...',
+        discography: {
+          listenOnSpotify: 'Auf Spotify anhören',
+          listenOnAppleMusic: 'Auf Apple Music anhören',
+          listenOnSpotifyFor: '{title} auf Spotify anhören',
+          listenOnAppleMusicFor: '{title} auf Apple Music anhören',
+          opensInNewTab: 'öffnet in neuem Tab',
+        },
         video: {
           accordionTrigger: 'Video anzeigen',
         },

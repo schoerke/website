@@ -91,6 +91,13 @@ const en = {
           concertDates: 'No upcoming dates.',
         },
         loading: 'Loading...',
+        discography: {
+          listenOnSpotify: 'Listen on Spotify',
+          listenOnAppleMusic: 'Listen on Apple Music',
+          listenOnSpotifyFor: 'Listen to {title} on Spotify',
+          listenOnAppleMusicFor: 'Listen to {title} on Apple Music',
+          opensInNewTab: 'opens in new tab',
+        },
         video: {
           accordionTrigger: 'Show video',
         },
