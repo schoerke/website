@@ -477,6 +477,14 @@ export interface Recording {
   catalogNumber?: string | null;
   coverArt?: (number | null) | Image;
   /**
+   * Link to this recording on Spotify (e.g. https://open.spotify.com/album/...)
+   */
+  spotifyURL?: string | null;
+  /**
+   * Link to this recording on Apple Music (e.g. https://music.apple.com/album/...)
+   */
+  appleMusicURL?: string | null;
+  /**
    * Select one or more artists who performed in this recording
    */
   artists: (number | Artist)[];
@@ -844,6 +852,8 @@ export interface RecordingsSelect<T extends boolean = true> {
   recordingLabel?: T;
   catalogNumber?: T;
   coverArt?: T;
+  spotifyURL?: T;
+  appleMusicURL?: T;
   artists?: T;
   roles?: T;
   updatedAt?: T;

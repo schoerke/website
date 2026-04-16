@@ -4,6 +4,7 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
+import { validateURL } from '@/validators/fields'
 
 export const Recordings: CollectionConfig = {
   slug: 'recordings',
@@ -125,6 +126,38 @@ export const Recordings: CollectionConfig = {
       admin: {
         position: 'sidebar',
       },
+    },
+    {
+      name: 'spotifyURL',
+      type: 'text',
+      required: false,
+      label: {
+        en: 'Spotify URL',
+        de: 'Spotify-URL',
+      },
+      admin: {
+        description: {
+          en: 'Link to this recording on Spotify (e.g. https://open.spotify.com/album/...)',
+          de: 'Link zu dieser Aufnahme auf Spotify (z.B. https://open.spotify.com/album/...)',
+        },
+      },
+      validate: validateURL({ allowedDomains: ['spotify.com', 'open.spotify.com'] }),
+    },
+    {
+      name: 'appleMusicURL',
+      type: 'text',
+      required: false,
+      label: {
+        en: 'Apple Music URL',
+        de: 'Apple Music-URL',
+      },
+      admin: {
+        description: {
+          en: 'Link to this recording on Apple Music (e.g. https://music.apple.com/album/...)',
+          de: 'Link zu dieser Aufnahme auf Apple Music (z.B. https://music.apple.com/album/...)',
+        },
+      },
+      validate: validateURL({ allowedDomains: ['music.apple.com'] }),
     },
     {
       name: 'artists',
