@@ -60,7 +60,7 @@
     "kbar": "0.1.0-beta.48",
     "libsql": "^0.5.29",
     "lodash": "^4.18.1",
-    "lucide-react": "^0.577.0",
+    "lucide-react": "^1.8.0",
     "mime": "^4.0.7",
     "next": "16.2.4",
     "next-intl": "^4.9.1",
