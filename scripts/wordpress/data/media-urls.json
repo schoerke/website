@@ -1,6 +1,6 @@
 [
   {
-    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2017/11/Ruth-Killius_Jean-François-Mariotti-e1568814418126.jpg",
+    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2017/11/Ruth-Killius_Jean-Fran\u00e7ois-Mariotti-e1568814418126.jpg",
     "source": "artists",
     "field": "image",
     "filename": "Ruth-Killius_Jean-Fran%C3%A7ois-Mariotti-e1568814418126.jpg"
@@ -90,7 +90,7 @@
     "filename": "Till-Fellner-Fotos-download.zip"
   },
   {
-    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2016/08/Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-®-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940.jpg",
+    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2016/08/Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-\u00ae-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940.jpg",
     "source": "artists",
     "field": "image",
     "filename": "Martin-Stadtfeld-Pressefoto-2018_Homage-to-Bach-%C2%AE-Henning-Ross-Sony-Classical-5_-Slide2-e1536755976940.jpg"
@@ -300,7 +300,7 @@
     "filename": "TG_Bio_e.pdf"
   },
   {
-    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2023/09/Trio-Gaspard-©-Andrej-Grilc.zip",
+    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2023/09/Trio-Gaspard-\u00a9-Andrej-Grilc.zip",
     "source": "artists",
     "field": "galleryZIP",
     "filename": "Trio-Gaspard-%C2%A9-Andrej-Grilc.zip"
@@ -360,7 +360,7 @@
     "filename": "Claire-Huangci-C-Mateusz-Zahora_MG_3302-2.zip"
   },
   {
-    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2016/08/CZ01©Constanze-Zacharias-e1522062645520.jpg",
+    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2016/08/CZ01\u00a9Constanze-Zacharias-e1522062645520.jpg",
     "source": "artists",
     "field": "image",
     "filename": "CZ01%C2%A9Constanze-Zacharias-e1522062645520.jpg"
@@ -372,7 +372,7 @@
     "filename": "CZ_Bio_e.pdf"
   },
   {
-    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2018/08/CZ_13©Constanze-Zacharias.zip",
+    "url": "http://en.ks-schoerke.de/wp-content/uploads/sites/2/2018/08/CZ_13\u00a9Constanze-Zacharias.zip",
     "source": "artists",
     "field": "galleryZIP",
     "filename": "CZ_13%C2%A9Constanze-Zacharias.zip"
@@ -436,5 +436,17 @@
     "source": "employees",
     "field": "image",
     "filename": "Foto-Justine-scaled.jpg"
+  },
+  {
+    "url": "https://ks-schoerke.de/wp-content/uploads/2018/02/Scheps_Foto06_c_Uwe_Arens-scaled-e1769774667573.jpg",
+    "source": "artists",
+    "field": "image",
+    "filename": "Scheps_Foto06_c_Uwe_Arens-scaled-e1769774667573.jpg"
+  },
+  {
+    "url": "https://ks-schoerke.de/wp-content/uploads/2018/02/Scheps_Foto07_c_Thomas-Rabsch-scaled-e1769774704909.jpg",
+    "source": "artists",
+    "field": "image",
+    "filename": "Scheps_Foto07_c_Thomas-Rabsch-scaled-e1769774704909.jpg"
   }
 ]
