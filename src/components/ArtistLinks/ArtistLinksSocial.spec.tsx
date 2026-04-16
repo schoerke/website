@@ -40,7 +40,7 @@ describe('ArtistLinksSocial', () => {
     const { container } = render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksSocial />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(container.firstChild).toBeNull()
@@ -58,7 +58,7 @@ describe('ArtistLinksSocial', () => {
           youtubeURL={null}
           spotifyURL={null}
         />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(container.firstChild).toBeNull()
@@ -69,7 +69,7 @@ describe('ArtistLinksSocial', () => {
       render(
         <NextIntlTestProvider messages={testMessages}>
           <ArtistLinksSocial homepageURL="https://www.example.com" />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const link = screen.getByRole('link', { name: 'Visit artist homepage' })
@@ -83,7 +83,7 @@ describe('ArtistLinksSocial', () => {
       render(
         <NextIntlTestProvider messages={testMessages}>
           <ArtistLinksSocial homepageURL="https://www.artist-website.com/portfolio" />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByText('artist-website.com')).toBeInTheDocument()
@@ -93,7 +93,7 @@ describe('ArtistLinksSocial', () => {
       render(
         <NextIntlTestProvider messages={testMessages}>
           <ArtistLinksSocial homepageURL="http://artist-website.com" />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByText('artist-website.com')).toBeInTheDocument()
@@ -103,7 +103,7 @@ describe('ArtistLinksSocial', () => {
       render(
         <NextIntlTestProvider messages={testMessages}>
           <ArtistLinksSocial homepageURL="https://example.com" />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByText('Links')).toBeInTheDocument()
@@ -113,7 +113,7 @@ describe('ArtistLinksSocial', () => {
       render(
         <NextIntlTestProvider messages={testMessages}>
           <ArtistLinksSocial homepageURL="https://example.com" />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const links = screen.getAllByRole('link')
@@ -125,7 +125,7 @@ describe('ArtistLinksSocial', () => {
       render(
         <NextIntlTestProvider messages={testMessages}>
           <ArtistLinksSocial homepageURL="https://example.com" facebookURL="https://facebook.com/artist" />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const links = screen.getAllByRole('link')
@@ -145,7 +145,7 @@ describe('ArtistLinksSocial', () => {
             youtubeURL={null}
             spotifyURL={null}
           />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const link = screen.getByRole('link', { name: 'Visit Facebook profile' })
@@ -165,7 +165,7 @@ describe('ArtistLinksSocial', () => {
             youtubeURL={null}
             spotifyURL={null}
           />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByRole('link', { name: 'Visit Facebook profile' })).toBeInTheDocument()
@@ -185,7 +185,7 @@ describe('ArtistLinksSocial', () => {
             youtubeURL="https://youtube.com/artist"
             spotifyURL="https://spotify.com/artist"
           />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByRole('link', { name: 'Visit Facebook profile' })).toBeInTheDocument()
@@ -205,28 +205,28 @@ describe('ArtistLinksSocial', () => {
             youtubeURL="https://youtube.com/@testartist"
             spotifyURL="https://open.spotify.com/artist/abc123"
           />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByRole('link', { name: 'Visit Facebook profile' })).toHaveAttribute(
         'href',
-        'https://facebook.com/test-artist',
+        'https://facebook.com/test-artist'
       )
       expect(screen.getByRole('link', { name: 'Visit X (Twitter) profile' })).toHaveAttribute(
         'href',
-        'https://twitter.com/test_artist',
+        'https://twitter.com/test_artist'
       )
       expect(screen.getByRole('link', { name: 'Visit Instagram profile' })).toHaveAttribute(
         'href',
-        'https://instagram.com/test.artist',
+        'https://instagram.com/test.artist'
       )
       expect(screen.getByRole('link', { name: 'Visit YouTube channel' })).toHaveAttribute(
         'href',
-        'https://youtube.com/@testartist',
+        'https://youtube.com/@testartist'
       )
       expect(screen.getByRole('link', { name: 'Visit Spotify profile' })).toHaveAttribute(
         'href',
-        'https://open.spotify.com/artist/abc123',
+        'https://open.spotify.com/artist/abc123'
       )
     })
 
@@ -240,7 +240,7 @@ describe('ArtistLinksSocial', () => {
             youtubeURL="https://youtube.com/artist"
             spotifyURL="https://spotify.com/artist"
           />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const links = screen.getAllByRole('link')
@@ -254,7 +254,7 @@ describe('ArtistLinksSocial', () => {
       render(
         <NextIntlTestProvider messages={testMessages}>
           <ArtistLinksSocial facebookURL="https://facebook.com/artist" />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByText('Links')).toBeInTheDocument()
@@ -266,7 +266,7 @@ describe('ArtistLinksSocial', () => {
       render(
         <NextIntlTestProvider messages={testMessages}>
           <ArtistLinksSocial externalCalendarURL="https://calendar.example.com/artist" />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const link = screen.getByRole('link', { name: 'View concert dates' })
@@ -284,7 +284,7 @@ describe('ArtistLinksSocial', () => {
             facebookURL="https://facebook.com/artist"
             instagramURL="https://instagram.com/artist"
           />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const links = screen.getAllByRole('link')

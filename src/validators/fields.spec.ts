@@ -60,7 +60,7 @@ describe('validateYouTubeURL', () => {
 
     it('should reject YouTube URLs without video ID', () => {
       expect(validateYouTubeURL('https://youtube.com/watch')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID',
+        'Please enter a valid YouTube URL with a valid video ID'
       )
       expect(validateYouTubeURL('https://youtube.com')).toBe('Please enter a valid YouTube URL with a valid video ID')
       expect(validateYouTubeURL('https://youtu.be/')).toBe('Please enter a valid YouTube URL with a valid video ID')
@@ -68,26 +68,26 @@ describe('validateYouTubeURL', () => {
 
     it('should reject video IDs shorter than 11 characters', () => {
       expect(validateYouTubeURL('https://youtube.com/watch?v=short')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID',
+        'Please enter a valid YouTube URL with a valid video ID'
       )
       expect(validateYouTubeURL('https://youtu.be/abc')).toBe('Please enter a valid YouTube URL with a valid video ID')
     })
 
     it('should reject video IDs longer than 11 characters', () => {
       expect(validateYouTubeURL('https://youtube.com/watch?v=toolongvideoid')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID',
+        'Please enter a valid YouTube URL with a valid video ID'
       )
       expect(validateYouTubeURL('https://youtu.be/verylongid12')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID',
+        'Please enter a valid YouTube URL with a valid video ID'
       )
     })
 
     it('should reject video IDs with invalid characters', () => {
       expect(validateYouTubeURL('https://youtube.com/watch?v=abc@def#hij')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID',
+        'Please enter a valid YouTube URL with a valid video ID'
       )
       expect(validateYouTubeURL('https://youtu.be/abc def hij')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID',
+        'Please enter a valid YouTube URL with a valid video ID'
       )
     })
 
@@ -184,7 +184,7 @@ describe('validateURL', () => {
     it('should show multiple allowed domains in error message', () => {
       const validator = validateURL({ allowedDomains: ['example.com', 'test.org', 'sample.net'] })
       expect(validator('https://other.com')).toBe(
-        'URL must be from one of these domains: example.com, test.org, sample.net',
+        'URL must be from one of these domains: example.com, test.org, sample.net'
       )
     })
 
@@ -280,49 +280,49 @@ describe('validateQuote', () => {
   describe('invalid quotes', () => {
     it('should reject quotes starting with double quotation marks', () => {
       expect(validateQuote('"This starts with quotes')).toBe(
-        'Please avoid starting or ending the quote with quotation marks',
+        'Please avoid starting or ending the quote with quotation marks'
       )
     })
 
     it('should reject quotes ending with double quotation marks', () => {
       expect(validateQuote('This ends with quotes"')).toBe(
-        'Please avoid starting or ending the quote with quotation marks',
+        'Please avoid starting or ending the quote with quotation marks'
       )
     })
 
     it('should reject quotes both starting and ending with double quotation marks', () => {
       expect(validateQuote('"This is fully quoted"')).toBe(
-        'Please avoid starting or ending the quote with quotation marks',
+        'Please avoid starting or ending the quote with quotation marks'
       )
     })
 
     it('should reject quotes with curly double quotes at start', () => {
       expect(validateQuote('"Curly quote at start')).toBe(
-        'Please avoid starting or ending the quote with quotation marks',
+        'Please avoid starting or ending the quote with quotation marks'
       )
       expect(validateQuote('"Curly quote at start')).toBe(
-        'Please avoid starting or ending the quote with quotation marks',
+        'Please avoid starting or ending the quote with quotation marks'
       )
     })
 
     it('should reject quotes with curly double quotes at end', () => {
       expect(validateQuote('Curly quote at end"')).toBe(
-        'Please avoid starting or ending the quote with quotation marks',
+        'Please avoid starting or ending the quote with quotation marks'
       )
       expect(validateQuote('Curly quote at end"')).toBe(
-        'Please avoid starting or ending the quote with quotation marks',
+        'Please avoid starting or ending the quote with quotation marks'
       )
     })
 
     it('should reject quotes starting with single quotation marks', () => {
       expect(validateQuote("'This starts with single quote")).toBe(
-        'Please avoid starting or ending the quote with quotation marks',
+        'Please avoid starting or ending the quote with quotation marks'
       )
     })
 
     it('should reject quotes ending with single quotation marks', () => {
       expect(validateQuote("This ends with single quote'")).toBe(
-        'Please avoid starting or ending the quote with quotation marks',
+        'Please avoid starting or ending the quote with quotation marks'
       )
     })
 
@@ -477,7 +477,7 @@ describe('validatePassword', () => {
     it('should handle password exactly at 128 characters', () => {
       const exactly128 = 'A'.repeat(60) + 'a'.repeat(60) + '12345678'
       expect(validatePassword(exactly128)).toBe(
-        'Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)',
+        'Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)'
       )
 
       const exactly128Valid = 'A'.repeat(60) + 'a'.repeat(60) + '1234567!'

@@ -164,7 +164,7 @@ describe('sendIssueNotification hook', () => {
         expect.objectContaining({
           reporterName: 'John Doe',
           reporterEmail: 'reporter@example.com',
-        }),
+        })
       )
     })
 
@@ -198,7 +198,7 @@ describe('sendIssueNotification hook', () => {
         expect.objectContaining({
           reporterName: 'Jane Smith',
           reporterEmail: 'fetched@example.com',
-        }),
+        })
       )
     })
 
@@ -219,7 +219,7 @@ describe('sendIssueNotification hook', () => {
         expect.objectContaining({
           reporterName: undefined,
           reporterEmail: undefined,
-        }),
+        })
       )
     })
 
@@ -245,7 +245,7 @@ describe('sendIssueNotification hook', () => {
         expect.objectContaining({
           reporterName: undefined,
           reporterEmail: undefined,
-        }),
+        })
       )
     })
   })
@@ -277,7 +277,7 @@ describe('sendIssueNotification hook', () => {
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           description: lexicalDescription,
-        }),
+        })
       )
     })
 
@@ -321,7 +321,7 @@ describe('sendIssueNotification hook', () => {
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           description: lexicalWithImages,
-        }),
+        })
       )
     })
 
@@ -340,7 +340,7 @@ describe('sendIssueNotification hook', () => {
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           description: 'invalid-lexical-format',
-        }),
+        })
       )
     })
 
@@ -357,7 +357,7 @@ describe('sendIssueNotification hook', () => {
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           description: 'No description provided',
-        }),
+        })
       )
     })
   })
@@ -377,7 +377,7 @@ describe('sendIssueNotification hook', () => {
       } as HookArgs)
 
       expect(req.payload.logger.error).toHaveBeenCalledWith(
-        expect.stringContaining('Failed to send issue notification email'),
+        expect.stringContaining('Failed to send issue notification email')
       )
       expect(result).toEqual(doc)
     })
@@ -412,7 +412,7 @@ describe('sendIssueNotification hook', () => {
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'in-progress',
-        }),
+        })
       )
     })
 
@@ -429,7 +429,7 @@ describe('sendIssueNotification hook', () => {
       expect(sendIssueNotificationEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'open',
-        }),
+        })
       )
     })
   })

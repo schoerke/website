@@ -62,25 +62,25 @@ const [newsResult, artistsResult] = await Promise.all([
 
 New keys to add to `custom.pages.home` in both `src/i18n/de.ts` and `src/i18n/en.ts`:
 
-| Key              | DE                            | EN                          |
-|------------------|-------------------------------|-----------------------------|
-| `newsHeading`    | `"Aktuelles"`                 | `"Latest News"`             |
-| `artistsHeading` | `"Unsere Künstler:innen"`     | `"Our Artists"`             |
-| `teamHeading`    | `"Unser Team"`                | `"Meet the Team"`           |
-| `teamTagline`    | `"Lernen Sie unser Team kennen"` | `"Get to know our team"` |
-| `teamCta`        | `"Zum Team"`                  | `"Meet the Team"`           |
-| `contactHeading` | `"Kontakt"`                   | `"Get in Touch"`            |
+| Key              | DE                                    | EN                             |
+| ---------------- | ------------------------------------- | ------------------------------ |
+| `newsHeading`    | `"Aktuelles"`                         | `"Latest News"`                |
+| `artistsHeading` | `"Unsere Künstler:innen"`             | `"Our Artists"`                |
+| `teamHeading`    | `"Unser Team"`                        | `"Meet the Team"`              |
+| `teamTagline`    | `"Lernen Sie unser Team kennen"`      | `"Get to know our team"`       |
+| `teamCta`        | `"Zum Team"`                          | `"Meet the Team"`              |
+| `contactHeading` | `"Kontakt"`                           | `"Get in Touch"`               |
 | `contactTagline` | `"Wir freuen uns von Ihnen zu hören"` | `"We'd love to hear from you"` |
-| `contactCta`     | `"Kontakt aufnehmen"`         | `"Contact Us"`              |
+| `contactCta`     | `"Kontakt aufnehmen"`                 | `"Contact Us"`                 |
 
 ## Component Map
 
-| Section       | Component            | Source file                              | New code? |
-|---------------|----------------------|------------------------------------------|-----------|
-| News          | `NewsFeed.Server`    | `src/components/NewsFeed/`               | No        |
-| Artist roster | `ArtistGrid`         | `src/components/Artist/ArtistGrid.tsx`   | No        |
-| Team teaser   | inline in page       | `src/app/(frontend)/[locale]/page.tsx`   | Yes (small) |
-| Contact CTA   | inline in page       | `src/app/(frontend)/[locale]/page.tsx`   | Yes (small) |
+| Section       | Component         | Source file                            | New code?   |
+| ------------- | ----------------- | -------------------------------------- | ----------- |
+| News          | `NewsFeed.Server` | `src/components/NewsFeed/`             | No          |
+| Artist roster | `ArtistGrid`      | `src/components/Artist/ArtistGrid.tsx` | No          |
+| Team teaser   | inline in page    | `src/app/(frontend)/[locale]/page.tsx` | Yes (small) |
+| Contact CTA   | inline in page    | `src/app/(frontend)/[locale]/page.tsx` | Yes (small) |
 
 ## File Changes
 

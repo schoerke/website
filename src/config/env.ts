@@ -21,7 +21,7 @@ export const publicEnv = {
 export function validatePublicEnv() {
   if (!process.env.NEXT_PUBLIC_S3_HOSTNAME) {
     console.warn(
-      'Warning: NEXT_PUBLIC_S3_HOSTNAME is not set. Using default R2 endpoint. This may cause issues in production.',
+      'Warning: NEXT_PUBLIC_S3_HOSTNAME is not set. Using default R2 endpoint. This may cause issues in production.'
     )
   }
 }

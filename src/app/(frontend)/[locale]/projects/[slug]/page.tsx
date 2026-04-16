@@ -26,7 +26,7 @@ export async function generateStaticParams() {
         ...posts.docs.map((post) => ({
           locale,
           slug: post.slug,
-        })),
+        }))
       )
     }
 

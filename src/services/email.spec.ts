@@ -178,7 +178,7 @@ describe('email service - integration tests', () => {
           payload,
           to: 'invalid-email-format',
           resetLink: 'https://example.com/reset?token=test',
-        }),
+        })
       ).rejects.toThrow()
     })
 
@@ -191,7 +191,7 @@ describe('email service - integration tests', () => {
           description: 'Test description',
           status: 'open',
           issueId: 'test',
-        }),
+        })
       ).rejects.toThrow()
     })
   })

@@ -53,7 +53,7 @@ describe('Recording Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { _status: { equals: 'published' } },
-        }),
+        })
       )
     })
 
@@ -65,7 +65,7 @@ describe('Recording Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           depth: 2,
-        }),
+        })
       )
     })
 
@@ -77,7 +77,7 @@ describe('Recording Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           locale: 'en',
-        }),
+        })
       )
     })
   })
@@ -127,7 +127,7 @@ describe('Recording Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           depth: 2,
-        }),
+        })
       )
     })
   })
@@ -171,7 +171,7 @@ describe('Recording Service', () => {
       expect(mockPayload.findByID).toHaveBeenCalledWith(
         expect.objectContaining({
           depth: 2,
-        }),
+        })
       )
     })
   })

@@ -111,7 +111,7 @@ const NewsFeedSearch: React.FC<NewsFeedSearchProps> = ({ minChars = 3, debounceM
           onKeyDown={handleKeyDown}
           className={cn(
             'pl-6 pr-6',
-            showMinCharsWarning && 'border-b-primary-error focus-visible:border-b-primary-error border-b-2',
+            showMinCharsWarning && 'border-b-primary-error focus-visible:border-b-primary-error border-b-2'
           )}
           aria-label={placeholderText}
           aria-invalid={showMinCharsWarning}

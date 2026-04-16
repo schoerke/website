@@ -86,7 +86,7 @@ const FooterInfo: React.FC<FooterInfoProps> = async ({ locale }) => {
                     | 'socialMedia.visitFacebook'
                     | 'socialMedia.visitInstagram'
                     | 'socialMedia.visitTwitter'
-                    | 'socialMedia.visitYouTube',
+                    | 'socialMedia.visitYouTube'
                 )}
                 target="_blank"
                 rel="noopener noreferrer"

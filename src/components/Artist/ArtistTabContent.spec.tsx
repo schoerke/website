@@ -332,7 +332,7 @@ describe('ArtistTabContent', () => {
           availableRoles={[]}
           selectedRole={null}
           onRoleFilterChange={vi.fn()}
-        />,
+        />
       )
 
       // Check for loading skeletons by looking for animate-pulse class
@@ -349,7 +349,7 @@ describe('ArtistTabContent', () => {
           availableRoles={[]}
           selectedRole={null}
           onRoleFilterChange={vi.fn()}
-        />,
+        />
       )
 
       expect(screen.getByTestId('empty-recordings')).toBeInTheDocument()
@@ -365,7 +365,7 @@ describe('ArtistTabContent', () => {
           availableRoles={['conductor', 'soloist']}
           selectedRole="conductor"
           onRoleFilterChange={vi.fn()}
-        />,
+        />
       )
 
       expect(screen.getByText(emptyMessage)).toBeInTheDocument()
@@ -381,7 +381,7 @@ describe('ArtistTabContent', () => {
           availableRoles={['conductor']}
           selectedRole={null}
           onRoleFilterChange={vi.fn()}
-        />,
+        />
       )
 
       expect(screen.getByTestId('recording-list')).toBeInTheDocument()
@@ -400,7 +400,7 @@ describe('ArtistTabContent', () => {
           availableRoles={availableRoles}
           selectedRole={null}
           onRoleFilterChange={vi.fn()}
-        />,
+        />
       )
 
       expect(screen.getByTestId('role-filter')).toBeInTheDocument()
@@ -419,7 +419,7 @@ describe('ArtistTabContent', () => {
           availableRoles={['conductor']}
           selectedRole={null}
           onRoleFilterChange={vi.fn()}
-        />,
+        />
       )
 
       expect(screen.queryByTestId('role-filter')).not.toBeInTheDocument()
@@ -439,7 +439,7 @@ describe('ArtistTabContent', () => {
           availableRoles={availableRoles}
           selectedRole={null}
           onRoleFilterChange={onRoleFilterChange}
-        />,
+        />
       )
 
       const soloistButton = screen.getByText('soloist')
@@ -460,7 +460,7 @@ describe('ArtistTabContent', () => {
           availableRoles={['conductor', 'soloist']}
           selectedRole={selectedRole}
           onRoleFilterChange={vi.fn()}
-        />,
+        />
       )
 
       expect(screen.getByTestId('recording-list')).toBeInTheDocument()

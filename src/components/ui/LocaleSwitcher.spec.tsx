@@ -196,7 +196,7 @@ describe('LocaleSwitcher', () => {
         <div>
           <LocaleSwitcher />
           <div data-testid="outside">Outside element</div>
-        </div>,
+        </div>
       )
 
       // Open drawer

@@ -27,7 +27,7 @@ describe('ArtistLinksDownloads', () => {
     const { container } = render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(container.firstChild).toBeNull()
@@ -37,7 +37,7 @@ describe('ArtistLinksDownloads', () => {
     const { container } = render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPDF: null, galleryZIP: null }} />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(container.firstChild).toBeNull()
@@ -47,7 +47,7 @@ describe('ArtistLinksDownloads', () => {
     const { container } = render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{}} />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(container.firstChild).toBeNull()
@@ -57,7 +57,7 @@ describe('ArtistLinksDownloads', () => {
     const { container } = render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPDF: 123, galleryZIP: 456 }} />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(container.firstChild).toBeNull()
@@ -78,7 +78,7 @@ describe('ArtistLinksDownloads', () => {
     render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPDF: biographyDoc, galleryZIP: null }} />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(screen.getByText('Downloads')).toBeInTheDocument()
@@ -105,7 +105,7 @@ describe('ArtistLinksDownloads', () => {
     render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPDF: null, galleryZIP: galleryDoc }} />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(screen.getByText('Downloads')).toBeInTheDocument()
@@ -143,7 +143,7 @@ describe('ArtistLinksDownloads', () => {
     render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPDF: biographyDoc, galleryZIP: galleryDoc }} />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(screen.getByText('Downloads')).toBeInTheDocument()
@@ -177,12 +177,12 @@ describe('ArtistLinksDownloads', () => {
     render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPDF: biographyDoc, galleryZIP: galleryDoc }} />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(screen.getByRole('link', { name: /Biography PDF/i })).toHaveAttribute(
       'href',
-      '/downloads/artist-biography.pdf',
+      '/downloads/artist-biography.pdf'
     )
     expect(screen.getByRole('link', { name: /Photo Gallery/i })).toHaveAttribute('href', '/downloads/photo-gallery.zip')
   })
@@ -213,7 +213,7 @@ describe('ArtistLinksDownloads', () => {
     render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPDF: biographyDoc, galleryZIP: galleryDoc }} />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     const links = screen.getAllByRole('link')
@@ -237,7 +237,7 @@ describe('ArtistLinksDownloads', () => {
     const { container } = render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPDF: docWithoutURL, galleryZIP: null }} />
-      </NextIntlTestProvider>,
+      </NextIntlTestProvider>
     )
 
     expect(container.firstChild).toBeNull()

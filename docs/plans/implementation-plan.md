@@ -296,7 +296,7 @@ export async function searchContent(query: string, locale: 'de' | 'en'): Promise
     const result = await fetchWithTimeout(
       `/api/search?q=${encodeURIComponent(query)}&locale=${locale}`,
       { signal: abortController.signal },
-      5000,
+      5000
     )
 
     cache.set(cacheKey, result)

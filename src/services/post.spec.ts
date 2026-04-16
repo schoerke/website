@@ -150,7 +150,7 @@ describe('Post Service', () => {
           where: expect.objectContaining({
             categories: { contains: 'news' },
           }),
-        }),
+        })
       )
     })
   })
@@ -184,7 +184,7 @@ describe('Post Service', () => {
           where: expect.objectContaining({
             published: { equals: true },
           }),
-        }),
+        })
       )
     })
   })
@@ -286,7 +286,7 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           limit: 5,
-        }),
+        })
       )
     })
 
@@ -298,7 +298,7 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           locale: 'en',
-        }),
+        })
       )
     })
 
@@ -325,7 +325,7 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           sort: '-createdAt',
-        }),
+        })
       )
     })
 
@@ -345,7 +345,7 @@ describe('Post Service', () => {
               },
             ],
           }),
-        }),
+        })
       )
     })
 
@@ -359,7 +359,7 @@ describe('Post Service', () => {
           where: expect.not.objectContaining({
             or: expect.anything(),
           }),
-        }),
+        })
       )
     })
   })
@@ -399,7 +399,7 @@ describe('Post Service', () => {
         expect.objectContaining({
           page: 1,
           limit: 25,
-        }),
+        })
       )
     })
 
@@ -412,7 +412,7 @@ describe('Post Service', () => {
         expect.objectContaining({
           page: 3,
           limit: 10,
-        }),
+        })
       )
     })
 
@@ -426,7 +426,7 @@ describe('Post Service', () => {
           where: expect.objectContaining({
             categories: { contains: 'projects' },
           }),
-        }),
+        })
       )
     })
 
@@ -440,7 +440,7 @@ describe('Post Service', () => {
           where: expect.objectContaining({
             artists: { equals: 'artist-123' },
           }),
-        }),
+        })
       )
     })
 
@@ -454,7 +454,7 @@ describe('Post Service', () => {
           where: expect.objectContaining({
             _status: { equals: 'published' },
           }),
-        }),
+        })
       )
     })
 
@@ -468,7 +468,7 @@ describe('Post Service', () => {
           where: expect.not.objectContaining({
             _status: expect.anything(),
           }),
-        }),
+        })
       )
     })
 
@@ -480,7 +480,7 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           locale: 'en',
-        }),
+        })
       )
     })
 
@@ -492,7 +492,7 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           sort: '-createdAt',
-        }),
+        })
       )
     })
 
@@ -512,7 +512,7 @@ describe('Post Service', () => {
               },
             ],
           }),
-        }),
+        })
       )
     })
 
@@ -526,7 +526,7 @@ describe('Post Service', () => {
           where: expect.not.objectContaining({
             or: expect.anything(),
           }),
-        }),
+        })
       )
     })
   })

@@ -112,7 +112,7 @@ const NewsFeedPagination: React.FC<NewsFeedPaginationProps> = ({ currentPage, to
       params.set('limit', limit.toString())
       return `${basePath}?${params.toString()}`
     },
-    [searchParams, limit, basePath],
+    [searchParams, limit, basePath]
   )
 
   const pageNumbers = generatePageNumbers(currentPage, totalPages)

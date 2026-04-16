@@ -99,7 +99,7 @@ async function uploadViaPayload(
   filePath: string,
   filename: string,
   mimeType: string,
-  altText: string,
+  altText: string
 ): Promise<number | null> {
   try {
     const buffer = await fs.readFile(filePath)
@@ -140,7 +140,7 @@ async function uploadViaBlob(
   filename: string,
   mimeType: string,
   altText: string,
-  fileSize: number,
+  fileSize: number
 ): Promise<number | null> {
   try {
     // Upload directly to Vercel Blob
@@ -195,7 +195,7 @@ async function uploadLocalFile(
   payload: Payload,
   filePath: string,
   filename: string,
-  altText: string,
+  altText: string
 ): Promise<{ id: number | null; collection: 'images' | 'documents'; uploadMethod: 'payload' | 'blob' }> {
   try {
     // Get file info
@@ -256,7 +256,7 @@ async function uploadCoreAssets(payload: Payload, imagesIdMap: MediaIdMap, stats
     } catch {
       console.warn(
         `  ⚠️  Core asset not found: ${asset.filename} (${asset.path})` +
-          `\n      If needed, restore from git: git restore ${asset.path}`,
+          `\n      If needed, restore from git: git restore ${asset.path}`
       )
       continue
     }

@@ -187,7 +187,7 @@ export const getArtistListData = unstable_cache(
     })
   },
   ['artist-list'],
-  { revalidate: 3600, tags: ['artists'] },
+  { revalidate: 3600, tags: ['artists'] }
 )
 
 // Revalidate on-demand when content changes

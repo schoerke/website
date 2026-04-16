@@ -175,7 +175,7 @@ it('should not filter by search text when search is less than 3 characters', asy
       where: expect.not.objectContaining({
         or: expect.anything(),
       }),
-    }),
+    })
   )
 })
 ```

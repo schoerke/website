@@ -1,0 +1,30 @@
+{
+  "printWidth": 120,
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "sortImports": true,
+  "sortTailwindcss": {
+    "functions": ["cn", "clsx", "cva"]
+  },
+  "ignorePatterns": [
+    "**/payload-types.ts",
+    ".tmp",
+    "**/.git",
+    "**/.yarn/**",
+    "**/build",
+    "**/dist/**",
+    "**/node_modules",
+    "**/temp",
+    "pnpm-lock.yaml"
+  ],
+  "overrides": [
+    {
+      "files": ["*.md"],
+      "options": {
+        "proseWrap": "always"
+      }
+    }
+  ]
+}

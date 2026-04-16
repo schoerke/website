@@ -41,7 +41,7 @@ export interface PaginationParams {
 export function parsePaginationParams(
   pageParam?: string,
   limitParam?: string,
-  allowedLimits: readonly number[] = PAGINATION_DEFAULTS.allowedLimits,
+  allowedLimits: readonly number[] = PAGINATION_DEFAULTS.allowedLimits
 ): PaginationParams {
   // Parse and validate page number (minimum 1)
   const page = Math.max(1, parseInt(pageParam || '', 10) || PAGINATION_DEFAULTS.page)

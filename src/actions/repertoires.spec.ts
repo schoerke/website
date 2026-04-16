@@ -88,7 +88,7 @@ describe('fetchRepertoiresByArtist', () => {
         where: {
           artists: { equals: 'specific-artist-id' },
         },
-      }),
+      })
     )
   })
 
@@ -100,7 +100,7 @@ describe('fetchRepertoiresByArtist', () => {
     expect(mockPayload.find).toHaveBeenCalledWith(
       expect.objectContaining({
         limit: 1000,
-      }),
+      })
     )
   })
 

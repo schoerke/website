@@ -103,7 +103,7 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
   // Filter slider images from the pre-shuffled list to exclude artists shown in grid
   const sliderArtists = useMemo(
     () => shuffledArtists.filter((artist) => !displayedArtistIds.has(artist.id)),
-    [shuffledArtists, displayedArtistIds],
+    [shuffledArtists, displayedArtistIds]
   )
 
   // Only show slider if there are artists not shown in the grid

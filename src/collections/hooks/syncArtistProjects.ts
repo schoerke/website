@@ -120,7 +120,7 @@ export const syncArtistProjects: CollectionAfterChangeHook = async ({ doc, previ
             data: {
               projects: newProjects,
             },
-          }),
+          })
         )
       }
     }
@@ -132,7 +132,7 @@ export const syncArtistProjects: CollectionAfterChangeHook = async ({ doc, previ
     const errorMessage = error instanceof Error ? error.message : String(error)
     req.payload.logger.error(
       `Failed to sync artist projects for post ${doc.id} ("${doc.title}"): ${errorMessage}. ` +
-        `Added artists: [${addedArtists.join(', ')}], Removed artists: [${removedArtists.join(', ')}]`,
+        `Added artists: [${addedArtists.join(', ')}], Removed artists: [${removedArtists.join(', ')}]`
     )
   }
 }

@@ -464,7 +464,7 @@ async function backupBlobs() {
         Key: `${timestamp}/${blob.pathname}`,
         Body: Buffer.from(buffer),
         ContentType: blob.contentType,
-      }),
+      })
     )
 
     console.log(`Backed up: ${blob.pathname}`)

@@ -63,7 +63,7 @@ describe('Employee Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           sort: 'order',
-        }),
+        })
       )
     })
   })

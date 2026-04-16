@@ -111,14 +111,14 @@ describe('NewsFeedPagination', () => {
     describe('visibility', () => {
       it('should not render when totalPages is 0', () => {
         const { container } = renderWithProviders(
-          <NewsFeedPagination currentPage={1} totalPages={0} limit={25} basePath="/news" />,
+          <NewsFeedPagination currentPage={1} totalPages={0} limit={25} basePath="/news" />
         )
         expect(container.firstChild).toBeNull()
       })
 
       it('should not render when totalPages is 1', () => {
         const { container } = renderWithProviders(
-          <NewsFeedPagination currentPage={1} totalPages={1} limit={25} basePath="/news" />,
+          <NewsFeedPagination currentPage={1} totalPages={1} limit={25} basePath="/news" />
         )
         expect(container.firstChild).toBeNull()
       })

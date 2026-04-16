@@ -292,7 +292,7 @@ function parseEmployeeContent(content: string): ParsedEmployeeData {
 async function mapEmployeeData(
   wpEmployee: WordPressEmployee,
   locale: 'en' | 'de',
-  xmlOrder: number,
+  xmlOrder: number
 ): Promise<PayloadEmployeeData> {
   const meta = parsePostMeta(wpEmployee['wp:postmeta'])
   const parsed = parseEmployeeContent(wpEmployee['content:encoded'] || '')
@@ -343,7 +343,7 @@ async function loadXML(filePath: string): Promise<WordPressEmployee[]> {
  */
 function mergeEmployeeData(
   enEmployees: Map<string, { data: PayloadEmployeeData; wpData: WordPressEmployee }>,
-  deEmployees: Map<string, { data: PayloadEmployeeData; wpData: WordPressEmployee }>,
+  deEmployees: Map<string, { data: PayloadEmployeeData; wpData: WordPressEmployee }>
 ): Map<string, { en: PayloadEmployeeData; de: PayloadEmployeeData; email: string }> {
   const merged = new Map<string, { en: PayloadEmployeeData; de: PayloadEmployeeData; email: string }>()
 
@@ -382,7 +382,7 @@ async function migrateEmployee(
   enData: PayloadEmployeeData,
   deData: PayloadEmployeeData,
   payload: Payload,
-  stats: MigrationStats,
+  stats: MigrationStats
 ): Promise<void> {
   try {
     if (CONFIG.verbose) {

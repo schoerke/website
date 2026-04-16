@@ -31,7 +31,7 @@ const ArtistLinks: React.FC<ArtistLinksProps> = ({
 }) => {
   // Check if there's any content to display
   const hasSocialLinks = Boolean(
-    homepageURL || externalCalendarURL || facebookURL || instagramURL || twitterURL || youtubeURL || spotifyURL,
+    homepageURL || externalCalendarURL || facebookURL || instagramURL || twitterURL || youtubeURL || spotifyURL
   )
   const hasDownloads = Boolean(downloads?.biographyPDF || downloads?.galleryZIP)
 

@@ -197,7 +197,7 @@ describe('NewsFeedServer', () => {
     expect(getPaginatedPosts).toHaveBeenCalledWith(
       expect.objectContaining({
         publishedOnly: true,
-      }),
+      })
     )
   })
 

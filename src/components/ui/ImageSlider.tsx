@@ -35,7 +35,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
             stopOnFocusIn: true, // Pause on focus (accessibility)
           })
         : null,
-    [autoAdvance, interval],
+    [autoAdvance, interval]
   )
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -43,7 +43,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
       loop: true,
       duration: 30, // Physics-based scroll speed (default: 25, range: 20-60, higher = faster attraction)
     },
-    autoplayPlugin ? [autoplayPlugin] : [],
+    autoplayPlugin ? [autoplayPlugin] : []
   )
   const [selectedIndex, setSelectedIndex] = useState(0)
 
@@ -69,7 +69,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
         }
       }
     },
-    [emblaApi, autoplayPlugin],
+    [emblaApi, autoplayPlugin]
   )
 
   const scrollPrev = useCallback(() => {

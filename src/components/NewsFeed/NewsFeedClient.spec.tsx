@@ -266,7 +266,7 @@ describe('NewsFeedClient', () => {
       rerender!(
         <NextIntlTestProvider>
           <NewsFeedClient />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
     })
 

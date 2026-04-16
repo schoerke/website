@@ -72,7 +72,7 @@ describe('Employee Actions', () => {
 
     it('should use default limit of 100', async () => {
       const mockEmployees = Array.from({ length: 150 }, (_, i) =>
-        createMockEmployee({ id: i + 1, name: `Employee ${i + 1}` }),
+        createMockEmployee({ id: i + 1, name: `Employee ${i + 1}` })
       )
       const { getEmployees } = await import('@/services/employee')
       vi.mocked(getEmployees).mockResolvedValue(createMockPaginatedDocs(mockEmployees))
@@ -100,7 +100,7 @@ describe('Employee Actions', () => {
         createMockPaginatedDocs(mockEmployees, {
           totalDocs: 10,
           totalPages: 1,
-        }),
+        })
       )
 
       const result = await fetchEmployees({ limit: 5 })
@@ -142,7 +142,7 @@ describe('Employee Actions', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           locale: 'en',
-        }),
+        })
       )
     })
 
@@ -162,7 +162,7 @@ describe('Employee Actions', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           depth: 2,
-        }),
+        })
       )
     })
 
@@ -175,7 +175,7 @@ describe('Employee Actions', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           depth: 1,
-        }),
+        })
       )
     })
 
@@ -192,7 +192,7 @@ describe('Employee Actions', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           limit: 3,
-        }),
+        })
       )
     })
 

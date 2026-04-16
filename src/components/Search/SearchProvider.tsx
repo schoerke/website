@@ -169,7 +169,7 @@ function SearchInputWithClear({ locale }: { locale: 'de' | 'en' }) {
         query.inputRefSetter(node)
       }
     },
-    [query],
+    [query]
   )
 
   // Clear search when KBar closes (like Raycast)
@@ -506,7 +506,7 @@ function createSearchAction(
   searchQuery: string,
   locale: 'de' | 'en',
   router: ReturnType<typeof useRouter>,
-  priority: number,
+  priority: number
 ) {
   return {
     id: `search-${doc.id}`,

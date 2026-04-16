@@ -105,7 +105,7 @@ export async function downloadAndUploadMedia(
   payload: Payload,
   url: string | number | undefined,
   altText?: string,
-  maxSizeMB: number = 60, // Temporarily increased for migration
+  maxSizeMB: number = 60 // Temporarily increased for migration
 ): Promise<string | number | null> {
   if (!url || typeof url !== 'string') return null
 

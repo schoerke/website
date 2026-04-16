@@ -357,7 +357,7 @@ import type { Repertoire } from '@/payload-types'
 export async function getRepertoiresByArtist(
   payload: Payload,
   artistId: string,
-  locale: string,
+  locale: string
 ): Promise<Repertoire[]> {
   const result = await payload.find({
     collection: 'repertoires',
@@ -378,7 +378,7 @@ export async function getRepertoiresByArtist(
 export async function createRepertoire(
   payload: Payload,
   data: Partial<Repertoire>,
-  locale: string,
+  locale: string
 ): Promise<Repertoire> {
   return await payload.create({
     collection: 'repertoires',
@@ -394,7 +394,7 @@ export async function updateRepertoire(
   payload: Payload,
   id: string,
   data: Partial<Repertoire>,
-  locale: string,
+  locale: string
 ): Promise<Repertoire> {
   return await payload.update({
     collection: 'repertoires',
@@ -714,7 +714,7 @@ async function runMigration() {
   // Write edge cases to file for review
   await fs.writeFile(
     path.join(__dirname, '../../data/dumps/repertoire-edge-cases.json'),
-    JSON.stringify(edgeCases, null, 2),
+    JSON.stringify(edgeCases, null, 2)
   )
   console.log('\n📝 Edge cases written to: data/dumps/repertoire-edge-cases.json')
 }

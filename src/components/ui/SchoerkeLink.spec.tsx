@@ -47,7 +47,7 @@ describe('SchoerkeLink', () => {
       render(
         <SchoerkeLink href="/test" className="text-sm">
           Link
-        </SchoerkeLink>,
+        </SchoerkeLink>
       )
       const link = screen.getByRole('link')
       expect(link).toHaveClass('text-sm')
@@ -60,7 +60,7 @@ describe('SchoerkeLink', () => {
         <SchoerkeLink href="/test" variant="with-icon">
           <span>Icon</span>
           <span>Text</span>
-        </SchoerkeLink>,
+        </SchoerkeLink>
       )
       const link = screen.getByRole('link')
 
@@ -73,7 +73,7 @@ describe('SchoerkeLink', () => {
       render(
         <SchoerkeLink href="/test" variant="with-icon">
           Content
-        </SchoerkeLink>,
+        </SchoerkeLink>
       )
       const link = screen.getByRole('link')
 
@@ -87,7 +87,7 @@ describe('SchoerkeLink', () => {
       render(
         <SchoerkeLink href="/test" variant="icon-only" aria-label="Icon link">
           Icon
-        </SchoerkeLink>,
+        </SchoerkeLink>
       )
       const link = screen.getByRole('link', { name: 'Icon link' })
 
@@ -99,7 +99,7 @@ describe('SchoerkeLink', () => {
       render(
         <SchoerkeLink href="/test" variant="icon-only">
           Icon
-        </SchoerkeLink>,
+        </SchoerkeLink>
       )
       const link = screen.getByRole('link')
 
@@ -123,7 +123,7 @@ describe('SchoerkeLink', () => {
       render(
         <SchoerkeLink href="/test" variant="icon-only" aria-label="Social media">
           Icon
-        </SchoerkeLink>,
+        </SchoerkeLink>
       )
       expect(screen.getByRole('link', { name: 'Social media' })).toBeInTheDocument()
     })
@@ -134,7 +134,7 @@ describe('SchoerkeLink', () => {
       render(
         <SchoerkeLink href="https://example.com" target="_blank" rel="noopener noreferrer">
           External
-        </SchoerkeLink>,
+        </SchoerkeLink>
       )
       const link = screen.getByRole('link')
 

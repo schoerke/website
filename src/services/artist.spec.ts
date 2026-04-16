@@ -99,7 +99,7 @@ describe('Artist Service', () => {
             id: true,
             slug: true,
           }),
-        }),
+        })
       )
     })
   })

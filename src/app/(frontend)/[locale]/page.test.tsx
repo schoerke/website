@@ -11,7 +11,7 @@ vi.mock('@/components/HomePageSlider/HomePageSlider', () => ({
     React.createElement(
       'div',
       { 'data-testid': 'homepage-slider' },
-      slides.map((s) => React.createElement('span', { key: s.title }, s.title)),
+      slides.map((s) => React.createElement('span', { key: s.title }, s.title))
     ),
 }))
 vi.mock('@/components/Artist/ArtistMasonryGrid', () => ({
@@ -19,7 +19,7 @@ vi.mock('@/components/Artist/ArtistMasonryGrid', () => ({
     React.createElement(
       'div',
       { 'data-testid': 'artist-masonry-grid' },
-      artists.map((a) => React.createElement('span', { key: a.id }, a.name)),
+      artists.map((a) => React.createElement('span', { key: a.id }, a.name))
     ),
 }))
 vi.mock('@/components/ui/SchoerkeLink', () => ({

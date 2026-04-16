@@ -515,7 +515,7 @@ describe('ArtistTabs', async () => {
       rerender(
         <NextIntlTestProvider messages={testMessages} locale="de">
           <ArtistTabs artist={artist} locale="de" />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       // Should show biography tab (initial state)

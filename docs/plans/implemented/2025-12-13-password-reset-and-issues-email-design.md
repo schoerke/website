@@ -274,7 +274,7 @@ export async function sendIssueNotificationEmail(params: SendIssueNotificationEm
       reporterEmail,
       issueId,
       adminPanelUrl,
-    }),
+    })
   )
 
   return await resend.emails.send({

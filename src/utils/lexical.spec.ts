@@ -477,7 +477,7 @@ describe('Lexical parsing utilities', () => {
       const lexical = { root: { children: [] } }
       const html = lexicalToHtml(lexical)
       expect(html).toBe(
-        '<p style="color: #222126; font-size: 14px; margin: 0; line-height: 1.6;">No description provided</p>',
+        '<p style="color: #222126; font-size: 14px; margin: 0; line-height: 1.6;">No description provided</p>'
       )
     })
 

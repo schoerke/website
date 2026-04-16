@@ -104,7 +104,7 @@ describe('ArtistGrid', () => {
       render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByTestId('instrument-filter')).toBeInTheDocument()
@@ -116,7 +116,7 @@ describe('ArtistGrid', () => {
       render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByTestId('artist-card-1')).toHaveTextContent('Artist One')
@@ -127,7 +127,7 @@ describe('ArtistGrid', () => {
       render(
         <NextIntlTestProvider>
           <ArtistGrid artists={[]} instruments={[]} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       expect(screen.getByText(/no artists found/i)).toBeInTheDocument()
@@ -146,7 +146,7 @@ describe('ArtistGrid', () => {
       render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin', 'piano', 'cello']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       // Click piano filter
@@ -169,7 +169,7 @@ describe('ArtistGrid', () => {
       render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin', 'piano']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       // Select violin
@@ -188,7 +188,7 @@ describe('ArtistGrid', () => {
       render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin', 'piano']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       await user.click(screen.getByTestId('filter-piano'))
@@ -210,7 +210,7 @@ describe('ArtistGrid', () => {
       const { container } = render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['conductor', 'piano', 'violin', 'cello']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
@@ -230,7 +230,7 @@ describe('ArtistGrid', () => {
       const { container } = render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
@@ -248,7 +248,7 @@ describe('ArtistGrid', () => {
       const { container } = render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
@@ -266,7 +266,7 @@ describe('ArtistGrid', () => {
       const { container } = render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['piano', 'piano-forte', 'violin']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
@@ -288,7 +288,7 @@ describe('ArtistGrid', () => {
       render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin', 'piano']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       // Filter to only violinists
@@ -304,7 +304,7 @@ describe('ArtistGrid', () => {
       render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       // All artists shown in grid, no slider
@@ -321,7 +321,7 @@ describe('ArtistGrid', () => {
       render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin', 'piano']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       await user.click(screen.getByTestId('filter-violin'))
@@ -337,7 +337,7 @@ describe('ArtistGrid', () => {
       const { container } = render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const grid = container.querySelector('.grid')
@@ -353,7 +353,7 @@ describe('ArtistGrid', () => {
       const { container } = render(
         <NextIntlTestProvider>
           <ArtistGrid artists={artists} instruments={['violin']} />
-        </NextIntlTestProvider>,
+        </NextIntlTestProvider>
       )
 
       const grid = container.querySelector('.grid')

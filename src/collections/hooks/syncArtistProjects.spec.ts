@@ -518,7 +518,7 @@ describe('syncArtistProjects hook', () => {
       } as HookArgs)
 
       expect(req.payload.logger.error).toHaveBeenCalledWith(
-        'Failed to sync artist projects for post 123 ("Test Project Post"): Database connection failed. Added artists: [1], Removed artists: []',
+        'Failed to sync artist projects for post 123 ("Test Project Post"): Database connection failed. Added artists: [1], Removed artists: []'
       )
     })
 
@@ -537,7 +537,7 @@ describe('syncArtistProjects hook', () => {
       } as HookArgs)
 
       expect(req.payload.logger.error).toHaveBeenCalledWith(
-        'Failed to sync artist projects for post 123 ("Test Project Post"): String error. Added artists: [1], Removed artists: []',
+        'Failed to sync artist projects for post 123 ("Test Project Post"): String error. Added artists: [1], Removed artists: []'
       )
     })
 

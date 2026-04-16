@@ -276,7 +276,7 @@ describe('NewsFeedSearch', () => {
         expect(callArgs[0]).toContain('search=test')
         expect(callArgs[0]).toContain('page=1')
       },
-      { timeout: 300 },
+      { timeout: 300 }
     )
   })
 })

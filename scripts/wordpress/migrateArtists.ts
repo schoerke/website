@@ -156,7 +156,7 @@ async function loadAttachmentMap() {
 async function findMediaByFilename(
   filename: string | undefined,
   collection: 'images' | 'documents',
-  dryRun: boolean = false,
+  dryRun: boolean = false
 ): Promise<number | null> {
   if (!filename) return null
   if (dryRun) return null
@@ -220,7 +220,7 @@ async function mapArtistData(
   wpArtist: WordPressArtist,
   _locale: 'en' | 'de',
   payload: Payload,
-  dryRun: boolean = false,
+  dryRun: boolean = false
 ): Promise<PayloadArtistData> {
   const meta = parsePostMeta(wpArtist['wp:postmeta'])
   const content = wpArtist['content:encoded'] || ''
@@ -329,7 +329,7 @@ async function migrateArtist(
   enData: PayloadArtistData,
   deData: PayloadArtistData,
   payload: Payload,
-  stats: MigrationStats,
+  stats: MigrationStats
 ): Promise<void> {
   try {
     if (CONFIG.verbose) {
@@ -341,7 +341,7 @@ async function migrateArtist(
       console.log(`  Has biography: ${!!enData.biography}`)
       console.log(`  Contact persons: ${enData.contactPersons?.length || 0}`)
       console.log(
-        `  URLs: ${[enData.homepageURL, enData.facebookURL, enData.instagramURL, enData.twitterURL, enData.youtubeURL, enData.spotifyURL].filter(Boolean).length}`,
+        `  URLs: ${[enData.homepageURL, enData.facebookURL, enData.instagramURL, enData.twitterURL, enData.youtubeURL, enData.spotifyURL].filter(Boolean).length}`
       )
       console.log(`  Has downloads: ${!!enData.downloads}`)
     }

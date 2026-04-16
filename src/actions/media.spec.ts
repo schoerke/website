@@ -58,7 +58,7 @@ describe('fetchDefaultAvatar', () => {
     expect(mockPayload.find).toHaveBeenCalledWith(
       expect.objectContaining({
         collection: 'images',
-      }),
+      })
     )
   })
 
@@ -70,7 +70,7 @@ describe('fetchDefaultAvatar', () => {
     expect(mockPayload.find).toHaveBeenCalledWith(
       expect.objectContaining({
         limit: 1,
-      }),
+      })
     )
   })
 
@@ -104,7 +104,7 @@ describe('fetchDefaultAvatar', () => {
         where: {
           filename: { equals: 'default-avatar.webp' },
         },
-      }),
+      })
     )
   })
 })

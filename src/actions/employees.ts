@@ -52,7 +52,7 @@ export async function fetchEmployeesByIds(
   options?: {
     locale?: 'de' | 'en'
     depth?: number
-  },
+  }
 ): Promise<Employee[]> {
   if (!ids || ids.length === 0) return []
 

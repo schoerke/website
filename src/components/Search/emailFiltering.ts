@@ -30,7 +30,7 @@ import type { SearchDoc } from '@/services/search'
 export function filterEmailCommands(
   query: string,
   allEmployees: Array<{ id: number; name: string; email: string }>,
-  searchResults: SearchDoc[],
+  searchResults: SearchDoc[]
 ): Array<{ id: number; name: string; email: string }> {
   if (query.length < 3) return []
 
