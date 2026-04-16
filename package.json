@@ -33,7 +33,7 @@
     "dump:recordings": "pnpm dump recordings"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1030.0",
+    "@aws-sdk/client-s3": "^3.1031.0",
     "@libsql/client": "^0.17.2",
     "@payloadcms/db-sqlite": "^3.83.0",
     "@payloadcms/email-resend": "^3.83.0",
