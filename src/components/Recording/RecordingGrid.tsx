@@ -1,5 +1,3 @@
-'use client'
-
 import RecordingCard from '@/components/Recording/RecordingCard'
 import type { Recording } from '@/payload-types'
 

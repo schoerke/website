@@ -1,14 +1,12 @@
-'use client'
-
 import type { Recording } from '@/payload-types'
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 
 interface RecordingListItemProps {
   recording: Recording
 }
 
-const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
-  const t = useTranslations('custom.pages.artist.discography')
+const RecordingListItem = async ({ recording }: RecordingListItemProps) => {
+  const t = await getTranslations('custom.pages.artist.discography')
 
   const label = recording.recordingLabel
   const catalogNumber = recording.catalogNumber

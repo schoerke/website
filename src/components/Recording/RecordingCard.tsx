@@ -1,14 +1,12 @@
-'use client'
-
 import type { Recording } from '@/payload-types'
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 
 interface RecordingCardProps {
   recording: Recording
 }
 
-const RecordingCard: React.FC<RecordingCardProps> = ({ recording }) => {
-  const t = useTranslations('custom.pages.artist.discography')
+const RecordingCard = async ({ recording }: RecordingCardProps) => {
+  const t = await getTranslations('custom.pages.artist.discography')
 
   const labelAndCatalog = [recording.recordingLabel, recording.catalogNumber].filter(Boolean).join(' • ')
   const year = recording.recordingYear?.toString()

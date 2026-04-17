@@ -1,5 +1,3 @@
-'use client'
-
 import RecordingListItem from '@/components/Recording/RecordingListItem'
 import type { Recording } from '@/payload-types'
 
