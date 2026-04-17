@@ -7,9 +7,9 @@ import {
   BiographyTab,
   ConcertDatesTab,
   DiscographyTab,
+  MediaTab,
   RecordingsTab,
   RepertoireTab,
-  VideoTab,
 } from './ArtistTabContent'
 
 // Mock next-intl navigation (required for Link component in ProjectsTab)
@@ -60,6 +60,22 @@ vi.mock('./VideoAccordion', () => ({
   default: ({ videos, emptyMessage }: { videos: Artist['youtubeLinks']; emptyMessage: string }) => (
     <div data-testid="video-accordion">{videos && videos.length > 0 ? `${videos.length} videos` : emptyMessage}</div>
   ),
+}))
+
+vi.mock('./ImageGallery', () => ({
+  default: ({ images, emptyMessage }: { images: unknown[]; emptyMessage: string }) => (
+    <div data-testid="image-gallery">{images.length > 0 ? `${images.length} images` : emptyMessage}</div>
+  ),
+}))
+
+vi.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const map: Record<string, string> = {
+      'media.images': 'Images',
+      'media.videos': 'Videos',
+    }
+    return map[key] ?? key
+  },
 }))
 
 // Mock factories
@@ -273,29 +289,54 @@ describe('ArtistTabContent', () => {
     })
   })
 
-  describe('VideoTab', () => {
-    it('should render empty message when no videos', () => {
-      const emptyMessage = 'No videos available'
-      render(<VideoTab videos={[]} emptyMessage={emptyMessage} />)
+  describe('MediaTab', () => {
+    const mockImages = [
+      { id: 'img1', image: { id: 1, alt: 'Photo 1', url: '/photo1.jpg', updatedAt: '', createdAt: '' } },
+      { id: 'img2', image: { id: 2, alt: 'Photo 2', url: '/photo2.jpg', updatedAt: '', createdAt: '' } },
+    ]
+    const mockVideos: Artist['youtubeLinks'] = [{ label: 'Performance 1', url: 'https://youtube.com/watch?v=abc123' }]
 
-      expect(screen.getByText(emptyMessage)).toBeInTheDocument()
+    it('should default to images sub-section', () => {
+      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" />)
+      expect(screen.getByTestId('image-gallery')).toBeInTheDocument()
+      expect(screen.queryByTestId('video-accordion')).not.toBeInTheDocument()
     })
 
-    it('should render video accordion with videos', () => {
-      const videos: Artist['youtubeLinks'] = [
-        { label: 'Performance 1', url: 'https://youtube.com/watch?v=123' },
-        { label: 'Performance 2', url: 'https://youtube.com/watch?v=456' },
-      ]
-      render(<VideoTab videos={videos} emptyMessage="No videos" />)
-
-      expect(screen.getByText('2 videos')).toBeInTheDocument()
+    it('should show video accordion when initialSection is videos', () => {
+      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" initialSection="videos" />)
+      expect(screen.getByTestId('video-accordion')).toBeInTheDocument()
+      expect(screen.queryByTestId('image-gallery')).not.toBeInTheDocument()
     })
 
-    it('should handle undefined videos', () => {
-      const emptyMessage = 'No videos available'
-      render(<VideoTab videos={undefined} emptyMessage={emptyMessage} />)
+    it('should switch to videos section when Videos button is clicked', async () => {
+      const user = userEvent.setup()
+      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" />)
+      await user.click(screen.getByText('Videos'))
+      expect(screen.getByTestId('video-accordion')).toBeInTheDocument()
+      expect(screen.queryByTestId('image-gallery')).not.toBeInTheDocument()
+    })
 
-      expect(screen.getByText(emptyMessage)).toBeInTheDocument()
+    it('should switch to images section when Images button is clicked', async () => {
+      const user = userEvent.setup()
+      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" initialSection="videos" />)
+      await user.click(screen.getByText('Images'))
+      expect(screen.getByTestId('image-gallery')).toBeInTheDocument()
+      expect(screen.queryByTestId('video-accordion')).not.toBeInTheDocument()
+    })
+
+    it('should call onSectionChange when section changes', async () => {
+      const user = userEvent.setup()
+      const onSectionChange = vi.fn()
+      render(
+        <MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" onSectionChange={onSectionChange} />
+      )
+      await user.click(screen.getByText('Videos'))
+      expect(onSectionChange).toHaveBeenCalledWith('videos')
+    })
+
+    it('should show empty message when no images and on images section', () => {
+      render(<MediaTab images={[]} videos={[]} emptyMessage="No media available" />)
+      expect(screen.getByText('No media available')).toBeInTheDocument()
     })
   })
 
