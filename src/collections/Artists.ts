@@ -420,7 +420,7 @@ export const Artists: CollectionConfig = {
                 initCollapsed: true,
                 description: {
                   en: 'Press photos displayed in the gallery on the artist detail page.',
-                  de: 'Pressefotos, die in der Galerie auf der Kuenstlerdetailseite angezeigt werden.',
+                  de: 'Pressefotos, die in der Galerie auf der Künstlerdetailseite angezeigt werden.',
                 },
               },
               fields: [
@@ -429,6 +429,10 @@ export const Artists: CollectionConfig = {
                   type: 'upload',
                   relationTo: 'images',
                   required: true,
+                  label: {
+                    en: 'Image',
+                    de: 'Bild',
+                  },
                 },
               ],
             },
