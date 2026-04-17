@@ -49,7 +49,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
   }
 
   return (
-    <div className="space-y-4">
+    <ul className="space-y-0">
       {videos.map((video, index) => {
         const videoId = extractYouTubeId(video.url)
         const isOpen = openIndex === index
@@ -60,15 +60,15 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
         }
 
         return (
-          <div key={video.id || index} className="overflow-hidden rounded-lg border border-gray-200">
+          <li key={video.id || index} className="border-b border-gray-200 last:border-b-0">
             <button
               onClick={() => toggleAccordion(index)}
-              className="flex w-full items-center justify-between bg-gray-50 px-6 py-4 text-left transition-colors hover:bg-gray-100"
+              className="flex w-full items-center justify-between py-3 text-left"
               aria-expanded={isOpen}
             >
-              <span className="font-medium text-gray-900">{video.label}</span>
+              <h3 className="font-playfair mb-1 text-lg font-bold">{video.label}</h3>
               <svg
-                className={`h-5 w-5 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -78,7 +78,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
             </button>
 
             {isOpen && (
-              <div className="border-t border-gray-200 bg-white p-6">
+              <div className="pb-4">
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
                   <iframe
                     src={`https://www.youtube.com/embed/${videoId}`}
@@ -90,10 +90,10 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
                 </div>
               </div>
             )}
-          </div>
+          </li>
         )
       })}
-    </div>
+    </ul>
   )
 }
 
