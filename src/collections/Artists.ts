@@ -405,6 +405,33 @@ export const Artists: CollectionConfig = {
                 },
               ],
             },
+            {
+              name: 'galleryImages',
+              label: {
+                en: 'Gallery Images',
+                de: 'Galeriebilder',
+              },
+              type: 'array',
+              labels: {
+                singular: { en: 'Image', de: 'Bild' },
+                plural: { en: 'Images', de: 'Bilder' },
+              },
+              admin: {
+                initCollapsed: true,
+                description: {
+                  en: 'Press photos displayed in the gallery on the artist detail page.',
+                  de: 'Pressefotos, die in der Galerie auf der Kuenstlerdetailseite angezeigt werden.',
+                },
+              },
+              fields: [
+                {
+                  name: 'image',
+                  type: 'upload',
+                  relationTo: 'images',
+                  required: true,
+                },
+              ],
+            },
           ],
         },
         {
