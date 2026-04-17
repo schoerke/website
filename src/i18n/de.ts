@@ -79,7 +79,7 @@ const de = {
           biography: 'Biographie',
           repertoire: 'Repertoire',
           discography: 'Recordings',
-          video: 'Video',
+          media: 'Medien',
           news: 'News',
           projects: 'Projekte',
           concertDates: 'Kalender',
@@ -88,7 +88,7 @@ const de = {
           biography: 'Keine Biographie verfügbar.',
           repertoire: 'Keine Repertoire-Informationen verfügbar.',
           discography: 'Keine Recordings verfügbar.',
-          video: 'Keine Videos verfügbar.',
+          media: 'Keine Medien verfügbar.',
           news: 'Keine News-Artikel verfügbar.',
           projects: 'Keine Projekte verfügbar.',
           concertDates: 'Keine anstehenden Termine.',
@@ -101,8 +101,9 @@ const de = {
           listenOnAppleMusicFor: '{title} auf Apple Music anhören',
           opensInNewTab: 'öffnet in neuem Tab',
         },
-        video: {
-          accordionTrigger: 'Video anzeigen',
+        media: {
+          images: 'Bilder',
+          videos: 'Videos',
         },
         concertDates: {
           button: 'Kalender ansehen',
