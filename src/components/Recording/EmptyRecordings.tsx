@@ -1,7 +1,9 @@
-import { getTranslations } from 'next-intl/server'
+'use client'
 
-const EmptyRecordings = async () => {
-  const t = await getTranslations('custom.pages.artist.empty')
+import { useTranslations } from 'next-intl'
+
+const EmptyRecordings: React.FC = () => {
+  const t = useTranslations('custom.pages.artist.empty')
 
   return (
     <div className="py-8 text-center text-gray-500">

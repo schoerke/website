@@ -1,12 +1,20 @@
+'use client'
+
 import type { Recording } from '@/payload-types'
-import { getTranslations } from 'next-intl/server'
+import { useTranslations } from 'next-intl'
 
 interface RecordingListItemProps {
   recording: Recording
 }
 
-const RecordingListItem = async ({ recording }: RecordingListItemProps) => {
-  const t = await getTranslations('custom.pages.artist.discography')
+/**
+ * A single recording entry rendered as a <li> element.
+ * Displays title, optional subtitle (label, catalog number, year), and streaming links.
+ *
+ * Must be used inside a list container such as RecordingList (<ul>).
+ */
+const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
+  const t = useTranslations('custom.pages.artist.discography')
 
   const label = recording.recordingLabel
   const catalogNumber = recording.catalogNumber
