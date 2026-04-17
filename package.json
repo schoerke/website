@@ -1,7 +1,7 @@
 {
   "name": "ksschoerke",
   "version": "1.0.0",
-  "description": "A blank template to get started with Payload 3.0",
+  "description": "The website for Künstlersekretariat Schoerke, built with Payload CMS and Next.js.",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -33,7 +33,7 @@
     "dump:recordings": "pnpm dump recordings"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1030.0",
+    "@aws-sdk/client-s3": "^3.1032.0",
     "@libsql/client": "^0.17.2",
     "@payloadcms/db-sqlite": "^3.83.0",
     "@payloadcms/email-resend": "^3.83.0",
@@ -45,6 +45,7 @@
     "@payloadcms/storage-vercel-blob": "^3.83.0",
     "@payloadcms/translations": "^3.83.0",
     "@payloadcms/ui": "^3.83.0",
+    "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-toggle": "^1.1.10",
@@ -55,7 +56,7 @@
     "cross-env": "^10.0.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "fast-xml-parser": "^5.6.0",
+    "fast-xml-parser": "^5.7.0",
     "graphql": "^16.13.2",
     "kbar": "0.1.0-beta.48",
     "libsql": "^0.5.29",
@@ -95,7 +96,7 @@
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "6.0.2",
+    "typescript": "6.0.3",
     "vite": "^8.0.8",
     "vitest": "^4.1.4"
   },

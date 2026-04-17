@@ -265,6 +265,15 @@ export interface Artist {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Press photos displayed in the gallery on the artist detail page.
+   */
+  galleryImages?:
+    | {
+        image: number | Image;
+        id?: string | null;
+      }[]
+    | null;
   homepageURL?: string | null;
   externalCalendarURL?: string | null;
   facebookURL?: string | null;
@@ -785,6 +794,12 @@ export interface ArtistsSelect<T extends boolean = true> {
     | {
         label?: T;
         url?: T;
+        id?: T;
+      };
+  galleryImages?:
+    | T
+    | {
+        image?: T;
         id?: T;
       };
   homepageURL?: T;
