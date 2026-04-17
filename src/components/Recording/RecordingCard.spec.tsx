@@ -39,6 +39,32 @@ describe('RecordingCard', () => {
     expect(screen.getByText('Deutsche Grammophon • DG 123456')).toBeInTheDocument()
   })
 
+  it('renders only label when catalog and year are absent with no dangling separator', async () => {
+    const recording = createMockRecording({
+      recordingLabel: 'Deutsche Grammophon',
+      catalogNumber: null,
+      recordingYear: null,
+    })
+    const component = await RecordingCard({ recording })
+    render(component)
+
+    expect(screen.getByText('Deutsche Grammophon')).toBeInTheDocument()
+    expect(screen.queryByText(/•/)).not.toBeInTheDocument()
+  })
+
+  it('renders only year when label and catalog are absent with no dangling separator', async () => {
+    const recording = createMockRecording({
+      recordingLabel: null,
+      catalogNumber: null,
+      recordingYear: 2021,
+    })
+    const component = await RecordingCard({ recording })
+    render(component)
+
+    expect(screen.getByText('2021')).toBeInTheDocument()
+    expect(screen.queryByText(/•/)).not.toBeInTheDocument()
+  })
+
   it('renders the year separately from label/catalog', async () => {
     const recording = createMockRecording({ recordingYear: 2021 })
     const component = await RecordingCard({ recording })
