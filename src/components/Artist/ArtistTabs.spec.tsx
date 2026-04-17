@@ -69,8 +69,27 @@ vi.mock('./ArtistTabContent', () => ({
       {loading ? 'Loading...' : recordings.length > 0 ? `${recordings.length} recordings` : emptyMessage}
     </div>
   ),
-  VideoTab: ({ videos, emptyMessage }: { videos?: Array<{ url: string }>; emptyMessage: string }) => (
-    <div data-testid="video-tab">{videos && videos.length > 0 ? `${videos.length} videos` : emptyMessage}</div>
+  MediaTab: ({
+    images,
+    videos,
+    emptyMessage,
+    initialSection,
+  }: {
+    images?: unknown[]
+    videos?: Array<{ url: string }>
+    emptyMessage: string
+    initialSection?: string
+    onSectionChange?: (section: string) => void
+  }) => (
+    <div data-testid="media-tab">
+      {initialSection === 'videos'
+        ? videos && videos.length > 0
+          ? `${videos.length} videos`
+          : emptyMessage
+        : images && images.length > 0
+          ? `${images.length} images`
+          : emptyMessage}
+    </div>
   ),
   ProjectsTab: ({ projects, emptyMessage }: { projects: unknown[]; emptyMessage: string }) => (
     <div data-testid="projects-tab">{projects.length > 0 ? `${projects.length} projects` : emptyMessage}</div>
@@ -85,14 +104,14 @@ const testMessages = {
           biography: 'Biography',
           repertoire: 'Repertoire',
           discography: 'Discography',
-          video: 'Video',
+          media: 'Media',
           news: 'News',
           projects: 'Projects',
         },
         empty: {
           repertoire: 'No repertoire available',
           discography: 'No recordings available',
-          video: 'No videos available',
+          media: 'No media available',
           news: 'No news available',
           projects: 'No projects available',
         },
@@ -118,6 +137,7 @@ const createMockArtist = (overrides?: Partial<Artist>): Artist => ({
   quote: 'Test quote',
   instrument: [],
   youtubeLinks: [{ label: 'Test Video', url: 'https://youtube.com/watch?v=123' }],
+  galleryImages: [],
   contactPersons: [],
   updatedAt: '2023-01-01T00:00:00.000Z',
   createdAt: '2023-01-01T00:00:00.000Z',
@@ -185,7 +205,7 @@ describe('ArtistTabs', async () => {
       expect(screen.getAllByText('Biography')).toHaveLength(2) // Desktop + Mobile
       expect(screen.getAllByText('Repertoire')).toHaveLength(2)
       expect(screen.getAllByText('Discography')).toHaveLength(2)
-      expect(screen.getAllByText('Video')).toHaveLength(2)
+      expect(screen.getAllByText('Media')).toHaveLength(2)
       expect(screen.getAllByText('News')).toHaveLength(2)
       expect(screen.getAllByText('Projects')).toHaveLength(2)
     })
@@ -220,16 +240,16 @@ describe('ArtistTabs', async () => {
       })
     })
 
-    it('should switch to video tab when clicked', async () => {
+    it('should switch to media tab when clicked', async () => {
       const user = userEvent.setup()
       const artist = createMockArtist()
       renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
 
-      const videoTabs = screen.getAllByText('Video')
-      await user.click(videoTabs[0])
+      const mediaTabs = screen.getAllByText('Media')
+      await user.click(mediaTabs[0])
 
       await waitFor(() => {
-        expect(screen.getByTestId('video-tab')).toBeInTheDocument()
+        expect(screen.getByTestId('media-tab')).toBeInTheDocument()
       })
     })
 
@@ -238,10 +258,10 @@ describe('ArtistTabs', async () => {
       const artist = createMockArtist()
       renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
 
-      const videoTabs = screen.getAllByText('Video')
-      await user.click(videoTabs[0])
+      const mediaTabs = screen.getAllByText('Media')
+      await user.click(mediaTabs[0])
 
-      expect(window.location.hash).toBe('#video')
+      expect(window.location.hash).toBe('#media-images')
     })
   })
 
@@ -315,8 +335,8 @@ describe('ArtistTabs', async () => {
       })
 
       // Switch to another tab
-      const videoTabs = screen.getAllByText('Video')
-      await user.click(videoTabs[0])
+      const mediaTabs = screen.getAllByText('Media')
+      await user.click(mediaTabs[0])
 
       // Switch back to discography
       await user.click(discographyTabs[0])
@@ -434,8 +454,8 @@ describe('ArtistTabs', async () => {
         expect(fetchRepertoiresByArtist).toHaveBeenCalledTimes(1)
       })
 
-      const videoTabs = screen.getAllByText('Video')
-      await user.click(videoTabs[0])
+      const mediaTabs = screen.getAllByText('Media')
+      await user.click(mediaTabs[0])
       await user.click(repertoireTabs[0])
 
       expect(fetchRepertoiresByArtist).toHaveBeenCalledTimes(1)
@@ -462,12 +482,12 @@ describe('ArtistTabs', async () => {
 
   describe('URL hash handling', () => {
     it('should initialize with tab from URL hash', () => {
-      window.location.hash = '#video'
+      window.location.hash = '#media'
       const artist = createMockArtist()
 
       renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
 
-      expect(screen.getByTestId('video-tab')).toBeInTheDocument()
+      expect(screen.getByTestId('media-tab')).toBeInTheDocument()
     })
 
     it('should default to biography for invalid hash', () => {
@@ -477,6 +497,31 @@ describe('ArtistTabs', async () => {
       renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
 
       expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
+    })
+
+    it('should initialize media tab to videos section from #media-videos hash', () => {
+      window.location.hash = '#media-videos'
+      const artist = createMockArtist({
+        youtubeLinks: [{ label: 'Test', url: 'https://youtube.com/watch?v=abc' }],
+        galleryImages: [],
+      })
+
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+
+      expect(screen.getByTestId('media-tab')).toBeInTheDocument()
+      expect(screen.getByText('1 videos')).toBeInTheDocument()
+    })
+
+    it('should initialize media tab to images section from #media-images hash', () => {
+      window.location.hash = '#media-images'
+      const artist = createMockArtist({
+        galleryImages: [{ id: 'img1', image: { id: 1, alt: 'Photo', url: '/p.jpg', updatedAt: '', createdAt: '' } }],
+      })
+
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+
+      expect(screen.getByTestId('media-tab')).toBeInTheDocument()
+      expect(screen.getByText('1 images')).toBeInTheDocument()
     })
   })
 
