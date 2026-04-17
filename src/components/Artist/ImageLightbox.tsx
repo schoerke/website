@@ -1,6 +1,6 @@
 'use client'
 
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import type { Artist, Image as PayloadImage } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
 import useEmblaCarousel from 'embla-carousel-react'
@@ -45,6 +45,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="flex max-h-screen max-w-5xl flex-col items-center bg-black p-4 text-white">
+        <DialogTitle className="sr-only">Image gallery</DialogTitle>
         <div className="w-full overflow-hidden" ref={emblaRef}>
           <div className="flex">
             {images.map((item, idx) => {
