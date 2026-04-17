@@ -44,15 +44,12 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.slice(1) // e.g. "media-videos"
-      const dashIndex = hash.indexOf('-')
-      const tabPart = (dashIndex === -1 ? hash : hash.slice(0, dashIndex)) as TabId
-      const sectionPart = dashIndex === -1 ? undefined : hash.slice(dashIndex + 1)
-
-      if (tabPart && tabs.includes(tabPart)) {
-        setActiveTab(tabPart)
-        if (tabPart === 'media' && (sectionPart === 'images' || sectionPart === 'videos')) {
-          setMediaSection(sectionPart)
-        }
+      const mediaMatch = /^media-(images|videos)$/.exec(hash)
+      if (mediaMatch) {
+        setActiveTab('media')
+        setMediaSection(mediaMatch[1] as 'images' | 'videos')
+      } else if (tabs.includes(hash as TabId)) {
+        setActiveTab(hash as TabId)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

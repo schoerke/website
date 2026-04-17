@@ -1,13 +1,13 @@
 'use client'
 
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import type { Artist, Image as PayloadImage } from '@/payload-types'
+import type { Image as PayloadImage } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
 import useEmblaCarousel from 'embla-carousel-react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect } from 'react'
-
-type GalleryImage = NonNullable<Artist['galleryImages']>[number]
+import type { GalleryImage } from './artistTypes'
 
 interface ImageLightboxProps {
   images: GalleryImage[]
@@ -17,7 +17,8 @@ interface ImageLightboxProps {
 }
 
 const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, open, onClose }) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, startIndex: initialIndex })
+  const t = useTranslations('custom.pages.artist')
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
 
   // Scroll to the correct image when lightbox opens or initialIndex changes
   useEffect(() => {
@@ -44,14 +45,15 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="flex max-h-screen max-w-5xl flex-col items-center bg-black p-4 text-white">
-        <DialogTitle className="sr-only">Image gallery</DialogTitle>
+      <DialogContent className="flex max-h-screen max-w-5xl flex-col items-center border-0 bg-black p-4 text-white">
+        <DialogTitle className="sr-only">{t('media.galleryTitle')}</DialogTitle>
         <div className="w-full overflow-hidden" ref={emblaRef}>
           <div className="flex">
             {images.map((item, idx) => {
               const imageObj = typeof item.image === 'object' ? (item.image as PayloadImage) : null
               const src = getValidImageUrl(item.image)
-              const alt = imageObj?.alt || `Gallery image ${idx + 1}`
+              const caption = imageObj?.alt || null
+              const alt = caption || `Gallery image ${idx + 1}`
 
               return (
                 <div key={item.id || idx} className="relative min-w-0 flex-[0_0_100%]">
@@ -64,7 +66,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
                       sizes="(max-width: 1024px) 100vw, 1024px"
                     />
                   </div>
-                  {alt && <p className="mt-2 text-center text-sm text-gray-300">{alt}</p>}
+                  {caption && <p className="mt-2 text-center text-sm text-gray-300">{caption}</p>}
                 </div>
               )
             })}

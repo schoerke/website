@@ -101,6 +101,7 @@ const en = {
         media: {
           images: 'Images',
           videos: 'Videos',
+          galleryTitle: 'Image gallery',
         },
         concertDates: {
           button: 'View Calendar',

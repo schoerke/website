@@ -65,6 +65,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
               onClick={() => toggleAccordion(index)}
               className="flex w-full items-center justify-between py-3 text-left"
               aria-expanded={isOpen}
+              aria-controls={`video-panel-${video.id || index}`}
             >
               <h3 className="font-playfair mb-1 text-lg font-bold">{video.label}</h3>
               <svg
@@ -78,7 +79,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
             </button>
 
             {isOpen && (
-              <div className="pb-4">
+              <div id={`video-panel-${video.id || index}`} className="pb-4">
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
                   <iframe
                     src={`https://www.youtube.com/embed/${videoId}`}

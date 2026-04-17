@@ -104,6 +104,7 @@ const de = {
         media: {
           images: 'Bilder',
           videos: 'Videos',
+          galleryTitle: 'Bildergalerie',
         },
         concertDates: {
           button: 'Kalender ansehen',

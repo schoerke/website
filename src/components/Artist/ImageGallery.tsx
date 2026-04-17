@@ -1,12 +1,11 @@
 'use client'
 
-import type { Artist, Image as PayloadImage } from '@/payload-types'
+import type { Image as PayloadImage } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import ImageLightbox from './ImageLightbox'
-
-type GalleryImage = NonNullable<Artist['galleryImages']>[number]
+import type { GalleryImage } from './artistTypes'
 
 interface ImageGalleryProps {
   images: GalleryImage[]
@@ -32,7 +31,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, emptyMessage }) => 
 
   return (
     <>
-      <div className="columns-1 gap-1 sm:columns-2 lg:columns-3">
+      <div className="columns-1 sm:columns-2 lg:columns-3">
         {images.map((item, idx) => {
           const imageObj = typeof item.image === 'object' ? (item.image as PayloadImage) : null
           const src = getValidImageUrl(item.image)
