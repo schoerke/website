@@ -42,15 +42,13 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
 
   // Read hash from URL after hydration to set initial tab
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash.slice(1) // e.g. "media-videos"
-      const mediaMatch = /^media-(images|videos)$/.exec(hash)
-      if (mediaMatch) {
-        setActiveTab('media')
-        setMediaSection(mediaMatch[1] as 'images' | 'videos')
-      } else if (tabs.includes(hash as TabId)) {
-        setActiveTab(hash as TabId)
-      }
+    const hash = window.location.hash.slice(1) // e.g. "media-videos"
+    const mediaMatch = /^media-(images|videos)$/.exec(hash)
+    if (mediaMatch) {
+      setActiveTab('media')
+      setMediaSection(mediaMatch[1] as 'images' | 'videos')
+    } else if (tabs.includes(hash as TabId)) {
+      setActiveTab(hash as TabId)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only run once after mount

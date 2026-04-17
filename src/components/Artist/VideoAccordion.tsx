@@ -65,7 +65,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
               onClick={() => toggleAccordion(index)}
               className="flex w-full items-center justify-between py-3 text-left"
               aria-expanded={isOpen}
-              aria-controls={`video-panel-${video.id || index}`}
+              aria-controls={isOpen ? `video-panel-${video.id || index}` : undefined}
             >
               <h3 className="font-playfair mb-1 text-lg font-bold">{video.label}</h3>
               <svg

@@ -105,6 +105,8 @@ const de = {
           images: 'Bilder',
           videos: 'Videos',
           galleryTitle: 'Bildergalerie',
+          previousImage: 'Vorheriges Bild',
+          nextImage: 'Nächstes Bild',
         },
         concertDates: {
           button: 'Kalender ansehen',

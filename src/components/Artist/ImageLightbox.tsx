@@ -77,14 +77,14 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
           <div className="mt-4 flex w-full justify-between">
             <button
               onClick={scrollPrev}
-              aria-label="Previous image"
+              aria-label={t('media.previousImage')}
               className="rounded bg-white/10 px-4 py-2 hover:bg-white/20"
             >
               &#8592;
             </button>
             <button
               onClick={scrollNext}
-              aria-label="Next image"
+              aria-label={t('media.nextImage')}
               className="rounded bg-white/10 px-4 py-2 hover:bg-white/20"
             >
               &#8594;

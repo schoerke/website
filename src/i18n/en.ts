@@ -102,6 +102,8 @@ const en = {
           images: 'Images',
           videos: 'Videos',
           galleryTitle: 'Image gallery',
+          previousImage: 'Previous image',
+          nextImage: 'Next image',
         },
         concertDates: {
           button: 'View Calendar',
