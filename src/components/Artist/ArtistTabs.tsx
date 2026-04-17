@@ -7,9 +7,9 @@ import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 import NewsFeedClient from '../NewsFeed/NewsFeedClient'
-import { BiographyTab, ProjectsTab, RecordingsTab, RepertoireTab, VideoTab } from './ArtistTabContent'
+import { BiographyTab, MediaTab, ProjectsTab, RecordingsTab, RepertoireTab } from './ArtistTabContent'
 
-type TabId = 'biography' | 'repertoire' | 'discography' | 'video' | 'news' | 'projects'
+type TabId = 'biography' | 'repertoire' | 'discography' | 'media' | 'news' | 'projects'
 
 interface ArtistTabsProps {
   artist: Artist
@@ -36,14 +36,23 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const [repertoiresFetched, setRepertoiresFetched] = useState(false)
 
   // Available tabs
-  const tabs: TabId[] = ['biography', 'repertoire', 'discography', 'video', 'news', 'projects']
+  const tabs: TabId[] = ['biography', 'repertoire', 'discography', 'media', 'news', 'projects']
+
+  const [mediaSection, setMediaSection] = useState<'images' | 'videos'>('images')
 
   // Read hash from URL after hydration to set initial tab
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const hash = window.location.hash.slice(1) as TabId
-      if (hash && tabs.includes(hash)) {
-        setActiveTab(hash)
+      const hash = window.location.hash.slice(1) // e.g. "media-videos"
+      const dashIndex = hash.indexOf('-')
+      const tabPart = (dashIndex === -1 ? hash : hash.slice(0, dashIndex)) as TabId
+      const sectionPart = dashIndex === -1 ? undefined : hash.slice(dashIndex + 1)
+
+      if (tabPart && tabs.includes(tabPart)) {
+        setActiveTab(tabPart)
+        if (tabPart === 'media' && (sectionPart === 'images' || sectionPart === 'videos')) {
+          setMediaSection(sectionPart)
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,7 +61,16 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   // Update URL hash when tab changes
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab)
-    window.history.pushState(null, '', `#${tab}`)
+    if (tab === 'media') {
+      window.history.pushState(null, '', `#media-${mediaSection}`)
+    } else {
+      window.history.pushState(null, '', `#${tab}`)
+    }
+  }
+
+  const handleMediaSectionChange = (section: 'images' | 'videos') => {
+    setMediaSection(section)
+    window.history.pushState(null, '', `#media-${section}`)
   }
 
   // Fetch recordings when discography tab is selected
@@ -192,7 +210,15 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
             onRoleFilterChange={setSelectedRole}
           />
         )}
-        {activeTab === 'video' && <VideoTab videos={artist.youtubeLinks} emptyMessage={t('empty.video')} />}
+        {activeTab === 'media' && (
+          <MediaTab
+            images={artist.galleryImages || []}
+            videos={artist.youtubeLinks}
+            emptyMessage={t('empty.media')}
+            initialSection={mediaSection}
+            onSectionChange={handleMediaSectionChange}
+          />
+        )}
         {activeTab === 'news' && (
           <NewsFeedClient category="news" artistId={artist.id.toString()} emptyMessage={t('empty.news')} />
         )}
