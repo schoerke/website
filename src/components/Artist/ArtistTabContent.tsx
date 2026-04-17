@@ -10,7 +10,9 @@ import { Link } from '@/i18n/navigation'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import React from 'react'
+import ImageGallery from './ImageGallery'
 import VideoAccordion from './VideoAccordion'
 
 // Biography Tab
@@ -136,14 +138,55 @@ export const DiscographyTab: React.FC<DiscographyTabProps> = ({ content, emptyMe
   )
 }
 
-// Video Tab
-interface VideoTabProps {
+// Media Tab
+type MediaSection = 'images' | 'videos'
+
+interface MediaTabProps {
+  images: Artist['galleryImages']
   videos: Artist['youtubeLinks']
   emptyMessage: string
+  initialSection?: MediaSection
+  onSectionChange?: (section: MediaSection) => void
 }
 
-export const VideoTab: React.FC<VideoTabProps> = ({ videos, emptyMessage }) => {
-  return <VideoAccordion videos={videos || []} emptyMessage={emptyMessage} />
+export const MediaTab: React.FC<MediaTabProps> = ({
+  images,
+  videos,
+  emptyMessage,
+  initialSection = 'images',
+  onSectionChange,
+}) => {
+  const t = useTranslations('custom.pages.artist')
+  const [section, setSection] = React.useState<MediaSection>(initialSection)
+
+  const handleSectionChange = (value: string) => {
+    if (value === 'images' || value === 'videos') {
+      setSection(value)
+      onSectionChange?.(value)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <ToggleGroup
+        type="single"
+        value={section}
+        onValueChange={handleSectionChange}
+        className="mb-6 flex flex-wrap justify-start gap-2"
+        aria-label="Select media type"
+      >
+        <ToggleGroupItem value="images" aria-label={t('media.images')}>
+          {t('media.images')}
+        </ToggleGroupItem>
+        <ToggleGroupItem value="videos" aria-label={t('media.videos')}>
+          {t('media.videos')}
+        </ToggleGroupItem>
+      </ToggleGroup>
+
+      {section === 'images' && <ImageGallery images={images || []} emptyMessage={emptyMessage} />}
+      {section === 'videos' && <VideoAccordion videos={videos || []} emptyMessage={emptyMessage} />}
+    </div>
+  )
 }
 
 // Concert Dates Tab
