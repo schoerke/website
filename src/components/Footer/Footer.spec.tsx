@@ -42,12 +42,11 @@ describe('Footer Components - Structure and Configuration', () => {
         { href: '/artists', key: 'artists' },
         { href: '/news', key: 'news' },
         { href: '/projects', key: 'projects' },
-        { href: '/team', key: 'team' },
         { href: '/contact', key: 'contact' },
       ]
 
       // This verifies the data structure matches what FooterNavigation expects
-      expect(expectedLinks).toHaveLength(6)
+      expect(expectedLinks).toHaveLength(5)
       expectedLinks.forEach((link) => {
         expect(link.href).toBeTruthy()
         expect(link.key).toBeTruthy()
