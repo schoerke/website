@@ -343,7 +343,7 @@ function DynamicSearchActions() {
       id: `email-${employee.id}`,
       name: `${locale === 'de' ? 'E-Mail an' : 'Email'} ${employee.name}`,
       // Include search query and command keywords to prevent KBar from filtering it out
-      keywords: `${searchQuery} email mail e-mail command commands befehl befehle ${employee.name}`,
+      keywords: `${searchQuery},email,mail,e-mail,command,commands,befehl,befehle,${employee.name}`,
       section: locale === 'de' ? 'Befehle' : 'Commands',
       subtitle: commandLabel,
       priority: 60, // Lower priority than content, so Commands appear last
@@ -512,8 +512,8 @@ function createSearchAction(
     id: `search-${doc.id}`,
     name: doc.title.substring(0, 100),
     // Add a unique keyword that includes the search query so KBar doesn't filter it out
-    // Each result gets its own unique keyword combining the query + doc title
-    keywords: `${searchQuery} ${doc.title}`,
+    // Comma-separated so Fuse.js treats each token independently (it splits by comma)
+    keywords: `${searchQuery},${doc.title}`,
     section: getSection(doc.relationTo, locale),
     subtitle: getTypeLabel(doc.relationTo, locale),
     priority,
