@@ -64,7 +64,7 @@ const SchoerkeLink: React.FC<SchoerkeLinkProps> = ({ variant = 'animated', class
 
   const variantClasses = {
     animated: animatedUnderlineClasses,
-    'with-icon': 'inline-flex items-center gap-2',
+    'with-icon': 'inline-flex items-center gap-2 group',
     'icon-only': '',
   }
 

@@ -28,7 +28,7 @@ const Header: React.FC = () => {
             width={120}
             height={120}
             className="transition-opacity hover:opacity-80 sm:hidden"
-            style={{ width: 'auto', height: '80px' }}
+            style={{ width: 'auto', height: '40px' }}
           />
           {/* sm+: full text logo */}
           <Image

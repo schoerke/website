@@ -9,7 +9,7 @@ type RouterPushHref = Parameters<ReturnType<typeof useRouter>['push']>[0]
 interface BackButtonProps {
   label: string
   className?: string
-  fallbackHref?: RouterPushHref
+  fallbackHref?: RouterPushHref | string
 }
 
 /**
@@ -27,7 +27,7 @@ const BackButton: React.FC<BackButtonProps> = ({ label, className, fallbackHref 
       router.back()
     } else {
       // router.push from next-intl/navigation is already locale-aware
-      router.push(fallbackHref)
+      router.push(fallbackHref as RouterPushHref)
     }
   }
 
