@@ -1,5 +1,4 @@
-import { getImageByFilename } from '@/services/media.server'
-import { getPageBySlug } from '@/services/page'
+import { getContactPageData } from '../_lib/contactPageData'
 import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import ContactPageLayout from '../_components/ContactPageLayout'
@@ -13,15 +12,26 @@ const ContactPage = async ({ params }: { params: Promise<{ locale: string }> }) 
 
   setRequestLocale(locale)
 
-  const page = await getPageBySlug('contact', locale as 'de' | 'en')
+  const { page, teamPage, employees, wiesbadenImage, phoneLabel, mobileLabel } = await getContactPageData(
+    'contact',
+    locale as 'de' | 'en'
+  )
 
   if (!page) {
     notFound()
   }
 
-  const wiesbadenImage = await getImageByFilename('wiesbaden.webp')
-
-  return <ContactPageLayout page={page} locale={locale} image={wiesbadenImage} />
+  return (
+    <ContactPageLayout
+      page={page}
+      locale={locale}
+      image={wiesbadenImage}
+      teamPage={teamPage}
+      employees={employees}
+      phoneLabel={phoneLabel}
+      mobileLabel={mobileLabel}
+    />
+  )
 }
 
 export default ContactPage

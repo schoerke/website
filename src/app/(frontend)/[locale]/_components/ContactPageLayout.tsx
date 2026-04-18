@@ -1,5 +1,6 @@
+import TeamMemberCard from '@/components/Employee/TeamMemberCard'
 import PayloadRichText from '@/components/ui/PayloadRichText'
-import type { Page, Image as PayloadImage } from '@/payload-types'
+import type { Employee, Page, Image as PayloadImage } from '@/payload-types'
 import Image from 'next/image'
 import React from 'react'
 
@@ -7,9 +8,21 @@ interface ContactPageLayoutProps {
   page: Page
   locale: string
   image?: PayloadImage | null
+  teamPage?: Page | null
+  employees?: Employee[]
+  phoneLabel?: string
+  mobileLabel?: string
 }
 
-const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({ page, locale, image }) => {
+const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
+  page,
+  locale,
+  image,
+  teamPage,
+  employees,
+  phoneLabel = 'Phone',
+  mobileLabel = 'Mobile',
+}) => {
   return (
     <div className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
       <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold sm:text-6xl lg:text-7xl">{page.title}</h1>
@@ -19,7 +32,7 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({ page, locale, ima
         </div>
         {image && (
           <div className="mb-0 md:mb-0 md:w-1/2">
-            <div className="relative w-full overflow-hidden rounded-lg" style={{ aspectRatio: '4 / 3' }}>
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg">
               <Image
                 src={image.url || ''}
                 alt={image.alt || 'Wiesbaden, Germany'}
@@ -32,6 +45,31 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({ page, locale, ima
           </div>
         )}
       </div>
+
+      {/* Team section — shown when employees are available */}
+      {employees && employees.length > 0 && (
+        <div className="mt-16">
+          {teamPage && (
+            <div className="mb-8">
+              <h2 className="font-playfair mb-6 text-4xl font-bold sm:text-5xl lg:text-6xl">{teamPage.title}</h2>
+              <div className="prose max-w-none">
+                <PayloadRichText content={teamPage.content} locale={locale} />
+              </div>
+            </div>
+          )}
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {employees.map((employee, index) => (
+              <TeamMemberCard
+                key={employee.id}
+                {...employee}
+                phoneLabel={phoneLabel}
+                mobileLabel={mobileLabel}
+                priority={index === 0}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

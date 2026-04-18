@@ -84,19 +84,11 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
       {
         id: 'contact',
         name: locale === 'de' ? 'Kontakt' : 'Contact',
-        keywords: 'contact kontakt',
+        keywords: 'contact kontakt team',
         section: navigationSection,
         subtitle: pageLabel,
         priority: 1, // Higher priority for contact
         perform: () => router.push('/kontakt'),
-      },
-      {
-        id: 'team',
-        name: 'Team',
-        keywords: 'team',
-        section: navigationSection,
-        subtitle: pageLabel,
-        perform: () => router.push('/team'),
       },
       {
         id: 'locale-switch',
@@ -481,7 +473,7 @@ function getDocumentPath(doc: SearchDoc): string {
       // Use slug if available, otherwise fall back to ID
       return `/artists/${doc.slug || doc.relationId}`
     case 'employees':
-      return `/team` // Employees don't have individual pages
+      return `/kontakt` // Employees are listed on the contact page
     case 'pages':
       return `/${doc.slug || doc.relationId}`
     case 'repertoire':
