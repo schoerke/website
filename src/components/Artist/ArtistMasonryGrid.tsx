@@ -2,6 +2,7 @@
 
 import { Link } from '@/i18n/navigation'
 import type { Artist, Image as PayloadImage } from '@/payload-types'
+import ImageSkeleton from '@/components/ui/ImageSkeleton'
 import { shuffleArray } from '@/utils/array'
 import { getValidImageUrl, isImageObject } from '@/utils/image'
 import { useTranslations } from 'next-intl'
@@ -18,21 +19,39 @@ interface MasonryItemProps {
 }
 
 const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments }) => {
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(false)
   const image = isImageObject(artist.image) ? (artist.image as PayloadImage) : null
   const imageUrl = getValidImageUrl(artist.image)
   const focalX = image?.focalX ?? 50
   const focalY = image?.focalY ?? 50
 
-  const content = (
+  const content = imageUrl ? (
     <div className="group relative w-full overflow-hidden">
+      {/* Skeleton shimmer — collapses once image loads */}
+      {!loaded && !error && <ImageSkeleton width={image?.width} height={image?.height} fallbackRatio="3 / 4" />}
+      {/* Error fallback */}
+      {error && (
+        <div
+          className="flex w-full items-center justify-center bg-gray-100 text-gray-400"
+          style={{ aspectRatio: '3 / 4' }}
+        >
+          <span className="text-sm">Image unavailable</span>
+        </div>
+      )}
       <Image
         src={imageUrl}
         alt={artist.name}
         width={600}
         height={800}
-        className="block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        className={`block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105 ${loaded && !error ? 'opacity-100' : 'opacity-0 transition-opacity'}`}
         style={{ objectPosition: `${focalX}% ${focalY}%` }}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        ref={(node) => {
+          if (node?.complete && !loaded) setLoaded(true)
+        }}
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
       />
       {/* Hover overlay */}
       <div className="absolute inset-0 flex flex-col justify-end bg-black/0 p-4 transition-all duration-300 group-hover:bg-black/60">
@@ -42,7 +61,9 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments
         </div>
       </div>
     </div>
-  )
+  ) : null
+
+  if (!content) return null
 
   if (!artist.slug) return <div className="mb-1 break-inside-avoid">{content}</div>
 
@@ -50,7 +71,7 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments
     <Link
       href={{ pathname: '/artists/[slug]', params: { slug: artist.slug } }}
       className="mb-1 block break-inside-avoid"
-      aria-label={artist.name}
+      aria-label={translatedInstruments ? `${artist.name}, ${translatedInstruments}` : artist.name}
     >
       {content}
     </Link>
