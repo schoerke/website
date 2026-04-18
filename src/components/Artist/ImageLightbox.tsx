@@ -52,7 +52,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
             {images.map((item, idx) => {
               const imageObj = typeof item.image === 'object' ? (item.image as PayloadImage) : null
               const src = getValidImageUrl(item.image)
-              const caption = imageObj?.alt || null
+              const caption = imageObj?.credit ? `© ${imageObj.credit}` : imageObj?.alt || null
               const alt = caption || `Gallery image ${idx + 1}`
 
               return (
