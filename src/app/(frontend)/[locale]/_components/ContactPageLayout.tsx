@@ -51,7 +51,9 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
         <div className="mt-16">
           {teamPage && (
             <div className="mb-8">
-              <h2 className="font-playfair mb-6 text-4xl font-bold sm:text-5xl lg:text-6xl">{teamPage.title}</h2>
+              <h2 id="team" className="font-playfair mb-6 text-4xl font-bold sm:text-5xl lg:text-6xl">
+                {teamPage.title}
+              </h2>
               <div className="prose max-w-none">
                 <PayloadRichText content={teamPage.content} locale={locale} />
               </div>

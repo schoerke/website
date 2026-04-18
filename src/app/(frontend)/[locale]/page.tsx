@@ -101,7 +101,7 @@ const HomePage = async ({ params }: HomePageProps) => {
               ? homePageGlobal.teamIntro
               : t('teamTagline')}
           </p>
-          <SchoerkeLink href="/team" variant="animated" className="text-sm font-medium">
+          <SchoerkeLink href="/kontakt#team" variant="animated" className="text-sm font-medium">
             {t('teamCta')}
           </SchoerkeLink>
         </section>
