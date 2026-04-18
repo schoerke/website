@@ -34,7 +34,8 @@ function extractYouTubeId(url: string): string | null {
 }
 
 const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage }) => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const firstValidIndex = videos.findIndex((v) => extractYouTubeId(v.url) !== null)
+  const [openIndex, setOpenIndex] = useState<number | null>(firstValidIndex >= 0 ? firstValidIndex : null)
 
   if (videos.length === 0) {
     return (
@@ -53,6 +54,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
       {videos.map((video, index) => {
         const videoId = extractYouTubeId(video.url)
         const isOpen = openIndex === index
+        const panelId = `video-panel-${video.id || index}`
 
         if (!videoId) {
           console.warn(`Invalid YouTube URL: ${video.url}`)
@@ -65,9 +67,9 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
               onClick={() => toggleAccordion(index)}
               className="flex w-full items-center justify-between py-3 text-left"
               aria-expanded={isOpen}
-              aria-controls={isOpen ? `video-panel-${video.id || index}` : undefined}
+              aria-controls={panelId}
             >
-              <h3 className="font-playfair mb-1 text-lg font-bold">{video.label}</h3>
+              <span className="font-playfair mb-1 text-lg font-bold">{video.label}</span>
               <svg
                 className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                 fill="none"
@@ -78,19 +80,17 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
               </svg>
             </button>
 
-            {isOpen && (
-              <div id={`video-panel-${video.id || index}`} className="pb-4">
-                <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${videoId}`}
-                    title={video.label}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="absolute inset-0 h-full w-full"
-                  />
-                </div>
+            <div id={panelId} hidden={!isOpen} className="pb-4">
+              <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title={video.label}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full"
+                />
               </div>
-            )}
+            </div>
           </li>
         )
       })}
