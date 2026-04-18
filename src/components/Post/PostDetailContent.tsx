@@ -86,7 +86,7 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
 
         {relatedArtists.length > 0 && (
           <div className="text-right">
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">
+            <h2 className="mb-2 font-semibold text-gray-900">
               {relatedArtists.length === 1 ? relatedArtistLabel : relatedArtistsLabel}
             </h2>
             <ul className="flex flex-wrap justify-end gap-3">
