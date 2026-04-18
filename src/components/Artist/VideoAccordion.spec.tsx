@@ -215,7 +215,7 @@ describe('VideoAccordion', () => {
 
       expect(screen.getByText('Valid')).toBeInTheDocument()
       expect(screen.queryByText('Invalid')).not.toBeInTheDocument()
-      expect(console.warn).toHaveBeenCalledWith('Invalid YouTube URL: https://example.com/not-a-video')
+      expect(console.warn).toHaveBeenCalledWith('Unsupported video URL: https://example.com/not-a-video')
     })
   })
 

@@ -208,9 +208,8 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
         {activeTab === 'media' && (
           <MediaTab
             images={artist.galleryImages || []}
-            videos={artist.youtubeLinks}
+            videos={artist.videoLinks}
             emptyMessage={t('empty.media')}
-            locale={locale}
             initialSection={mediaSection}
             onSectionChange={handleMediaSectionChange}
           />

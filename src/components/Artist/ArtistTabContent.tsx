@@ -143,9 +143,8 @@ type MediaSection = 'images' | 'videos'
 
 interface MediaTabProps {
   images: Artist['galleryImages']
-  videos: Artist['youtubeLinks']
+  videos: Artist['videoLinks']
   emptyMessage: string
-  locale: string
   initialSection?: MediaSection
   onSectionChange?: (section: MediaSection) => void
 }
@@ -154,7 +153,6 @@ export const MediaTab: React.FC<MediaTabProps> = ({
   images,
   videos,
   emptyMessage,
-  locale,
   initialSection = 'images',
   onSectionChange,
 }) => {
@@ -186,7 +184,7 @@ export const MediaTab: React.FC<MediaTabProps> = ({
       </ToggleGroup>
 
       {section === 'images' && <ImageGallery images={images || []} emptyMessage={emptyMessage} />}
-      {section === 'videos' && <VideoAccordion videos={videos || []} emptyMessage={emptyMessage} locale={locale} />}
+      {section === 'videos' && <VideoAccordion videos={videos || []} emptyMessage={emptyMessage} />}
     </div>
   )
 }

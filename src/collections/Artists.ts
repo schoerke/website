@@ -1,7 +1,7 @@
 import { INSTRUMENTS } from '@/constants/options'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { createSlugHook } from '@/utils/slug'
-import { validateURL, validateYouTubeURL } from '@/validators/fields'
+import { validateURL, validateVideoURL } from '@/validators/fields'
 import type { TFunction } from '@payloadcms/translations'
 import type { CollectionConfig } from 'payload'
 
@@ -366,23 +366,26 @@ export const Artists: CollectionConfig = {
               ],
             },
             {
-              name: 'youtubeLinks',
-              label: 'YouTube Links',
+              name: 'videoLinks',
+              label: {
+                en: 'Video Links',
+                de: 'Video-Links',
+              },
               type: 'array',
               labels: {
                 singular: {
-                  en: 'YouTube Video',
-                  de: 'YouTube-Video',
+                  en: 'Video',
+                  de: 'Video',
                 },
                 plural: {
-                  en: 'YouTube Videos',
-                  de: 'YouTube-Videos',
+                  en: 'Videos',
+                  de: 'Videos',
                 },
               },
               admin: {
                 initCollapsed: true,
                 components: {
-                  RowLabel: './collections/components/YouTubeLinkRowLabel',
+                  RowLabel: './collections/components/VideoLinkRowLabel',
                 },
               },
               fields: [
@@ -394,13 +397,14 @@ export const Artists: CollectionConfig = {
                 },
                 {
                   name: 'url',
-                  label: 'YouTube URL',
+                  label: 'Video URL',
                   type: 'text',
                   required: true,
                   admin: {
-                    placeholder: 'https://www.youtube.com/watch?v=...',
+                    placeholder: 'https://www.youtube.com/watch?v=... or https://www.arte.tv/de/videos/...',
+                    description: 'Supports YouTube and arte.tv URLs',
                   },
-                  validate: validateYouTubeURL,
+                  validate: validateVideoURL,
                 },
               ],
             },

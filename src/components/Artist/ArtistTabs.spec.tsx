@@ -136,7 +136,7 @@ const createMockArtist = (overrides?: Partial<Artist>): Artist => ({
   },
   quote: 'Test quote',
   instrument: [],
-  youtubeLinks: [{ label: 'Test Video', url: 'https://youtube.com/watch?v=123' }],
+  videoLinks: [{ label: 'Test Video', url: 'https://youtube.com/watch?v=123' }],
   galleryImages: [],
   contactPersons: [],
   updatedAt: '2023-01-01T00:00:00.000Z',
@@ -502,7 +502,7 @@ describe('ArtistTabs', async () => {
     it('should initialize media tab to videos section from #media-videos hash', () => {
       window.location.hash = '#media-videos'
       const artist = createMockArtist({
-        youtubeLinks: [{ label: 'Test', url: 'https://youtube.com/watch?v=abc' }],
+        videoLinks: [{ label: 'Test', url: 'https://youtube.com/watch?v=abc' }],
         galleryImages: [],
       })
 

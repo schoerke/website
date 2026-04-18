@@ -258,9 +258,12 @@ export interface Artist {
     biographyPDF?: (number | null) | Document;
     galleryZIP?: (number | null) | Document;
   };
-  youtubeLinks?:
+  videoLinks?:
     | {
         label: string;
+        /**
+         * Supports YouTube and arte.tv URLs
+         */
         url: string;
         id?: string | null;
       }[]
@@ -789,7 +792,7 @@ export interface ArtistsSelect<T extends boolean = true> {
         biographyPDF?: T;
         galleryZIP?: T;
       };
-  youtubeLinks?:
+  videoLinks?:
     | T
     | {
         label?: T;

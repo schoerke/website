@@ -11,7 +11,6 @@ interface VideoLink {
 interface VideoAccordionProps {
   videos: VideoLink[]
   emptyMessage: string
-  locale: string
 }
 
 /**
@@ -53,9 +52,10 @@ function extractArteId(url: string): string | null {
 
 /**
  * Build the embed iframe src for a video URL.
+ * For arte.tv, the locale is extracted from the watch URL itself.
  * Returns null if the URL is not a supported platform.
  */
-function buildEmbedSrc(url: string, locale: string): string | null {
+function buildEmbedSrc(url: string): string | null {
   const youtubeId = extractYouTubeId(url)
   if (youtubeId) {
     return `https://www.youtube.com/embed/${youtubeId}`
@@ -63,14 +63,22 @@ function buildEmbedSrc(url: string, locale: string): string | null {
 
   const arteId = extractArteId(url)
   if (arteId) {
-    return `https://www.arte.tv/embeds/${locale}/${arteId}`
+    // Extract locale from the watch URL: /de/videos/... → 'de'
+    try {
+      const parsed = new URL(url)
+      const localeMatch = parsed.pathname.match(/^\/([a-z]{2})\/videos\//)
+      const locale = localeMatch ? localeMatch[1] : 'de'
+      return `https://www.arte.tv/embeds/${locale}/${arteId}`
+    } catch {
+      return null
+    }
   }
 
   return null
 }
 
-const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage, locale }) => {
-  const firstValidIndex = videos.findIndex((v) => buildEmbedSrc(v.url, locale) !== null)
+const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage }) => {
+  const firstValidIndex = videos.findIndex((v) => buildEmbedSrc(v.url) !== null)
   const [openIndex, setOpenIndex] = useState<number | null>(firstValidIndex >= 0 ? firstValidIndex : null)
 
   if (videos.length === 0) {
@@ -88,7 +96,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage, l
   return (
     <ul className="space-y-0">
       {videos.map((video, index) => {
-        const embedSrc = buildEmbedSrc(video.url, locale)
+        const embedSrc = buildEmbedSrc(video.url)
         const isOpen = openIndex === index
         const panelId = `video-panel-${video.id || index}`
 
