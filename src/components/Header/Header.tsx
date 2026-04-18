@@ -1,7 +1,7 @@
 'use client'
 
 import { Link } from '@/i18n/navigation'
-import { LOGO_PATH } from '@/services/media'
+import { LOGO_ICON_PATH, LOGO_PATH } from '@/services/media'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import AppControls from '../ui/AppControls'
@@ -21,12 +21,22 @@ const Header: React.FC = () => {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         {/* Logo Branding */}
         <Link href="/" className="flex items-center">
+          {/* Mobile: icon only */}
+          <Image
+            src={LOGO_ICON_PATH}
+            alt="KSSchoerke Logo"
+            width={120}
+            height={120}
+            className="transition-opacity hover:opacity-80 sm:hidden"
+            style={{ width: 'auto', height: '80px' }}
+          />
+          {/* sm+: full text logo */}
           <Image
             src={LOGO_PATH}
             alt="KSSchoerke Logo"
             width={400}
             height={120}
-            className="transition-opacity hover:opacity-80"
+            className="hidden transition-opacity hover:opacity-80 sm:block"
             style={{ width: 'auto', height: '80px' }}
           />
         </Link>
