@@ -292,4 +292,42 @@ describe('VideoAccordion', () => {
       expect(iframe.src).toContain('dQw4w9WgXcQ')
     })
   })
+
+  describe('arte.tv URL support', () => {
+    it('should render arte.tv video with correct embed URL', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Arte Concert', url: 'https://www.arte.tv/de/videos/120894-000-A/some-title/' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const iframe = screen.getByTitle('Arte Concert') as HTMLIFrameElement
+      expect(iframe.src).toContain('arte.tv/embeds/de/120894-000-A')
+    })
+
+    it('should extract locale from arte.tv URL', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Arte FR', url: 'https://www.arte.tv/fr/videos/120894-000-A/some-title/' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const iframe = screen.getByTitle('Arte FR') as HTMLIFrameElement
+      expect(iframe.src).toContain('/embeds/fr/')
+    })
+
+    it('should disable autoplay for arte.tv embeds', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Arte Test', url: 'https://www.arte.tv/de/videos/120894-000-A/title/' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const iframe = screen.getByTitle('Arte Test') as HTMLIFrameElement
+      expect(iframe.src).toContain('autoplay=false')
+    })
+  })
 })

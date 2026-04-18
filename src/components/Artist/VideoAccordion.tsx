@@ -34,17 +34,18 @@ function extractYouTubeId(url: string): string | null {
 }
 
 /**
- * Extract arte.tv video ID from watch URL:
+ * Parse an arte.tv watch URL, returning the locale and video ID.
  * - https://www.arte.tv/de/videos/120894-000-A/some-title/
  */
-function extractArteId(url: string): string | null {
+function parseArteUrl(url: string): { locale: string; id: string } | null {
   try {
     const parsed = new URL(url)
     const isArteDomain = parsed.hostname === 'www.arte.tv' || parsed.hostname === 'arte.tv'
     if (!isArteDomain) return null
 
-    const match = parsed.pathname.match(/^\/[a-z]{2}\/videos\/([^/]+)/)
-    return match ? match[1] : null
+    const match = parsed.pathname.match(/^\/([a-z]{2})\/videos\/([^/]+)/)
+    if (!match) return null
+    return { locale: match[1], id: match[2] }
   } catch {
     return null
   }
@@ -61,17 +62,9 @@ function buildEmbedSrc(url: string): string | null {
     return `https://www.youtube.com/embed/${youtubeId}`
   }
 
-  const arteId = extractArteId(url)
-  if (arteId) {
-    // Extract locale from the watch URL: /de/videos/... → 'de'
-    try {
-      const parsed = new URL(url)
-      const localeMatch = parsed.pathname.match(/^\/([a-z]{2})\/videos\//)
-      const locale = localeMatch ? localeMatch[1] : 'de'
-      return `https://www.arte.tv/embeds/${locale}/${arteId}`
-    } catch {
-      return null
-    }
+  const arte = parseArteUrl(url)
+  if (arte) {
+    return `https://www.arte.tv/embeds/${arte.locale}/${arte.id}?autoplay=false`
   }
 
   return null
@@ -113,7 +106,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
               aria-expanded={isOpen}
               aria-controls={panelId}
             >
-              <span className="font-playfair mb-1 text-lg font-bold">{video.label}</span>
+              <span className="font-playfair text-lg font-bold">{video.label}</span>
               <svg
                 className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                 fill="none"
