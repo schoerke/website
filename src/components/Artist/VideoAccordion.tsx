@@ -2,19 +2,20 @@
 
 import { useState } from 'react'
 
-interface YouTubeLink {
+interface VideoLink {
   label: string
   url: string
   id?: string | null
 }
 
 interface VideoAccordionProps {
-  videos: YouTubeLink[]
+  videos: VideoLink[]
   emptyMessage: string
+  locale: string
 }
 
 /**
- * Extract YouTube video ID from various URL formats
+ * Extract YouTube video ID from various URL formats:
  * - https://www.youtube.com/watch?v=VIDEO_ID
  * - https://youtu.be/VIDEO_ID
  * - https://www.youtube.com/embed/VIDEO_ID
@@ -33,8 +34,43 @@ function extractYouTubeId(url: string): string | null {
   return null
 }
 
-const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage }) => {
-  const firstValidIndex = videos.findIndex((v) => extractYouTubeId(v.url) !== null)
+/**
+ * Extract arte.tv video ID from watch URL:
+ * - https://www.arte.tv/de/videos/120894-000-A/some-title/
+ */
+function extractArteId(url: string): string | null {
+  try {
+    const parsed = new URL(url)
+    const isArteDomain = parsed.hostname === 'www.arte.tv' || parsed.hostname === 'arte.tv'
+    if (!isArteDomain) return null
+
+    const match = parsed.pathname.match(/^\/[a-z]{2}\/videos\/([^/]+)/)
+    return match ? match[1] : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Build the embed iframe src for a video URL.
+ * Returns null if the URL is not a supported platform.
+ */
+function buildEmbedSrc(url: string, locale: string): string | null {
+  const youtubeId = extractYouTubeId(url)
+  if (youtubeId) {
+    return `https://www.youtube.com/embed/${youtubeId}`
+  }
+
+  const arteId = extractArteId(url)
+  if (arteId) {
+    return `https://www.arte.tv/embeds/${locale}/${arteId}`
+  }
+
+  return null
+}
+
+const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage, locale }) => {
+  const firstValidIndex = videos.findIndex((v) => buildEmbedSrc(v.url, locale) !== null)
   const [openIndex, setOpenIndex] = useState<number | null>(firstValidIndex >= 0 ? firstValidIndex : null)
 
   if (videos.length === 0) {
@@ -52,12 +88,12 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
   return (
     <ul className="space-y-0">
       {videos.map((video, index) => {
-        const videoId = extractYouTubeId(video.url)
+        const embedSrc = buildEmbedSrc(video.url, locale)
         const isOpen = openIndex === index
         const panelId = `video-panel-${video.id || index}`
 
-        if (!videoId) {
-          console.warn(`Invalid YouTube URL: ${video.url}`)
+        if (!embedSrc) {
+          console.warn(`Unsupported video URL: ${video.url}`)
           return null
         }
 
@@ -83,7 +119,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
             <div id={panelId} hidden={!isOpen} className="pb-4">
               <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
                 <iframe
-                  src={`https://www.youtube.com/embed/${videoId}`}
+                  src={embedSrc}
                   title={video.label}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

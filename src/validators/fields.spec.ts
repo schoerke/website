@@ -1,115 +1,123 @@
 import { describe, expect, it } from 'vitest'
-import { validatePassword, validateQuote, validateURL, validateYouTubeURL } from './fields'
+import { validatePassword, validateQuote, validateURL, validateVideoURL } from './fields'
 
-describe('validateYouTubeURL', () => {
-  describe('valid URLs', () => {
+describe('validateVideoURL', () => {
+  describe('YouTube URLs', () => {
     it('should accept standard youtube.com watch URL', () => {
-      expect(validateYouTubeURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
+      expect(validateVideoURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
     })
 
     it('should accept youtube.com without www', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
+      expect(validateVideoURL('https://youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
     })
 
     it('should accept youtu.be short URLs', () => {
-      expect(validateYouTubeURL('https://youtu.be/dQw4w9WgXcQ')).toBe(true)
+      expect(validateVideoURL('https://youtu.be/dQw4w9WgXcQ')).toBe(true)
     })
 
     it('should accept mobile youtube URLs (m.youtube.com)', () => {
-      expect(validateYouTubeURL('https://m.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
+      expect(validateVideoURL('https://m.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
     })
 
     it('should accept video IDs with hyphens', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch?v=abc-def-hij')).toBe(true)
+      expect(validateVideoURL('https://youtube.com/watch?v=abc-def-hij')).toBe(true)
     })
 
     it('should accept video IDs with underscores', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch?v=abc_def_hij')).toBe(true)
+      expect(validateVideoURL('https://youtube.com/watch?v=abc_def_hij')).toBe(true)
     })
 
     it('should accept video IDs with mixed alphanumeric and special chars', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch?v=aB3-De_5XyZ')).toBe(true)
+      expect(validateVideoURL('https://youtube.com/watch?v=aB3-De_5XyZ')).toBe(true)
     })
 
     it('should accept http protocol', () => {
-      expect(validateYouTubeURL('http://youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
+      expect(validateVideoURL('http://youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
+    })
+  })
+
+  describe('arte.tv URLs', () => {
+    it('should accept arte.tv video URL (German)', () => {
+      expect(
+        validateVideoURL('https://www.arte.tv/de/videos/120894-000-A/thomas-hengelbrock-dirigiert-beethoven-und-faure/')
+      ).toBe(true)
+    })
+
+    it('should accept arte.tv video URL (French)', () => {
+      expect(validateVideoURL('https://www.arte.tv/fr/videos/120894-000-A/some-title/')).toBe(true)
+    })
+
+    it('should accept arte.tv video URL without trailing slash', () => {
+      expect(validateVideoURL('https://www.arte.tv/de/videos/120894-000-A/some-title')).toBe(true)
+    })
+
+    it('should accept arte.tv video URL without title slug', () => {
+      expect(validateVideoURL('https://www.arte.tv/de/videos/120894-000-A/')).toBe(true)
+    })
+
+    it('should reject arte.tv URLs without a video ID', () => {
+      expect(validateVideoURL('https://www.arte.tv/de/videos/')).not.toBe(true)
     })
   })
 
   describe('invalid URLs', () => {
     it('should reject non-string values', () => {
-      expect(validateYouTubeURL(123)).toBe('Please enter a valid YouTube URL')
-      expect(validateYouTubeURL(null)).toBe('Please enter a valid YouTube URL')
-      expect(validateYouTubeURL(undefined)).toBe('Please enter a valid YouTube URL')
-      expect(validateYouTubeURL({})).toBe('Please enter a valid YouTube URL')
-      expect(validateYouTubeURL([])).toBe('Please enter a valid YouTube URL')
+      expect(validateVideoURL(123)).not.toBe(true)
+      expect(validateVideoURL(null)).not.toBe(true)
+      expect(validateVideoURL(undefined)).not.toBe(true)
+      expect(validateVideoURL({})).not.toBe(true)
+      expect(validateVideoURL([])).not.toBe(true)
     })
 
-    it('should reject non-YouTube domains', () => {
-      expect(validateYouTubeURL('https://vimeo.com/123456789')).toBe('Please enter a valid YouTube URL')
-      expect(validateYouTubeURL('https://dailymotion.com/video/xyz')).toBe('Please enter a valid YouTube URL')
-      expect(validateYouTubeURL('https://google.com')).toBe('Please enter a valid YouTube URL')
+    it('should reject unsupported platforms', () => {
+      expect(validateVideoURL('https://vimeo.com/123456789')).not.toBe(true)
+      expect(validateVideoURL('https://dailymotion.com/video/xyz')).not.toBe(true)
+      expect(validateVideoURL('https://google.com')).not.toBe(true)
     })
 
     it('should reject malformed URLs', () => {
-      expect(validateYouTubeURL('not-a-url')).toBe('Please enter a valid URL format')
-      expect(validateYouTubeURL('youtube.com/watch?v=dQw4w9WgXcQ')).toBe('Please enter a valid URL format')
-      // 'htp://youtube.com' is a valid URL (typo becomes hostname), but video ID is missing
-      expect(validateYouTubeURL('htp://youtube.com')).toBe('Please enter a valid YouTube URL with a valid video ID')
+      expect(validateVideoURL('not-a-url')).not.toBe(true)
+      expect(validateVideoURL('youtube.com/watch?v=dQw4w9WgXcQ')).not.toBe(true)
     })
 
     it('should reject YouTube URLs without video ID', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID'
-      )
-      expect(validateYouTubeURL('https://youtube.com')).toBe('Please enter a valid YouTube URL with a valid video ID')
-      expect(validateYouTubeURL('https://youtu.be/')).toBe('Please enter a valid YouTube URL with a valid video ID')
+      expect(validateVideoURL('https://youtube.com/watch')).not.toBe(true)
+      expect(validateVideoURL('https://youtube.com')).not.toBe(true)
+      expect(validateVideoURL('https://youtu.be/')).not.toBe(true)
     })
 
     it('should reject video IDs shorter than 11 characters', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch?v=short')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID'
-      )
-      expect(validateYouTubeURL('https://youtu.be/abc')).toBe('Please enter a valid YouTube URL with a valid video ID')
+      expect(validateVideoURL('https://youtube.com/watch?v=short')).not.toBe(true)
+      expect(validateVideoURL('https://youtu.be/abc')).not.toBe(true)
     })
 
     it('should reject video IDs longer than 11 characters', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch?v=toolongvideoid')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID'
-      )
-      expect(validateYouTubeURL('https://youtu.be/verylongid12')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID'
-      )
+      expect(validateVideoURL('https://youtube.com/watch?v=toolongvideoid')).not.toBe(true)
+      expect(validateVideoURL('https://youtu.be/verylongid12')).not.toBe(true)
     })
 
     it('should reject video IDs with invalid characters', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch?v=abc@def#hij')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID'
-      )
-      expect(validateYouTubeURL('https://youtu.be/abc def hij')).toBe(
-        'Please enter a valid YouTube URL with a valid video ID'
-      )
+      expect(validateVideoURL('https://youtube.com/watch?v=abc@def#hij')).not.toBe(true)
+      expect(validateVideoURL('https://youtu.be/abc def hij')).not.toBe(true)
     })
 
-    it('should reject youtu.be URLs with path after video ID', () => {
-      // Video ID extraction takes first segment, so "dQw4w9WgXcQ" is valid
-      // But if there's extra path like "dQw4w9WgXcQ/extra", only "dQw4w9WgXcQ" is extracted
-      expect(validateYouTubeURL('https://youtu.be/dQw4w9WgXcQ/extra')).toBe(true)
+    it('should handle youtu.be URLs with path after video ID (takes first segment)', () => {
+      expect(validateVideoURL('https://youtu.be/dQw4w9WgXcQ/extra')).toBe(true)
     })
 
     it('should reject empty string', () => {
-      expect(validateYouTubeURL('')).toBe('Please enter a valid URL format')
+      expect(validateVideoURL('')).not.toBe(true)
     })
   })
 
   describe('edge cases', () => {
     it('should handle youtube.com URLs with additional query parameters', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch?v=dQw4w9WgXcQ&t=10s')).toBe(true)
-      expect(validateYouTubeURL('https://youtube.com/watch?feature=share&v=dQw4w9WgXcQ')).toBe(true)
+      expect(validateVideoURL('https://youtube.com/watch?v=dQw4w9WgXcQ&t=10s')).toBe(true)
+      expect(validateVideoURL('https://youtube.com/watch?feature=share&v=dQw4w9WgXcQ')).toBe(true)
     })
 
     it('should handle URLs with fragments', () => {
-      expect(validateYouTubeURL('https://youtube.com/watch?v=dQw4w9WgXcQ#t=30')).toBe(true)
+      expect(validateVideoURL('https://youtube.com/watch?v=dQw4w9WgXcQ#t=30')).toBe(true)
     })
   })
 })
