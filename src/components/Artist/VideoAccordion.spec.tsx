@@ -78,11 +78,20 @@ describe('VideoAccordion', () => {
       expect(buttons).toHaveLength(3)
     })
 
-    it('should not render iframes initially (all closed)', () => {
+    it('should render first video iframe open by default', () => {
       render(<VideoAccordion videos={mockVideos} emptyMessage="No videos" />)
 
-      const iframes = screen.queryAllByTitle(/Performance/)
-      expect(iframes).toHaveLength(0)
+      const firstPanel = document.getElementById('video-panel-1')
+      expect(firstPanel).not.toHaveAttribute('hidden')
+    })
+
+    it('should render subsequent video panels hidden by default', () => {
+      render(<VideoAccordion videos={mockVideos} emptyMessage="No videos" />)
+
+      const secondPanel = document.getElementById('video-panel-2')
+      const thirdPanel = document.getElementById('video-panel-3')
+      expect(secondPanel).toHaveAttribute('hidden')
+      expect(thirdPanel).toHaveAttribute('hidden')
     })
   })
 
@@ -91,10 +100,12 @@ describe('VideoAccordion', () => {
       const user = userEvent.setup()
       render(<VideoAccordion videos={mockVideos} emptyMessage="No videos" />)
 
-      const firstButton = screen.getByRole('button', { name: /Performance 1/i })
-      await user.click(firstButton)
+      // First is already open; open the second
+      const secondButton = screen.getByRole('button', { name: /Performance 2/i })
+      await user.click(secondButton)
 
-      expect(screen.getByTitle('Performance 1')).toBeInTheDocument()
+      const secondPanel = document.getElementById('video-panel-2')
+      expect(secondPanel).not.toHaveAttribute('hidden')
     })
 
     it('should close accordion when clicked again', async () => {
@@ -102,31 +113,33 @@ describe('VideoAccordion', () => {
       render(<VideoAccordion videos={mockVideos} emptyMessage="No videos" />)
 
       const firstButton = screen.getByRole('button', { name: /Performance 1/i })
+      const firstPanel = document.getElementById('video-panel-1')
 
-      // Open
-      await user.click(firstButton)
-      expect(screen.getByTitle('Performance 1')).toBeInTheDocument()
+      // First starts open
+      expect(firstPanel).not.toHaveAttribute('hidden')
 
-      // Close
+      // Click to close
       await user.click(firstButton)
-      expect(screen.queryByTitle('Performance 1')).not.toBeInTheDocument()
+      expect(firstPanel).toHaveAttribute('hidden')
     })
 
     it('should close previous accordion when opening a new one', async () => {
       const user = userEvent.setup()
       render(<VideoAccordion videos={mockVideos} emptyMessage="No videos" />)
 
-      // Open first video
-      const firstButton = screen.getByRole('button', { name: /Performance 1/i })
-      await user.click(firstButton)
-      expect(screen.getByTitle('Performance 1')).toBeInTheDocument()
+      const firstPanel = document.getElementById('video-panel-1')
+      const secondPanel = document.getElementById('video-panel-2')
+
+      // First starts open
+      expect(firstPanel).not.toHaveAttribute('hidden')
+      expect(secondPanel).toHaveAttribute('hidden')
 
       // Open second video (should close first)
       const secondButton = screen.getByRole('button', { name: /Performance 2/i })
       await user.click(secondButton)
 
-      expect(screen.queryByTitle('Performance 1')).not.toBeInTheDocument()
-      expect(screen.getByTitle('Performance 2')).toBeInTheDocument()
+      expect(firstPanel).toHaveAttribute('hidden')
+      expect(secondPanel).not.toHaveAttribute('hidden')
     })
 
     it('should update aria-expanded attribute', async () => {
@@ -135,10 +148,12 @@ describe('VideoAccordion', () => {
 
       const firstButton = screen.getByRole('button', { name: /Performance 1/i })
 
-      expect(firstButton).toHaveAttribute('aria-expanded', 'false')
-
-      await user.click(firstButton)
+      // First starts open
       expect(firstButton).toHaveAttribute('aria-expanded', 'true')
+
+      // Click to close
+      await user.click(firstButton)
+      expect(firstButton).toHaveAttribute('aria-expanded', 'false')
     })
   })
 
@@ -241,12 +256,12 @@ describe('VideoAccordion', () => {
       const button = screen.getByRole('button')
       const svg = container.querySelector('svg')
 
-      // Initially not rotated
-      expect(svg).not.toHaveClass('rotate-180')
-
-      // After opening, should be rotated
-      await user.click(button)
+      // Initially open (first item opens by default)
       expect(svg).toHaveClass('rotate-180')
+
+      // After closing, should not be rotated
+      await user.click(button)
+      expect(svg).not.toHaveClass('rotate-180')
     })
   })
 

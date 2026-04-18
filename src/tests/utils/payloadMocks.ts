@@ -103,14 +103,18 @@ export function createMockRecording(overrides?: Partial<Recording>): Recording {
  */
 export function createMockEmployee(overrides?: Partial<Employee>): Employee {
   return {
-    id: '1',
+    id: 1,
     name: 'John Doe',
-    position: 'Artist Manager',
+    title: 'Artist Manager',
+    email: 'john@example.com',
+    phone: '+49 611 123456',
+    mobile: '+49 171 123456',
+    image: null,
     order: 1,
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
-  } as Employee
+  }
 }
 
 /**
