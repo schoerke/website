@@ -1,5 +1,7 @@
 'use client'
 
+import ImageSkeleton from '@/components/ui/ImageSkeleton'
+import { useImageLoad } from '@/hooks/useImageLoad'
 import { Link } from '@/i18n/navigation'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -30,6 +32,7 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
   const pausedRef = useRef(false)
   const pauseStartRef = useRef<number | null>(null)
   const accumulatedRef = useRef(0)
+  const firstImage = useImageLoad()
 
   const goTo = useCallback((index: number) => {
     setActiveIndex(index)
@@ -93,6 +96,13 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {/* Skeleton — shown until first image loads or errors */}
+      {!firstImage.loaded && !firstImage.error && (
+        <div className="absolute inset-0">
+          <ImageSkeleton fallbackRatio="4 / 3" />
+        </div>
+      )}
+
       {/* All slides stacked — crossfade via opacity */}
       {slides.map((slide, idx) => {
         const isActive = idx === activeIndex
@@ -118,6 +128,9 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
               className="object-cover object-top"
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
               priority={idx === 0}
+              ref={idx === 0 ? firstImage.ref : undefined}
+              onLoad={idx === 0 ? firstImage.onLoad : undefined}
+              onError={idx === 0 ? firstImage.onError : undefined}
             />
 
             {/* Title */}

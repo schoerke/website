@@ -3,6 +3,7 @@
 import { Link } from '@/i18n/navigation'
 import type { Artist, Image as PayloadImage } from '@/payload-types'
 import ImageSkeleton from '@/components/ui/ImageSkeleton'
+import { useImageLoad } from '@/hooks/useImageLoad'
 import { shuffleArray } from '@/utils/array'
 import { getValidImageUrl, isImageObject } from '@/utils/image'
 import { useTranslations } from 'next-intl'
@@ -19,8 +20,7 @@ interface MasonryItemProps {
 }
 
 const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments }) => {
-  const [loaded, setLoaded] = useState(false)
-  const [error, setError] = useState(false)
+  const { loaded, error, ref, onLoad, onError } = useImageLoad()
   const image = isImageObject(artist.image) ? (artist.image as PayloadImage) : null
   const imageUrl = getValidImageUrl(artist.image)
   const focalX = image?.focalX ?? 50
@@ -47,11 +47,9 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments
         className={`block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105 ${loaded && !error ? 'opacity-100' : 'opacity-0 transition-opacity'}`}
         style={{ objectPosition: `${focalX}% ${focalY}%` }}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        ref={(node) => {
-          if (node?.complete && !loaded) setLoaded(true)
-        }}
-        onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
+        ref={ref}
+        onLoad={onLoad}
+        onError={onError}
       />
       {/* Hover overlay */}
       <div className="absolute inset-0 flex flex-col justify-end bg-black/0 p-4 transition-all duration-300 group-hover:bg-black/60">
