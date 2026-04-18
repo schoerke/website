@@ -95,6 +95,117 @@ This includes:
 - **Impact:** 2 media files uploaded, artist biography data modified on remote development database
 - **Prevention:** Added mandatory database environment verification step above
 
+**2026-04-18: Video data lost during Payload field rename (youtubeLinks → videoLinks)**
+
+- **What happened:** Olga Scheps' 2 YouTube videos were lost after renaming the `youtubeLinks` array field to
+  `videoLinks` in the Payload Artists collection config
+- **Root cause:** Fundamental misunderstanding of how Payload handles array field renames with the SQLite adapter.
+  See "Payload CMS + SQLite: How Array Field Renames Work" section below for the full explanation.
+- **Impact:** 2 video entries permanently deleted from the remote development database
+- **Prevention:** Added mandatory migration pattern for Payload array field renames below
+
+## Payload CMS + SQLite: How Array Field Renames Work
+
+**CRITICAL: Read this before renaming any array/block/relationship field in a Payload collection.**
+
+### How Payload stores array fields in SQLite
+
+Each Payload `array` field is stored in its **own table**, named after the collection and field:
+
+- `artists` collection + `youtubeLinks` field → table `artists_youtube_links`
+- `artists` collection + `videoLinks` field → table `artists_video_links`
+
+These are separate tables. Renaming the field in the collection config does NOT rename the table — Payload sees
+the old table as belonging to a deleted field and the new table as belonging to a new (empty) field.
+
+### What happens when you rename an array field and accept the schema push
+
+When you start the dev server after renaming an array field, Payload presents a schema diff prompt. If you accept:
+
+1. Payload **drops** `artists_youtube_links` (old field, treated as deleted)
+2. Payload **creates** `artists_video_links` (new field, treated as new — empty)
+
+**Any data written to `artists_video_links` before the schema push is also lost**, because Payload drops and
+recreates the table. This is what happened: the migration script wrote data to `videoLinks` while the collection
+config still said `youtubeLinks`. But when the schema push ran, it saw both `artists_youtube_links` (to drop) and
+`artists_video_links` (to also drop and recreate, because it wasn't in the schema snapshot yet).
+
+### The correct way to rename an array field with data preservation
+
+**NEVER use a pre-migration script + schema push. Use a Payload migration file instead.**
+
+A Payload migration file has `up()` and `down()` functions with direct SQL access. This runs atomically
+**as part of** the schema change, not before or after it.
+
+#### Step-by-step process:
+
+**Step 1: Create a migration file**
+
+```bash
+pnpm payload migrate:create rename-youtube-links-to-video-links
+```
+
+This generates a file in `src/migrations/` with empty `up()` and `down()` functions.
+
+**Step 2: Write the migration SQL**
+
+```typescript
+import { type MigrateUpArgs, type MigrateDownArgs, sql } from '@payloadcms/db-sqlite'
+
+export async function up({ db }: MigrateUpArgs): Promise<void> {
+  // 1. Create the new table with the same schema as the old one
+  await db.run(sql`
+    CREATE TABLE IF NOT EXISTS artists_video_links (
+      _order integer NOT NULL,
+      _parent_id integer NOT NULL REFERENCES artists(id),
+      id text PRIMARY KEY,
+      url text,
+      CONSTRAINT artists_video_links_parent_id_fk
+        FOREIGN KEY (_parent_id) REFERENCES artists(id) ON DELETE CASCADE
+    )
+  `)
+
+  // 2. Create the locales table if the field is localized
+  // (check the existing _locales table structure and replicate it)
+
+  // 3. Copy data from old table to new table
+  await db.run(sql`
+    INSERT INTO artists_video_links SELECT * FROM artists_youtube_links
+  `)
+
+  // 4. Drop the old table
+  await db.run(sql`DROP TABLE IF EXISTS artists_youtube_links`)
+}
+
+export async function down({ db }: MigrateDownArgs): Promise<void> {
+  await db.run(sql`
+    CREATE TABLE IF NOT EXISTS artists_youtube_links AS SELECT * FROM artists_video_links
+  `)
+  await db.run(sql`DROP TABLE IF EXISTS artists_video_links`)
+}
+```
+
+**Step 3: Run the migration before starting the dev server**
+
+```bash
+pnpm payload migrate
+```
+
+**Step 4: Update the collection config** (rename the field in `Artists.ts`)
+
+**Step 5: Start the dev server** — the schema push will now see the new table already exists with the correct
+structure and will accept it without data loss.
+
+### Summary: Pre-migration script is NOT sufficient
+
+| Approach                                   | Data safe? | Why                                                             |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------- |
+| Script writes data → schema push           | ❌         | Schema push drops and recreates the table, wiping script output |
+| Payload migration file (SQL) → schema push | ✅         | Migration runs atomically before schema push sees the table     |
+| Schema push first → script writes data     | ✅         | Table already exists, script writes to live table               |
+
+The safest approach for any array/block field rename with existing data is always **the Payload migration file**.
+
 ## Environment Variable Management Policy
 
 **RULE: NEVER GENERATE OR MODIFY CREDENTIALS WITHOUT EXPLICIT USER CONFIRMATION**
