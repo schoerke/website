@@ -214,9 +214,9 @@ _This file is for agentic coding agents. Update if project conventions change._
 ### Required Component Structure
 
 ```typescript
-import statements...
+'use client' // Only if client component (place at TOP of file, before imports)
 
-'use client' // Only if client component (place AFTER imports)
+import statements...
 
 interface ComponentNameProps {
   prop1: Type1
@@ -236,8 +236,8 @@ export default ComponentName
 ### Key Rules
 
 1. **Import Placement:**
-   - **ALWAYS place imports at the very top of the file**
-   - Imports come before 'use client' directive, before JSDoc comments, before any code
+   - **ALWAYS place imports at the very top of the file**, immediately after `'use client'` if present
+   - `'use client'` must be the very first line when needed — before all imports
    - This is a critical rule for code organization
 
 2. **Component Declaration:**
@@ -265,7 +265,7 @@ export default ComponentName
 
 6. **Client vs Server:**
    - Add `'use client'` directive only when necessary (hooks, event handlers, browser APIs)
-   - Place 'use client' AFTER imports
+   - Place `'use client'` at the very top of the file, before all imports
    - Server components are the default (no directive needed)
 
 ### Examples
