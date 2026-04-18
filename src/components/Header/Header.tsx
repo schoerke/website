@@ -20,7 +20,7 @@ const Header: React.FC = () => {
       </a>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         {/* Logo Branding */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" aria-label="Home" className="flex items-center">
           {/* Mobile: icon only */}
           <Image
             src={LOGO_ICON_PATH}

@@ -18,9 +18,9 @@ const FooterLogo: React.FC = () => {
       {/* sm+: icon only */}
       <Image
         src={LOGO_ICON_PATH}
-        alt="Logo"
-        width={40}
-        height={40}
+        alt="KSSchoerke Logo"
+        width={120}
+        height={120}
         priority
         className="hidden sm:block"
         style={{ width: 'auto', height: '100px' }}
