@@ -2,7 +2,6 @@ import ArtistMasonryGrid from '@/components/Artist/ArtistMasonryGrid'
 import type { HomePageSlide } from '@/components/HomePageSlider/HomePageSlider'
 import HomePageSlider from '@/components/HomePageSlider/HomePageSlider'
 import SchoerkeLink from '@/components/ui/SchoerkeLink'
-// Replaces all homepage CTA links with unified styling and accessibility
 import { routing } from '@/i18n/routing'
 import { Artist, Image as PayloadImage, Post } from '@/payload-types'
 import { getArtistListData } from '@/services/artist'
@@ -36,6 +35,8 @@ const HomePage = async ({ params }: HomePageProps) => {
 
   setRequestLocale(locale)
 
+  const kontaktPathname = routing.pathnames['/kontakt']
+  const contactSlug = typeof kontaktPathname === 'string' ? kontaktPathname : kontaktPathname[locale]
   const t = await getTranslations({ locale, namespace: 'custom.pages.home' })
 
   const [newsResult, artistsResult, homePageGlobal] = await Promise.all([
@@ -101,7 +102,8 @@ const HomePage = async ({ params }: HomePageProps) => {
               ? homePageGlobal.teamIntro
               : t('teamTagline')}
           </p>
-          <SchoerkeLink href="/kontakt#team" variant="animated" className="text-sm font-medium">
+          {/* #team must match the id of the "Meet the Team" section on the Kontakt/Contact page */}
+          <SchoerkeLink href={`${contactSlug}#team`} variant="animated" className="text-sm font-medium">
             {t('teamCta')}
           </SchoerkeLink>
         </section>
@@ -114,6 +116,7 @@ const HomePage = async ({ params }: HomePageProps) => {
               ? homePageGlobal.contactIntro
               : t('contactTagline')}
           </p>
+          {/* next-intl's Link translates /kontakt → /contact for English automatically (no hash needed) */}
           <SchoerkeLink href="/kontakt" variant="animated" className="text-sm font-medium">
             {t('contactCta')}
           </SchoerkeLink>
