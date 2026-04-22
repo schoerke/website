@@ -554,7 +554,6 @@ export interface Repertoire {
 export interface User {
   id: number;
   name: string;
-  password: string | null;
   role?: ('admin' | 'editor') | null;
   updatedAt: string;
   createdAt: string;
@@ -572,6 +571,7 @@ export interface User {
         expiresAt: string;
       }[]
     | null;
+  password?: string | null;
   collection: 'users';
 }
 /**
@@ -896,7 +896,6 @@ export interface RepertoireSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
-  password?: T;
   role?: T;
   updatedAt?: T;
   createdAt?: T;
