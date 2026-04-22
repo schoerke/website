@@ -32,7 +32,13 @@ vi.mock('next-intl/server', () => ({
 }))
 vi.mock('next-intl', () => ({ useTranslations: vi.fn().mockImplementation(() => (key: string) => key) }))
 vi.mock('@/i18n/routing', () => ({
-  routing: { locales: ['de', 'en'], defaultLocale: 'de' },
+  routing: {
+    locales: ['de', 'en'],
+    defaultLocale: 'de',
+    pathnames: {
+      '/kontakt': { de: '/kontakt', en: '/contact' },
+    },
+  },
 }))
 
 import { getArtistListData } from '@/services/artist'
