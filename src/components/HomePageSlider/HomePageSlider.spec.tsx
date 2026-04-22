@@ -16,9 +16,8 @@ vi.mock('next/image', () => ({
     fill: _fill,
     ...props
   }: React.ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean; fill?: boolean }) => {
-    // eslint-disable-next-line @next/next/no-img-element
     return (
-      <img
+      <img // oxlint-disable-line eslint-plugin-next/no-img-element
         src={src as string}
         alt={alt}
         data-priority={priority ? 'true' : undefined}
