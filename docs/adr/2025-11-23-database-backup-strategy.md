@@ -1,7 +1,8 @@
 # Architectural Decision Record: Database Backup Strategy
 
 **Date:** 2025-11-23  
-**Status:** PROPOSED
+**Last Updated:** 2026-04-22  
+**Status:** ACTIVE
 
 ## Context
 
@@ -14,10 +15,10 @@ We need a reliable backup strategy for our Turso database that balances:
 
 ### Current State
 
-- **Database:** Turso (distributed SQLite)
-- **Manual backup tools:** JSON dump scripts via Payload API (`pnpm dump <collection>`)
-- **Current dumps:** Stored in `data/dumps/` and tracked in git (~152KB total)
-- **Collections:** Artists, Employees, Posts, Media, Recordings, etc.
+- **Databases:**
+  - `ksschoerke-production` (`libsql://ksschoerke-production-zeitchef.aws-eu-west-1.turso.io`) — live client database
+  - `ksschoerke-development` (`libsql://ksschoerke-development-zeitchef.aws-eu-west-1.turso.io`) — development database, kept in sync with production via nightly backup
+- **Collections:** Artists, Employees, Images, Documents, Posts, Recordings, Search
 
 ### Backup Methods Considered
 
@@ -42,29 +43,38 @@ We need a reliable backup strategy for our Turso database that balances:
 
 We will use a **hybrid backup strategy** combining multiple approaches for different purposes:
 
-### 1. Development Data (JSON Dumps in Git)
+### 1. Nightly Production Backup + Development Sync
 
-**Purpose:** Provide developers with sample production data for local testing
+**Purpose:** Back up production data to Cloudflare R2 and keep development database in sync
 
-**Implementation:**
+**Implementation:** (Planned — not yet implemented)
 
-- Keep JSON dumps in `data/dumps/` tracked in git
-- Manual updates when data structure changes significantly
-- Used for: Onboarding new developers, testing migrations, reproducing bugs
+- GitHub Action runs nightly (e.g. 02:00 UTC)
+- Dumps `ksschoerke-production` using `turso db shell ... .dump`
+- Compresses dump with gzip
+- Uploads to Cloudflare R2: `backups/ksschoerke-production-YYYY-MM-DD.sql.gz`
+- Deletes backups older than 30 days from R2
+- Restores latest dump into `ksschoerke-development`
 
-**Cadence:** Manual (as needed, typically monthly or when schema changes)
+**Cadence:** Nightly (automated)
 
-**Collections to dump:**
+**Storage estimate:**
 
-- `artists-dump.json` - Core artist data with all relationships
-- `employees-dump.json` - Team member data
+- Current dump size: ~3.1 MB uncompressed, ~0.3 MB gzipped
+- 30 days × ~0.3 MB = ~9 MB total — well within R2's free tier (10 GB)
+- Even at 10× database growth: ~90 MB, still negligible
+
+**Storage location:** Cloudflare R2 (already used for documents — same credentials)
+
+**Retention:** 30 days
 
 **Rationale:**
 
-- Files are small (~150KB) and compress well in git
-- Version control shows data evolution over time
-- Immediate access for any developer cloning the repo
-- No external dependencies or credentials needed
+- Development always reflects real production data
+- No manual effort to keep dev in sync
+- R2 already integrated — no new infrastructure or credentials needed
+- Unlimited egress means recovery downloads are free
+- Compressed dumps are tiny — 30-day retention costs nothing
 
 ### 2. Production Disaster Recovery (Turso Built-in Backups)
 
@@ -73,7 +83,7 @@ We will use a **hybrid backup strategy** combining multiple approaches for diffe
 **Implementation:**
 
 - Rely on Turso's built-in point-in-time recovery (24 hours)
-- Periodic manual snapshots for major milestones: `turso db shell your-db ".backup backup-YYYY-MM-DD.db"`
+- Periodic manual snapshots for major milestones: `turso db shell ksschoerke-production ".backup backup-YYYY-MM-DD.db"`
 - Store snapshots in secure location (not git) - consider S3 or similar
 
 **Cadence:**
@@ -88,39 +98,45 @@ We will use a **hybrid backup strategy** combining multiple approaches for diffe
 - Manual snapshots provide milestone rollback points
 - No maintenance overhead or custom scripts needed
 
-### 3. Optional: Automated JSON Backups (Future Enhancement)
+### 3. JSON Dumps in Git
 
-**Purpose:** Regular snapshots of production data for audit trail
+**Purpose:** Portable, human-readable snapshots for onboarding and debugging
 
-**Implementation:** (If needed in the future)
+**Implementation:**
 
-- GitHub Action runs monthly to dump all collections
-- Commits to separate branch or external storage (not main)
-- Provides historical record of data changes
+- Keep JSON dumps in `data/dumps/` tracked in git
+- Manual updates when data structure changes significantly
+- Used for: Onboarding, testing migrations, reproducing bugs
 
-**Rationale for deferring:**
+**Cadence:** Manual (as needed, typically after significant data changes)
 
-- Not critical for current scale
-- Manual dumps sufficient for development needs
-- Turso backups handle disaster recovery
-- Can implement if audit requirements emerge
+**Collections to dump:**
+
+- `artists-dump.json` - Core artist data with all relationships
+- `employees-dump.json` - Team member data
+
+**Rationale:**
+
+- Files are small and compress well in git
+- Version control shows data evolution over time
+- Immediate access for any developer cloning the repo
+- No external dependencies or credentials needed
 
 ## Consequences
 
 ### Positive
 
 - **No additional infrastructure** - Uses existing tools (Payload, Turso, git)
-- **Developer-friendly** - Easy access to production-like data
+- **Developer-friendly** - Easy access to up-to-date production data
 - **Cost-effective** - No backup storage costs beyond git/Turso
 - **Simple mental model** - Each backup type has clear purpose
 - **Flexibility** - JSON dumps are portable across database systems
 
 ### Negative
 
-- **Manual effort required** - Developer must remember to update dumps periodically
+- **Nightly sync not yet implemented** - Currently manual
 - **Git repo size grows** - Dumps add ~150KB+ (acceptable for now, monitor over time)
 - **Not continuous** - Git dumps are point-in-time, not real-time
-- **Potential staleness** - Development dumps may lag behind production
 
 ### Monitoring
 
@@ -141,44 +157,67 @@ pnpm dump employees    # → data/dumps/employees-dump.json
 pnpm restore:artists-dump
 ```
 
-### Recommended Workflow
+### Manual Production → Development Sync
 
-1. **After significant data changes:**
+```bash
+# Dump production to local file
+turso db shell ksschoerke-production .dump > /tmp/ksschoerke-prod-dump.sql
 
-   ```bash
-   pnpm dump artists
-   pnpm dump employees
-   git add data/dumps/
-   git commit -m "Update database dumps with latest production data"
-   ```
+# Restore into development
+turso db shell ksschoerke-development < /tmp/ksschoerke-prod-dump.sql
 
-2. **Before major schema migrations:**
+# Clean up
+rm /tmp/ksschoerke-prod-dump.sql
+```
 
-   ```bash
-   # Create Turso snapshot
-   turso db shell your-db ".backup backup-$(date +%Y-%m-%d).db"
+### Restoring Production from R2 Backup
 
-   # Store securely (example)
-   aws s3 cp backup-2025-11-23.db s3://your-bucket/backups/
-   ```
+```bash
+# 1. Download backup from R2
+aws s3 cp s3://your-r2-bucket/backups/ksschoerke-production-YYYY-MM-DD.sql.gz /tmp/backup.sql.gz \
+  --endpoint-url https://<account-id>.r2.cloudflarestorage.com
 
-3. **New developer onboarding:**
-   ```bash
-   git clone repo
-   pnpm install
-   pnpm restore:artists-dump  # Loads sample production data
-   pnpm dev
-   ```
+# 2. Decompress
+gunzip /tmp/backup.sql.gz
+
+# 3. Restore into a fresh database (recommended - avoids conflicts)
+#    Create a new Turso database, restore, then update DNS/env vars
+turso db shell ksschoerke-production < /tmp/backup.sql
+
+# 4. Clean up
+rm /tmp/backup.sql
+```
+
+> **Note:** If restoring to an existing database with data, drop all tables first or create a new database and swap `DATABASE_URI` in Vercel environment variables.
+
+### Before Major Schema Migrations
+
+```bash
+# Create Turso snapshot of production
+turso db shell ksschoerke-production ".backup backup-$(date +%Y-%m-%d).db"
+
+# Store securely (example)
+aws s3 cp backup-$(date +%Y-%m-%d).db s3://your-bucket/backups/
+```
+
+### New Developer Onboarding
+
+```bash
+git clone repo
+pnpm install
+pnpm restore:artists-dump  # Loads sample production data
+pnpm dev
+```
 
 ## Future Considerations
 
+- **Implement nightly GitHub Action** — automate production backup to R2 and dev sync (next priority)
 - If repo size becomes an issue, migrate dumps to Git LFS or external storage
-- If compliance/audit requirements emerge, implement automated GitHub Action backups
 - Consider adding more collections to dump script as data model grows
 - Evaluate Turso's backup features as they evolve (versioning, longer retention, etc.)
 
 ## Related Documents
 
 - [Database Selection ADR](2025-10-26-database-selection.md)
-- [Cloudflare R2 Image Storage & Backup Design](../plans/2025-10-26-cloudflare-r2-image-storage-design.md) (similar
-  pattern for media files)
+- [ADR: Storage Migration to Vercel Blob](2025-11-29-storage-migration-vercel-blob.md)
+- [ADR: Dual Storage R2 + Vercel Blob](2025-12-10-dual-storage-r2-vercel-blob.md)
