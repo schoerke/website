@@ -149,6 +149,7 @@ describe('sendIssueNotification hook', () => {
         email: 'reporter@example.com',
         name: 'John Doe',
         password: '', // Required field for User type
+        collection: 'users',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
@@ -174,6 +175,7 @@ describe('sendIssueNotification hook', () => {
         email: 'fetched@example.com',
         name: 'Jane Smith',
         password: '', // Required field for User type
+        collection: 'users',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
@@ -230,6 +232,7 @@ describe('sendIssueNotification hook', () => {
         email: '',
         name: '',
         password: '', // Required field for User type
+        collection: 'users',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }

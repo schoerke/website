@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import HomePageSlider from './HomePageSlider'
 
@@ -13,7 +13,7 @@ vi.mock('next/image', () => ({
     onLoad,
     onError,
     priority,
-    fill,
+    fill: _fill,
     ...props
   }: React.ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean; fill?: boolean }) => {
     // eslint-disable-next-line @next/next/no-img-element
