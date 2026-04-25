@@ -17,6 +17,7 @@
     "lint": "oxlint --config oxlint.config.ts",
     "typecheck": "tsc --noEmit",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
+    "build:posts-dataset": "tsx scripts/wordpress/buildPostsDataset.ts",
     "migrate:artists": "payload run scripts/wordpress/migrateArtists.ts",
     "migrate:employees": "payload run scripts/wordpress/migrateEmployees.ts",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
