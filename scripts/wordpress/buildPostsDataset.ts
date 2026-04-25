@@ -375,7 +375,7 @@ async function buildPostsDataset(): Promise<void> {
   // (which reuse the EN slug) from colliding with fuzzy-matched DE slugs.
 
   // Pass 1: resolve exact slug matches and lock in usedDeSlugs
-  const exactDeMatchByEnSlug = new Map<string, { post: WPPost; method: 'slug' | 'fuzzy' }>()
+  const exactDeMatchByEnSlug = new Map<string, { post: WPPost; method: 'slug' }>()
   for (const en of enProjects) {
     const bySlug = deBySlug.get(en['wp:post_name'])
     if (bySlug && !usedDeSlugs.has(bySlug['wp:post_name'])) {
@@ -396,6 +396,7 @@ async function buildPostsDataset(): Promise<void> {
   const fuzzyDeMatchByEnSlug = new Map<string, { post: WPPost; method: 'slug' | 'fuzzy' }>()
   for (const en of enProjects) {
     if (exactDeMatchByEnSlug.has(en['wp:post_name'])) continue
+    // Must be recomputed each iteration — usedDeSlugs grows as fuzzy matches are locked in above
     // Exclude DE posts already used AND DE posts whose slug is reserved for auto-translate fallback
     const availableDePosts = dePosts.filter(
       (p) => !usedDeSlugs.has(p['wp:post_name']) && !autoTranslateSlugs.has(p['wp:post_name']),
@@ -414,7 +415,6 @@ async function buildPostsDataset(): Promise<void> {
     const imagePath = resolveImageFilename(en, attachmentUrlById)
 
     const deMatch = exactDeMatchByEnSlug.get(en['wp:post_name']) ?? fuzzyDeMatchByEnSlug.get(en['wp:post_name']) ?? null
-    const deMatchPost = deMatch
 
     const entry: PostDatasetEntry = {
       wpSlug: en['wp:post_name'],
@@ -428,12 +428,12 @@ async function buildPostsDataset(): Promise<void> {
         slug: en['wp:post_name'],
         source: 'original',
       },
-      de: deMatchPost
+      de: deMatch
         ? {
-            title: String(deMatchPost.post.title),
-            contentHtml: deMatchPost.post['content:encoded'] || '',
-            slug: deMatchPost.post['wp:post_name'],
-            source: deMatch!.method === 'slug' ? 'matched' : 'fuzzy-match',
+            title: String(deMatch.post.title),
+            contentHtml: deMatch.post['content:encoded'] || '',
+            slug: deMatch.post['wp:post_name'],
+            source: deMatch.method === 'slug' ? 'matched' : 'fuzzy-match',
           }
         : {
             title: '',
@@ -443,9 +443,9 @@ async function buildPostsDataset(): Promise<void> {
           },
     }
 
-    if (deMatchPost) {
+    if (deMatch) {
       stats.projMatched++
-      if (verbose) console.log(`  ✅ ${en.title} → ${deMatchPost.post.title} (${deMatch!.method})`)
+      if (verbose) console.log(`  ✅ ${en.title} → ${deMatch.post.title} (${deMatch.method})`)
     } else {
       stats.projUnmatched++
       console.log(`  ⚠️  No DE match: "${en.title}"`)
