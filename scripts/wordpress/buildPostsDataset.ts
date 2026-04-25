@@ -138,7 +138,7 @@ interface PostLocaleData {
   title: string
   contentHtml: string
   slug: string
-  source: 'original' | 'matched' | 'auto-translate'
+  source: 'original' | 'matched' | 'fuzzy-match' | 'auto-translate'
 }
 
 // ============================================================================
@@ -275,20 +275,24 @@ async function buildPostsDataset(): Promise<void> {
   // Build attachment URL map from EN XML (ID → URL)
   const attachmentUrlById = new Map<number, string>()
   for (const item of enItems) {
-    if (item['wp:post_type'] === 'attachment' && (item as unknown as WPAttachment)['wp:attachment_url']) {
-      attachmentUrlById.set(
-        item['wp:post_id'],
-        (item as unknown as WPAttachment)['wp:attachment_url']!,
-      )
+    if (item['wp:post_type'] === 'attachment') {
+      const attachmentUrl = (item as WPPost & { 'wp:attachment_url'?: string })['wp:attachment_url']
+      if (attachmentUrl) {
+        attachmentUrlById.set(item['wp:post_id'], attachmentUrl)
+      }
     }
   }
   console.log(`🖼️  Loaded ${attachmentUrlById.size} attachment URLs\n`)
 
   // Filter to published posts within date range
-  const isRecentPublished = (p: WPPost) =>
-    p['wp:post_type'] === 'post' &&
-    p['wp:status'] === 'publish' &&
-    new Date(p['wp:post_date']) >= CUTOFF_DATE
+  const isRecentPublished = (p: WPPost) => {
+    const d = new Date(p['wp:post_date'])
+    if (isNaN(d.getTime())) {
+      console.warn(`⚠️  Invalid date on post "${p['wp:post_name']}"`)
+      return false
+    }
+    return p['wp:post_type'] === 'post' && p['wp:status'] === 'publish' && d >= CUTOFF_DATE
+  }
 
   const enPosts = enItems.filter(isRecentPublished) as WPPost[]
   const dePosts = deItems.filter(isRecentPublished) as WPPost[]
@@ -337,7 +341,7 @@ async function buildPostsDataset(): Promise<void> {
             title: String(enMatch.post.title),
             contentHtml: enMatch.post['content:encoded'] || '',
             slug: enMatch.post['wp:post_name'],
-            source: 'matched',
+            source: enMatch.method === 'slug' ? 'matched' : 'fuzzy-match',
           }
         : {
             title: '',
@@ -365,14 +369,52 @@ async function buildPostsDataset(): Promise<void> {
   // Track which DE posts were already used for news matching (avoid double-use)
   const usedDeSlugs = new Set(dataset.map((e) => e.de.slug))
 
+  // Two-pass matching: exact slug first, then fuzzy.
+  // This prevents a fuzzy match from consuming a DE post that should be reserved for
+  // an exact slug match on a later EN post, and prevents auto-translate fallback slugs
+  // (which reuse the EN slug) from colliding with fuzzy-matched DE slugs.
+
+  // Pass 1: resolve exact slug matches and lock in usedDeSlugs
+  const exactDeMatchByEnSlug = new Map<string, { post: WPPost; method: 'slug' | 'fuzzy' }>()
+  for (const en of enProjects) {
+    const bySlug = deBySlug.get(en['wp:post_name'])
+    if (bySlug && !usedDeSlugs.has(bySlug['wp:post_name'])) {
+      exactDeMatchByEnSlug.set(en['wp:post_name'], { post: bySlug, method: 'slug' })
+      usedDeSlugs.add(bySlug['wp:post_name'])
+    }
+  }
+
+  // EN posts without exact slug matches will fall back to using their own slug as the DE slug
+  // (auto-translate). Reserve these slugs so fuzzy matching can't claim them.
+  const autoTranslateSlugs = new Set(
+    enProjects
+      .filter((p) => !exactDeMatchByEnSlug.has(p['wp:post_name']))
+      .map((p) => p['wp:post_name']),
+  )
+
+  // Pass 2: fuzzy match only for EN posts without exact match, using remaining available DE posts
+  const fuzzyDeMatchByEnSlug = new Map<string, { post: WPPost; method: 'slug' | 'fuzzy' }>()
+  for (const en of enProjects) {
+    if (exactDeMatchByEnSlug.has(en['wp:post_name'])) continue
+    // Exclude DE posts already used AND DE posts whose slug is reserved for auto-translate fallback
+    const availableDePosts = dePosts.filter(
+      (p) => !usedDeSlugs.has(p['wp:post_name']) && !autoTranslateSlugs.has(p['wp:post_name']),
+    )
+    const fuzzyMatch = findDeCounterpart(en, availableDePosts, new Map()) // slug pass already done
+    if (fuzzyMatch) {
+      fuzzyDeMatchByEnSlug.set(en['wp:post_name'], fuzzyMatch)
+      usedDeSlugs.add(fuzzyMatch.post['wp:post_name'])
+    }
+  }
+
   for (const en of enProjects) {
     stats.projTotal++
     const enCategories = getCategories(en)
     const artists = getArtistSlugsFromCategories(enCategories)
     const imagePath = resolveImageFilename(en, attachmentUrlById)
 
-    const deMatch = findDeCounterpart(en, dePosts, deBySlug)
-    const deMatchPost = deMatch && !usedDeSlugs.has(deMatch.post['wp:post_name']) ? deMatch : null
+    const deMatch = exactDeMatchByEnSlug.get(en['wp:post_name']) ?? fuzzyDeMatchByEnSlug.get(en['wp:post_name']) ?? null
+    const deMatchPost = deMatch
 
     const entry: PostDatasetEntry = {
       wpSlug: en['wp:post_name'],
@@ -391,7 +433,7 @@ async function buildPostsDataset(): Promise<void> {
             title: String(deMatchPost.post.title),
             contentHtml: deMatchPost.post['content:encoded'] || '',
             slug: deMatchPost.post['wp:post_name'],
-            source: 'matched',
+            source: deMatch!.method === 'slug' ? 'matched' : 'fuzzy-match',
           }
         : {
             title: '',
