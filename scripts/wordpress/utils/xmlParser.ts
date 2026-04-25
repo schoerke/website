@@ -7,6 +7,12 @@
 import { XMLParser } from 'fast-xml-parser'
 import * as fs from 'fs/promises'
 
+export interface WordPressCategoryItem {
+  '#text': string
+  '@_domain': string
+  '@_nicename': string
+}
+
 export interface WordPressItem {
   title: string
   'wp:post_name': string
@@ -15,6 +21,7 @@ export interface WordPressItem {
   'wp:status': string
   'wp:postmeta'?: WordPressPostMeta | WordPressPostMeta[]
   'content:encoded'?: string
+  category?: WordPressCategoryItem | WordPressCategoryItem[]
 }
 
 export interface WordPressPostMeta {
@@ -36,7 +43,7 @@ export async function parseWordPressXML(filePath: string): Promise<WordPressItem
 
 /**
  * Parse WordPress XML file into items, preserving XML attributes.
- * Use this when category tags need to be distinguished by domain attribute.
+ * Use this when you need XML attributes (e.g., category `domain`/`nicename`) or guaranteed array wrapping for `item`, `wp:postmeta`, and `category`.
  *
  * Categories in WordPress XML look like:
  *   <category domain="category" nicename="news"><![CDATA[News]]></category>
@@ -53,7 +60,7 @@ export async function parseWordPressXMLWithAttributes(filePath: string): Promise
   })
   const wpData = parser.parse(xmlData)
   const items = wpData.rss?.channel?.item || []
-  return Array.isArray(items) ? items : [items]
+  return items
 }
 
 /**
