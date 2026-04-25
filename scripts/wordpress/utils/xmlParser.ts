@@ -35,6 +35,28 @@ export async function parseWordPressXML(filePath: string): Promise<WordPressItem
 }
 
 /**
+ * Parse WordPress XML file into items, preserving XML attributes.
+ * Use this when category tags need to be distinguished by domain attribute.
+ *
+ * Categories in WordPress XML look like:
+ *   <category domain="category" nicename="news"><![CDATA[News]]></category>
+ *
+ * With attributes preserved, each category is: { '#text': 'News', '@_domain': 'category', '@_nicename': 'news' }
+ */
+export async function parseWordPressXMLWithAttributes(filePath: string): Promise<WordPressItem[]> {
+  const xmlData = await fs.readFile(filePath, 'utf8')
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: '@_',
+    textNodeName: '#text',
+    isArray: (name) => name === 'item' || name === 'wp:postmeta' || name === 'category',
+  })
+  const wpData = parser.parse(xmlData)
+  const items = wpData.rss?.channel?.item || []
+  return Array.isArray(items) ? items : [items]
+}
+
+/**
  * Parse WordPress postmeta into key-value object
  */
 export function parsePostMeta(postmeta: unknown): Record<string, string | number> {
