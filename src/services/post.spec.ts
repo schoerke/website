@@ -74,8 +74,8 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
         where: {
+          _status: { equals: 'published' },
           categories: { equals: 'news' },
-          published: { equals: true },
         },
         locale: 'de',
         limit: 0,
@@ -93,8 +93,8 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
         where: {
+          _status: { equals: 'published' },
           categories: { equals: 'projects' },
-          published: { equals: true },
         },
         locale: 'de',
         limit: 0,
@@ -112,8 +112,8 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
         where: {
+          _status: { equals: 'published' },
           categories: { equals: 'home' },
-          published: { equals: true },
         },
         locale: 'de',
         limit: 0,
@@ -131,9 +131,9 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
         where: {
+          _status: { equals: 'published' },
           categories: { contains: 'news' },
           artists: { equals: '1' },
-          published: { equals: true },
         },
         locale: 'de',
         limit: 0,
@@ -165,9 +165,9 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
         where: {
+          _status: { equals: 'published' },
           categories: { contains: 'projects' },
           artists: { equals: '1' },
-          published: { equals: true },
         },
         locale: 'de',
         limit: 0,
@@ -182,7 +182,7 @@ describe('Post Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
-            published: { equals: true },
+            _status: { equals: 'published' },
           }),
         })
       )
