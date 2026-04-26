@@ -54,12 +54,12 @@ export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
     fallbackLocale: 'de',
   })
 
-  const artist = result.docs[0] as Artist & { projects?: (number | Post)[] }
+  const artist = result.docs[0] as Artist & { projects?: (number | { id: number } | Post)[] }
 
   // Manually populate projects if they exist (depth doesn't always work for relationship arrays)
   if (artist?.projects && Array.isArray(artist.projects) && artist.projects.length > 0) {
     const projectIds = artist.projects
-      .map((p: number | Post) => (typeof p === 'number' ? p : p.id))
+      .map((p: number | { id: number } | Post) => (typeof p === 'number' ? p : p.id))
       .filter((id): id is number => typeof id === 'number')
 
     if (projectIds.length > 0) {
