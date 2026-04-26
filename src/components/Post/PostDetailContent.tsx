@@ -71,7 +71,7 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
 
         {/* Article content */}
         <div className="prose prose-lg max-w-none">
-          <PayloadRichText content={content} />
+          <PayloadRichText content={content} locale={locale} />
         </div>
       </article>
 
