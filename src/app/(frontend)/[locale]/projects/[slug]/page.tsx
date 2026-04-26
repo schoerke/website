@@ -19,10 +19,12 @@ export async function generateStaticParams() {
       })
 
       params.push(
-        ...posts.docs.map((post) => ({
-          locale,
-          slug: post.slug,
-        }))
+        ...posts.docs
+          .filter((post) => !!post.slug)
+          .map((post) => ({
+            locale,
+            slug: post.slug,
+          }))
       )
     }
 
