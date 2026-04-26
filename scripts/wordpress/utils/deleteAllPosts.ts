@@ -15,7 +15,6 @@
 
 import 'dotenv/config'
 import { getPayload } from 'payload'
-import { fileURLToPath } from 'url'
 import config from '../../../src/payload.config.js'
 
 const DRY_RUN = process.argv.includes('--dry-run')
@@ -41,7 +40,7 @@ async function main() {
   const payload = await getPayload({ config })
 
   // Find all posts
-  const { docs, totalDocs } = await payload.find({
+  const { docs } = await payload.find({
     collection: 'posts',
     locale: 'de',
     limit: 500,

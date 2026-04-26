@@ -56,7 +56,7 @@ function processContent(html: string): string {
   if (!html) return html
 
   // Unwrap [embed]URL[/embed] shortcodes to bare URL (including malformed ones without closing bracket)
-  html = html.replace(/\[embed\](https?:\/\/[^\[\s]+?)(?:\[\/embed\]|$)/gi, '$1')
+  html = html.replace(/\[embed\](https?:\/\/[^[\s]+?)(?:\[\/embed\]|$)/gi, '$1')
 
   // Strip any remaining [/embed] remnants
   html = html.replace(/\[\/embed\]/gi, '')
@@ -65,7 +65,7 @@ function processContent(html: string): string {
   const ytPattern = /https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?[^\s<"[\]]*|youtu\.be\/[^\s<"[\]]*)/
 
   // Convert YouTube URLs wrapped in <p> or <p class=...> tags
-  html = html.replace(new RegExp(`<p[^>]*>(${ytPattern.source})<\/p>`, 'gi'), (_, url) => {
+  html = html.replace(new RegExp(`<p[^>]*>(${ytPattern.source})</p>`, 'gi'), (_, url) => {
     const id = extractYouTubeId(url)
     return id ? `<p>${youTubeEmbed(id)}</p>` : `<p>${url}</p>`
   })
@@ -80,7 +80,7 @@ function processContent(html: string): string {
   const spPattern = /https?:\/\/open\.spotify\.com\/[^\s<"[\]]+/
 
   // Convert Spotify URLs in <p> tags
-  html = html.replace(new RegExp(`<p[^>]*>(${spPattern.source})<\/p>`, 'gi'), (_, url) => {
+  html = html.replace(new RegExp(`<p[^>]*>(${spPattern.source})</p>`, 'gi'), (_, url) => {
     return `<p>${spotifyEmbed(url)}</p>`
   })
 

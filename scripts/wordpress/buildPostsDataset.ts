@@ -118,12 +118,6 @@ interface WPMeta {
   'wp:meta_value': string | number
 }
 
-interface WPAttachment {
-  'wp:post_id': number
-  'wp:post_type': string
-  'wp:attachment_url'?: string
-}
-
 export interface PostDatasetEntry {
   wpSlug: string
   publishedAt: string
