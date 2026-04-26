@@ -215,7 +215,7 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
           />
         )}
         {activeTab === 'news' && (
-          <NewsFeedClient category="news" artistId={artist.id.toString()} emptyMessage={t('empty.news')} />
+          <NewsFeedClient category="news" artistId={artist.id.toString()} locale={locale} emptyMessage={t('empty.news')} />
         )}
         {activeTab === 'projects' && (
           <ProjectsTab
