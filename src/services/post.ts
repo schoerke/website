@@ -43,8 +43,8 @@ export const getAllNewsPosts = async (locale?: LocaleCode) => {
       categories: {
         equals: 'news',
       },
-      published: {
-        equals: true,
+      _status: {
+        equals: 'published',
       },
     },
     locale: locale || 'de',
@@ -71,8 +71,8 @@ export const getAllProjectPosts = async (locale?: LocaleCode) => {
       categories: {
         equals: 'projects',
       },
-      published: {
-        equals: true,
+      _status: {
+        equals: 'published',
       },
     },
     locale: locale || 'de',
@@ -99,8 +99,8 @@ export const getAllHomepagePosts = async (locale?: LocaleCode) => {
       categories: {
         equals: 'home',
       },
-      published: {
-        equals: true,
+      _status: {
+        equals: 'published',
       },
     },
     locale: locale || 'de',
@@ -130,8 +130,8 @@ export const getAllNewsPostsByArtist = async (artistId: string, locale?: LocaleC
       artists: {
         equals: artistId,
       },
-      published: {
-        equals: true,
+      _status: {
+        equals: 'published',
       },
     },
     locale: locale || 'de',
@@ -161,8 +161,8 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
       artists: {
         equals: artistId,
       },
-      published: {
-        equals: true,
+      _status: {
+        equals: 'published',
       },
     },
     locale: locale || 'de',
