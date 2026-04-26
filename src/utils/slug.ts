@@ -39,8 +39,8 @@ export function generateSlug(text: string): string {
  */
 export function createSlugHook(sourceField: string): FieldHook {
   return ({ data, operation, value, req }) => {
-    // Only generate slug on create or if slug is empty
-    if (operation === 'create' || !value) {
+    // Only generate slug if no value is provided; respect explicitly passed slugs
+    if (!value) {
       const sourceValue = data?.[sourceField]
 
       if (sourceValue) {
