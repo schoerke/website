@@ -9,6 +9,7 @@
  * - Inline styling (<span style="...">) - strips styles but preserves text
  * - HTML entities (&nbsp;, &amp;, etc.)
  * - Nested formatting (e.g., <span><strong>text</strong></span>)
+ * - Bare YouTube/Spotify URLs (converted to Lexical link nodes)
  *
  * @example
  * const lexical = htmlToLexical('<p><strong>Bold text</strong> and <em>italic</em></p>')
@@ -38,6 +39,42 @@ interface TextSegment {
   link?: string
 }
 
+/** Regex matching YouTube or Spotify URLs that should become embed links */
+const MEDIA_URL_REGEX = /^https?:\/\/(www\.)?(youtube\.com\/watch\?|youtu\.be\/|open\.spotify\.com\/)/
+
+/**
+ * Clean and normalise a bare media URL:
+ * - Decode HTML entities (&amp; → &)
+ * - Strip WordPress `[/embed]` remnants and anything after them
+ * - Strip concatenated garbage text appended directly to the URL
+ *   (e.g. "https://youtu.be/20D2ZHoFOfoBaroque" — keep only valid URL chars)
+ */
+function cleanMediaUrl(raw: string): string {
+  return raw
+    .replace(/&amp;/g, '&')
+    .replace(/\[\/embed\].*$/, '')
+    .replace(/[^A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]/g, '')
+    .trim()
+}
+
+/**
+ * If a paragraph's raw HTML is nothing but a bare YouTube/Spotify URL
+ * (optionally wrapped in whitespace), return the cleaned URL; otherwise null.
+ */
+function extractBareMediaUrl(paraHtml: string): string | null {
+  // Decode common HTML entities before testing, so &amp; in URLs doesn't break detection
+  let stripped = paraHtml
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .trim()
+  // Strip WordPress [embed]...[/embed] wrappers
+  stripped = stripped.replace(/^\[embed\](.*?)\[\/embed\]$/i, '$1').trim()
+  if (MEDIA_URL_REGEX.test(stripped)) {
+    return cleanMediaUrl(stripped)
+  }
+  return null
+}
+
 /**
  * Convert HTML to Lexical format
  *
@@ -62,42 +99,79 @@ export function htmlToLexical(html: string): LexicalRoot {
     for (const para of htmlParagraphs) {
       if (!para) continue
 
+      // Detect bare media URLs — emit a link-wrapped paragraph
+      const mediaUrl = extractBareMediaUrl(para)
+      if (mediaUrl) {
+        const textNode: LexicalNode = {
+          type: 'text',
+          version: 1,
+          text: mediaUrl,
+          format: 0,
+          mode: 'normal',
+          style: '',
+          detail: 0,
+        }
+        children.push(createParagraphNode([createLinkNode(mediaUrl, [textNode])]))
+        continue
+      }
+
       const textNodes = parseInlineHTML(para)
       if (textNodes.length > 0) {
         children.push(createParagraphNode(textNodes))
       }
     }
   } else {
-    // No <p> tags found, split by double newlines after converting to text
-    const tempNodes = parseInlineHTML(html)
+    // No <p> tags — split by newlines first, check each line for bare media URLs
+    const lines = html.split('\n')
+    let nonMediaLines: string[] = []
 
-    // Group nodes by paragraph (split on double linebreaks)
-    let currentParagraphNodes: LexicalNode[] = []
-    let consecutiveLinebreaks = 0
-
-    for (const node of tempNodes) {
-      if (node.type === 'linebreak') {
-        consecutiveLinebreaks++
-        // Double linebreak = new paragraph
-        if (consecutiveLinebreaks === 2 && currentParagraphNodes.length > 0) {
-          children.push(createParagraphNode(currentParagraphNodes))
-          currentParagraphNodes = []
+    const flushNonMediaLines = () => {
+      if (nonMediaLines.length === 0) return
+      const chunk = nonMediaLines.join('\n')
+      nonMediaLines = []
+      const tempNodes = parseInlineHTML(chunk)
+      let currentParagraphNodes: LexicalNode[] = []
+      let consecutiveLinebreaks = 0
+      for (const node of tempNodes) {
+        if (node.type === 'linebreak') {
+          consecutiveLinebreaks++
+          if (consecutiveLinebreaks === 2 && currentParagraphNodes.length > 0) {
+            children.push(createParagraphNode(currentParagraphNodes))
+            currentParagraphNodes = []
+            consecutiveLinebreaks = 0
+          } else if (consecutiveLinebreaks === 1) {
+            currentParagraphNodes.push(node)
+          }
+        } else {
           consecutiveLinebreaks = 0
-        } else if (consecutiveLinebreaks === 1) {
-          // Single linebreak = keep in paragraph
           currentParagraphNodes.push(node)
         }
-      } else {
-        // Regular text node
-        consecutiveLinebreaks = 0
-        currentParagraphNodes.push(node)
+      }
+      if (currentParagraphNodes.length > 0) {
+        children.push(createParagraphNode(currentParagraphNodes))
       }
     }
 
-    // Add final paragraph
-    if (currentParagraphNodes.length > 0) {
-      children.push(createParagraphNode(currentParagraphNodes))
+    for (const line of lines) {
+      const trimmed = line.trim()
+      const mediaUrl = trimmed ? extractBareMediaUrl(trimmed) : null
+      if (mediaUrl) {
+        flushNonMediaLines()
+        const textNode: LexicalNode = {
+          type: 'text',
+          version: 1,
+          text: mediaUrl,
+          format: 0,
+          mode: 'normal',
+          style: '',
+          detail: 0,
+        }
+        children.push(createParagraphNode([createLinkNode(mediaUrl, [textNode])]))
+      } else {
+        nonMediaLines.push(line)
+      }
     }
+    flushNonMediaLines()
   }
 
   return {

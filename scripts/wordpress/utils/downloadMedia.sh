@@ -1,12 +1,16 @@
 #!/bin/bash
 
 # Download WordPress media files locally to avoid Node.js SSL issues
-# Usage: bash scripts/wordpress/utils/downloadMedia.sh
+# Usage:
+#   bash scripts/wordpress/utils/downloadMedia.sh                          # uses media-urls.json
+#   bash scripts/wordpress/utils/downloadMedia.sh post-image-urls.json     # uses named JSON file
 
 set -e
 
-MEDIA_DIR="../data/downloaded-media"
-MEDIA_JSON="../data/media-urls.json"
+# Resolve paths relative to the script's own location (scripts/wordpress/)
+SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+MEDIA_DIR="$SCRIPT_DIR/data/downloaded-media"
+MEDIA_JSON="$SCRIPT_DIR/data/${1:-media-urls.json}"
 
 mkdir -p "$MEDIA_DIR"
 

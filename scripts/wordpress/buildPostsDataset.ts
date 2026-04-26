@@ -272,9 +272,11 @@ async function buildPostsDataset(): Promise<void> {
   console.log(`   EN: ${enItems.length} total items`)
   console.log(`   DE: ${deItems.length} total items\n`)
 
-  // Build attachment URL map from EN XML (ID → URL)
+  // Build attachment URL map from both XMLs (ID → URL)
+  // DE is indexed first so EN doesn't overwrite DE-specific attachment IDs.
+  // DE posts use DE attachment IDs for _thumbnail_id; EN posts use EN attachment IDs.
   const attachmentUrlById = new Map<number, string>()
-  for (const item of enItems) {
+  for (const item of deItems) {
     if (item['wp:post_type'] === 'attachment') {
       const attachmentUrl = (item as WPPost & { 'wp:attachment_url'?: string })['wp:attachment_url']
       if (attachmentUrl) {
@@ -282,7 +284,15 @@ async function buildPostsDataset(): Promise<void> {
       }
     }
   }
-  console.log(`🖼️  Loaded ${attachmentUrlById.size} attachment URLs\n`)
+  for (const item of enItems) {
+    if (item['wp:post_type'] === 'attachment') {
+      const attachmentUrl = (item as WPPost & { 'wp:attachment_url'?: string })['wp:attachment_url']
+      if (attachmentUrl && !attachmentUrlById.has(item['wp:post_id'])) {
+        attachmentUrlById.set(item['wp:post_id'], attachmentUrl)
+      }
+    }
+  }
+  console.log(`🖼️  Loaded ${attachmentUrlById.size} attachment URLs (DE + EN)\n`)
 
   // Filter to published posts within date range
   const isRecentPublished = (p: WPPost) => {
