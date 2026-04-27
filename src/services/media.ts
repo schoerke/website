@@ -4,6 +4,18 @@
  */
 
 /**
+ * Filename of the icon-only logo SVG in the Payload Image collection.
+ * Used in headers and footers on desktop (≥sm) and mobile respectively.
+ */
+export const LOGO_ICON_FILENAME = 'schoerke-icon-logo.svg'
+
+/**
+ * Filename of the full text logo SVG in the Payload Image collection.
+ * Used in headers and footers on desktop (≥sm) and mobile respectively.
+ */
+export const LOGO_FULL_FILENAME = 'schoerke-icon-short-logo.svg'
+
+/**
  * Payload API path for the full logo image (logo.png).
  * @example <Image src={LOGO_PATH} alt="Logo" />
  */
@@ -14,7 +26,7 @@ export const LOGO_PATH = '/api/images/file/logo.png'
  * Typically used for smaller logo representations in headers, footers, or favicons.
  * @example <Image src={LOGO_ICON_PATH} alt="Logo" width={40} height={40} />
  */
-export const LOGO_ICON_PATH = '/api/images/file/logo_icon.png'
+export const LOGO_ICON_PATH = '/api/images/file/schoerke-icon-logo.svg'
 
 /**
  * Payload API path for the default avatar image (default-avatar.webp).
