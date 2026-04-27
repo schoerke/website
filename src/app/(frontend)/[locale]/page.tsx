@@ -10,6 +10,9 @@ import { getDefaultAvatar } from '@/services/media'
 import { getPaginatedPosts } from '@/services/post'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 
+// Fallback TTL — on-demand revalidation via Payload hooks is the primary mechanism
+export const revalidate = 3600
+
 type HomePageProps = {
   params: Promise<{ locale: string }>
 }

@@ -2,6 +2,7 @@ import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { revalidateHomePageOnGlobalChange } from '@/collections/hooks/revalidateHomePage'
 
 export const HomePageGlobal: GlobalConfig = {
   slug: 'home-page',
@@ -15,6 +16,9 @@ export const HomePageGlobal: GlobalConfig = {
   },
   admin: {
     group: 'Content Management',
+  },
+  hooks: {
+    afterChange: [revalidateHomePageOnGlobalChange],
   },
   fields: [
     {

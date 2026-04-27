@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '@/collections/hooks/revalidateHomePage'
 import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
 import { categoryOptions } from '@/data/options'
 import { normalizeText } from '@/utils/search/normalizeText'
@@ -135,7 +136,8 @@ export const Posts: CollectionConfig = {
     },
   ],
   hooks: {
-    afterChange: [syncArtistProjects],
+    afterChange: [syncArtistProjects, revalidateHomePageOnPostChange],
+    afterDelete: [revalidateHomePageOnPostDelete],
   },
   versions: {
     drafts: {
