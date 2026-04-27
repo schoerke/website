@@ -1,6 +1,7 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
+import HeaderLogo from '@/components/Header/HeaderLogo'
 import SearchProvider from '@/components/Search/SearchProvider'
 import { routing } from '@/i18n/routing'
 import { hasLocale, NextIntlClientProvider } from 'next-intl'
@@ -37,12 +38,14 @@ export default async function LocaleLayout({ children, params }: Props) {
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ErrorBoundary>
             <SearchProvider>
-              <Header />
+              <Header logo={<HeaderLogo />} />
               <main id="main-content" className="flex-1">
                 {children}
               </main>
-              <Footer locale={locale} />
             </SearchProvider>
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <Footer locale={locale} />
           </ErrorBoundary>
         </NextIntlClientProvider>
       </body>

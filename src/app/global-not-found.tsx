@@ -1,5 +1,6 @@
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
+import HeaderLogo from '@/components/Header/HeaderLogo'
 import { Button } from '@/components/ui/button'
 import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
@@ -108,7 +109,7 @@ async function GlobalNotFound() {
     <html lang={locale}>
       <body className="font-inter text-primary-black flex min-h-screen flex-col antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Header />
+          <Header logo={<HeaderLogo />} />
           <main className="flex-1">
             <div className="flex min-h-[60vh] items-center justify-center px-4 py-28 sm:px-6 lg:px-8">
               <div className="w-full max-w-2xl text-center">
