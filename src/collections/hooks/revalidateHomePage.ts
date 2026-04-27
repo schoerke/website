@@ -1,16 +1,13 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, GlobalAfterChangeHook } from 'payload'
 import { revalidatePath } from 'next/cache'
 
-import { routing } from '@/i18n/routing'
-
 /**
  * Revalidates the home page for all locales.
  * Must be called with explicit paths — revalidatePath does not expand route parameters.
  */
 function revalidateHomePage(): void {
-  for (const locale of routing.locales) {
-    revalidatePath(`/${locale}`, 'page')
-  }
+  // Must include the (frontend) route group — revalidatePath matches file structure, not URL
+  revalidatePath('/(frontend)/[locale]', 'page')
 }
 
 /**
