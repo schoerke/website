@@ -95,6 +95,19 @@ This includes:
 - **Impact:** 2 media files uploaded, artist biography data modified on remote development database
 - **Prevention:** Added mandatory database environment verification step above
 
+**2026-04-27: Post versions table emptied, admin showed "No Results"**
+
+- **What happened:** Prod admin showed 137 ghost posts with `id: null`, then after deleting orphaned `_posts_v`
+  rows it showed "No Results" — all 168 real posts were invisible in the admin.
+- **Root cause:** Posts had originally been migrated to prod via raw SQL (`@libsql/client` direct copy), bypassing
+  Payload's Local API. This means Payload hooks never ran, so `_posts_v` (versions table) was never populated.
+  The Payload admin list view queries `_posts_v`, not `posts` directly. When orphaned version rows were deleted,
+  the table was left empty and the admin showed nothing.
+- **Impact:** ~1 hour of remediation; posts had to be fully re-imported via Local API.
+- **Resolution:** Wiped all posts from prod tables, then ran `importPostsDataset.ts` directly against prod DB
+  (with `.env` pointed at prod). Payload Local API created all posts, versions, and related rows correctly.
+- **Prevention:** See "Always Use Payload Local API for Production Data Operations" section below.
+
 **2026-04-18: Video data lost during Payload field rename (youtubeLinks → videoLinks)**
 
 - **What happened:** Olga Scheps' 2 YouTube videos were lost after renaming the `youtubeLinks` array field to
@@ -103,6 +116,85 @@ This includes:
   See "Payload CMS + SQLite: How Array Field Renames Work" section below for the full explanation.
 - **Impact:** 2 video entries permanently deleted from the remote development database
 - **Prevention:** Added mandatory migration pattern for Payload array field renames below
+
+## Always Use Payload Local API for Production Data Operations
+
+**CRITICAL: NEVER use raw SQL or `@libsql/client` to copy or write data to production.**
+
+### Why Raw SQL Is Dangerous
+
+Payload CMS is not just a database — it's a system with hooks, lifecycle events, and internal tables that must
+all stay in sync. When you bypass Payload's Local API and write directly to SQLite:
+
+- `_posts_v`, `_recordings_v`, etc. (versions tables) are **never populated** — the admin list view will show
+  nothing or ghost entries
+- Search index (`search` collection) is **never updated**
+- `afterChange` hooks **never run** (search sync, slug generation, etc.)
+- Relationship integrity is fragile — foreign key mismatches cause silent failures
+
+### The Correct Pattern for Migrating Data to Production
+
+**Step 1:** Point `.env` at prod:
+```bash
+# In .env, swap DATABASE_URI and DATABASE_AUTH_TOKEN to production values
+```
+
+**Step 2:** Run the import/seed script (which uses Payload Local API):
+```bash
+npx tsx scripts/wordpress/importPostsDataset.ts
+npx tsx scripts/wordpress/importRecordingsDataset.ts
+```
+
+**Step 3:** Restore `.env` to dev immediately after:
+```bash
+# Swap DATABASE_URI and DATABASE_AUTH_TOKEN back to development values
+```
+
+### The Correct Pattern for Deleting Data from Production
+
+Always use `payload.delete()` — never raw `DELETE FROM` SQL:
+
+```typescript
+import 'dotenv/config'
+import config from '@/payload.config'
+import { getPayload } from 'payload'
+
+const payload = await getPayload({ config })
+
+// Find records to delete
+const results = await payload.find({
+  collection: 'recordings',
+  where: { artists: { contains: artistId } },
+  depth: 0,
+  limit: 100,
+})
+
+// Delete each one via Local API
+for (const doc of results.docs) {
+  await payload.delete({ collection: 'recordings', id: doc.id })
+}
+```
+
+### When Raw SQL IS Acceptable
+
+- **Read-only queries** for inspection/verification (e.g., `SELECT COUNT(*)`)
+- **Schema inspection** (`PRAGMA table_info(...)`)
+- **Deleting orphaned rows** that Payload itself cannot see (e.g., rows with `parent_id IS NULL`) — but only
+  after verifying they are truly orphaned and not real data
+
+### The `.env` Swap Workflow
+
+Every time you need to operate on prod:
+
+1. Comment out dev `DATABASE_URI` + `DATABASE_AUTH_TOKEN`
+2. Uncomment prod values
+3. Run script
+4. Immediately restore dev values
+5. Verify with `grep DATABASE_URI .env` that you're back on dev
+
+**Never leave `.env` pointing at prod after a session ends.**
+
+---
 
 ## Payload CMS + SQLite: How Array Field Renames Work
 
