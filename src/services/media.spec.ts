@@ -31,7 +31,7 @@ describe('media service', () => {
     })
 
     it('should export correct LOGO_ICON_PATH', () => {
-      expect(LOGO_ICON_PATH).toBe('/api/images/file/logo_icon.png')
+      expect(LOGO_ICON_PATH).toBe('/api/images/file/schoerke-icon-logo.svg')
     })
 
     it('should export correct DEFAULT_AVATAR_PATH', () => {
@@ -47,7 +47,7 @@ describe('media service', () => {
 
     it('getLogoIcon should return LOGO_ICON_PATH', () => {
       expect(getLogoIcon()).toBe(LOGO_ICON_PATH)
-      expect(getLogoIcon()).toBe('/api/images/file/logo_icon.png')
+      expect(getLogoIcon()).toBe('/api/images/file/schoerke-icon-logo.svg')
     })
 
     it('getDefaultAvatar should return DEFAULT_AVATAR_PATH', () => {
