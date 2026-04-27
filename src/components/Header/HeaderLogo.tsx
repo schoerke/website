@@ -4,36 +4,21 @@ import { getImageByFilename } from '@/services/media.server'
 import Image from 'next/image'
 
 /**
- * FooterLogo fetches SVG logos from Payload using the Local API.
- * - Mobile (<sm): full text logo
- * - Desktop (≥sm): icon-only logo
+ * HeaderLogo fetches SVG logos from Payload using the Local API.
+ * - Mobile (<sm): icon-only logo
+ * - Desktop (≥sm): full text logo
  * Falls back to a text label if either image is unavailable.
  */
 
-const FooterLogo = async () => {
+const HeaderLogo = async () => {
   const [icon, full] = await Promise.all([
     getImageByFilename(LOGO_ICON_FILENAME),
     getImageByFilename(LOGO_FULL_FILENAME),
   ])
 
   return (
-    <Link href="/" aria-label="Home">
-      {/* Mobile: full text logo */}
-      {full?.url ? (
-        <Image
-          src={full.url}
-          alt={full.alt || 'KSSchoerke Logo'}
-          width={400}
-          height={120}
-          priority
-          unoptimized
-          className="sm:hidden"
-          style={{ width: 'auto', height: '100px' }}
-        />
-      ) : (
-        <span className="text-lg font-semibold sm:hidden">KSSchoerke</span>
-      )}
-      {/* sm+: icon only */}
+    <Link href="/" aria-label="Home" className="flex items-center">
+      {/* Mobile: icon only */}
       {icon?.url ? (
         <Image
           src={icon.url}
@@ -42,8 +27,23 @@ const FooterLogo = async () => {
           height={120}
           priority
           unoptimized
-          className="hidden sm:block"
-          style={{ width: 'auto', height: '100px' }}
+          className="transition-opacity hover:opacity-80 sm:hidden"
+          style={{ width: 'auto', height: '40px' }}
+        />
+      ) : (
+        <span className="text-lg font-semibold sm:hidden">KSSchoerke</span>
+      )}
+      {/* sm+: full text logo */}
+      {full?.url ? (
+        <Image
+          src={full.url}
+          alt={full.alt || 'KSSchoerke Logo'}
+          width={400}
+          height={120}
+          priority
+          unoptimized
+          className="hidden transition-opacity hover:opacity-80 sm:block"
+          style={{ width: 'auto', height: '80px' }}
         />
       ) : (
         <span className="hidden text-lg font-semibold sm:block">KSSchoerke</span>
@@ -52,4 +52,4 @@ const FooterLogo = async () => {
   )
 }
 
-export default FooterLogo
+export default HeaderLogo
