@@ -90,8 +90,8 @@ describe('VideoAccordion', () => {
 
       const secondPanel = document.getElementById('video-panel-2')
       const thirdPanel = document.getElementById('video-panel-3')
-      expect(secondPanel).toHaveAttribute('hidden')
-      expect(thirdPanel).toHaveAttribute('hidden')
+      expect(secondPanel).toHaveStyle({ visibility: 'hidden' })
+      expect(thirdPanel).toHaveStyle({ visibility: 'hidden' })
     })
   })
 
@@ -120,7 +120,7 @@ describe('VideoAccordion', () => {
 
       // Click to close
       await user.click(firstButton)
-      expect(firstPanel).toHaveAttribute('hidden')
+      expect(firstPanel).toHaveStyle({ visibility: 'hidden' })
     })
 
     it('should close previous accordion when opening a new one', async () => {
@@ -131,15 +131,15 @@ describe('VideoAccordion', () => {
       const secondPanel = document.getElementById('video-panel-2')
 
       // First starts open
-      expect(firstPanel).not.toHaveAttribute('hidden')
-      expect(secondPanel).toHaveAttribute('hidden')
+      expect(firstPanel).not.toHaveStyle({ visibility: 'hidden' })
+      expect(secondPanel).toHaveStyle({ visibility: 'hidden' })
 
       // Open second video (should close first)
       const secondButton = screen.getByRole('button', { name: /Performance 2/i })
       await user.click(secondButton)
 
-      expect(firstPanel).toHaveAttribute('hidden')
-      expect(secondPanel).not.toHaveAttribute('hidden')
+      expect(firstPanel).toHaveStyle({ visibility: 'hidden' })
+      expect(secondPanel).not.toHaveStyle({ visibility: 'hidden' })
     })
 
     it('should update aria-expanded attribute', async () => {
