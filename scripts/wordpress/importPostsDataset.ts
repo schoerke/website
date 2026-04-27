@@ -51,6 +51,8 @@ const LIMIT_ARG = process.argv.find(a => a.startsWith('--limit='))
 const LIMIT = LIMIT_ARG ? parseInt(LIMIT_ARG.split('=')[1], 10) : undefined
 const SLUGS_ARG = process.argv.find(a => a.startsWith('--slugs='))
 const FILTER_SLUGS: string[] | null = SLUGS_ARG ? SLUGS_ARG.split('=')[1].split(',').map(s => s.trim()) : null
+const DATASET_ARG = process.argv.find(a => a.startsWith('--dataset='))
+const DATASET_PATH = DATASET_ARG ? path.resolve(DATASET_ARG.split('=')[1]) : path.join(DATA_DIR, 'posts-dataset.json')
 
 interface DatasetEntry {
   wpSlug: string
@@ -80,9 +82,8 @@ async function main() {
   }
 
   // Load dataset
-  const datasetPath = path.join(DATA_DIR, 'posts-dataset.json')
-  const dataset: DatasetEntry[] = JSON.parse(await fs.readFile(datasetPath, 'utf-8'))
-  console.log(`📋 ${dataset.length} entries in posts-dataset.json\n`)
+  const dataset: DatasetEntry[] = JSON.parse(await fs.readFile(DATASET_PATH, 'utf-8'))
+  console.log(`📋 ${dataset.length} entries in ${path.basename(DATASET_PATH)}\n`)
 
   const entries = LIMIT ? dataset.slice(0, LIMIT) : dataset
   if (LIMIT) console.log(`⚠️  Limiting to first ${LIMIT} entr${LIMIT === 1 ? 'y' : 'ies'}\n`)
