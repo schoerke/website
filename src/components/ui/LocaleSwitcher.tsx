@@ -1,5 +1,6 @@
 'use client'
 
+import { resolvePostSlugInLocale } from '@/actions/posts'
 import { usePathname, useRouter } from '@/i18n/navigation'
 import { useLocale } from 'next-intl'
 import { useParams } from 'next/navigation'
@@ -20,7 +21,7 @@ const LocaleSwitcher: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const firstOptionRef = useRef<HTMLButtonElement>(null)
 
-  const handleLocaleChange = (locale: string) => {
+  const handleLocaleChange = async (locale: string) => {
     // Preserve hash fragment when switching locales
     const hash = window.location.hash
 
@@ -28,12 +29,25 @@ const LocaleSwitcher: React.FC = () => {
     const localeLabel = SUPPORTED_LOCALES.find((l) => l.code === locale)?.label
     setAnnouncement(`Language changed to ${localeLabel}`)
 
+    // For routes with localized slugs (e.g. /news/[slug], /projects/[slug]), resolve the slug
+    // in the target locale to avoid 404s when the slug differs between languages.
+    let resolvedParams = params
+    const slug = params?.slug
+    const isLocalizedSlugRoute =
+      typeof slug === 'string' && (pathname === '/news/[slug]' || pathname === '/projects/[slug]')
+    if (isLocalizedSlugRoute) {
+      const targetSlug = await resolvePostSlugInLocale(slug, currentLocale as 'de' | 'en', locale as 'de' | 'en')
+      if (targetSlug) {
+        resolvedParams = { ...params, slug: targetSlug }
+      }
+    }
+
     // With `pathnames`: Pass `params` as well
     router.replace(
       // @ts-expect-error -- TypeScript will validate that only known `params`
       // are used in combination with a given `pathname`. Since the two will
       // always match for the current route, we can skip runtime checks.
-      { pathname, params },
+      { pathname, params: resolvedParams },
       { locale, scroll: false }
     )
 

@@ -34,6 +34,11 @@ vi.mock('next/navigation', () => ({
   useParams: vi.fn(() => ({})),
 }))
 
+// Mock actions/posts (used for locale-aware slug resolution on news detail pages)
+vi.mock('@/actions/posts', () => ({
+  resolvePostSlugInLocale: vi.fn(() => Promise.resolve(null)),
+}))
+
 describe('LocaleSwitcher', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -369,6 +374,86 @@ describe('LocaleSwitcher', () => {
 
       const container = document.querySelector('.justify-end')
       expect(container).toBeInTheDocument()
+    })
+  })
+
+  describe('Localized Slug Resolution', () => {
+    const buildMockRouter = (mockReplace = vi.fn()) => ({
+      push: vi.fn(),
+      replace: mockReplace,
+      prefetch: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      refresh: vi.fn(),
+    })
+
+    it.each(['/news/[slug]', '/projects/[slug]'])(
+      'resolves target-locale slug before navigating on %s routes',
+      async (routePathname) => {
+        const user = userEvent.setup()
+        const { useRouter, usePathname } = await import('@/i18n/navigation')
+        const { useParams } = await import('next/navigation')
+        const { resolvePostSlugInLocale } = await import('@/actions/posts')
+
+        const mockReplace = vi.fn()
+        vi.mocked(useRouter).mockReturnValue(buildMockRouter(mockReplace))
+        vi.mocked(usePathname).mockReturnValue(routePathname)
+        vi.mocked(useParams).mockReturnValue({ locale: 'de', slug: 'konzert-in-wien' })
+        vi.mocked(resolvePostSlugInLocale).mockResolvedValue('concert-in-vienna')
+
+        render(<LocaleSwitcher />)
+        await user.click(screen.getByRole('button', { name: /Select language/i }))
+        await user.click(screen.getByRole('button', { name: 'English' }))
+
+        await waitFor(() => {
+          expect(resolvePostSlugInLocale).toHaveBeenCalledWith('konzert-in-wien', 'de', 'en')
+          expect(mockReplace).toHaveBeenCalledWith(
+            { pathname: routePathname, params: { locale: 'de', slug: 'concert-in-vienna' } },
+            { locale: 'en', scroll: false },
+          )
+        })
+      },
+    )
+
+    it('falls back to original slug when resolvePostSlugInLocale returns null', async () => {
+      const user = userEvent.setup()
+      const { useRouter, usePathname } = await import('@/i18n/navigation')
+      const { useParams } = await import('next/navigation')
+      const { resolvePostSlugInLocale } = await import('@/actions/posts')
+
+      const mockReplace = vi.fn()
+      vi.mocked(useRouter).mockReturnValue(buildMockRouter(mockReplace))
+      vi.mocked(usePathname).mockReturnValue('/news/[slug]')
+      vi.mocked(useParams).mockReturnValue({ locale: 'de', slug: 'german-only-post' })
+      vi.mocked(resolvePostSlugInLocale).mockResolvedValue(null)
+
+      render(<LocaleSwitcher />)
+      await user.click(screen.getByRole('button', { name: /Select language/i }))
+      await user.click(screen.getByRole('button', { name: 'English' }))
+
+      await waitFor(() => {
+        expect(mockReplace).toHaveBeenCalledWith(
+          { pathname: '/news/[slug]', params: { locale: 'de', slug: 'german-only-post' } },
+          { locale: 'en', scroll: false },
+        )
+      })
+    })
+
+    it('does not call resolvePostSlugInLocale on non-news routes', async () => {
+      const user = userEvent.setup()
+      const { useRouter, usePathname } = await import('@/i18n/navigation')
+      const { resolvePostSlugInLocale } = await import('@/actions/posts')
+
+      vi.mocked(useRouter).mockReturnValue(buildMockRouter())
+      vi.mocked(usePathname).mockReturnValue('/artists/[slug]')
+
+      render(<LocaleSwitcher />)
+      await user.click(screen.getByRole('button', { name: /Select language/i }))
+      await user.click(screen.getByRole('button', { name: 'English' }))
+
+      await waitFor(() => {
+        expect(resolvePostSlugInLocale).not.toHaveBeenCalled()
+      })
     })
   })
 

@@ -381,3 +381,27 @@ export const getPostBySlug = async (slug: string, locale: LocaleCode = 'de') => 
 
   return result.docs.length > 0 ? result.docs[0] : null
 }
+
+/**
+ * Retrieves the localized slug for a post by its ID and target locale.
+ * Useful for locale switching on post detail pages where slugs differ per locale.
+ *
+ * @param id - The post's numeric ID (same across all locales)
+ * @param locale - Target locale code ('de' or 'en')
+ * @returns The post's slug in the target locale, or null if not found
+ *
+ * @example
+ * const enSlug = await getPostSlugByIdAndLocale(42, 'en')
+ * // '/en/news/english-slug'
+ */
+export const getPostSlugByIdAndLocale = async (id: number, locale: 'de' | 'en'): Promise<string | null> => {
+  const payload = await getPayload({ config })
+  const result = await payload.findByID({
+    collection: 'posts',
+    id,
+    locale,
+    depth: 0,
+  })
+
+  return result?.slug ?? null
+}

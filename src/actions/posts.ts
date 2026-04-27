@@ -1,6 +1,6 @@
 'use server'
 
-import { getFilteredPosts } from '@/services/post'
+import { getFilteredPosts, getPostBySlug, getPostSlugByIdAndLocale } from '@/services/post'
 
 /**
  * Server action to fetch posts filtered by category and/or artist.
@@ -37,4 +37,27 @@ export async function fetchPosts(options: {
     locale: options.locale || 'de',
     publishedOnly: true,
   })
+}
+
+/**
+ * Server action to resolve a post's slug in a different locale.
+ * Used by the locale switcher to navigate to the correct localized URL on post detail pages.
+ *
+ * @param currentSlug - The post's slug in the current locale
+ * @param currentLocale - The locale the current slug belongs to
+ * @param targetLocale - The locale to resolve the slug for
+ * @returns The post's slug in the target locale, or null if not found
+ *
+ * @example
+ * const enSlug = await resolvePostSlugInLocale('konzert-in-wien', 'de', 'en')
+ * // 'concert-in-vienna'
+ */
+export async function resolvePostSlugInLocale(
+  currentSlug: string,
+  currentLocale: 'de' | 'en',
+  targetLocale: 'de' | 'en',
+): Promise<string | null> {
+  const post = await getPostBySlug(currentSlug, currentLocale)
+  if (!post) return null
+  return await getPostSlugByIdAndLocale(post.id, targetLocale)
 }
