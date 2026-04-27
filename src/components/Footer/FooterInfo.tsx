@@ -20,7 +20,7 @@ const translationKeyMap: Record<string, string> = {
   Youtube: 'visitYouTube',
 }
 
-const FooterInfo: React.FC<FooterInfoProps> = async ({ locale }) => {
+const FooterInfo = async ({ locale }: FooterInfoProps) => {
   const t = await getTranslations({ locale, namespace: 'custom.pages' })
   const tFooter = await getTranslations({ locale, namespace: 'custom.footer' })
 

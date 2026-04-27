@@ -6,7 +6,7 @@ type FooterNavigationProps = {
   locale: string
 }
 
-const FooterNavigation: React.FC<FooterNavigationProps> = async ({ locale }) => {
+const FooterNavigation = async ({ locale }: FooterNavigationProps) => {
   const t = await getTranslations({ locale, namespace: 'custom.pages' })
   const tFooter = await getTranslations({ locale, namespace: 'custom.footer' })
 

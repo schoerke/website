@@ -5,7 +5,7 @@ type FooterProps = {
   locale: string
 }
 
-const Footer: React.FC<FooterProps> = async ({ locale }) => {
+const Footer = async ({ locale }: FooterProps) => {
   return (
     <footer>
       <div className="bg-white">
