@@ -16,13 +16,13 @@ describe('resolvePostSlugInLocale', () => {
 
   it('returns the target locale slug when the post exists', async () => {
     const { getPostBySlug, getPostSlugByIdAndLocale } = await import('@/services/post')
-    vi.mocked(getPostBySlug).mockResolvedValue(createMockPost({ id: '42', slug: 'konzert-in-wien' }))
+    vi.mocked(getPostBySlug).mockResolvedValue(createMockPost({ id: 42, slug: 'konzert-in-wien' }))
     vi.mocked(getPostSlugByIdAndLocale).mockResolvedValue('concert-in-vienna')
 
     const result = await resolvePostSlugInLocale('konzert-in-wien', 'de', 'en')
 
     expect(getPostBySlug).toHaveBeenCalledWith('konzert-in-wien', 'de')
-    expect(getPostSlugByIdAndLocale).toHaveBeenCalledWith('42', 'en')
+    expect(getPostSlugByIdAndLocale).toHaveBeenCalledWith(42, 'en')
     expect(result).toBe('concert-in-vienna')
   })
 
@@ -37,7 +37,7 @@ describe('resolvePostSlugInLocale', () => {
 
   it('returns null when the target locale has no slug', async () => {
     const { getPostBySlug, getPostSlugByIdAndLocale } = await import('@/services/post')
-    vi.mocked(getPostBySlug).mockResolvedValue(createMockPost({ id: '42' }))
+    vi.mocked(getPostBySlug).mockResolvedValue(createMockPost({ id: 42 }))
     vi.mocked(getPostSlugByIdAndLocale).mockResolvedValue(null)
 
     const result = await resolvePostSlugInLocale('some-slug', 'de', 'en')
@@ -47,13 +47,13 @@ describe('resolvePostSlugInLocale', () => {
 
   it('works in the reverse direction (en → de)', async () => {
     const { getPostBySlug, getPostSlugByIdAndLocale } = await import('@/services/post')
-    vi.mocked(getPostBySlug).mockResolvedValue(createMockPost({ id: '99', slug: 'concert-in-vienna' }))
+    vi.mocked(getPostBySlug).mockResolvedValue(createMockPost({ id: 99, slug: 'concert-in-vienna' }))
     vi.mocked(getPostSlugByIdAndLocale).mockResolvedValue('konzert-in-wien')
 
     const result = await resolvePostSlugInLocale('concert-in-vienna', 'en', 'de')
 
     expect(getPostBySlug).toHaveBeenCalledWith('concert-in-vienna', 'en')
-    expect(getPostSlugByIdAndLocale).toHaveBeenCalledWith('99', 'de')
+    expect(getPostSlugByIdAndLocale).toHaveBeenCalledWith(99, 'de')
     expect(result).toBe('konzert-in-wien')
   })
 

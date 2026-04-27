@@ -387,7 +387,7 @@ describe('LocaleSwitcher', () => {
       refresh: vi.fn(),
     })
 
-    it.each(['/news/[slug]', '/projects/[slug]'])(
+    it.each(['/news/[slug]', '/projects/[slug]'] as const)(
       'resolves target-locale slug before navigating on %s routes',
       async (routePathname) => {
         const user = userEvent.setup()
