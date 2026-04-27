@@ -73,6 +73,9 @@ function buildEmbedSrc(url: string): string | null {
 const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage }) => {
   const firstValidIndex = videos.findIndex((v) => buildEmbedSrc(v.url) !== null)
   const [openIndex, setOpenIndex] = useState<number | null>(firstValidIndex >= 0 ? firstValidIndex : null)
+  const [mountedIndices, setMountedIndices] = useState<Set<number>>(
+    () => new Set(firstValidIndex >= 0 ? [firstValidIndex] : []),
+  )
 
   if (videos.length === 0) {
     return (
@@ -83,7 +86,9 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
   }
 
   const toggleAccordion = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index)
+    const next = openIndex === index ? null : index
+    setOpenIndex(next)
+    if (next !== null) setMountedIndices((prev) => new Set(prev).add(next))
   }
 
   return (
@@ -117,15 +122,23 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
               </svg>
             </button>
 
-            <div id={panelId} hidden={!isOpen} className="pb-4">
+            <div
+              id={panelId}
+              className="pb-4"
+              style={!isOpen ? { position: 'absolute', visibility: 'hidden', pointerEvents: 'none' } : undefined}
+            >
               <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
-                <iframe
-                  src={embedSrc}
-                  title={video.label}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0 h-full w-full"
-                />
+                {mountedIndices.has(index) && (
+                  <iframe
+                    src={embedSrc}
+                    title={video.label}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    width="1280"
+                    height="720"
+                    className="absolute inset-0 h-full w-full"
+                  />
+                )}
               </div>
             </div>
           </li>
