@@ -93,7 +93,7 @@
     "happy-dom": "^20.9.0",
     "oxfmt": "^0.46.0",
     "oxlint": "^1.61.0",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.12",
     "tailwindcss": "^4.2.4",
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.2",
