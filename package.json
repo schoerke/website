@@ -92,7 +92,7 @@
     "dotenv": "^17.4.2",
     "happy-dom": "^20.9.0",
     "oxfmt": "^0.47.0",
-    "oxlint": "^1.61.0",
+    "oxlint": "^1.63.0",
     "postcss": "^8.5.12",
     "tailwindcss": "^4.2.4",
     "tailwindcss-animate": "^1.0.7",
