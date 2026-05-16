@@ -70,10 +70,10 @@ const ProjectsPage = async ({ params, searchParams }: ProjectsPageProps) => {
       <h1 className="font-playfair mb-8 text-5xl font-bold sm:mb-12 sm:text-6xl lg:text-7xl">{t('title')}</h1>
       <Suspense
         fallback={
-          <div role="status" aria-live="polite" aria-label={t('loading')}>
+          <output aria-live="polite" aria-label={t('loading')}>
             <NewsFeed.Skeleton count={limit} showPagination={result.totalPages > 1} />
             <span className="sr-only">{t('loadingPosts')}</span>
-          </div>
+          </output>
         }
       >
         <NewsFeed.Server

@@ -100,7 +100,7 @@ const NewsFeedSearch: React.FC<NewsFeedSearchProps> = ({ minChars = 3, debounceM
   }
 
   return (
-    <div className="relative w-full" role="search">
+    <search className="relative w-full">
       <div className="relative">
         <Search className="text-muted-foreground absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2" />
         <Input
@@ -133,7 +133,7 @@ const NewsFeedSearch: React.FC<NewsFeedSearchProps> = ({ minChars = 3, debounceM
           </p>
         )}
       </div>
-    </div>
+    </search>
   )
 }
 

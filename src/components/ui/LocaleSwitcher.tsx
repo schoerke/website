@@ -108,9 +108,9 @@ const LocaleSwitcher: React.FC = () => {
   return (
     <div ref={containerRef} className="relative flex justify-end">
       {/* Screen reader announcements */}
-      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+      <output aria-live="polite" aria-atomic="true" className="sr-only">
         {announcement}
-      </div>
+      </output>
 
       {/* Morphing container - expands left, rounded left corners only */}
       <div

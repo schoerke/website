@@ -21,7 +21,6 @@ const Logo: React.FC = () => {
       className="graphic-logo"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 80.44 68.95"
-      role="img"
       aria-label="Schoerke Logo"
     >
       <style type="text/css">{css}</style>

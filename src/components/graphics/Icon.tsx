@@ -18,7 +18,6 @@ const Icon: React.FC = () => {
       viewBox="0 0 378 378"
       width="100%"
       height="100%"
-      role="img"
       aria-label="Schoerke Icon"
       version="1.1"
     >
