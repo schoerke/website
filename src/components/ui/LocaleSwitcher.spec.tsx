@@ -238,14 +238,14 @@ describe('LocaleSwitcher', () => {
     it('has ARIA live region for announcements', () => {
       render(<LocaleSwitcher />)
 
-      const liveRegion = document.querySelector('[role="status"][aria-live="polite"]')
+      const liveRegion = document.querySelector('output[aria-live="polite"]')
       expect(liveRegion).toBeInTheDocument()
     })
 
     it('has sr-only class on announcement region', () => {
       render(<LocaleSwitcher />)
 
-      const liveRegion = document.querySelector('[role="status"]')
+      const liveRegion = document.querySelector('output')
       expect(liveRegion).toHaveClass('sr-only')
     })
 
@@ -271,7 +271,7 @@ describe('LocaleSwitcher', () => {
 
       // Check that announcement was made
       await waitFor(() => {
-        const liveRegion = document.querySelector('[role="status"]')
+      const liveRegion = document.querySelector('output')
         expect(liveRegion).toHaveTextContent('Language changed to English')
       })
     })
