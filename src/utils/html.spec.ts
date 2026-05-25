@@ -67,7 +67,6 @@ describe('sanitizeUrl', () => {
   })
 
   it('should allow relative paths starting with /', () => {
-    expect(sanitizeUrl('/admin/collections/issues/123')).toBe('/admin/collections/issues/123')
     expect(sanitizeUrl('/api/images/file/screenshot.jpg')).toBe('/api/images/file/screenshot.jpg')
   })
 

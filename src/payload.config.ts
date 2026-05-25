@@ -16,7 +16,6 @@ import { Artists } from './collections/Artists'
 import { Documents } from './collections/Documents'
 import { Employees } from './collections/Employees'
 import { Images } from './collections/Images'
-import { Issues } from './collections/Issues'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Recordings } from './collections/Recordings'
@@ -53,7 +52,7 @@ export default buildConfig({
       actions: ['/components/admin/LocaleSwitcherHider'],
     },
   },
-  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Images, Documents, Issues],
+  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Images, Documents],
   globals: [HomePageGlobal],
   db: sqliteAdapter({
     client: {

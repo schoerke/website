@@ -1,6 +1,6 @@
 import type { Payload } from 'payload'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
-import { sendIssueNotificationEmail, sendResetPasswordEmail, type ResendResponse } from './email'
+import { sendResetPasswordEmail, type ResendResponse } from './email'
 
 /**
  * Email Integration Tests
@@ -68,109 +68,6 @@ describe('email service - integration tests', () => {
     })
   })
 
-  describe('sendIssueNotificationEmail', () => {
-    it('should send issue notification email via Resend and return email ID', async () => {
-      const result: ResendResponse = await sendIssueNotificationEmail({
-        payload,
-        to: 'delivered@resend.dev',
-        title: 'Test Issue: Search functionality broken',
-        description: 'The search feature returns no results when searching for artist names.',
-        status: 'open',
-        reporterName: 'Test Reporter',
-        reporterEmail: 'reporter@example.com',
-        issueId: 'test-issue-123',
-      })
-
-      expect(result).toHaveProperty('id')
-      expect(typeof result.id).toBe('string')
-      expect(result.id.length).toBeGreaterThan(0)
-    })
-
-    it('should send email without optional reporterEmail', async () => {
-      const result: ResendResponse = await sendIssueNotificationEmail({
-        payload,
-        to: 'delivered@resend.dev',
-        title: 'Anonymous Issue Report',
-        description: 'Issue reported without email address.',
-        status: 'open',
-        issueId: 'test-issue-456',
-      })
-
-      expect(result).toHaveProperty('id')
-      expect(typeof result.id).toBe('string')
-      expect(result.id.length).toBeGreaterThan(0)
-    })
-
-    it('should handle different issue statuses', async () => {
-      const result: ResendResponse = await sendIssueNotificationEmail({
-        payload,
-        to: 'delivered@resend.dev',
-        title: 'Closed Issue',
-        description: 'This issue has been resolved.',
-        status: 'closed',
-        reporterName: 'Test User',
-        reporterEmail: 'user@example.com',
-        issueId: 'test-issue-789',
-      })
-
-      expect(result).toHaveProperty('id')
-      expect(typeof result.id).toBe('string')
-      expect(result.id.length).toBeGreaterThan(0)
-    })
-
-    it('should include admin panel link with correct issue ID', async () => {
-      const issueId = 'test-issue-with-link'
-
-      const result: ResendResponse = await sendIssueNotificationEmail({
-        payload,
-        to: 'delivered@resend.dev',
-        title: 'Issue with Link Test',
-        description: 'Testing admin panel link generation.',
-        status: 'in-progress',
-        issueId,
-      })
-
-      expect(result).toHaveProperty('id')
-      expect(typeof result.id).toBe('string')
-      expect(result.id.length).toBeGreaterThan(0)
-    })
-
-    it('should handle Lexical JSON description with inline images', async () => {
-      const lexicalDescription = {
-        root: {
-          children: [
-            {
-              type: 'paragraph',
-              children: [{ type: 'text', text: 'Description with inline image' }],
-            },
-            {
-              type: 'upload',
-              value: {
-                url: 'https://example.com/screenshot.jpg',
-                alt: 'Test screenshot',
-              },
-            },
-          ],
-        },
-      }
-
-      const result: ResendResponse = await sendIssueNotificationEmail({
-        payload,
-        to: 'delivered@resend.dev',
-        title: 'Issue with Inline Screenshots',
-        description: lexicalDescription,
-        status: 'open',
-        reporterName: 'Test User',
-        reporterEmail: 'test@example.com',
-        issueId: 'test-issue-lexical',
-      })
-
-      expect(result).toHaveProperty('id')
-      expect(typeof result.id).toBe('string')
-      expect(result.id.length).toBeGreaterThan(0)
-    })
-  })
-
   describe('error handling', () => {
     it('should throw error for invalid email address', async () => {
       await expect(
@@ -178,19 +75,6 @@ describe('email service - integration tests', () => {
           payload,
           to: 'invalid-email-format',
           resetLink: 'https://example.com/reset?token=test',
-        })
-      ).rejects.toThrow()
-    })
-
-    it('should throw error for empty recipient email', async () => {
-      await expect(
-        sendIssueNotificationEmail({
-          payload,
-          to: '',
-          title: 'Test',
-          description: 'Test description',
-          status: 'open',
-          issueId: 'test',
         })
       ).rejects.toThrow()
     })
