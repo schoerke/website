@@ -95,4 +95,16 @@ describe('ScrollAwareLogo', () => {
 
     expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function))
   })
+
+  it('syncs scroll state on mount when page is already scrolled', () => {
+    Object.defineProperty(window, 'scrollY', { writable: true, value: 50 })
+
+    render(<ScrollAwareLogo {...defaultProps} />)
+
+    const icon = screen.getByAltText('Icon logo')
+    const full = screen.getByAltText('Full logo')
+
+    expect(icon.className).toContain('opacity-100')
+    expect(full.className).toContain('opacity-0')
+  })
 })

@@ -19,6 +19,7 @@ const ScrollAwareLogo: React.FC<ScrollAwareLogoProps> = ({ iconUrl, iconAlt, ful
       setScrolled(window.scrollY > 10)
     }
 
+    handleScroll() // sync initial state (e.g. back-nav restores scroll position)
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
