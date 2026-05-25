@@ -174,7 +174,7 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
  * Useful for determining whether to show the News tab on the artist detail page.
  *
  * @param artistId - The artist's numeric ID
- * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de'
+ * @param locale - Optional locale code ('de' or 'en'). Defaults to 'de'
  * @returns A promise resolving to the count of matching posts
  *
  * @example
@@ -183,7 +183,7 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
  */
 export const getNewsPostCountByArtist = async (
   artistId: number,
-  locale?: LocaleCode,
+  locale?: 'de' | 'en',
 ): Promise<number> => {
   const payload = await getPayload({ config })
   const result = await payload.count({

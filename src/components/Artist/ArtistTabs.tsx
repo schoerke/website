@@ -14,6 +14,8 @@ type TabId = 'biography' | 'repertoire' | 'discography' | 'media' | 'news' | 'pr
 interface ArtistTabsProps {
   artist: Artist
   locale: string
+  hasNews: boolean
+  hasProjects: boolean
 }
 
 // Always return 'biography' for initial render to avoid hydration mismatch
@@ -26,7 +28,7 @@ function getInitialTab(): TabId {
  * Internal component that manages tab state and data fetching.
  * Uses key prop on parent to reset all state when locale changes.
  */
-const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
+const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasProjects }) => {
   const t = useTranslations('custom.pages.artist')
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab)
   const [recordings, setRecordings] = useState<Recording[]>([])
@@ -36,7 +38,13 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
   const [repertoiresFetched, setRepertoiresFetched] = useState(false)
 
   // Available tabs
-  const tabs: TabId[] = ['biography', 'repertoire', 'discography', 'media', 'news', 'projects']
+  const tabs: TabId[] = (
+    ['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]
+  ).filter((tab) => {
+    if (tab === 'news') return hasNews
+    if (tab === 'projects') return hasProjects
+    return true
+  })
 
   const [mediaSection, setMediaSection] = useState<'images' | 'videos'>('images')
 
@@ -219,7 +227,7 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
         )}
         {activeTab === 'projects' && (
           <ProjectsTab
-            projects={(artist.projects || []).filter((p): p is Post => typeof p === 'object')}
+            projects={(artist.projects ?? []).filter((p): p is Post => typeof p === 'object' && p !== null)}
             emptyMessage={t('empty.projects')}
           />
         )}
@@ -232,8 +240,8 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
  * ArtistTabs component with locale-based reset.
  * Uses key prop to reset all internal state when locale changes.
  */
-const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale }) => {
-  return <ArtistTabsInner key={locale} artist={artist} locale={locale} />
+const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasProjects }) => {
+  return <ArtistTabsInner key={locale} artist={artist} locale={locale} hasNews={hasNews} hasProjects={hasProjects} />
 }
 
 export default ArtistTabs

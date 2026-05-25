@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import type { Artist, Recording, Repertoire } from '@/payload-types'
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ArtistTabs from './ArtistTabs'
@@ -192,7 +192,7 @@ describe('ArtistTabs', async () => {
   describe('Initial rendering', () => {
     it('should render biography tab by default', () => {
       const artist = createMockArtist()
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
       expect(screen.getByText(/Biography: Has content/)).toBeInTheDocument()
@@ -200,7 +200,7 @@ describe('ArtistTabs', async () => {
 
     it('should render all tab buttons', () => {
       const artist = createMockArtist()
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       expect(screen.getAllByText('Biography')).toHaveLength(2) // Desktop + Mobile
       expect(screen.getAllByText('Repertoire')).toHaveLength(2)
@@ -229,7 +229,7 @@ describe('ArtistTabs', async () => {
         nextPage: null,
       })
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       // Click repertoire tab (use first one - desktop)
       const repertoireTabs = screen.getAllByText('Repertoire')
@@ -243,7 +243,7 @@ describe('ArtistTabs', async () => {
     it('should switch to media tab when clicked', async () => {
       const user = userEvent.setup()
       const artist = createMockArtist()
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       const mediaTabs = screen.getAllByText('Media')
       await user.click(mediaTabs[0])
@@ -256,7 +256,7 @@ describe('ArtistTabs', async () => {
     it('should update URL hash when tab changes', async () => {
       const user = userEvent.setup()
       const artist = createMockArtist()
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       const mediaTabs = screen.getAllByText('Media')
       await user.click(mediaTabs[0])
@@ -284,7 +284,7 @@ describe('ArtistTabs', async () => {
         nextPage: null,
       })
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       // Initially, recordings should not be fetched
       expect(fetchRecordingsByArtist).not.toHaveBeenCalled()
@@ -324,7 +324,7 @@ describe('ArtistTabs', async () => {
         nextPage: null,
       })
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       // Click discography tab
       const discographyTabs = screen.getAllByText('Discography')
@@ -351,7 +351,7 @@ describe('ArtistTabs', async () => {
 
       vi.mocked(fetchRecordingsByArtist).mockRejectedValue(new Error('Network error'))
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       const discographyTabs = screen.getAllByText('Discography')
       await user.click(discographyTabs[0])
@@ -380,7 +380,7 @@ describe('ArtistTabs', async () => {
         nextPage: null,
       })
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       const discographyTabs = screen.getAllByText('Discography')
       await user.click(discographyTabs[0])
@@ -410,7 +410,7 @@ describe('ArtistTabs', async () => {
         nextPage: null,
       })
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       expect(fetchRepertoiresByArtist).not.toHaveBeenCalled()
 
@@ -445,7 +445,7 @@ describe('ArtistTabs', async () => {
         nextPage: null,
       })
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       const repertoireTabs = screen.getAllByText('Repertoire')
       await user.click(repertoireTabs[0])
@@ -467,7 +467,7 @@ describe('ArtistTabs', async () => {
 
       vi.mocked(fetchRepertoiresByArtist).mockRejectedValue(new Error('Network error'))
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       const repertoireTabs = screen.getAllByText('Repertoire')
       await user.click(repertoireTabs[0])
@@ -485,7 +485,7 @@ describe('ArtistTabs', async () => {
       window.location.hash = '#media'
       const artist = createMockArtist()
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       expect(screen.getByTestId('media-tab')).toBeInTheDocument()
     })
@@ -494,7 +494,7 @@ describe('ArtistTabs', async () => {
       window.location.hash = '#invalid'
       const artist = createMockArtist()
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
     })
@@ -506,7 +506,7 @@ describe('ArtistTabs', async () => {
         galleryImages: [],
       })
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       expect(screen.getByTestId('media-tab')).toBeInTheDocument()
       expect(screen.getByText('1 videos')).toBeInTheDocument()
@@ -518,7 +518,7 @@ describe('ArtistTabs', async () => {
         galleryImages: [{ id: 'img1', image: { id: 1, alt: 'Photo', url: '/p.jpg', updatedAt: '', createdAt: '' } }],
       })
 
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       expect(screen.getByTestId('media-tab')).toBeInTheDocument()
       expect(screen.getByText('1 images')).toBeInTheDocument()
@@ -542,7 +542,7 @@ describe('ArtistTabs', async () => {
         nextPage: null,
       })
 
-      const { rerender } = renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      const { rerender } = renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       // Switch to discography tab
       const user = userEvent.setup()
@@ -559,7 +559,7 @@ describe('ArtistTabs', async () => {
 
       rerender(
         <NextIntlTestProvider messages={testMessages} locale="de">
-          <ArtistTabs artist={artist} locale="de" />
+          <ArtistTabs artist={artist} locale="de" hasNews={true} hasProjects={true} />
         </NextIntlTestProvider>
       )
 
@@ -580,7 +580,7 @@ describe('ArtistTabs', async () => {
     it('should render news feed for news tab', async () => {
       const user = userEvent.setup()
       const artist = createMockArtist()
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       const newsTabs = screen.getAllByText('News')
       await user.click(newsTabs[0])
@@ -594,13 +594,74 @@ describe('ArtistTabs', async () => {
     it('should render projects tab', async () => {
       const user = userEvent.setup()
       const artist = createMockArtist()
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" />)
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       const projectsTabs = screen.getAllByText('Projects')
       await user.click(projectsTabs[0])
 
       await waitFor(() => {
         expect(screen.getByTestId('projects-tab')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Conditional tab visibility', () => {
+    it('should hide News tab when hasNews is false', () => {
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={false} hasProjects={true} />)
+
+      expect(screen.queryAllByText('News')).toHaveLength(0)
+      expect(screen.getAllByText('Projects')).toHaveLength(2)
+    })
+
+    it('should show News tab when hasNews is true', () => {
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      expect(screen.getAllByText('News')).toHaveLength(2)
+    })
+
+    it('should hide Projects tab when hasProjects is false', () => {
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={false} />)
+
+      expect(screen.queryAllByText('Projects')).toHaveLength(0)
+      expect(screen.getAllByText('News')).toHaveLength(2)
+    })
+
+    it('should show Projects tab when hasProjects is true', () => {
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      expect(screen.getAllByText('Projects')).toHaveLength(2)
+    })
+
+    it('should hide both News and Projects tabs when both are false', () => {
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={false} hasProjects={false} />)
+
+      expect(screen.queryAllByText('News')).toHaveLength(0)
+      expect(screen.queryAllByText('Projects')).toHaveLength(0)
+      expect(screen.getAllByText('Biography')).toHaveLength(2)
+    })
+
+    it('should fall back to biography tab when hash points to hidden News tab', async () => {
+      window.location.hash = '#news'
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={false} hasProjects={true} />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
+      })
+    })
+
+    it('should fall back to biography tab when hash points to hidden Projects tab', async () => {
+      window.location.hash = '#projects'
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={false} />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
       })
     })
   })

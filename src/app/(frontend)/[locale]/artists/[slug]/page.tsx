@@ -3,6 +3,7 @@ import ContactPersons from '@/components/Artist/ContactPersons'
 import ArtistLinks from '@/components/ArtistLinks'
 import { Link } from '@/i18n/navigation'
 import { getArtistBySlug } from '@/services/artist'
+import { getNewsPostCountByArtist } from '@/services/post'
 import { isEmployee } from '@/utils/collection'
 import { getImageUrl, isImageObject, isValidUrl } from '@/utils/image'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -18,6 +19,11 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
   const artist = await getArtistBySlug(slug, locale as 'de' | 'en')
 
   if (!artist) return notFound()
+
+  const newsCount = await getNewsPostCountByArtist(artist.id, locale as 'de' | 'en')
+
+  const hasNews = newsCount > 0
+  const hasProjects = (artist.projects ?? []).some((p) => typeof p === 'object' && p !== null)
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.artist' })
 
@@ -76,7 +82,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
       </div>
 
       {/* Artist Tabs - Biography, Repertoire, Discography, Video, News, Projects, Concert Dates */}
-      <ArtistTabs artist={artist} locale={locale} />
+      <ArtistTabs artist={artist} locale={locale} hasNews={hasNews} hasProjects={hasProjects} />
 
       {/* Show ArtistLinks below tabs on small screens */}
       <div className="mt-8 border-t border-gray-200 pt-8 md:hidden">
