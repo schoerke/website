@@ -181,6 +181,9 @@ const en = {
         visitYouTube: 'Visit us on YouTube',
       },
     },
+    header: {
+      navigationLabel: 'Header navigation',
+    },
     accessibility: {
       skipToMainContent: 'Skip to main content',
     },

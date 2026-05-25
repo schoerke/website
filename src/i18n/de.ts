@@ -184,6 +184,9 @@ const de = {
         visitYouTube: 'Besuchen Sie uns auf YouTube',
       },
     },
+    header: {
+      navigationLabel: 'Header-Navigation',
+    },
     accessibility: {
       skipToMainContent: 'Zum Hauptinhalt springen',
     },
