@@ -1,5 +1,14 @@
 # TODO
 
+## Navigation
+
+- [ ] **Hardcoded `/kontakt` in header and footer nav** - locale-unaware contact link
+  - `src/components/Header/HeaderNavigation.tsx` line 14: `href: '/kontakt' as const`
+  - `src/components/Footer/FooterNavigation.tsx` line 18: `href: '/kontakt' as const`
+  - EN locale currently links to `/kontakt` instead of `/contact`
+  - Fix: use locale-aware routing (either next-intl `pathname` mapping or derive from locale)
+  - **Effort:** ~30 minutes
+
 ## Code Quality
 
 - [x] **TypeScript/ESLint Cleanup** - ✅ **COMPLETE** (2025-12-10)
