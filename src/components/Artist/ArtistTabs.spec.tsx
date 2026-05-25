@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import type { Artist, Recording, Repertoire } from '@/payload-types'
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ArtistTabs from './ArtistTabs'
