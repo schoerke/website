@@ -9,6 +9,16 @@
   - Fix: use locale-aware routing (either next-intl `pathname` mapping or derive from locale)
   - **Effort:** ~30 minutes
 
+## Search
+
+- [ ] **Search returns no results on prod for non-artist queries (e.g. "cello")** — 2026-05-25
+  - Two root causes identified:
+    1. **Static JSON fallback is too shallow** — `public/search-index-de.json` only has 34 docs (artist display names only). Repertoire, instruments, biographies not indexed. When API fails, fallback returns nothing for content-based queries.
+    2. **API may be timing out on prod** — 2000ms timeout in `src/services/search.ts:125`. Seen timing out in dev logs; unclear if prod `/api/search?q=cello` returns correct results at all.
+  - **To investigate:** Hit `/api/search?q=cello&locale=de&limit=50` directly on prod to confirm whether the API itself returns results
+  - **Files:** `src/services/search.ts`, `public/search-index-de.json`, `public/search-index-en.json`
+  - **Effort:** Medium — static index regeneration + possibly raising/removing timeout
+
 ## Code Quality
 
 - [x] **TypeScript/ESLint Cleanup** - ✅ **COMPLETE** (2025-12-10)
