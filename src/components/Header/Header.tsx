@@ -25,11 +25,11 @@ const Header: React.FC<HeaderProps> = ({ logo, nav }) => {
         {/* Logo Branding */}
         {logo}
 
-        {/* Primary Navigation */}
-        {nav}
-
-        {/* App Controls - unified locale switcher + kbar */}
-        <AppControls />
+        {/* Right side: nav + app controls grouped together */}
+        <div className="flex items-center gap-8">
+          {nav}
+          <AppControls />
+        </div>
       </div>
     </header>
   )
