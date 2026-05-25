@@ -6,9 +6,10 @@ import AppControls from '../ui/AppControls'
 
 interface HeaderProps {
   logo: ReactNode
+  nav?: ReactNode
 }
 
-const Header: React.FC<HeaderProps> = ({ logo }) => {
+const Header: React.FC<HeaderProps> = ({ logo, nav }) => {
   const t = useTranslations('custom.accessibility')
 
   return (
@@ -23,6 +24,9 @@ const Header: React.FC<HeaderProps> = ({ logo }) => {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         {/* Logo Branding */}
         {logo}
+
+        {/* Primary Navigation */}
+        {nav}
 
         {/* App Controls - unified locale switcher + kbar */}
         <AppControls />
