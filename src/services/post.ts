@@ -170,6 +170,35 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
   })
 }
 /**
+ * Returns the count of published news posts associated with a specific artist.
+ * Useful for determining whether to show the News tab on the artist detail page.
+ *
+ * @param artistId - The artist's numeric ID
+ * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de'
+ * @returns A promise resolving to the count of matching posts
+ *
+ * @example
+ * const count = await getNewsPostCountByArtist(42, 'en')
+ * const hasNews = count > 0
+ */
+export const getNewsPostCountByArtist = async (
+  artistId: number,
+  locale?: LocaleCode,
+): Promise<number> => {
+  const payload = await getPayload({ config })
+  const result = await payload.count({
+    collection: 'posts',
+    where: {
+      categories: { contains: 'news' },
+      artists: { equals: artistId },
+      _status: { equals: 'published' },
+    },
+    locale: locale || 'de',
+  })
+  return result.totalDocs
+}
+
+/**
  * Retrieves posts with flexible filtering options.
  * This is the recommended function for fetching posts with custom criteria.
  *

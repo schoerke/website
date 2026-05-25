@@ -9,6 +9,7 @@ import {
   getAllProjectPosts,
   getAllProjectPostsByArtist,
   getFilteredPosts,
+  getNewsPostCountByArtist,
   getPaginatedPosts,
   getPostBySlug,
 } from './post'
@@ -28,6 +29,7 @@ describe('Post Service', () => {
   beforeEach(async () => {
     mockPayload = {
       find: vi.fn(),
+      count: vi.fn(),
     } as unknown as Payload
 
     // Mock getPayload to return our mock payload instance
@@ -636,6 +638,43 @@ describe('Post Service', () => {
       expect(typeof result?.image).toBe('object')
       expect(result?.image).toHaveProperty('url')
       expect(result?.image).toHaveProperty('alt')
+    })
+  })
+
+  describe('getNewsPostCountByArtist', () => {
+    it('should return the count of published news posts for an artist', async () => {
+      mockPayload.count = vi.fn().mockResolvedValue({ totalDocs: 5 })
+
+      const result = await getNewsPostCountByArtist(42, 'en')
+
+      expect(result).toBe(5)
+      expect(mockPayload.count).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: {
+          categories: { contains: 'news' },
+          artists: { equals: 42 },
+          _status: { equals: 'published' },
+        },
+        locale: 'en',
+      })
+    })
+
+    it('should return 0 when no news posts exist for the artist', async () => {
+      mockPayload.count = vi.fn().mockResolvedValue({ totalDocs: 0 })
+
+      const result = await getNewsPostCountByArtist(99, 'de')
+
+      expect(result).toBe(0)
+    })
+
+    it('should use default locale de when not specified', async () => {
+      mockPayload.count = vi.fn().mockResolvedValue({ totalDocs: 3 })
+
+      await getNewsPostCountByArtist(1)
+
+      expect(mockPayload.count).toHaveBeenCalledWith(
+        expect.objectContaining({ locale: 'de' })
+      )
     })
   })
 })
