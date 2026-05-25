@@ -16,7 +16,7 @@ const ScrollAwareLogo: React.FC<ScrollAwareLogoProps> = ({ iconUrl, iconAlt, ful
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 0)
+      setScrolled(window.scrollY > 10)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -24,7 +24,7 @@ const ScrollAwareLogo: React.FC<ScrollAwareLogoProps> = ({ iconUrl, iconAlt, ful
   }, [])
 
   return (
-    <Link href="/" aria-label="Home" className="flex items-center">
+    <Link href="/" aria-label="Home" className="relative flex items-center">
       {/* Icon-only logo: visible when scrolled */}
       <Image
         src={iconUrl}
