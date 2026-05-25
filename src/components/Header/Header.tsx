@@ -13,7 +13,7 @@ const Header: React.FC<HeaderProps> = ({ logo, nav }) => {
   const t = useTranslations('custom.accessibility')
 
   return (
-    <header className="w-full">
+    <header className="bg-primary-white sticky top-0 z-50 w-full">
       {/* Skip navigation link for keyboard and screen reader users */}
       <a
         href="#main-content"
