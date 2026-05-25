@@ -7,17 +7,12 @@ vi.mock('@/services/media.server', () => ({
 }))
 
 vi.mock('@/services/media', () => ({
-  LOGO_ICON_FILENAME: 'schoerke-icon-logo.svg',
   LOGO_FULL_FILENAME: 'schoerke-icon-short-logo.svg',
 }))
 
 vi.mock('@/components/Header/ScrollAwareLogo', () => ({
-  default: ({ iconUrl, iconAlt, fullUrl, fullAlt }: {
-    iconUrl: string
-    iconAlt: string
-    fullUrl: string
-    fullAlt: string
-  }) => React.createElement('div', { 'data-testid': 'scroll-aware-logo', 'data-icon-url': iconUrl, 'data-full-url': fullUrl, 'data-icon-alt': iconAlt, 'data-full-alt': fullAlt }),
+  default: ({ fullUrl, fullAlt }: { fullUrl: string; fullAlt: string }) =>
+    React.createElement('div', { 'data-testid': 'scroll-aware-logo', 'data-full-url': fullUrl, 'data-full-alt': fullAlt }),
 }))
 
 import type { Image as PayloadImage } from '@/payload-types'
@@ -27,7 +22,6 @@ import React from 'react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import HeaderLogo from './HeaderLogo'
 
-const mockIcon: Partial<PayloadImage> = { url: 'https://cdn.example.com/icon.svg', alt: 'Icon' }
 const mockFull: Partial<PayloadImage> = { url: 'https://cdn.example.com/full.svg', alt: 'Full logo' }
 
 beforeEach(() => {
@@ -35,35 +29,25 @@ beforeEach(() => {
 })
 
 describe('HeaderLogo', () => {
-  it('passes icon and full logo URLs to ScrollAwareLogo', async () => {
-    vi.mocked(getImageByFilename)
-      .mockResolvedValueOnce(mockIcon as PayloadImage)
-      .mockResolvedValueOnce(mockFull as PayloadImage)
+  it('passes full logo URL to ScrollAwareLogo', async () => {
+    vi.mocked(getImageByFilename).mockResolvedValueOnce(mockFull as PayloadImage)
 
     render(await HeaderLogo())
 
-    const logo = screen.getByTestId('scroll-aware-logo')
-    expect(logo).toHaveAttribute('data-icon-url', mockIcon.url)
-    expect(logo).toHaveAttribute('data-full-url', mockFull.url)
+    expect(screen.getByTestId('scroll-aware-logo')).toHaveAttribute('data-full-url', mockFull.url)
   })
 
   it('passes alt text to ScrollAwareLogo', async () => {
-    vi.mocked(getImageByFilename)
-      .mockResolvedValueOnce(mockIcon as PayloadImage)
-      .mockResolvedValueOnce(mockFull as PayloadImage)
+    vi.mocked(getImageByFilename).mockResolvedValueOnce(mockFull as PayloadImage)
 
     render(await HeaderLogo())
 
-    const logo = screen.getByTestId('scroll-aware-logo')
-    expect(logo).toHaveAttribute('data-icon-alt', mockIcon.alt)
-    expect(logo).toHaveAttribute('data-full-alt', mockFull.alt)
+    expect(screen.getByTestId('scroll-aware-logo')).toHaveAttribute('data-full-alt', mockFull.alt)
   })
 
-  it('falls back to empty string URLs when images are unavailable', async () => {
+  it('falls back to empty string URL when image is unavailable', async () => {
     render(await HeaderLogo())
 
-    const logo = screen.getByTestId('scroll-aware-logo')
-    expect(logo).toHaveAttribute('data-icon-url', '')
-    expect(logo).toHaveAttribute('data-full-url', '')
+    expect(screen.getByTestId('scroll-aware-logo')).toHaveAttribute('data-full-url', '')
   })
 })

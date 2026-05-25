@@ -3,8 +3,10 @@
 import { vi } from 'vitest'
 
 vi.mock('next/image', () => ({
-  default: ({ src, alt, style, className }: { src: string; alt: string; style?: React.CSSProperties; className?: string }) =>
-    React.createElement('img', { src, alt, style, className }),
+  default: React.forwardRef(
+    ({ src, alt, style, className }: { src: string; alt: string; style?: React.CSSProperties; className?: string }, ref: React.Ref<HTMLImageElement>) =>
+      React.createElement('img', { src, alt, style, className, ref }),
+  ),
 }))
 
 import { render, screen, act } from '@testing-library/react'
@@ -13,8 +15,6 @@ import { describe, expect, it, beforeEach, afterEach } from 'vitest'
 import ScrollAwareLogo from './ScrollAwareLogo'
 
 const defaultProps = {
-  iconUrl: '/icon.svg',
-  iconAlt: 'Icon logo',
   fullUrl: '/full.svg',
   fullAlt: 'Full logo',
 }
@@ -28,43 +28,44 @@ describe('ScrollAwareLogo', () => {
     vi.restoreAllMocks()
   })
 
-  it('renders both icon and full logo images', () => {
+  it('renders the full logo', () => {
     render(<ScrollAwareLogo {...defaultProps} />)
 
-    expect(screen.getByAltText('Icon logo')).toBeInTheDocument()
     expect(screen.getByAltText('Full logo')).toBeInTheDocument()
   })
 
-  it('shows full logo and hides icon logo at scroll top', () => {
+  it('renders at full height (80px) at scroll top', () => {
     render(<ScrollAwareLogo {...defaultProps} />)
 
-    const icon = screen.getByAltText('Icon logo')
-    const full = screen.getByAltText('Full logo')
-
-    expect(icon.className).toContain('opacity-0')
-    expect(full.className).toContain('opacity-100')
+    expect(screen.getByAltText('Full logo')).toHaveStyle({ height: '80px' })
   })
 
-  it('shows icon logo and hides full logo after scroll', () => {
+  it('renders at minimum height (64px) when fully scrolled past range', () => {
+    Object.defineProperty(window, 'scrollY', { writable: true, value: 200 })
+    render(<ScrollAwareLogo {...defaultProps} />)
+
+    const img = screen.getByAltText('Full logo') as HTMLElement
+    expect(img.style.height).toBe('64px')
+  })
+
+  it('interpolates height continuously between 80px and 64px', () => {
     render(<ScrollAwareLogo {...defaultProps} />)
 
     act(() => {
-      Object.defineProperty(window, 'scrollY', { writable: true, value: 50 })
+      Object.defineProperty(window, 'scrollY', { writable: true, value: 40 }) // 50% of 80px range
       window.dispatchEvent(new Event('scroll'))
     })
 
-    const icon = screen.getByAltText('Icon logo')
-    const full = screen.getByAltText('Full logo')
-
-    expect(icon.className).toContain('opacity-100')
-    expect(full.className).toContain('opacity-0')
+    const img = screen.getByAltText('Full logo') as HTMLElement
+    // At 50% scroll: 80 - 0.5 * (80 - 64) = 72px
+    expect(img.style.height).toBe('72px')
   })
 
-  it('reverts to full logo when scrolled back to top', () => {
+  it('restores to full height when scrolling back to top', () => {
     render(<ScrollAwareLogo {...defaultProps} />)
 
     act(() => {
-      Object.defineProperty(window, 'scrollY', { writable: true, value: 50 })
+      Object.defineProperty(window, 'scrollY', { writable: true, value: 80 })
       window.dispatchEvent(new Event('scroll'))
     })
 
@@ -73,18 +74,21 @@ describe('ScrollAwareLogo', () => {
       window.dispatchEvent(new Event('scroll'))
     })
 
-    const full = screen.getByAltText('Full logo')
-    expect(full.className).toContain('opacity-100')
+    expect((screen.getByAltText('Full logo') as HTMLElement).style.height).toBe('80px')
   })
 
-  it('icon is smaller than full logo (height style differs)', () => {
+  it('syncs height on mount when page is already scrolled', () => {
+    Object.defineProperty(window, 'scrollY', { writable: true, value: 80 })
+
     render(<ScrollAwareLogo {...defaultProps} />)
 
-    const icon = screen.getByAltText('Icon logo')
-    const full = screen.getByAltText('Full logo')
+    expect((screen.getByAltText('Full logo') as HTMLElement).style.height).toBe('64px')
+  })
 
-    expect(icon).toHaveStyle({ height: '40px' })
-    expect(full).toHaveStyle({ height: '80px' })
+  it('renders fallback text when fullUrl is empty', () => {
+    render(<ScrollAwareLogo fullUrl="" fullAlt="Logo" />)
+
+    expect(screen.getByText('KSSchoerke')).toBeInTheDocument()
   })
 
   it('removes scroll listener on unmount', () => {
@@ -94,17 +98,5 @@ describe('ScrollAwareLogo', () => {
     unmount()
 
     expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function))
-  })
-
-  it('syncs scroll state on mount when page is already scrolled', () => {
-    Object.defineProperty(window, 'scrollY', { writable: true, value: 50 })
-
-    render(<ScrollAwareLogo {...defaultProps} />)
-
-    const icon = screen.getByAltText('Icon logo')
-    const full = screen.getByAltText('Full logo')
-
-    expect(icon.className).toContain('opacity-100')
-    expect(full.className).toContain('opacity-0')
   })
 })

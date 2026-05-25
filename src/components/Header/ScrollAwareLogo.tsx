@@ -1,22 +1,26 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link } from '@/i18n/navigation'
 
+const LOGO_HEIGHT_FULL = 80
+const LOGO_HEIGHT_SMALL = 64
+const SCROLL_RANGE = 80 // px of scroll over which transition completes
+
 interface ScrollAwareLogoProps {
-  iconUrl: string
-  iconAlt: string
   fullUrl: string
   fullAlt: string
 }
 
-const ScrollAwareLogo: React.FC<ScrollAwareLogoProps> = ({ iconUrl, iconAlt, fullUrl, fullAlt }) => {
-  const [scrolled, setScrolled] = useState(false)
+const ScrollAwareLogo: React.FC<ScrollAwareLogoProps> = ({ fullUrl, fullAlt }) => {
+  const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10)
+      const progress = Math.min(window.scrollY / SCROLL_RANGE, 1)
+      const height = Math.round(LOGO_HEIGHT_FULL - progress * (LOGO_HEIGHT_FULL - LOGO_HEIGHT_SMALL))
+      if (imgRef.current) imgRef.current.style.height = `${height}px`
     }
 
     handleScroll() // sync initial state (e.g. back-nav restores scroll position)
@@ -25,38 +29,21 @@ const ScrollAwareLogo: React.FC<ScrollAwareLogoProps> = ({ iconUrl, iconAlt, ful
   }, [])
 
   return (
-    <Link href="/" aria-label="Home" className="relative flex items-center">
-      {/* Icon-only logo: visible when scrolled */}
-      {iconUrl && (
-        <Image
-          src={iconUrl}
-          alt={iconAlt}
-          width={120}
-          height={120}
-          priority
-          unoptimized
-          className={`transition-all duration-300 ${scrolled ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}`}
-          style={{ width: 'auto', height: '40px' }}
-        />
-      )}
-      {/* Full logo: visible at top */}
+    <Link href="/" aria-label="Home" className="flex items-center">
       {fullUrl ? (
         <Image
+          ref={imgRef}
           src={fullUrl}
           alt={fullAlt}
           width={400}
           height={120}
           priority
           unoptimized
-          className={`transition-all duration-300 ${scrolled ? 'opacity-0 pointer-events-none absolute' : 'opacity-100'}`}
-          style={{ width: 'auto', height: '80px' }}
+          className="hover:opacity-80"
+          style={{ width: 'auto', height: `${LOGO_HEIGHT_FULL}px` }}
         />
       ) : (
-        <span
-          className={`transition-all duration-300 text-lg font-semibold ${scrolled ? 'opacity-0 pointer-events-none absolute' : 'opacity-100'}`}
-        >
-          KSSchoerke
-        </span>
+        <span className="text-lg font-semibold">KSSchoerke</span>
       )}
     </Link>
   )
