@@ -6,6 +6,7 @@ import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '
 import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
 import { categoryOptions } from '@/data/options'
 import { normalizeText } from '@/utils/search/normalizeText'
+import { extractLexicalText } from '@/utils/search/extractLexicalText'
 import { createSlugHook } from '@/utils/slug'
 
 export const Posts: CollectionConfig = {
@@ -49,6 +50,22 @@ export const Posts: CollectionConfig = {
           ({ siblingData }: { siblingData: { title?: string } }) => {
             // Always return a value - empty string if no title
             return siblingData.title ? normalizeText(siblingData.title) : ''
+          },
+        ],
+      },
+    },
+    {
+      name: 'normalizedContent',
+      type: 'text',
+      localized: true,
+      index: true,
+      admin: {
+        hidden: true,
+      },
+      hooks: {
+        beforeChange: [
+          ({ siblingData }: { siblingData: { content?: unknown } }) => {
+            return siblingData.content ? normalizeText(extractLexicalText(siblingData.content as Parameters<typeof extractLexicalText>[0])) : ''
           },
         ],
       },
