@@ -181,10 +181,7 @@ export const getAllProjectPostsByArtist = async (artistId: string, locale?: Loca
  * const count = await getNewsPostCountByArtist(42, 'en')
  * const hasNews = count > 0
  */
-export const getNewsPostCountByArtist = async (
-  artistId: number,
-  locale?: 'de' | 'en',
-): Promise<number> => {
+export const getNewsPostCountByArtist = async (artistId: number, locale?: 'de' | 'en'): Promise<number> => {
   const payload = await getPayload({ config })
   const result = await payload.count({
     collection: 'posts',
@@ -264,11 +261,16 @@ export const getFilteredPosts = async (options: {
     where.artists = { equals: options.artistId }
   }
 
-  // Filter by search text (searches title field)
+  // Filter by search text (searches title and body content fields)
   if (options.search && options.search.trim().length >= 3) {
     where.or = [
       {
         normalizedTitle: {
+          contains: normalizeText(options.search.trim()),
+        },
+      },
+      {
+        normalizedContent: {
           contains: normalizeText(options.search.trim()),
         },
       },
@@ -361,11 +363,16 @@ export const getPaginatedPosts = async (options: {
     where.artists = { equals: options.artistId }
   }
 
-  // Filter by search text (searches title field)
+  // Filter by search text (searches title and body content fields)
   if (options.search && options.search.trim().length >= 3) {
     where.or = [
       {
         normalizedTitle: {
+          contains: normalizeText(options.search.trim()),
+        },
+      },
+      {
+        normalizedContent: {
           contains: normalizeText(options.search.trim()),
         },
       },
