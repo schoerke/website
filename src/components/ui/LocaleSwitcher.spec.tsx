@@ -278,7 +278,7 @@ describe('LocaleSwitcher', () => {
 
       // Check that announcement was made
       await waitFor(() => {
-      const liveRegion = document.querySelector('output')
+        const liveRegion = document.querySelector('output')
         expect(liveRegion).toHaveTextContent('Language changed to English')
       })
     })
@@ -416,10 +416,10 @@ describe('LocaleSwitcher', () => {
           expect(resolvePostSlugInLocale).toHaveBeenCalledWith('konzert-in-wien', 'de', 'en')
           expect(mockReplace).toHaveBeenCalledWith(
             { pathname: routePathname, params: { locale: 'de', slug: 'concert-in-vienna' } },
-            { locale: 'en', scroll: false },
+            { locale: 'en', scroll: false }
           )
         })
-      },
+      }
     )
 
     it('falls back to original slug when resolvePostSlugInLocale returns null', async () => {
@@ -441,7 +441,7 @@ describe('LocaleSwitcher', () => {
       await waitFor(() => {
         expect(mockReplace).toHaveBeenCalledWith(
           { pathname: '/news/[slug]', params: { locale: 'de', slug: 'german-only-post' } },
-          { locale: 'en', scroll: false },
+          { locale: 'en', scroll: false }
         )
       })
     })

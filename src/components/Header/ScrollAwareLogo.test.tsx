@@ -4,8 +4,10 @@ import { vi } from 'vitest'
 
 vi.mock('next/image', () => ({
   default: React.forwardRef(
-    ({ src, alt, style, className }: { src: string; alt: string; style?: React.CSSProperties; className?: string }, ref: React.Ref<HTMLImageElement>) =>
-      React.createElement('img', { src, alt, style, className, ref }),
+    (
+      { src, alt, style, className }: { src: string; alt: string; style?: React.CSSProperties; className?: string },
+      ref: React.Ref<HTMLImageElement>
+    ) => React.createElement('img', { src, alt, style, className, ref })
   ),
 }))
 

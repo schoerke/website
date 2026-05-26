@@ -45,17 +45,19 @@ describe('HeaderNavigation', () => {
   })
 
   it('renders translated link text for DE locale', async () => {
-    vi.mocked(
-      (await import('next-intl/server')).getTranslations,
-    ).mockImplementation((opts?: { locale?: string; namespace?: string }) => {
-      const namespace = opts?.namespace ?? ''
-      const messages: Record<string, string> = {
-        'custom.pages.artists.title': 'Künstler:innen',
-        'custom.pages.contact.title': 'Kontakt',
-        'custom.header.navigationLabel': 'Header-Navigation',
+    vi.mocked((await import('next-intl/server')).getTranslations).mockImplementation(
+      (opts?: { locale?: string; namespace?: string }) => {
+        const namespace = opts?.namespace ?? ''
+        const messages: Record<string, string> = {
+          'custom.pages.artists.title': 'Künstler:innen',
+          'custom.pages.contact.title': 'Kontakt',
+          'custom.header.navigationLabel': 'Header-Navigation',
+        }
+        return Promise.resolve((key: string) => messages[`${namespace}.${key}`] ?? key) as ReturnType<
+          typeof import('next-intl/server').getTranslations
+        >
       }
-      return Promise.resolve((key: string) => messages[`${namespace}.${key}`] ?? key) as ReturnType<typeof import('next-intl/server').getTranslations>
-    })
+    )
 
     render(await HeaderNavigation({ locale: 'de' }))
 

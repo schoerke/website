@@ -12,8 +12,24 @@ vi.mock('@/services/media', () => ({
 }))
 
 vi.mock('@/components/Header/ScrollAwareLogo', () => ({
-  default: ({ iconUrl, iconAlt, fullUrl, fullAlt }: { iconUrl: string; iconAlt: string; fullUrl: string; fullAlt: string }) =>
-    React.createElement('div', { 'data-testid': 'scroll-aware-logo', 'data-icon-url': iconUrl, 'data-icon-alt': iconAlt, 'data-full-url': fullUrl, 'data-full-alt': fullAlt }),
+  default: ({
+    iconUrl,
+    iconAlt,
+    fullUrl,
+    fullAlt,
+  }: {
+    iconUrl: string
+    iconAlt: string
+    fullUrl: string
+    fullAlt: string
+  }) =>
+    React.createElement('div', {
+      'data-testid': 'scroll-aware-logo',
+      'data-icon-url': iconUrl,
+      'data-icon-alt': iconAlt,
+      'data-full-url': fullUrl,
+      'data-full-alt': fullAlt,
+    }),
 }))
 
 import type { Image as PayloadImage } from '@/payload-types'

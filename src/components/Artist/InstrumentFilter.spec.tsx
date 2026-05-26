@@ -217,7 +217,9 @@ describe('InstrumentFilter', () => {
       const user = userEvent.setup()
       const onChange = vi.fn()
 
-      renderWithIntl(<InstrumentFilter instruments={['piano', 'violin']} selected={['piano', 'violin']} onChange={onChange} />)
+      renderWithIntl(
+        <InstrumentFilter instruments={['piano', 'violin']} selected={['piano', 'violin']} onChange={onChange} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'Clear All' }))
 
