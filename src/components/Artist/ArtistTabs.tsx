@@ -2,6 +2,7 @@
 
 import { fetchRecordingsByArtist } from '@/actions/recordings'
 import { fetchRepertoiresByArtist } from '@/actions/repertoires'
+import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import { useTranslations } from 'next-intl'
@@ -136,8 +137,15 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
     }
   }, [activeTab, artist.id, locale, repertoiresFetched])
 
-  // Extract unique roles from recordings
-  const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort()
+  // Extract unique roles from recordings, sorted by canonical order in RECORDING_ROLES
+  const roleOrder = RECORDING_ROLES.map((r) => r.value)
+  const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort(
+    (a, b) => {
+      const ai = roleOrder.indexOf(a)
+      const bi = roleOrder.indexOf(b)
+      return (ai === -1 ? Infinity : ai) - (bi === -1 ? Infinity : bi)
+    },
+  )
 
   // Filter recordings by selected role
   const filteredRecordings =
