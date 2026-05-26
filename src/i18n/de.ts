@@ -71,6 +71,7 @@ const de = {
         noArtistsFound: 'Keine Künstler:innen gefunden.',
         noArtistsForInstruments: 'Keine Künstler:innen für diese Instrumente gefunden.',
         filterByInstrument: 'Künstler:innen nach Instrument filtern',
+        clearAll: 'Alle löschen',
       },
       artist: {
         backButton: 'Zurück',

@@ -68,6 +68,7 @@ const en = {
         noArtistsFound: 'No artists found.',
         noArtistsForInstruments: 'No artists found for these instruments.',
         filterByInstrument: 'Filter artists by instrument',
+        clearAll: 'Clear All',
       },
       artist: {
         backButton: 'Back to Artists',
