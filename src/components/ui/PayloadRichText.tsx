@@ -1,10 +1,15 @@
 'use client'
 
 import type { LinkFields } from '@payloadcms/richtext-lexical'
-import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import type { SerializedEditorState, SerializedLexicalNode } from '@payloadcms/richtext-lexical/lexical'
 
 import { LinkJSXConverter, RichText } from '@payloadcms/richtext-lexical/react'
 import React from 'react'
+
+import VideoEmbed from '@/components/blocks/VideoEmbed'
+import AudioEmbed from '@/components/blocks/AudioEmbed'
+import type { VideoEmbedBlockFields } from '@/blocks/VideoEmbed'
+import type { AudioEmbedBlockFields } from '@/blocks/AudioEmbed'
 
 interface PayloadRichTextProps {
   content: SerializedEditorState
@@ -49,6 +54,16 @@ const PayloadRichText: React.FC<PayloadRichTextProps> = ({ content, className, l
             return buildInternalHref(doc, locale)
           },
         }),
+        blocks: {
+          videoEmbed: ({ node }: { node: SerializedLexicalNode & { fields: VideoEmbedBlockFields } }) => {
+            const { url, aspectRatio } = node.fields
+            return <VideoEmbed url={url} aspectRatio={aspectRatio} locale={locale as 'de' | 'en'} />
+          },
+          audioEmbed: ({ node }: { node: SerializedLexicalNode & { fields: AudioEmbedBlockFields } }) => {
+            const { url } = node.fields
+            return <AudioEmbed url={url} />
+          },
+        },
       })}
     />
   )

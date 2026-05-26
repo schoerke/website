@@ -1,7 +1,11 @@
 import type { CollectionConfig } from 'payload'
 
+import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { AudioEmbed } from '@/blocks/AudioEmbed'
+import { VideoEmbed } from '@/blocks/VideoEmbed'
 import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '@/collections/hooks/revalidateHomePage'
 import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
 import { categoryOptions } from '@/data/options'
@@ -104,6 +108,14 @@ export const Posts: CollectionConfig = {
       type: 'richText',
       localized: true,
       required: true,
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          BlocksFeature({
+            blocks: [VideoEmbed, AudioEmbed],
+          }),
+        ],
+      }),
     },
     {
       name: 'categories',
