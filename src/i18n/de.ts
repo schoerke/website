@@ -46,7 +46,7 @@ const de = {
       soloist: 'Solist',
       conductor: 'Dirigent',
       ensemble_member: 'Ensemblemitglied',
-      chamber_musician: 'Kammermusiker',
+      chamber_musician: 'Kammermusik',
       accompanist: 'Begleiter',
     },
     pages: {
@@ -78,7 +78,7 @@ const de = {
         tabs: {
           biography: 'Biographie',
           repertoire: 'Repertoire',
-          discography: 'Recordings',
+          discography: 'Aufnahmen',
           media: 'Medien',
           news: 'News',
           projects: 'Projekte',
@@ -87,7 +87,7 @@ const de = {
         empty: {
           biography: 'Keine Biographie verfügbar.',
           repertoire: 'Keine Repertoire-Informationen verfügbar.',
-          discography: 'Keine Recordings verfügbar.',
+          discography: 'Keine Aufnahmen verfügbar.',
           media: 'Keine Medien verfügbar.',
           news: 'Keine News-Artikel verfügbar.',
           projects: 'Keine Projekte verfügbar.',

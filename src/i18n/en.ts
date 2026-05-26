@@ -43,7 +43,7 @@ const en = {
       soloist: 'Soloist',
       conductor: 'Conductor',
       ensemble_member: 'Ensemble Member',
-      chamber_musician: 'Chamber Musician',
+      chamber_musician: 'Chamber Music',
       accompanist: 'Accompanist',
     },
     pages: {

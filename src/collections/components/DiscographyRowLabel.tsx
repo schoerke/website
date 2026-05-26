@@ -1,15 +1,9 @@
 'use client'
 
+import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { useRowLabel } from '@payloadcms/ui'
 
-// Static mapping for role labels (admin panel context)
-const ROLE_LABELS: Record<string, string> = {
-  soloist: 'Soloist',
-  conductor: 'Conductor',
-  ensemble_member: 'Ensemble Member',
-  chamber_musician: 'Chamber Musician',
-  accompanist: 'Accompanist',
-}
+const ROLE_LABELS = Object.fromEntries(RECORDING_ROLES.map((r) => [r.value, r.label.en]))
 
 const DiscographyRowLabel = () => {
   const { data, rowNumber } = useRowLabel<{ role?: string }>()
