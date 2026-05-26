@@ -42,6 +42,7 @@ describe('Recording Service', () => {
         locale: 'de',
         depth: 2,
         limit: 0,
+        sort: '-recordingYear,-createdAt',
       })
     })
 
@@ -99,6 +100,7 @@ describe('Recording Service', () => {
         locale: 'de',
         depth: 2,
         limit: 0,
+        sort: '-recordingYear,-createdAt',
       })
     })
 
@@ -116,6 +118,7 @@ describe('Recording Service', () => {
         locale: 'de',
         depth: 2,
         limit: 0,
+        sort: '-recordingYear,-createdAt',
       })
     })
 
