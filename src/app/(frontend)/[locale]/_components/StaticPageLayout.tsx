@@ -20,8 +20,8 @@ const StaticPageLayout: React.FC<StaticPageLayoutProps> = async ({ slug, locale 
   }
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
-      <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold sm:text-6xl lg:text-7xl">{page.title}</h1>
+    <div className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
+      <h1 className="font-playfair mb-8 text-4xl font-bold sm:text-5xl">{page.title}</h1>
       <div className="prose max-w-none">
         <PayloadRichText content={page.content} />
       </div>

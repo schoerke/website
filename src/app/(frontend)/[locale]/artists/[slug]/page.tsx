@@ -48,7 +48,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
-      <h1 className="font-playfair mb-6 text-6xl font-bold">{name}</h1>
+      <h1 className="font-playfair mb-6 text-4xl font-bold sm:text-5xl">{name}</h1>
       <div className="mb-8 flex flex-col gap-8 md:flex-row md:items-start md:gap-8 lg:gap-12">
         {isValidUrl(imageUrl) && (
           <div className="mb-0 md:mb-0 md:w-3/4">
