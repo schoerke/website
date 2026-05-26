@@ -54,13 +54,13 @@ describe('Header', () => {
     expect(skip).toHaveAttribute('href', '#main-content')
   })
 
-  it('nav slot and AppControls are siblings in the same right-side container', () => {
+  it('nav slot and AppControls are in the same right-side container', () => {
     render(<Header logo={<div>Logo</div>} nav={<span data-testid="nav-slot">Nav</span>} />)
 
     const nav = screen.getByTestId('nav-slot')
     const controls = screen.getByTestId('app-controls')
 
-    // Both should share the same parent div
-    expect(nav.parentElement).toBe(controls.parentElement)
+    // Nav is wrapped in a visibility div; both share the same grandparent flex container
+    expect(nav.closest('.flex.items-center.gap-8')).toBe(controls.closest('.flex.items-center.gap-8'))
   })
 })

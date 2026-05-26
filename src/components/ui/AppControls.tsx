@@ -6,7 +6,12 @@ import { Menu, Search } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import LocaleSwitcher from './LocaleSwitcher'
 
-const AppControls: React.FC = () => {
+interface AppControlsProps {
+  localeSwitcherOpen: boolean
+  onLocaleSwitcherOpenChange: (open: boolean) => void
+}
+
+const AppControls: React.FC<AppControlsProps> = ({ localeSwitcherOpen, onLocaleSwitcherOpenChange }) => {
   const { query } = useKBar()
   const locale = useLocale()
   const platform = usePlatform()
@@ -17,7 +22,7 @@ const AppControls: React.FC = () => {
   return (
     <div className="flex h-10 items-center rounded-full bg-gray-100">
       {/* Locale Switcher - left side */}
-      <LocaleSwitcher />
+      <LocaleSwitcher open={localeSwitcherOpen} onOpenChange={onLocaleSwitcherOpenChange} />
 
       {/* Vertical Divider - shorter than full height */}
       <div className="h-6 w-px bg-gray-300" />
