@@ -23,6 +23,7 @@ const testMessages = {
     pages: {
       artists: {
         filterByInstrument: 'Filter artists by instrument',
+        clearAll: 'Clear All',
       },
     },
   },
@@ -196,6 +197,47 @@ describe('InstrumentFilter', () => {
 
       const button = screen.getByRole('button')
       expect(button).toHaveAttribute('aria-label', 'Piano')
+    })
+  })
+
+  describe('Clear All button', () => {
+    it('should not show Clear All button when no instruments are selected', () => {
+      renderWithIntl(<InstrumentFilter instruments={['piano', 'violin']} selected={[]} onChange={vi.fn()} />)
+
+      expect(screen.queryByRole('button', { name: 'Clear All' })).not.toBeInTheDocument()
+    })
+
+    it('should show Clear All button when instruments are selected', () => {
+      renderWithIntl(<InstrumentFilter instruments={['piano', 'violin']} selected={['piano']} onChange={vi.fn()} />)
+
+      expect(screen.getByRole('button', { name: 'Clear All' })).toBeInTheDocument()
+    })
+
+    it('should call onChange with empty array when Clear All is clicked', async () => {
+      const user = userEvent.setup()
+      const onChange = vi.fn()
+
+      renderWithIntl(<InstrumentFilter instruments={['piano', 'violin']} selected={['piano', 'violin']} onChange={onChange} />)
+
+      await user.click(screen.getByRole('button', { name: 'Clear All' }))
+
+      expect(onChange).toHaveBeenCalledTimes(1)
+      expect(onChange).toHaveBeenCalledWith([])
+    })
+
+    it('should appear as last item in the toggle group when filters are active', () => {
+      renderWithIntl(<InstrumentFilter instruments={['piano', 'violin']} selected={['piano']} onChange={vi.fn()} />)
+
+      const buttons = screen.getAllByRole('button')
+      expect(buttons[buttons.length - 1]).toHaveAccessibleName('Clear All')
+    })
+
+    it('should never appear as selected or pressed', () => {
+      renderWithIntl(<InstrumentFilter instruments={['piano']} selected={['piano']} onChange={vi.fn()} />)
+
+      const clearBtn = screen.getByRole('button', { name: 'Clear All' })
+      expect(clearBtn).not.toHaveAttribute('aria-pressed', 'true')
+      expect(clearBtn).not.toHaveAttribute('data-state', 'on')
     })
   })
 
