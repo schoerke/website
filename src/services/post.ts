@@ -234,6 +234,25 @@ export const getNewsPostCountByArtist = async (artistId: number, locale?: 'de' |
  *   category: 'news'
  * })
  */
+/**
+ * Builds the Payload `where.or` search clause for post search queries.
+ * Returns an object with `or` array when search >= 3 chars, undefined otherwise.
+ *
+ * @param search - Raw search string
+ * @param normalize - Function to normalize text (diacritic-insensitive)
+ * @returns Where clause object or undefined
+ */
+export function buildPostSearchWhere(
+  search: string | undefined,
+  normalize: (text: string) => string = normalizeText,
+): { or: object[] } | undefined {
+  if (!search || search.trim().length < 3) return undefined
+  const normalized = normalize(search.trim())
+  return {
+    or: [{ normalizedTitle: { contains: normalized } }, { normalizedContent: { contains: normalized } }],
+  }
+}
+
 export const getFilteredPosts = async (options: {
   category?: string | string[]
   artistId?: string
@@ -262,20 +281,8 @@ export const getFilteredPosts = async (options: {
   }
 
   // Filter by search text (searches title and body content fields)
-  if (options.search && options.search.trim().length >= 3) {
-    where.or = [
-      {
-        normalizedTitle: {
-          contains: normalizeText(options.search.trim()),
-        },
-      },
-      {
-        normalizedContent: {
-          contains: normalizeText(options.search.trim()),
-        },
-      },
-    ]
-  }
+  const searchWhere = buildPostSearchWhere(options.search)
+  if (searchWhere) Object.assign(where, searchWhere)
 
   return await payload.find({
     collection: 'posts',
@@ -364,20 +371,8 @@ export const getPaginatedPosts = async (options: {
   }
 
   // Filter by search text (searches title and body content fields)
-  if (options.search && options.search.trim().length >= 3) {
-    where.or = [
-      {
-        normalizedTitle: {
-          contains: normalizeText(options.search.trim()),
-        },
-      },
-      {
-        normalizedContent: {
-          contains: normalizeText(options.search.trim()),
-        },
-      },
-    ]
-  }
+  const searchWhere2 = buildPostSearchWhere(options.search)
+  if (searchWhere2) Object.assign(where, searchWhere2)
 
   return await payload.find({
     collection: 'posts',
