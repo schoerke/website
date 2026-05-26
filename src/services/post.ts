@@ -371,8 +371,8 @@ export const getPaginatedPosts = async (options: {
   }
 
   // Filter by search text (searches title and body content fields)
-  const searchWhere2 = buildPostSearchWhere(options.search)
-  if (searchWhere2) Object.assign(where, searchWhere2)
+  const searchWhere = buildPostSearchWhere(options.search)
+  if (searchWhere) Object.assign(where, searchWhere)
 
   return await payload.find({
     collection: 'posts',
