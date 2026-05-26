@@ -40,6 +40,11 @@ async function main() {
       console.log(`  Page ${page}/${result.totalPages} — ${result.docs.length} posts`)
 
       for (const post of result.docs) {
+        // Skip posts that already have normalizedContent populated
+        if (post.normalizedContent) {
+          process.stdout.write('s')
+          continue
+        }
         try {
           await payload.update({
             collection: 'posts',
