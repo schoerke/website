@@ -42,7 +42,6 @@ describe('Recording Service', () => {
         locale: 'de',
         depth: 2,
         limit: 0,
-        sort: '-recordingYear,-createdAt',
       })
     })
 
@@ -94,13 +93,12 @@ describe('Recording Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'recordings',
         where: {
-          artists: { equals: '1' },
+          artists: { contains: '1' },
           _status: { equals: 'published' },
         },
         locale: 'de',
         depth: 2,
         limit: 0,
-        sort: '-recordingYear,-createdAt',
       })
     })
 
@@ -112,13 +110,12 @@ describe('Recording Service', () => {
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'recordings',
         where: {
-          artists: { equals: '5' },
+          artists: { contains: '5' },
           _status: { equals: 'published' },
         },
         locale: 'de',
         depth: 2,
         limit: 0,
-        sort: '-recordingYear,-createdAt',
       })
     })
 
