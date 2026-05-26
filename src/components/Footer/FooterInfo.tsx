@@ -1,6 +1,6 @@
 import { SOCIAL_MEDIA_LINKS } from '@/constants/socialMedia'
 import { Link } from '@/i18n/navigation'
-import { Facebook, Twitter, Youtube } from 'lucide-react'
+import { Facebook, Instagram, Youtube } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import NextLink from 'next/link'
 
@@ -10,13 +10,13 @@ type FooterInfoProps = {
 
 const iconMap = {
   Facebook,
-  Twitter,
+  Instagram,
   Youtube,
 }
 
 const translationKeyMap: Record<string, string> = {
   Facebook: 'visitFacebook',
-  Twitter: 'visitTwitter',
+  Instagram: 'visitInstagram',
   Youtube: 'visitYouTube',
 }
 

@@ -12,19 +12,19 @@
 
 export const SOCIAL_MEDIA_LINKS = [
   {
+    platform: 'youtube',
+    url: 'https://youtube.com/@kuenstlersekretariatschoerke',
+    icon: 'Youtube',
+  },
+  {
     platform: 'facebook',
     url: 'https://facebook.com/kuenstlersekretariat.schoerke',
     icon: 'Facebook',
   },
   {
-    platform: 'twitter',
-    url: 'https://twitter.com/schoerke_gmbh',
-    icon: 'Twitter',
-  },
-  {
-    platform: 'youtube',
-    url: 'https://youtube.com/@kuenstlersekretariatschoerke',
-    icon: 'Youtube',
+    platform: 'instagram',
+    url: 'https://instagram.com/ks.schoerke',
+    icon: 'Instagram',
   },
 ] as const
 
