@@ -15,9 +15,9 @@ describe('Footer Components - Structure and Configuration', () => {
   describe('Social Media Links Configuration', () => {
     it('should have correct social media platforms configured', () => {
       expect(SOCIAL_MEDIA_LINKS).toHaveLength(3)
-      expect(SOCIAL_MEDIA_LINKS[0].platform).toBe('facebook')
-      expect(SOCIAL_MEDIA_LINKS[1].platform).toBe('twitter')
-      expect(SOCIAL_MEDIA_LINKS[2].platform).toBe('youtube')
+      expect(SOCIAL_MEDIA_LINKS[0].platform).toBe('youtube')
+      expect(SOCIAL_MEDIA_LINKS[1].platform).toBe('facebook')
+      expect(SOCIAL_MEDIA_LINKS[2].platform).toBe('instagram')
     })
 
     it('should have valid URLs for all platforms', () => {
@@ -28,7 +28,7 @@ describe('Footer Components - Structure and Configuration', () => {
     })
 
     it('should have icon names for all platforms', () => {
-      const expectedIcons = ['Facebook', 'Twitter', 'Youtube']
+      const expectedIcons = ['Youtube', 'Facebook', 'Instagram']
       SOCIAL_MEDIA_LINKS.forEach((link, index) => {
         expect(link.icon).toBe(expectedIcons[index])
       })
@@ -81,7 +81,7 @@ describe('Footer Components - Structure and Configuration', () => {
     })
 
     it('should have descriptive social media link labels', () => {
-      const socialMediaLabels = ['socialMedia.visitFacebook', 'socialMedia.visitTwitter', 'socialMedia.visitYouTube']
+      const socialMediaLabels = ['socialMedia.visitFacebook', 'socialMedia.visitInstagram', 'socialMedia.visitYouTube']
 
       socialMediaLabels.forEach((label) => {
         expect(label).toMatch(/^socialMedia\.visit/)
