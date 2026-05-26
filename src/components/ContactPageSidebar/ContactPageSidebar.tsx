@@ -1,9 +1,7 @@
 import React from 'react'
 import SchoerkeLink from '@/components/ui/SchoerkeLink'
 
-interface ContactPageSidebarProps {}
-
-const ContactPageSidebar: React.FC<ContactPageSidebarProps> = () => {
+const ContactPageSidebar: React.FC = () => {
   return (
     <aside className="flex flex-col gap-6 items-start text-left lg:items-end lg:text-right">
       {/* TODO: pull from site settings global once CMS field exists */}
