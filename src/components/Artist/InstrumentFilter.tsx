@@ -39,12 +39,7 @@ const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, select
   return (
     <fieldset className="mb-6 flex flex-wrap justify-center gap-2 border-0 p-0 m-0 min-w-0">
       <legend className="sr-only">{tArtists('filterByInstrument')}</legend>
-      <ToggleGroup
-        type="multiple"
-        value={selected}
-        onValueChange={onChange}
-        className="contents"
-      >
+      <ToggleGroup type="multiple" value={selected} onValueChange={onChange} className="contents">
         {sortedInstruments.map((instrument) => {
           const translationKey = instrument as Parameters<typeof t>[0]
           return (
@@ -61,7 +56,7 @@ const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, select
           aria-label={tArtists('clearAll')}
           className={cn(
             'inline-flex items-center justify-center rounded-md px-2 text-sm font-medium h-9 min-w-9',
-            'bg-gray-100 hover:bg-gray-200 transition-colors',
+            'bg-gray-100 hover:bg-gray-200 transition-colors'
           )}
         >
           {tArtists('clearAll')}

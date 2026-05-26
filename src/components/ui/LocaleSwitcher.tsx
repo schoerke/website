@@ -13,10 +13,7 @@ const SUPPORTED_LOCALES = [
 
 // onOpenChange is always a useState setter (stable identity), so omitting it from
 // effect dependency arrays is intentional and safe.
-const LocaleSwitcher: React.FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = ({
-  open,
-  onOpenChange,
-}) => {
+const LocaleSwitcher: React.FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = ({ open, onOpenChange }) => {
   const pathname = usePathname()
   const params = useParams()
   const router = useRouter()

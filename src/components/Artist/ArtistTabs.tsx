@@ -39,13 +39,13 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
   const [repertoiresFetched, setRepertoiresFetched] = useState(false)
 
   // Available tabs
-  const tabs: TabId[] = (
-    ['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]
-  ).filter((tab) => {
-    if (tab === 'news') return hasNews
-    if (tab === 'projects') return hasProjects
-    return true
-  })
+  const tabs: TabId[] = (['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]).filter(
+    (tab) => {
+      if (tab === 'news') return hasNews
+      if (tab === 'projects') return hasProjects
+      return true
+    }
+  )
 
   const [mediaSection, setMediaSection] = useState<'images' | 'videos'>('images')
 
@@ -139,13 +139,11 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
 
   // Extract unique roles from recordings, sorted by canonical order in RECORDING_ROLES
   const roleOrder = RECORDING_ROLES.map((r) => r.value)
-  const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort(
-    (a, b) => {
-      const ai = roleOrder.indexOf(a)
-      const bi = roleOrder.indexOf(b)
-      return (ai === -1 ? Infinity : ai) - (bi === -1 ? Infinity : bi)
-    },
-  )
+  const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort((a, b) => {
+    const ai = roleOrder.indexOf(a)
+    const bi = roleOrder.indexOf(b)
+    return (ai === -1 ? Infinity : ai) - (bi === -1 ? Infinity : bi)
+  })
 
   // Filter recordings by selected role
   const filteredRecordings =
@@ -231,7 +229,12 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
           />
         )}
         {activeTab === 'news' && (
-          <NewsFeedClient category="news" artistId={artist.id.toString()} locale={locale} emptyMessage={t('empty.news')} />
+          <NewsFeedClient
+            category="news"
+            artistId={artist.id.toString()}
+            locale={locale}
+            emptyMessage={t('empty.news')}
+          />
         )}
         {activeTab === 'projects' && (
           <ProjectsTab

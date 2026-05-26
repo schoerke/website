@@ -48,9 +48,7 @@ const Header: React.FC<HeaderProps> = ({ logo, nav }) => {
         <div className="flex items-center gap-8">
           {/* Nav visibility: hidden instantly on open, re-shown after 300ms on close
               (intentionally instant — no fade-in, just waits for LocaleSwitcher to finish collapsing) */}
-          <div className={navVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}>
-            {nav}
-          </div>
+          <div className={navVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}>{nav}</div>
           <AppControls localeSwitcherOpen={localeSwitcherOpen} onLocaleSwitcherOpenChange={setLocaleSwitcherOpen} />
         </div>
       </div>

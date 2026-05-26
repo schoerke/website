@@ -139,9 +139,7 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
                 className="inline-block max-w-full border-l-4 bg-black/60 px-3 py-1 shadow"
                 style={{ borderColor: '#FFD600' }}
               >
-                <h3 className="font-playfair break-words text-2xl font-bold text-white sm:text-4xl">
-                  {slide.title}
-                </h3>
+                <h3 className="font-playfair break-words text-2xl font-bold text-white sm:text-4xl">{slide.title}</h3>
               </div>
             </div>
           </Link>

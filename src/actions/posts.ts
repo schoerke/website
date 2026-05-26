@@ -55,7 +55,7 @@ export async function fetchPosts(options: {
 export async function resolvePostSlugInLocale(
   currentSlug: string,
   currentLocale: 'de' | 'en',
-  targetLocale: 'de' | 'en',
+  targetLocale: 'de' | 'en'
 ): Promise<string | null> {
   const post = await getPostBySlug(currentSlug, currentLocale)
   if (!post) return null

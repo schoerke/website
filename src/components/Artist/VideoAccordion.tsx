@@ -74,7 +74,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
   const firstValidIndex = videos.findIndex((v) => buildEmbedSrc(v.url) !== null)
   const [openIndex, setOpenIndex] = useState<number | null>(firstValidIndex >= 0 ? firstValidIndex : null)
   const [mountedIndices, setMountedIndices] = useState<Set<number>>(
-    () => new Set(firstValidIndex >= 0 ? [firstValidIndex] : []),
+    () => new Set(firstValidIndex >= 0 ? [firstValidIndex] : [])
   )
 
   if (videos.length === 0) {
