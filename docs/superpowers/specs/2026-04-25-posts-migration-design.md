@@ -73,6 +73,7 @@ Produces `scripts/wordpress/data/posts-dataset.json`. No database writes. Human-
 ```
 
 **Source values:**
+
 - `"original"` — taken directly from the respective language's WordPress export
 - `"matched"` — found via slug or date+artist matching
 - `"auto-translate"` — no counterpart found; content needs translation before import
@@ -125,43 +126,43 @@ scripts/wordpress/
 WordPress uses display names as category tags (e.g. "Christian Zacharias"). The migration maps these to Payload
 artist slugs. Known mappings to cover (based on categories found in the data):
 
-| WordPress Category        | Payload Slug              |
-| ------------------------- | ------------------------- |
-| Andreas Staier            | andreas-staier            |
-| Christian Zacharias       | christian-zacharias       |
-| Christian Poltéra         | christian-poltera         |
-| Claire Huangci            | claire-huangci            |
-| Conrad van Alphen         | conrad-van-alphen         |
-| Cuarteto SolTango         | cuarteto-soltango         |
-| Dominik Wagner            | dominik-wagner            |
-| Gustav Rivinius           | gustav-rivinius           |
-| Jean-Paul Gasparian       | jean-paul-gasparian       |
-| Jonian Ilias Kadesha      | jonian-ilias-kadesha      |
-| Marc Gruber               | marc-gruber               |
-| Marie-Luise Neunecker     | marie-luise-neunecker     |
-| Mario Venzago             | mario-venzago             |
-| Martin Stadtfeld          | martin-stadtfeld          |
-| Maurice Steger            | maurice-steger            |
-| Monet Quintett            | monet-quintett            |
-| Olga Scheps               | olga-scheps               |
-| Thomas Zehetmair          | thomas-zehetmair          |
-| Tianwa Yang               | tianwa-yang               |
-| Till Fellner              | till-fellner              |
-| Trio Gaspard              | trio-gaspard              |
-| Trio Jean Paul            | trio-jean-paul            |
-| Tzimon Barto              | tzimon-barto              |
-| Zehetmair Quartett        | zehetmair-quartett        |
+| WordPress Category    | Payload Slug          |
+| --------------------- | --------------------- |
+| Andreas Staier        | andreas-staier        |
+| Christian Zacharias   | christian-zacharias   |
+| Christian Poltéra     | christian-poltera     |
+| Claire Huangci        | claire-huangci        |
+| Conrad van Alphen     | conrad-van-alphen     |
+| Cuarteto SolTango     | cuarteto-soltango     |
+| Dominik Wagner        | dominik-wagner        |
+| Gustav Rivinius       | gustav-rivinius       |
+| Jean-Paul Gasparian   | jean-paul-gasparian   |
+| Jonian Ilias Kadesha  | jonian-ilias-kadesha  |
+| Marc Gruber           | marc-gruber           |
+| Marie-Luise Neunecker | marie-luise-neunecker |
+| Mario Venzago         | mario-venzago         |
+| Martin Stadtfeld      | martin-stadtfeld      |
+| Maurice Steger        | maurice-steger        |
+| Monet Quintett        | monet-quintett        |
+| Olga Scheps           | olga-scheps           |
+| Thomas Zehetmair      | thomas-zehetmair      |
+| Tianwa Yang           | tianwa-yang           |
+| Till Fellner          | till-fellner          |
+| Trio Gaspard          | trio-gaspard          |
+| Trio Jean Paul        | trio-jean-paul        |
+| Tzimon Barto          | tzimon-barto          |
+| Zehetmair Quartett    | zehetmair-quartett    |
 
 Unrecognized category tags are logged as warnings and ignored (not treated as artist links).
 
 ## Expected Dataset Composition
 
-| Type                         | Count | Both locales? |
-| ---------------------------- | ----- | ------------- |
-| DE News matched to EN        | ~77   | ✅ Yes        |
-| DE News unmatched (EN needed)| ~12   | ⚠️ auto-translate |
-| EN Projects matched to DE    | ~72   | ✅ Yes        |
-| EN Projects unmatched (DE needed) | ~7 | ⚠️ auto-translate |
+| Type                              | Count | Both locales?     |
+| --------------------------------- | ----- | ----------------- |
+| DE News matched to EN             | ~77   | ✅ Yes            |
+| DE News unmatched (EN needed)     | ~12   | ⚠️ auto-translate |
+| EN Projects matched to DE         | ~72   | ✅ Yes            |
+| EN Projects unmatched (DE needed) | ~7    | ⚠️ auto-translate |
 
 ## What Is Not In Scope
 

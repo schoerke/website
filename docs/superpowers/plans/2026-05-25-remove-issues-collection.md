@@ -12,21 +12,22 @@
 
 ## File Map
 
-| File | Change |
-|---|---|
-| `src/collections/Issues.ts` | Delete |
-| `src/collections/hooks/sendIssueNotification.ts` | Delete |
-| `src/collections/hooks/sendIssueNotification.spec.ts` | Delete |
-| `src/payload.config.ts` | Remove `Issues` import + remove from `collections` array |
-| `src/services/email.ts` | Remove `SendIssueNotificationEmailParams` interface + `sendIssueNotificationEmail` function (lines ~19-27 and ~115-213) |
-| `src/services/email.spec.ts` | Remove `sendIssueNotificationEmail` import + `describe('sendIssueNotificationEmail', ...)` block + issue-related error handling test |
-| `src/utils/html.spec.ts` | Remove the `/admin/collections/issues/123` assertion from the relative paths test |
+| File                                                  | Change                                                                                                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/collections/Issues.ts`                           | Delete                                                                                                                               |
+| `src/collections/hooks/sendIssueNotification.ts`      | Delete                                                                                                                               |
+| `src/collections/hooks/sendIssueNotification.spec.ts` | Delete                                                                                                                               |
+| `src/payload.config.ts`                               | Remove `Issues` import + remove from `collections` array                                                                             |
+| `src/services/email.ts`                               | Remove `SendIssueNotificationEmailParams` interface + `sendIssueNotificationEmail` function (lines ~19-27 and ~115-213)              |
+| `src/services/email.spec.ts`                          | Remove `sendIssueNotificationEmail` import + `describe('sendIssueNotificationEmail', ...)` block + issue-related error handling test |
+| `src/utils/html.spec.ts`                              | Remove the `/admin/collections/issues/123` assertion from the relative paths test                                                    |
 
 ---
 
 ## Task 1: Remove collection files and config
 
 **Files:**
+
 - Delete: `src/collections/Issues.ts`
 - Delete: `src/collections/hooks/sendIssueNotification.ts`
 - Delete: `src/collections/hooks/sendIssueNotification.spec.ts`
@@ -79,6 +80,7 @@ Expected: `sendIssueNotification.spec.ts` gone (no longer collected), email spec
 ## Task 2: Remove sendIssueNotificationEmail from email service
 
 **Files:**
+
 - Modify: `src/services/email.ts`
 - Modify: `src/services/email.spec.ts`
 
@@ -102,6 +104,7 @@ interface SendIssueNotificationEmailParams {
 Remove the JSDoc block starting around line 110 and the entire `sendIssueNotificationEmail` function (from `export async function sendIssueNotificationEmail` through its closing `}`). This is lines ~110–213 in the current file — the entire second exported function.
 
 After removal, `src/services/email.ts` should export only:
+
 - `ResendResponse` interface
 - `sendResetPasswordEmail` function
 
@@ -160,6 +163,7 @@ Expected: only the `html.spec.ts` issue URL test remaining (cosmetic, not a type
 ## Task 3: Clean up html.spec.ts
 
 **Files:**
+
 - Modify: `src/utils/html.spec.ts`
 
 - [ ] **Step 1: Remove the issues URL assertion**

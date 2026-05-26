@@ -12,19 +12,20 @@
 
 ## File Map
 
-| File | Change |
-|---|---|
-| `src/services/post.ts` | Add `getNewsPostCountByArtist` function |
-| `src/services/post.spec.ts` | Add tests for `getNewsPostCountByArtist` |
-| `src/app/(frontend)/[locale]/artists/[slug]/page.tsx` | Fetch news count, compute booleans, pass props |
-| `src/components/Artist/ArtistTabs.tsx` | Add `hasNews`/`hasProjects` props, filter tabs array |
-| `src/components/Artist/ArtistTabs.spec.tsx` | Add tests for conditional tab visibility |
+| File                                                  | Change                                               |
+| ----------------------------------------------------- | ---------------------------------------------------- |
+| `src/services/post.ts`                                | Add `getNewsPostCountByArtist` function              |
+| `src/services/post.spec.ts`                           | Add tests for `getNewsPostCountByArtist`             |
+| `src/app/(frontend)/[locale]/artists/[slug]/page.tsx` | Fetch news count, compute booleans, pass props       |
+| `src/components/Artist/ArtistTabs.tsx`                | Add `hasNews`/`hasProjects` props, filter tabs array |
+| `src/components/Artist/ArtistTabs.spec.tsx`           | Add tests for conditional tab visibility             |
 
 ---
 
 ## Task 1: Add `getNewsPostCountByArtist` to post service
 
 **Files:**
+
 - Modify: `src/services/post.ts`
 - Test: `src/services/post.spec.ts`
 
@@ -83,9 +84,7 @@ describe('getNewsPostCountByArtist', () => {
 
     await getNewsPostCountByArtist(1)
 
-    expect(mockPayload.count).toHaveBeenCalledWith(
-      expect.objectContaining({ locale: 'de' })
-    )
+    expect(mockPayload.count).toHaveBeenCalledWith(expect.objectContaining({ locale: 'de' }))
   })
 })
 ```
@@ -124,10 +123,7 @@ Add after `getAllProjectPostsByArtist` (around line 175):
  * const count = await getNewsPostCountByArtist(42, 'en')
  * const hasNews = count > 0
  */
-export const getNewsPostCountByArtist = async (
-  artistId: number,
-  locale?: 'de' | 'en',
-): Promise<number> => {
+export const getNewsPostCountByArtist = async (artistId: number, locale?: 'de' | 'en'): Promise<number> => {
   const payload = await getPayload({ config })
   const result = await payload.count({
     collection: 'posts',
@@ -162,6 +158,7 @@ git commit -m "feat(post-service): add getNewsPostCountByArtist using payload.co
 ## Task 2: Fetch count and pass booleans from artist page
 
 **Files:**
+
 - Modify: `src/app/(frontend)/[locale]/artists/[slug]/page.tsx`
 
 - [ ] **Step 1: Add import for `getNewsPostCountByArtist`**
@@ -181,8 +178,7 @@ In `ArtistDetailPage`, after `const artist = await getArtistBySlug(slug, locale 
 const newsCount = await getNewsPostCountByArtist(artist.id, locale as 'de' | 'en')
 
 const hasNews = newsCount > 0
-const hasProjects =
-  ((artist.projects || []) as unknown[]).filter((p) => typeof p === 'object' && p !== null).length > 0
+const hasProjects = ((artist.projects || []) as unknown[]).filter((p) => typeof p === 'object' && p !== null).length > 0
 ```
 
 - [ ] **Step 3: Pass props to `ArtistTabs`**
@@ -208,6 +204,7 @@ TypeScript will report an error until Task 3 updates `ArtistTabsProps` to accept
 ## Task 3: Update `ArtistTabs` to accept and use visibility props
 
 **Files:**
+
 - Modify: `src/components/Artist/ArtistTabs.tsx`
 - Test: `src/components/Artist/ArtistTabs.spec.tsx`
 
@@ -336,13 +333,13 @@ const tabs: TabId[] = ['biography', 'repertoire', 'discography', 'media', 'news'
 With:
 
 ```ts
-const tabs: TabId[] = (
-  ['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]
-).filter((tab) => {
-  if (tab === 'news') return hasNews
-  if (tab === 'projects') return hasProjects
-  return true
-})
+const tabs: TabId[] = (['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]).filter(
+  (tab) => {
+    if (tab === 'news') return hasNews
+    if (tab === 'projects') return hasProjects
+    return true
+  }
+)
 ```
 
 Update the destructured props in `ArtistTabsInner`:

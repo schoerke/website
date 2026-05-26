@@ -12,11 +12,13 @@ A one-shot `tmp/` script that scrapes discography HTML for all 24 artists from t
 ### `tmp/scrape-discographies.ts`
 
 **Usage:**
+
 ```bash
 pnpm tsx tmp/scrape-discographies.ts
 ```
 
 **Steps:**
+
 1. Read the 24 artist slugs from `scripts/wordpress/data/all-de.xml`
 2. For each artist, fetch:
    - DE: `https://ks-schoerke.de/kuenstler/<slug>/` (follows 301 redirect)
@@ -35,6 +37,7 @@ pnpm tsx tmp/scrape-discographies.ts
 ## Integration with Import Script
 
 After scraping, `scripts/importArtistRecordings.ts` is updated to read from:
+
 - `tmp/discography-html/<slug>-de.html` (instead of `/tmp/<slug>-discography-raw.html`)
 - `tmp/discography-html/<slug>-en.html` for EN locale (instead of copying DE)
 

@@ -13,6 +13,7 @@
 ### Task 1: Add i18n keys for header navigation label
 
 **Files:**
+
 - Modify: `src/i18n/en.ts`
 - Modify: `src/i18n/de.ts`
 
@@ -72,6 +73,7 @@ git commit -m "feat: add header.navigationLabel i18n keys (EN + DE)"
 ### Task 2: Create HeaderNavigation server component
 
 **Files:**
+
 - Create: `src/components/Header/HeaderNavigation.tsx`
 
 - [ ] **Step 1: Create the component**
@@ -134,6 +136,7 @@ git commit -m "feat: add HeaderNavigation server component (desktop-only, Artist
 ### Task 3: Add nav slot to Header and wire up in layout
 
 **Files:**
+
 - Modify: `src/components/Header/Header.tsx`
 - Modify: `src/app/(frontend)/[locale]/layout.tsx`
 

@@ -1,7 +1,7 @@
 # Design: Full-text Body Search for News/Projects
 
-**Date:** 2026-05-26  
-**Status:** Approved  
+**Date:** 2026-05-26
+**Status:** Approved
 **Scope:** Inline search on `/news` and `/projects` pages only
 
 ---
@@ -46,7 +46,7 @@ Add a new field alongside the existing `normalizedTitle` field:
 - `localized: true` — DE and EN content indexed separately
 - `index: true` — SQLite index for substring match performance
 - `admin: { hidden: true }` — not shown in Payload admin UI
-- Hook uses `extractLexicalText` (extracts plain text from Lexical richText JSON) and `normalizeText` (strips diacritics, lowercases) — both already imported in Posts.ts
+- Hook uses `extractLexicalText` (extracts plain text from Lexical richText JSON) and `normalizeText` (strips diacritics, lowercases) — `normalizeText` already imported; `extractLexicalText` must be added as a new import from `@/utils/search/extractLexicalText`
 
 ---
 
@@ -60,13 +60,13 @@ Two functions contain the search `where` clause — both must be updated:
 2. `getFilteredPosts` (around L268)
 
 **Before:**
+
 ```typescript
-where.or = [
-  { normalizedTitle: { contains: normalizeText(options.search.trim()) } },
-]
+where.or = [{ normalizedTitle: { contains: normalizeText(options.search.trim()) } }]
 ```
 
 **After:**
+
 ```typescript
 where.or = [
   { normalizedTitle: { contains: normalizeText(options.search.trim()) } },
@@ -83,6 +83,7 @@ No changes to the UI layer, URL param handling, debounce, or pagination.
 `normalizedContent` will be empty for all existing posts after the schema change. A backfill script (`tmp/backfillNormalizedContent.ts`) must be run once to re-save every post via Payload Local API, triggering the `beforeChange` hook.
 
 The script will:
+
 1. Fetch all posts (all locales, paginated)
 2. Call `payload.update()` on each post with its existing data (hook fires automatically)
 3. Log progress and any errors
@@ -102,8 +103,8 @@ The script will:
 
 ## Files Changed
 
-| File | Change |
-|---|---|
-| `src/collections/Posts.ts` | Add `normalizedContent` field |
-| `src/services/post.ts` | Extend `where.or` in `getPaginatedPosts` and `getFilteredPosts` |
-| `tmp/backfillNormalizedContent.ts` | New one-time backfill script (deleted after use) |
+| File                               | Change                                                          |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `src/collections/Posts.ts`         | Add `normalizedContent` field                                   |
+| `src/services/post.ts`             | Extend `where.or` in `getPaginatedPosts` and `getFilteredPosts` |
+| `tmp/backfillNormalizedContent.ts` | New one-time backfill script (deleted after use)                |

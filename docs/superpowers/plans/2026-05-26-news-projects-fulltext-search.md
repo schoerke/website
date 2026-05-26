@@ -12,19 +12,20 @@
 
 ## File Map
 
-| File | Change |
-|---|---|
-| `src/collections/Posts.ts` | Add `normalizedContent` field + `extractLexicalText` import |
-| `src/services/post.ts` | Extend `where.or` in `getFilteredPosts` (L268) and `getPaginatedPosts` (L365) |
-| `src/collections/Posts.test.ts` | New — unit tests for `normalizedContent` hook |
-| `src/services/post.test.ts` | New — unit tests for search `where` clause |
-| `tmp/backfillNormalizedContent.ts` | New — one-time backfill script (delete after use) |
+| File                               | Change                                                                        |
+| ---------------------------------- | ----------------------------------------------------------------------------- |
+| `src/collections/Posts.ts`         | Add `normalizedContent` field + `extractLexicalText` import                   |
+| `src/services/post.ts`             | Extend `where.or` in `getFilteredPosts` (L268) and `getPaginatedPosts` (L365) |
+| `src/collections/Posts.test.ts`    | New — unit tests for `normalizedContent` hook                                 |
+| `src/services/post.test.ts`        | New — unit tests for search `where` clause                                    |
+| `tmp/backfillNormalizedContent.ts` | New — one-time backfill script (delete after use)                             |
 
 ---
 
 ## Task 1: Add `normalizedContent` field to Posts collection
 
 **Files:**
+
 - Modify: `src/collections/Posts.ts`
 
 - [ ] **Step 1: Add `extractLexicalText` import**
@@ -78,6 +79,7 @@ git commit -m "feat(posts): add normalizedContent field for full-text search"
 ## Task 2: Write unit tests for `normalizedContent` hook
 
 **Files:**
+
 - Create: `src/collections/Posts.test.ts`
 
 - [ ] **Step 1: Create test file**
@@ -170,6 +172,7 @@ git commit -m "test(posts): add unit tests for normalizedContent hook"
 ## Task 3: Extend service-layer search to include `normalizedContent`
 
 **Files:**
+
 - Modify: `src/services/post.ts` (two locations)
 
 - [ ] **Step 1: Update `getFilteredPosts` search clause (around L268)**
@@ -177,34 +180,34 @@ git commit -m "test(posts): add unit tests for normalizedContent hook"
 Find this block in `getFilteredPosts`:
 
 ```typescript
-  if (options.search && options.search.trim().length >= 3) {
-    where.or = [
-      {
-        normalizedTitle: {
-          contains: normalizeText(options.search.trim()),
-        },
+if (options.search && options.search.trim().length >= 3) {
+  where.or = [
+    {
+      normalizedTitle: {
+        contains: normalizeText(options.search.trim()),
       },
-    ]
-  }
+    },
+  ]
+}
 ```
 
 Replace with:
 
 ```typescript
-  if (options.search && options.search.trim().length >= 3) {
-    where.or = [
-      {
-        normalizedTitle: {
-          contains: normalizeText(options.search.trim()),
-        },
+if (options.search && options.search.trim().length >= 3) {
+  where.or = [
+    {
+      normalizedTitle: {
+        contains: normalizeText(options.search.trim()),
       },
-      {
-        normalizedContent: {
-          contains: normalizeText(options.search.trim()),
-        },
+    },
+    {
+      normalizedContent: {
+        contains: normalizeText(options.search.trim()),
       },
-    ]
-  }
+    },
+  ]
+}
 ```
 
 - [ ] **Step 2: Update `getPaginatedPosts` search clause (around L365)**
@@ -212,20 +215,20 @@ Replace with:
 Find this identical block in `getPaginatedPosts` and replace with:
 
 ```typescript
-  if (options.search && options.search.trim().length >= 3) {
-    where.or = [
-      {
-        normalizedTitle: {
-          contains: normalizeText(options.search.trim()),
-        },
+if (options.search && options.search.trim().length >= 3) {
+  where.or = [
+    {
+      normalizedTitle: {
+        contains: normalizeText(options.search.trim()),
       },
-      {
-        normalizedContent: {
-          contains: normalizeText(options.search.trim()),
-        },
+    },
+    {
+      normalizedContent: {
+        contains: normalizeText(options.search.trim()),
       },
-    ]
-  }
+    },
+  ]
+}
 ```
 
 - [ ] **Step 3: Verify TypeScript compiles**
@@ -248,6 +251,7 @@ git commit -m "feat(search): extend post search to include body content"
 ## Task 4: Write unit tests for updated service search clause
 
 **Files:**
+
 - Create: `src/services/post.test.ts`
 
 - [ ] **Step 1: Create test file**
@@ -273,7 +277,9 @@ describe('getFilteredPosts search clause', () => {
   let mockPayload: { find: ReturnType<typeof vi.fn> }
 
   beforeEach(async () => {
-    mockFind = vi.fn().mockResolvedValue({ docs: [], totalDocs: 0, totalPages: 1, page: 1, hasNextPage: false, hasPrevPage: false })
+    mockFind = vi
+      .fn()
+      .mockResolvedValue({ docs: [], totalDocs: 0, totalPages: 1, page: 1, hasNextPage: false, hasPrevPage: false })
     mockPayload = { find: mockFind }
     vi.mocked(getPayload).mockResolvedValue(mockPayload as never)
   })
@@ -334,6 +340,7 @@ git commit -m "test(search): add unit tests for post content search clause"
 ## Task 5: Write backfill script
 
 **Files:**
+
 - Create: `tmp/backfillNormalizedContent.ts`
 
 - [ ] **Step 1: Create script**
@@ -435,6 +442,7 @@ git commit -m "chore: add backfill script for normalizedContent field"
 > **STOP — Database protection policy applies.**
 >
 > Before running the backfill:
+>
 > 1. Run `grep DATABASE_URI .env` and confirm which database (local vs remote) is targeted
 > 2. Present the DATABASE_URI to the user and ask: "This will re-save all posts in both DE and EN locales on `<database>`. Proceed?"
 > 3. Wait for explicit "yes, go ahead" before executing.

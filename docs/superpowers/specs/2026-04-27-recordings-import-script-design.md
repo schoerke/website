@@ -18,11 +18,13 @@ One-shot script to delete the 10 existing dummy recordings (IDs 1–10) from the
 Generic per-artist recordings import script.
 
 **Usage:**
+
 ```bash
 pnpm tsx scripts/importArtistRecordings.ts <artist-slug>
 ```
 
 **Workflow:**
+
 1. Look up artist by slug in Payload — exit with error if not found
 2. Read `/tmp/<artist-slug>-discography-raw.html` — exit with error if file not found
 3. Parse recording blocks from the HTML (same logic as `tmp/import-scheps-recordings.ts`):
@@ -40,6 +42,7 @@ pnpm tsx scripts/importArtistRecordings.ts <artist-slug>
 ## Data Model
 
 Each recording created with:
+
 - `title` — from `<strong>` text
 - `recordingLabel` — from `<em>` text (label portion)
 - `catalogNumber` — from `<em>` text (catalog portion)

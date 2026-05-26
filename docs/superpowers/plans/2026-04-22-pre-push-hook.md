@@ -12,9 +12,9 @@
 
 ## File Map
 
-| Action | File |
-|--------|------|
-| Create | `.git-hooks/pre-push` |
+| Action | File                                         |
+| ------ | -------------------------------------------- |
+| Create | `.git-hooks/pre-push`                        |
 | Modify | `package.json` — add/update `prepare` script |
 
 ---
@@ -22,6 +22,7 @@
 ### Task 1: Create `.git-hooks/pre-push`
 
 **Files:**
+
 - Create: `.git-hooks/pre-push`
 
 - [ ] **Step 1: Create the `.git-hooks/` directory and write the hook script**
@@ -65,6 +66,7 @@ Expected: lint, typecheck, and tests all run and pass (or fail with their own ou
 ### Task 2: Wire up the hooks directory via `package.json`
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Check whether a `prepare` script already exists**
@@ -116,6 +118,7 @@ The pre-push script should fire and print `Running pre-push checks...` before gi
 ### Task 3: Commit
 
 **Files:**
+
 - `.git-hooks/pre-push`
 - `package.json`
 - `docs/superpowers/specs/2026-04-22-pre-push-hook-design.md`

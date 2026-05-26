@@ -20,6 +20,7 @@
 ### Task 1: Delete dummy recordings script
 
 **Files:**
+
 - Create: `tmp/delete-dummy-recordings.ts`
 
 - [ ] **Step 1: Create the script**
@@ -79,7 +80,10 @@ async function main() {
   process.exit(0)
 }
 
-main().catch((e) => { console.error(e); process.exit(1) })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
 ```
 
 - [ ] **Step 2: Verify the database config points to remote dev**
@@ -111,6 +115,7 @@ Expected: `Total recordings: 0`
 ### Task 2: Generic per-artist import script
 
 **Files:**
+
 - Create: `scripts/importArtistRecordings.ts`
 
 - [ ] **Step 1: Create the script**
@@ -255,7 +260,8 @@ function guessRole(recording: Omit<ParsedRecording, 'role'>): RecordingRole | nu
     partner.includes('quintett') ||
     partner.includes('trio') ||
     partner.includes('ensemble')
-  ) return 'chamber_musician'
+  )
+    return 'chamber_musician'
   return null
 }
 
@@ -358,8 +364,8 @@ async function main() {
     const labelCatalogYear = [r.label, r.catalogNumber, r.year ? `(${r.year})` : null].filter(Boolean).join(' ')
     console.log(`${i + 1}. ${r.title}`)
     if (r.description.length > 0) console.log(`   ${r.description.join('\n   ')}`)
-    if (r.partner)                 console.log(`   Partner: ${r.partner}`)
-    if (labelCatalogYear)          console.log(`   ${labelCatalogYear}`)
+    if (r.partner) console.log(`   Partner: ${r.partner}`)
+    if (labelCatalogYear) console.log(`   ${labelCatalogYear}`)
     console.log(`   Role: ${r.role}`)
     console.log()
   }
@@ -445,7 +451,10 @@ async function main() {
   process.exit(0)
 }
 
-main().catch((e) => { console.error(e); process.exit(1) })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
 ```
 
 - [ ] **Step 2: Verify the script runs with no HTML file and exits gracefully**
@@ -464,6 +473,7 @@ Expected: error message explaining how to prepare the HTML file, then exit.
 4. Save to `/tmp/thomas-zehetmair-discography-raw.html`
 
 Then run:
+
 ```bash
 pnpm tsx scripts/importArtistRecordings.ts thomas-zehetmair
 ```

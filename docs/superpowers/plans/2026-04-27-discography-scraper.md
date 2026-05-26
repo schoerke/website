@@ -20,6 +20,7 @@
 ### Task 1: Scrape discography HTML for all artists
 
 **Files:**
+
 - Create: `tmp/scrape-discographies.ts`
 - Create: `tmp/discography-html/` (directory, created by script)
 
@@ -100,7 +101,10 @@ function extractDiskography(html: string): string {
 }
 
 function normalizeText(html: string): string {
-  return html.replace(/\s+/g, ' ').replace(/&nbsp;/g, ' ').trim()
+  return html
+    .replace(/\s+/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .trim()
 }
 
 type Status = 'BOTH' | 'IDENTICAL' | 'DE ONLY' | 'EMPTY'
@@ -174,7 +178,10 @@ async function main() {
   console.log(`\nNext step: pnpm tsx scripts/importArtistRecordings.ts <slug>`)
 }
 
-main().catch((e) => { console.error(e); process.exit(1) })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
 ```
 
 - [ ] **Step 2: Run the scraper**
@@ -207,9 +214,11 @@ Expected: `23` (we know Maurice Steger has 23 recordings).
 ### Task 2: Update import script to use scraped files and EN locale
 
 **Files:**
+
 - Modify: `scripts/importArtistRecordings.ts`
 
 The import script currently reads from `/tmp/<slug>-discography-raw.html` (single locale). Update it to:
+
 - Read DE from `tmp/discography-html/<slug>-de.html`
 - Read EN from `tmp/discography-html/<slug>-en.html`
 - Use real EN content when available (non-empty) instead of always copying DE
@@ -219,41 +228,42 @@ The import script currently reads from `/tmp/<slug>-discography-raw.html` (singl
 In `scripts/importArtistRecordings.ts`, replace the file reading section (around lines 182–198):
 
 ```typescript
-  const deHtmlPath = join(process.cwd(), 'tmp/discography-html', `${slug}-de.html`)
-  const enHtmlPath = join(process.cwd(), 'tmp/discography-html', `${slug}-en.html`)
+const deHtmlPath = join(process.cwd(), 'tmp/discography-html', `${slug}-de.html`)
+const enHtmlPath = join(process.cwd(), 'tmp/discography-html', `${slug}-en.html`)
 
-  let deContent: string
-  let enContent: string | null = null
+let deContent: string
+let enContent: string | null = null
 
-  try {
-    deContent = readFileSync(deHtmlPath, 'utf-8')
-  } catch {
-    console.error(`\nError: Could not read file: ${deHtmlPath}`)
-    console.error('\nRun the scraper first:')
-    console.error('  pnpm tsx tmp/scrape-discographies.ts')
-    process.exit(1)
-  }
+try {
+  deContent = readFileSync(deHtmlPath, 'utf-8')
+} catch {
+  console.error(`\nError: Could not read file: ${deHtmlPath}`)
+  console.error('\nRun the scraper first:')
+  console.error('  pnpm tsx tmp/scrape-discographies.ts')
+  process.exit(1)
+}
 
-  if (!deContent.trim()) {
-    console.error(`\nError: No discography content found for "${slug}" (DE file is empty).`)
-    console.error('This artist may not have a discography on the WordPress site.')
-    process.exit(1)
-  }
+if (!deContent.trim()) {
+  console.error(`\nError: No discography content found for "${slug}" (DE file is empty).`)
+  console.error('This artist may not have a discography on the WordPress site.')
+  process.exit(1)
+}
 
-  try {
-    const raw = readFileSync(enHtmlPath, 'utf-8')
-    enContent = raw.trim() || null
-  } catch {
-    // EN file missing is fine — will copy DE content
-  }
+try {
+  const raw = readFileSync(enHtmlPath, 'utf-8')
+  enContent = raw.trim() || null
+} catch {
+  // EN file missing is fine — will copy DE content
+}
 
-  const hasEN = enContent !== null
-  console.log(`\n=== Recordings Import: ${slug} ===`)
-  console.log(`EN locale: ${hasEN ? 'available' : 'not available (will copy DE)'}`)
-  console.log()
+const hasEN = enContent !== null
+console.log(`\n=== Recordings Import: ${slug} ===`)
+console.log(`EN locale: ${hasEN ? 'available' : 'not available (will copy DE)'}`)
+console.log()
 ```
 
 Also add `join` to the imports at the top:
+
 ```typescript
 import { readFileSync } from 'fs'
 import { join } from 'path'
@@ -262,9 +272,10 @@ import { join } from 'path'
 - [ ] **Step 2: Update block splitting to use `deContent` variable**
 
 Replace the line that sets `rawContent` / `blocks` (around line 202):
+
 ```typescript
-  const rawBlocks = deContent.includes('<p>') ? deContent.split(/<p>/) : deContent.split(/\n\n+/)
-  const blocks = rawBlocks.map((b) => b.replace(/<\/p>/g, '').trim()).filter((b) => b && b !== 'und weitere')
+const rawBlocks = deContent.includes('<p>') ? deContent.split(/<p>/) : deContent.split(/\n\n+/)
+const blocks = rawBlocks.map((b) => b.replace(/<\/p>/g, '').trim()).filter((b) => b && b !== 'und weitere')
 ```
 
 - [ ] **Step 3: Update the EN locale update to use real EN content when available**
@@ -272,27 +283,27 @@ Replace the line that sets `rawContent` / `blocks` (around line 202):
 Replace the EN update section inside the creation loop (around lines 311–319):
 
 ```typescript
-    // Use real EN content if available, otherwise copy DE
-    const enTitle = (() => {
-      if (!enContent) return r.title
-      // Try to find matching block by position in EN content
-      const enRawBlocks = enContent.includes('<p>') ? enContent.split(/<p>/) : enContent.split(/\n\n+/)
-      const enBlocks = enRawBlocks.map((b) => b.replace(/<\/p>/g, '').trim()).filter((b) => b && b !== 'und weitere')
-      const enBlock = enBlocks[recordings.indexOf(r)]
-      if (!enBlock) return r.title
-      const parsed = parseRecordingBlock(enBlock)
-      return parsed?.title || r.title
-    })()
+// Use real EN content if available, otherwise copy DE
+const enTitle = (() => {
+  if (!enContent) return r.title
+  // Try to find matching block by position in EN content
+  const enRawBlocks = enContent.includes('<p>') ? enContent.split(/<p>/) : enContent.split(/\n\n+/)
+  const enBlocks = enRawBlocks.map((b) => b.replace(/<\/p>/g, '').trim()).filter((b) => b && b !== 'und weitere')
+  const enBlock = enBlocks[recordings.indexOf(r)]
+  if (!enBlock) return r.title
+  const parsed = parseRecordingBlock(enBlock)
+  return parsed?.title || r.title
+})()
 
-    await payload.update({
-      collection: 'recordings',
-      id: recording.id,
-      data: {
-        title: enTitle,
-        description: description as never,
-      },
-      locale: 'en',
-    })
+await payload.update({
+  collection: 'recordings',
+  id: recording.id,
+  data: {
+    title: enTitle,
+    description: description as never,
+  },
+  locale: 'en',
+})
 ```
 
 - [ ] **Step 4: Verify TypeScript compiles**

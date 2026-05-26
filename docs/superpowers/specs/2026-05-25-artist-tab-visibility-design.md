@@ -52,7 +52,7 @@ if (!artist) return notFound()
 const newsCount = await getNewsPostCountByArtist(artist.id, locale as 'de' | 'en')
 
 const hasNews = newsCount > 0
-const hasProjects = (artist.projects || []).filter(p => typeof p === 'object').length > 0
+const hasProjects = (artist.projects || []).filter((p) => typeof p === 'object').length > 0
 ```
 
 Pass `hasNews` and `hasProjects` as props to `<ArtistTabs>`.
@@ -73,13 +73,13 @@ interface ArtistTabsProps {
 Filter `tabs` array:
 
 ```ts
-const tabs: TabId[] = (
-  ['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]
-).filter(tab => {
-  if (tab === 'news') return hasNews
-  if (tab === 'projects') return hasProjects
-  return true
-})
+const tabs: TabId[] = (['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]).filter(
+  (tab) => {
+    if (tab === 'news') return hasNews
+    if (tab === 'projects') return hasProjects
+    return true
+  }
+)
 ```
 
 ### 4. Hash navigation guard
@@ -97,10 +97,12 @@ This already exists — no change needed. The guard is already `tabs.includes(ha
 ## Testing
 
 ### `src/services/post.ts`
+
 - `getNewsPostCountByArtist` returns correct count from Payload
 - Returns 0 when no posts match
 
 ### `src/components/Artist/ArtistTabs.spec.tsx`
+
 - News tab hidden when `hasNews=false`
 - News tab visible when `hasNews=true`
 - Projects tab hidden when `hasProjects=false`
@@ -109,15 +111,16 @@ This already exists — no change needed. The guard is already `tabs.includes(ha
 - Hash pointing to hidden tab falls back to biography (hash `#news` with `hasNews=false`)
 
 ### `src/app/(frontend)/[locale]/artists/[slug]/page.tsx`
+
 - `getNewsPostCountByArtist` called with correct artist id
 - `hasNews` / `hasProjects` props passed to `ArtistTabs`
 
 ## Files Changed
 
-| File | Change |
-|---|---|
-| `src/services/post.ts` | Add `getNewsPostCountByArtist` |
+| File                                                  | Change                                                 |
+| ----------------------------------------------------- | ------------------------------------------------------ |
+| `src/services/post.ts`                                | Add `getNewsPostCountByArtist`                         |
 | `src/app/(frontend)/[locale]/artists/[slug]/page.tsx` | Fetch news count, compute booleans, pass to ArtistTabs |
-| `src/components/Artist/ArtistTabs.tsx` | Add `hasNews`/`hasProjects` props, filter tabs array |
-| `src/services/post.spec.ts` (or new) | Tests for new service function |
-| `src/components/Artist/ArtistTabs.spec.tsx` | Tests for conditional tab visibility |
+| `src/components/Artist/ArtistTabs.tsx`                | Add `hasNews`/`hasProjects` props, filter tabs array   |
+| `src/services/post.spec.ts` (or new)                  | Tests for new service function                         |
+| `src/components/Artist/ArtistTabs.spec.tsx`           | Tests for conditional tab visibility                   |

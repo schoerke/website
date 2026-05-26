@@ -14,14 +14,14 @@
 
 ## File Map
 
-| File | Action | Responsibility |
-|---|---|---|
-| `scripts/wordpress/buildPostsDataset.ts` | **Create** | Phase 1: parse XML, match DE↔EN, output JSON dataset |
-| `scripts/wordpress/importPostsDataset.ts` | **Create** | Phase 3: read JSON, create posts in Payload |
-| `scripts/wordpress/data/posts-dataset.json` | **Generated** | Human-reviewable intermediate dataset |
-| `scripts/wordpress/data/posts-image-urls.json` | **Generated** | List of post image URLs for uploadLocalMedia |
-| `scripts/wordpress/utils/xmlParser.ts` | **Modify** | Add `parseWordPressXMLWithAttributes` (attribute-aware parser) |
-| `package.json` | **Modify** | Add `build:posts-dataset` and `import:posts` scripts |
+| File                                           | Action        | Responsibility                                                 |
+| ---------------------------------------------- | ------------- | -------------------------------------------------------------- |
+| `scripts/wordpress/buildPostsDataset.ts`       | **Create**    | Phase 1: parse XML, match DE↔EN, output JSON dataset           |
+| `scripts/wordpress/importPostsDataset.ts`      | **Create**    | Phase 3: read JSON, create posts in Payload                    |
+| `scripts/wordpress/data/posts-dataset.json`    | **Generated** | Human-reviewable intermediate dataset                          |
+| `scripts/wordpress/data/posts-image-urls.json` | **Generated** | List of post image URLs for uploadLocalMedia                   |
+| `scripts/wordpress/utils/xmlParser.ts`         | **Modify**    | Add `parseWordPressXMLWithAttributes` (attribute-aware parser) |
+| `package.json`                                 | **Modify**    | Add `build:posts-dataset` and `import:posts` scripts           |
 
 ---
 
@@ -30,6 +30,7 @@
 The existing `parseWordPressXML` uses `new XMLParser()` with no options, which drops XML attributes. Category tags use attributes (`@_domain`, `@_nicename`) to distinguish post categories from artist tags. We need an attribute-aware variant.
 
 **Files:**
+
 - Modify: `scripts/wordpress/utils/xmlParser.ts`
 
 - [ ] **Read the existing file**
@@ -86,6 +87,7 @@ git commit -m "feat(migration): add attribute-aware XML parser for post category
 This script reads both XML files, matches DE News posts to EN counterparts (and EN Projects posts to DE counterparts), resolves artist slugs and image filenames, then writes `posts-dataset.json`. No database access.
 
 **Files:**
+
 - Create: `scripts/wordpress/buildPostsDataset.ts`
 - Create: `scripts/wordpress/data/posts-dataset.json` (generated output)
 
@@ -181,8 +183,18 @@ const ARTIST_SLUG_MAP: Record<string, string> = {
 
 /** WordPress category names that are NOT artist names */
 const NON_ARTIST_CATEGORIES = new Set([
-  'News', 'Projects', 'Home', 'Startseite', 'Calendar', 'Kalender',
-  'Video', 'Diskography', 'Diskographie', 'Repertoire', 'Künstler', 'Artists',
+  'News',
+  'Projects',
+  'Home',
+  'Startseite',
+  'Calendar',
+  'Kalender',
+  'Video',
+  'Diskography',
+  'Diskographie',
+  'Repertoire',
+  'Künstler',
+  'Artists',
 ])
 
 // ============================================================================
@@ -240,11 +252,7 @@ interface PostLocaleData {
 // ============================================================================
 
 function getCategories(post: WPPost): string[] {
-  const cats = Array.isArray(post.category)
-    ? post.category
-    : post.category
-      ? [post.category]
-      : []
+  const cats = Array.isArray(post.category) ? post.category : post.category ? [post.category] : []
   return cats.map((c) => (typeof c === 'string' ? c : c['#text'] || '')).filter(Boolean)
 }
 
@@ -291,7 +299,7 @@ function withinDays(a: Date, b: Date, days: number): boolean {
 function findEnCounterpart(
   dePost: WPPost,
   enPosts: WPPost[],
-  enBySlug: Map<string, WPPost>,
+  enBySlug: Map<string, WPPost>
 ): { post: WPPost; method: 'slug' | 'fuzzy' } | null {
   // Pass 1
   const bySlug = enBySlug.get(dePost['wp:post_name'])
@@ -316,7 +324,7 @@ function findEnCounterpart(
 function findDeCounterpart(
   enPost: WPPost,
   dePosts: WPPost[],
-  deBySlug: Map<string, WPPost>,
+  deBySlug: Map<string, WPPost>
 ): { post: WPPost; method: 'slug' | 'fuzzy' } | null {
   const bySlug = deBySlug.get(enPost['wp:post_name'])
   if (bySlug) return { post: bySlug, method: 'slug' }
@@ -337,10 +345,7 @@ function findDeCounterpart(
  * Resolve featured image filename from WP attachment map.
  * Returns the cleaned filename or null if not found.
  */
-function resolveImageFilename(
-  post: WPPost,
-  attachmentUrlById: Map<number, string>,
-): string | null {
+function resolveImageFilename(post: WPPost, attachmentUrlById: Map<number, string>): string | null {
   const meta = getPostMeta(post)
   const thumbId = meta['_thumbnail_id']
   if (!thumbId) return null
@@ -370,19 +375,14 @@ async function buildPostsDataset(): Promise<void> {
   const attachmentUrlById = new Map<number, string>()
   for (const item of enItems) {
     if (item['wp:post_type'] === 'attachment' && (item as unknown as WPAttachment)['wp:attachment_url']) {
-      attachmentUrlById.set(
-        item['wp:post_id'],
-        (item as unknown as WPAttachment)['wp:attachment_url']!,
-      )
+      attachmentUrlById.set(item['wp:post_id'], (item as unknown as WPAttachment)['wp:attachment_url']!)
     }
   }
   console.log(`🖼️  Loaded ${attachmentUrlById.size} attachment URLs\n`)
 
   // Filter to published posts within date range
   const isRecentPublished = (p: WPPost) =>
-    p['wp:post_type'] === 'post' &&
-    p['wp:status'] === 'publish' &&
-    new Date(p['wp:post_date']) >= CUTOFF_DATE
+    p['wp:post_type'] === 'post' && p['wp:status'] === 'publish' && new Date(p['wp:post_date']) >= CUTOFF_DATE
 
   const enPosts = enItems.filter(isRecentPublished) as WPPost[]
   const dePosts = deItems.filter(isRecentPublished) as WPPost[]
@@ -511,14 +511,18 @@ async function buildPostsDataset(): Promise<void> {
 
   // Summary
   const autoTranslateCount = dataset.filter(
-    (e) => e.en.source === 'auto-translate' || e.de.source === 'auto-translate',
+    (e) => e.en.source === 'auto-translate' || e.de.source === 'auto-translate'
   ).length
   const fullCount = dataset.length - autoTranslateCount
 
   console.log('\n✅ Dataset built successfully!')
   console.log(`\n📊 Summary:`)
-  console.log(`   DE News posts:     ${stats.deNewsTotal} total, ${stats.deNewsMatched} matched EN, ${stats.deNewsUnmatched} unmatched`)
-  console.log(`   EN Projects posts: ${stats.projTotal} total, ${stats.projMatched} matched DE, ${stats.projUnmatched} unmatched`)
+  console.log(
+    `   DE News posts:     ${stats.deNewsTotal} total, ${stats.deNewsMatched} matched EN, ${stats.deNewsUnmatched} unmatched`
+  )
+  console.log(
+    `   EN Projects posts: ${stats.projTotal} total, ${stats.projMatched} matched DE, ${stats.projUnmatched} unmatched`
+  )
   console.log(`   Total entries:     ${dataset.length}`)
   console.log(`   Both locales:      ${fullCount} (ready to import)`)
   console.log(`   Auto-translate:    ${autoTranslateCount} (skipped by default in import)`)
@@ -571,6 +575,7 @@ Post featured images need to be uploaded to Vercel Blob before import. We genera
 The cleanest approach: write a small script `scripts/wordpress/addPostImagesToMediaUrls.ts` that appends post image entries to `media-urls.json`, then re-run `uploadLocalMedia`.
 
 **Files:**
+
 - Create: `scripts/wordpress/addPostImagesToMediaUrls.ts`
 
 - [ ] **Check the shape of media-urls.json**
@@ -720,6 +725,7 @@ git commit -m "feat(migration): add script to append post images to media-urls.j
 Reads `posts-dataset.json`, converts HTML to Lexical, resolves artist IDs and image IDs, and creates posts in Payload with both locales.
 
 **Files:**
+
 - Create: `scripts/wordpress/importPostsDataset.ts`
 
 - [ ] **Create the file**
@@ -833,14 +839,15 @@ async function importPostsDataset(): Promise<void> {
   for (const slug of allArtistSlugs) {
     artistSlugToId.set(slug, await findArtistIdBySlug(slug, payload))
   }
-  console.log(`   Resolved ${[...artistSlugToId.values()].filter(Boolean).length}/${allArtistSlugs.size} artist slugs\n`)
+  console.log(
+    `   Resolved ${[...artistSlugToId.values()].filter(Boolean).length}/${allArtistSlugs.size} artist slugs\n`
+  )
 
   const stats: ImportStats = { total: 0, created: 0, updated: 0, skipped: 0, failed: 0, errors: [] }
 
   for (const entry of dataset) {
     stats.total++
-    const needsAutoTranslate =
-      entry.en.source === 'auto-translate' || entry.de.source === 'auto-translate'
+    const needsAutoTranslate = entry.en.source === 'auto-translate' || entry.de.source === 'auto-translate'
 
     if (needsAutoTranslate && !cfg.includeAutoTranslate) {
       if (cfg.verbose) console.log(`⏭️  Skipping (auto-translate needed): ${entry.wpSlug}`)
@@ -866,7 +873,9 @@ async function importPostsDataset(): Promise<void> {
     const deSlug = entry.de.slug || entry.en.slug
 
     if (cfg.dryRun) {
-      console.log(`[DRY RUN] Would create: "${enTitle}" / "${deTitle}" (${entry.category}) [${entry.publishedAt.split('T')[0]}]`)
+      console.log(
+        `[DRY RUN] Would create: "${enTitle}" / "${deTitle}" (${entry.category}) [${entry.publishedAt.split('T')[0]}]`
+      )
       if (needsAutoTranslate) console.log(`          ⚠️  One locale is a fallback — needs manual review`)
       stats.created++
       continue
@@ -999,6 +1008,7 @@ pnpm run build:posts-dataset
 ```
 
 Review the summary output. Confirm the counts match expectations:
+
 - ~89 DE News entries
 - ~79 EN Projects entries
 - ~19 auto-translate entries
@@ -1067,6 +1077,7 @@ Expected: creates ~149 posts with both locales, skips ~19 auto-translate entries
 - [ ] **Verify in Payload admin**
 
 Open the Payload admin panel → Posts collection. Confirm:
+
 - Posts are visible in both EN and DE
 - Categories are set correctly (news / projects)
 - Artists are linked

@@ -12,17 +12,18 @@
 
 ## File Structure
 
-| File | Change | Responsibility |
-|---|---|---|
-| `src/components/Header/ScrollAwareLogo.tsx` | Create | Client component — scroll listener, renders both logo variants with transitions |
-| `src/components/Header/HeaderLogo.tsx` | Modify | Fetches URLs, passes to `ScrollAwareLogo` |
-| `src/components/Header/ScrollAwareLogo.test.tsx` | Create | Tests for scroll behavior and rendering |
+| File                                             | Change | Responsibility                                                                  |
+| ------------------------------------------------ | ------ | ------------------------------------------------------------------------------- |
+| `src/components/Header/ScrollAwareLogo.tsx`      | Create | Client component — scroll listener, renders both logo variants with transitions |
+| `src/components/Header/HeaderLogo.tsx`           | Modify | Fetches URLs, passes to `ScrollAwareLogo`                                       |
+| `src/components/Header/ScrollAwareLogo.test.tsx` | Create | Tests for scroll behavior and rendering                                         |
 
 ---
 
 ### Task 1: Create ScrollAwareLogo client component
 
 **Files:**
+
 - Create: `src/components/Header/ScrollAwareLogo.tsx`
 - Test: `src/components/Header/ScrollAwareLogo.test.tsx`
 
@@ -228,6 +229,7 @@ git commit -m "feat(header): add ScrollAwareLogo client component with scroll-tr
 ### Task 2: Update HeaderLogo to use ScrollAwareLogo
 
 **Files:**
+
 - Modify: `src/components/Header/HeaderLogo.tsx`
 
 - [ ] **Step 1: Write failing test**
@@ -249,12 +251,24 @@ vi.mock('@/services/media', () => ({
 }))
 
 vi.mock('@/components/Header/ScrollAwareLogo', () => ({
-  default: ({ iconUrl, iconAlt, fullUrl, fullAlt }: {
+  default: ({
+    iconUrl,
+    iconAlt,
+    fullUrl,
+    fullAlt,
+  }: {
     iconUrl: string
     iconAlt: string
     fullUrl: string
     fullAlt: string
-  }) => React.createElement('div', { 'data-testid': 'scroll-aware-logo', 'data-icon-url': iconUrl, 'data-full-url': fullUrl, 'data-icon-alt': iconAlt, 'data-full-alt': fullAlt }),
+  }) =>
+    React.createElement('div', {
+      'data-testid': 'scroll-aware-logo',
+      'data-icon-url': iconUrl,
+      'data-full-url': fullUrl,
+      'data-icon-alt': iconAlt,
+      'data-full-alt': fullAlt,
+    }),
 }))
 
 import { getImageByFilename } from '@/services/media.server'

@@ -135,17 +135,20 @@ all stay in sync. When you bypass Payload's Local API and write directly to SQLi
 ### The Correct Pattern for Migrating Data to Production
 
 **Step 1:** Point `.env` at prod:
+
 ```bash
 # In .env, swap DATABASE_URI and DATABASE_AUTH_TOKEN to production values
 ```
 
 **Step 2:** Run the import/seed script (which uses Payload Local API):
+
 ```bash
 npx tsx scripts/wordpress/importPostsDataset.ts
 npx tsx scripts/wordpress/importRecordingsDataset.ts
 ```
 
 **Step 3:** Restore `.env` to dev immediately after:
+
 ```bash
 # Swap DATABASE_URI and DATABASE_AUTH_TOKEN back to development values
 ```

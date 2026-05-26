@@ -16,21 +16,21 @@
 
 ```ts
 interface RecordingEntry {
-  artistSlug: string           // e.g. "maurice-steger"
-  needsManualEntry?: true      // flag for artists whose HTML couldn't be parsed
+  artistSlug: string // e.g. "maurice-steger"
+  needsManualEntry?: true // flag for artists whose HTML couldn't be parsed
   de: {
-    title: string              // DE title
-    description: string[]      // track listing / program notes lines
+    title: string // DE title
+    description: string[] // track listing / program notes lines
   }
   en: {
-    title: string              // EN title (may equal DE if no EN translation found)
+    title: string // EN title (may equal DE if no EN translation found)
     description: string[]
   }
-  label: string | null         // record label, e.g. "harmonia mundi"
+  label: string | null // record label, e.g. "harmonia mundi"
   catalogNumber: string | null // e.g. "HMC 902190"
-  year: number | null          // recording/release year
+  year: number | null // recording/release year
   role: 'soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist'
-  partner: string | null       // partner info (stored in description on import)
+  partner: string | null // partner info (stored in description on import)
 }
 ```
 
@@ -40,14 +40,14 @@ The file is a top-level array. `artistSlug` is the only grouping — one object 
 
 ## File Map
 
-| File | Action | Responsibility |
-|---|---|---|
-| `scripts/wordpress/buildRecordingsDataset.ts` | Create | Parse all HTML → `recordings-dataset.json` |
-| `scripts/wordpress/data/recordings-dataset.json` | Create (generated) | Intermediary dataset for human review |
-| `scripts/wordpress/importRecordingsDataset.ts` | Create | Read JSON → write to Payload (skip existing) |
-| `src/app/(payload)/admin/recordings-review/page.tsx` | Create | Server component: load JSON, render review UI |
-| `src/app/(payload)/admin/recordings-review/RecordingsReviewClient.tsx` | Create | Client component: editable table |
-| `src/app/(payload)/admin/recordings-review/actions.ts` | Create | Server action: `saveDataset(data)` → write JSON |
+| File                                                                   | Action             | Responsibility                                  |
+| ---------------------------------------------------------------------- | ------------------ | ----------------------------------------------- |
+| `scripts/wordpress/buildRecordingsDataset.ts`                          | Create             | Parse all HTML → `recordings-dataset.json`      |
+| `scripts/wordpress/data/recordings-dataset.json`                       | Create (generated) | Intermediary dataset for human review           |
+| `scripts/wordpress/importRecordingsDataset.ts`                         | Create             | Read JSON → write to Payload (skip existing)    |
+| `src/app/(payload)/admin/recordings-review/page.tsx`                   | Create             | Server component: load JSON, render review UI   |
+| `src/app/(payload)/admin/recordings-review/RecordingsReviewClient.tsx` | Create             | Client component: editable table                |
+| `src/app/(payload)/admin/recordings-review/actions.ts`                 | Create             | Server action: `saveDataset(data)` → write JSON |
 
 **Why `(payload)/admin/recordings-review`?** The `(payload)` route group already exists and handles the admin layout. Adding a sub-route here is simpler than creating a new `(dev)` group. It will be accessible at `/admin/recordings-review` while the dev server is running.
 
@@ -56,6 +56,7 @@ The file is a top-level array. `artistSlug` is the only grouping — one object 
 ## Task 1: Build Script — `buildRecordingsDataset.ts`
 
 **Files:**
+
 - Create: `scripts/wordpress/buildRecordingsDataset.ts`
 
 - [ ] **Step 1: Create the build script**
@@ -155,7 +156,9 @@ function parseLabelLine(text: string): { label: string; catalogNumber: string | 
 }
 
 const LABEL_FIXES: Record<string, string> = { 'Sony Classicas': 'Sony Classical' }
-function fixLabel(label: string): string { return LABEL_FIXES[label] ?? label }
+function fixLabel(label: string): string {
+  return LABEL_FIXES[label] ?? label
+}
 
 function parseBlock(block: string): Omit<RecordingEntry, 'artistSlug' | 'en' | 'role'> | null {
   const tm = block.match(/<strong>([\s\S]*?)<\/strong>/)
@@ -173,9 +176,7 @@ function parseBlock(block: string): Omit<RecordingEntry, 'artistSlug' | 'en' | '
   const catalogNumber = !isTitleOnly && parsed ? parsed.catalogNumber : null
   const year = !isTitleOnly && parsed ? parsed.year : null
 
-  const middleLines = isTitleOnly
-    ? []
-    : lines.filter((l) => l !== title && l !== lastLine && l !== 'und weitere')
+  const middleLines = isTitleOnly ? [] : lines.filter((l) => l !== title && l !== lastLine && l !== 'und weitere')
 
   let partner: string | null = null
   const description: string[] = []
@@ -192,10 +193,14 @@ function guessRole(partner: string | null): RecordingRole {
   const p = partner.toLowerCase()
   if (p.includes('dirigent') || p.includes('orchester') || p.includes('orchestra')) return 'soloist'
   if (
-    p.includes('quartett') || p.includes('quartet') ||
-    p.includes('quintett') || p.includes('quintet') ||
-    p.includes('trio') || p.includes('ensemble')
-  ) return 'chamber_musician'
+    p.includes('quartett') ||
+    p.includes('quartet') ||
+    p.includes('quintett') ||
+    p.includes('quintet') ||
+    p.includes('trio') ||
+    p.includes('ensemble')
+  )
+    return 'chamber_musician'
   return 'chamber_musician'
 }
 
@@ -216,30 +221,32 @@ function buildArtist(slug: string): RecordingEntry[] {
 
   const deBlocks = splitBlocks(sourceRaw)
   // EN blocks: only use if different from source (i.e. DE wasn't empty)
-  const enBlocks = (deRaw && enRaw) ? splitBlocks(enRaw) : []
+  const enBlocks = deRaw && enRaw ? splitBlocks(enRaw) : []
 
-  return deBlocks.map((block, i): RecordingEntry | null => {
-    const de = parseBlock(block)
-    if (!de) return null
+  return deBlocks
+    .map((block, i): RecordingEntry | null => {
+      const de = parseBlock(block)
+      if (!de) return null
 
-    // Match EN block by position
-    const enBlock = i < enBlocks.length ? enBlocks[i] : null
-    const enParsed = enBlock ? parseBlock(enBlock) : null
+      // Match EN block by position
+      const enBlock = i < enBlocks.length ? enBlocks[i] : null
+      const enParsed = enBlock ? parseBlock(enBlock) : null
 
-    return {
-      artistSlug: slug,
-      de: de.de,
-      en: {
-        title: enParsed?.de.title ?? de.de.title,
-        description: enParsed?.de.description ?? de.de.description,
-      },
-      label: de.label,
-      catalogNumber: de.catalogNumber,
-      year: de.year,
-      role: guessRole(de.partner),
-      partner: de.partner,
-    }
-  }).filter((r): r is RecordingEntry => r !== null)
+      return {
+        artistSlug: slug,
+        de: de.de,
+        en: {
+          title: enParsed?.de.title ?? de.de.title,
+          description: enParsed?.de.description ?? de.de.description,
+        },
+        label: de.label,
+        catalogNumber: de.catalogNumber,
+        year: de.year,
+        role: guessRole(de.partner),
+        partner: de.partner,
+      }
+    })
+    .filter((r): r is RecordingEntry => r !== null)
 }
 
 // Artists known to have non-standard HTML (section headers, not albums)
@@ -303,6 +310,7 @@ Expected: `entries: ~280 slugs: 24`
 ## Task 2: Review UI — Server Component Page
 
 **Files:**
+
 - Create: `src/app/(payload)/admin/recordings-review/page.tsx`
 
 The page is a server component. It reads the JSON file from disk, passes data to the client component.
@@ -343,6 +351,7 @@ export default RecordingsReviewPage
 ## Task 3: Review UI — Server Action
 
 **Files:**
+
 - Create: `src/app/(payload)/admin/recordings-review/actions.ts`
 
 - [ ] **Step 1: Create the server action**
@@ -370,6 +379,7 @@ export async function saveDataset(data: unknown[]): Promise<{ ok: boolean; error
 ## Task 4: Review UI — Editable Client Component
 
 **Files:**
+
 - Create: `src/app/(payload)/admin/recordings-review/RecordingsReviewClient.tsx`
 
 The client component renders a full-page editable table grouped by artist. Each row is editable inline. A sticky "Save All" button at the top calls the server action.
@@ -606,6 +616,7 @@ export default RecordingsReviewClient
 ## Task 5: Import Script — `importRecordingsDataset.ts`
 
 **Files:**
+
 - Create: `scripts/wordpress/importRecordingsDataset.ts`
 
 - [ ] **Step 1: Create the import script**
@@ -724,12 +735,8 @@ async function main() {
     console.log(`\n${slug} (ID ${artist.id}): creating ${validEntries.length} recordings${DRY_RUN ? ' [DRY RUN]' : ''}`)
 
     for (const r of validEntries) {
-      const descriptionLines = r.partner
-        ? [...r.de.description, `Partner: ${r.partner}`]
-        : r.de.description
-      const descriptionLinesEn = r.partner
-        ? [...r.en.description, `Partner: ${r.partner}`]
-        : r.en.description
+      const descriptionLines = r.partner ? [...r.de.description, `Partner: ${r.partner}`] : r.de.description
+      const descriptionLinesEn = r.partner ? [...r.en.description, `Partner: ${r.partner}`] : r.en.description
 
       if (DRY_RUN) {
         console.log(`  [dry] "${r.de.title}" | ${r.label ?? '—'} | ${r.year ?? '—'} | ${r.role}`)
@@ -777,7 +784,10 @@ async function main() {
   }
 }
 
-main().catch((e) => { console.error(e); process.exit(1) })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
 ```
 
 ---
@@ -840,12 +850,12 @@ pnpm tsx scripts/wordpress/importRecordingsDataset.ts
 
 These will need manual correction after the JSON is generated:
 
-| Artist | Issue |
-|---|---|
+| Artist                                                  | Issue                                                                           |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | `marc-gruber`, `dominik-wagner`, `jonian-ilias-kadesha` | Label column = title (no label line in HTML) — clear label/catalogNumber fields |
-| `claire-huangci` | Parser puts "Partner: X" in label column — needs manual label/year fill |
-| `trio-gaspard` | DE/EN blocks misaligned by position — check EN titles match DE |
-| `mario-venzago` | DE/EN offset from row 11 — check EN titles match DE |
-| `tianwa-yang` | No years in HTML — fill years manually if desired |
-| `christian-zacharias`, `thomas-zehetmair` | Placeholder entries — fill all fields manually |
-| `monet-quintett` | Only EN HTML available — review DE titles match |
+| `claire-huangci`                                        | Parser puts "Partner: X" in label column — needs manual label/year fill         |
+| `trio-gaspard`                                          | DE/EN blocks misaligned by position — check EN titles match DE                  |
+| `mario-venzago`                                         | DE/EN offset from row 11 — check EN titles match DE                             |
+| `tianwa-yang`                                           | No years in HTML — fill years manually if desired                               |
+| `christian-zacharias`, `thomas-zehetmair`               | Placeholder entries — fill all fields manually                                  |
+| `monet-quintett`                                        | Only EN HTML available — review DE titles match                                 |
