@@ -219,36 +219,6 @@ export interface Artist {
       }[]
     | null;
   /**
-   * Group recordings by role. Add a role section for each role the artist performs.
-   */
-  discography?:
-    | {
-        /**
-         * Select the role for this group of recordings
-         */
-        role: 'soloist' | 'conductor' | 'ensemble_member' | 'chamber_musician' | 'accompanist';
-        /**
-         * List of recordings for this role. Each paragraph represents one recording. No images or embedded media allowed.
-         */
-        recordings: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        };
-        id?: string | null;
-      }[]
-    | null;
-  /**
    * Projects are automatically added when linked from Posts. Drag to reorder. Maximum 10 projects per artist.
    */
   projects?: (number | Post)[] | null;
@@ -738,13 +708,6 @@ export interface ArtistsSelect<T extends boolean = true> {
     | {
         title?: T;
         content?: T;
-        id?: T;
-      };
-  discography?:
-    | T
-    | {
-        role?: T;
-        recordings?: T;
         id?: T;
       };
   projects?: T;
