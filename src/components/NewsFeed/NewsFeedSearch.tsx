@@ -100,6 +100,7 @@ const NewsFeedSearch: React.FC<NewsFeedSearchProps> = ({ minChars = 3, debounceM
   }
 
   return (
+    // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
     <search className="relative w-full">
       <div className="relative">
         <Search className="text-muted-foreground absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2" />
