@@ -13,6 +13,7 @@
  */
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import LocaleSwitcher from './LocaleSwitcher'
 
@@ -40,13 +41,24 @@ vi.mock('@/actions/posts', () => ({
 }))
 
 describe('LocaleSwitcher', () => {
+  // Controlled wrapper — LocaleSwitcher now requires open/onOpenChange props
+  const renderLocaleSwitcher = () => {
+    const { rerender } = render(<LocaleSwitcherWrapper />)
+    return { rerender }
+  }
+
+  function LocaleSwitcherWrapper() {
+    const [open, setOpen] = React.useState(false)
+    return <LocaleSwitcher open={open} onOpenChange={setOpen} />
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   describe('Initial Rendering', () => {
     it('renders closed state with DE/EN button', () => {
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /Select language/i })
       expect(button).toBeInTheDocument()
@@ -55,7 +67,7 @@ describe('LocaleSwitcher', () => {
     })
 
     it('shows current locale in bold', () => {
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /Select language/i })
       const boldText = button.querySelector('.font-bold')
@@ -63,14 +75,14 @@ describe('LocaleSwitcher', () => {
     })
 
     it('has aria-expanded=false when closed', () => {
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /Select language/i })
       expect(button).toHaveAttribute('aria-expanded', 'false')
     })
 
     it('includes current language in aria-label', () => {
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /current: Deutsch/i })
       expect(button).toBeInTheDocument()
@@ -80,7 +92,7 @@ describe('LocaleSwitcher', () => {
   describe('Opening the Drawer', () => {
     it('shows language options when clicked', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /Select language/i })
       await user.click(button)
@@ -91,7 +103,7 @@ describe('LocaleSwitcher', () => {
 
     it('has aria-expanded=true when open', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /Select language/i })
       await user.click(button)
@@ -101,7 +113,7 @@ describe('LocaleSwitcher', () => {
 
     it('displays navigation with aria-label', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /Select language/i })
       await user.click(button)
@@ -114,7 +126,7 @@ describe('LocaleSwitcher', () => {
   describe('Language Options', () => {
     it('marks current language with aria-current', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       await user.click(screen.getByRole('button', { name: /Select language/i }))
 
@@ -124,7 +136,7 @@ describe('LocaleSwitcher', () => {
 
     it('applies bold styling to current language', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       await user.click(screen.getByRole('button', { name: /Select language/i }))
 
@@ -134,7 +146,7 @@ describe('LocaleSwitcher', () => {
 
     it('has lang attribute for each language option', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       await user.click(screen.getByRole('button', { name: /Select language/i }))
 
@@ -149,7 +161,7 @@ describe('LocaleSwitcher', () => {
   describe('Keyboard Interactions', () => {
     it('closes drawer on Escape key', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       // Open drawer
       const button = screen.getByRole('button', { name: /Select language/i })
@@ -167,7 +179,7 @@ describe('LocaleSwitcher', () => {
 
     it('does not close on Escape when already closed', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /Select language/i })
 
@@ -182,7 +194,7 @@ describe('LocaleSwitcher', () => {
   describe('Focus Management', () => {
     it('focuses first language option when drawer opens', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /Select language/i })
       await user.click(button)
@@ -199,7 +211,7 @@ describe('LocaleSwitcher', () => {
       const user = userEvent.setup()
       render(
         <div>
-          <LocaleSwitcher />
+          <LocaleSwitcherWrapper />
           <div data-testid="outside">Outside element</div>
         </div>
       )
@@ -220,7 +232,7 @@ describe('LocaleSwitcher', () => {
 
     it('stays open when clicking inside drawer', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       // Open drawer
       await user.click(screen.getByRole('button', { name: /Select language/i }))
@@ -236,14 +248,14 @@ describe('LocaleSwitcher', () => {
 
   describe('Screen Reader Support', () => {
     it('has ARIA live region for announcements', () => {
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const liveRegion = document.querySelector('output[aria-live="polite"]')
       expect(liveRegion).toBeInTheDocument()
     })
 
     it('has sr-only class on announcement region', () => {
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const liveRegion = document.querySelector('output')
       expect(liveRegion).toHaveClass('sr-only')
@@ -263,7 +275,7 @@ describe('LocaleSwitcher', () => {
       }
       vi.mocked(useRouter).mockReturnValue(mockRouter)
 
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       // Open drawer and click English
       await user.click(screen.getByRole('button', { name: /Select language/i }))
@@ -292,7 +304,7 @@ describe('LocaleSwitcher', () => {
       }
       vi.mocked(useRouter).mockReturnValue(mockRouter)
 
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       await user.click(screen.getByRole('button', { name: /Select language/i }))
       await user.click(screen.getByRole('button', { name: 'English' }))
@@ -314,7 +326,7 @@ describe('LocaleSwitcher', () => {
       }
       vi.mocked(useRouter).mockReturnValue(mockRouter)
 
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       await user.click(screen.getByRole('button', { name: /Select language/i }))
       await user.click(screen.getByRole('button', { name: 'English' }))
@@ -333,7 +345,7 @@ describe('LocaleSwitcher', () => {
       // Start with pathname '/'
       vi.mocked(usePathname).mockReturnValue('/')
 
-      const { rerender } = render(<LocaleSwitcher />)
+      const { rerender } = render(<LocaleSwitcherWrapper />)
 
       // Open drawer
       await user.click(screen.getByRole('button', { name: /Select language/i }))
@@ -341,7 +353,7 @@ describe('LocaleSwitcher', () => {
 
       // Simulate pathname change
       vi.mocked(usePathname).mockReturnValue('/artists')
-      rerender(<LocaleSwitcher />)
+      rerender(<LocaleSwitcherWrapper />)
 
       // Drawer should be closed
       await waitFor(() => {
@@ -352,7 +364,7 @@ describe('LocaleSwitcher', () => {
 
   describe('Visual Styling', () => {
     it('has consistent padding in both states', () => {
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const container = document.querySelector('.px-4')
       expect(container).toBeInTheDocument()
@@ -360,7 +372,7 @@ describe('LocaleSwitcher', () => {
 
     it('expands to correct width when open', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const button = screen.getByRole('button', { name: /Select language/i })
       await user.click(button)
@@ -370,7 +382,7 @@ describe('LocaleSwitcher', () => {
     })
 
     it('uses justify-end for consistent positioning', () => {
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       const container = document.querySelector('.justify-end')
       expect(container).toBeInTheDocument()
@@ -401,7 +413,7 @@ describe('LocaleSwitcher', () => {
         vi.mocked(useParams).mockReturnValue({ locale: 'de', slug: 'konzert-in-wien' })
         vi.mocked(resolvePostSlugInLocale).mockResolvedValue('concert-in-vienna')
 
-        render(<LocaleSwitcher />)
+        render(<LocaleSwitcherWrapper />)
         await user.click(screen.getByRole('button', { name: /Select language/i }))
         await user.click(screen.getByRole('button', { name: 'English' }))
 
@@ -427,7 +439,7 @@ describe('LocaleSwitcher', () => {
       vi.mocked(useParams).mockReturnValue({ locale: 'de', slug: 'german-only-post' })
       vi.mocked(resolvePostSlugInLocale).mockResolvedValue(null)
 
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
       await user.click(screen.getByRole('button', { name: /Select language/i }))
       await user.click(screen.getByRole('button', { name: 'English' }))
 
@@ -447,7 +459,7 @@ describe('LocaleSwitcher', () => {
       vi.mocked(useRouter).mockReturnValue(buildMockRouter())
       vi.mocked(usePathname).mockReturnValue('/artists/[slug]')
 
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
       await user.click(screen.getByRole('button', { name: /Select language/i }))
       await user.click(screen.getByRole('button', { name: 'English' }))
 
@@ -460,7 +472,7 @@ describe('LocaleSwitcher', () => {
   describe('Configuration', () => {
     it('supports German and English locales', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       await user.click(screen.getByRole('button', { name: /Select language/i }))
 
@@ -470,7 +482,7 @@ describe('LocaleSwitcher', () => {
 
     it('displays native language names', async () => {
       const user = userEvent.setup()
-      render(<LocaleSwitcher />)
+      render(<LocaleSwitcherWrapper />)
 
       await user.click(screen.getByRole('button', { name: /Select language/i }))
 

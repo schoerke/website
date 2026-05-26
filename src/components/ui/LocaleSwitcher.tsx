@@ -11,12 +11,16 @@ const SUPPORTED_LOCALES = [
   { code: 'en', label: 'English' },
 ]
 
-const LocaleSwitcher: React.FC = () => {
+// onOpenChange is always a useState setter (stable identity), so omitting it from
+// effect dependency arrays is intentional and safe.
+const LocaleSwitcher: React.FC<{ open: boolean; onOpenChange: (open: boolean) => void }> = ({
+  open,
+  onOpenChange,
+}) => {
   const pathname = usePathname()
   const params = useParams()
   const router = useRouter()
   const currentLocale = useLocale()
-  const [open, setOpen] = useState(false)
   const [announcement, setAnnouncement] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
   const firstOptionRef = useRef<HTMLButtonElement>(null)
@@ -59,7 +63,7 @@ const LocaleSwitcher: React.FC = () => {
       })
     }
 
-    setOpen(false)
+    onOpenChange(false)
 
     // Clear announcement after screen reader has read it
     setTimeout(() => setAnnouncement(''), 1000)
@@ -69,13 +73,13 @@ const LocaleSwitcher: React.FC = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false)
+        onOpenChange(false)
       }
     }
 
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && open) {
-        setOpen(false)
+        onOpenChange(false)
       }
     }
 
@@ -100,7 +104,7 @@ const LocaleSwitcher: React.FC = () => {
   // Close drawer on route change
   useEffect(() => {
     if (open) {
-      setOpen(false)
+      onOpenChange(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
@@ -147,7 +151,7 @@ const LocaleSwitcher: React.FC = () => {
 
         {/* Language code button - shows all options with active one bolded */}
         <button
-          onClick={() => setOpen(!open)}
+          onClick={() => onOpenChange(!open)}
           className="flex shrink-0 cursor-pointer items-center justify-center gap-1 transition-colors hover:text-gray-900"
           aria-label={`Select language (current: ${SUPPORTED_LOCALES.find((l) => l.code === currentLocale)?.label})`}
           aria-expanded={open}
