@@ -245,7 +245,7 @@ describe('InstrumentFilter', () => {
     it('should handle empty instruments array', () => {
       renderWithIntl(<InstrumentFilter instruments={[]} selected={[]} onChange={vi.fn()} />)
 
-      const group = screen.getByRole('group')
+      const group = screen.getByRole('group', { name: 'Filter artists by instrument' })
       expect(group.querySelectorAll('button')).toHaveLength(0)
     })
 

@@ -37,13 +37,16 @@ const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, select
   const sortedInstruments = sortInstruments(instruments)
 
   return (
-    <div className="mb-6 flex flex-wrap justify-center gap-2">
+    <div
+      role="group"
+      aria-label={tArtists('filterByInstrument')}
+      className="mb-6 flex flex-wrap justify-center gap-2"
+    >
       <ToggleGroup
         type="multiple"
         value={selected}
         onValueChange={onChange}
-        className="flex flex-wrap justify-center gap-2"
-        aria-label={tArtists('filterByInstrument')}
+        className="contents"
       >
         {sortedInstruments.map((instrument) => {
           const translationKey = instrument as Parameters<typeof t>[0]
