@@ -1,5 +1,4 @@
 import { INSTRUMENTS } from '@/constants/options'
-import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { createSlugHook } from '@/utils/slug'
 import { validateURL, validateVideoURL } from '@/validators/fields'
 import type { TFunction } from '@payloadcms/translations'
@@ -224,81 +223,7 @@ export const Artists: CollectionConfig = {
             },
           ],
         },
-        {
-          label: {
-            en: 'Discography',
-            de: 'Diskographie',
-          },
-          fields: [
-            {
-              name: 'discography',
-              type: 'array',
-              required: false,
-              label: {
-                en: 'Discography',
-                de: 'Diskographie',
-              },
-              labels: {
-                singular: {
-                  en: 'Role Section',
-                  de: 'Rollenabschnitt',
-                },
-                plural: {
-                  en: 'Role Sections',
-                  de: 'Rollenabschnitte',
-                },
-              },
-              admin: {
-                description: {
-                  en: 'Group recordings by role. Add a role section for each role the artist performs.',
-                  de: 'Aufnahmen nach Rolle gruppieren. Fügen Sie für jede Rolle, die der Künstler ausübt, einen Rollenabschnitt hinzu.',
-                },
-                initCollapsed: true,
-                components: {
-                  RowLabel: './collections/components/DiscographyRowLabel',
-                },
-              },
-              fields: [
-                {
-                  name: 'role',
-                  type: 'select',
-                  required: true,
-                  options: RECORDING_ROLES.map((opt) => ({
-                    value: opt.value,
-                    label: ({ t }: { t: TFunction }) =>
-                      t(`custom:recordingRoles:${opt.value}` as Parameters<typeof t>[0]),
-                  })),
-                  label: {
-                    en: 'Role',
-                    de: 'Rolle',
-                  },
-                  admin: {
-                    description: {
-                      en: 'Select the role for this group of recordings',
-                      de: 'Wählen Sie die Rolle für diese Aufnahmengruppe',
-                    },
-                  },
-                },
-                {
-                  name: 'recordings',
-                  type: 'richText',
-                  required: true,
-                  localized: true,
-                  label: {
-                    en: 'Recordings',
-                    de: 'Aufnahmen',
-                  },
-                  admin: {
-                    description: {
-                      en: 'List of recordings for this role. Each paragraph represents one recording. No images or embedded media allowed.',
-                      de: 'Liste der Aufnahmen für diese Rolle. Jeder Absatz stellt eine Aufnahme dar. Keine Bilder oder eingebetteten Medien erlaubt.',
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-        },
+
         {
           label: {
             en: 'Projects',
