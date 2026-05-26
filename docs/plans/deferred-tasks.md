@@ -45,6 +45,13 @@ Full plan exists but nothing implemented yet:
 
 ---
 
+## Image Performance
+
+- **Static imports for core assets** — logo, icon, default avatar currently served via `/api/images/file/...` (serverless function). Move to static imports for build-time optimization, eliminating serverless cold start on these assets. See `docs/optimizations.md` option 4.
+- **`*.public.blob.vercel-storage.com` in `remotePatterns`** — hostname missing from `next.config.mjs`. Likely not breaking (Blob URLs bypass optimizer check) but should be added for correctness.
+
+---
+
 ## ArtistLinks (from `2025-12-12-artist-links-component-design.md`)
 
 Implemented, but the design called for a dedicated `ArtistLinksHomepage.tsx` sub-component and spec file. Currently the
