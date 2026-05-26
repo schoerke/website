@@ -177,7 +177,6 @@ const en = {
       socialMedia: {
         visitFacebook: 'Visit us on Facebook',
         visitInstagram: 'Visit us on Instagram',
-        visitTwitter: 'Visit us on Twitter',
         visitYouTube: 'Visit us on YouTube',
       },
     },

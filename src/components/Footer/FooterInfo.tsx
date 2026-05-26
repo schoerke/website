@@ -85,7 +85,6 @@ const FooterInfo = async ({ locale }: FooterInfoProps) => {
                   `socialMedia.${translationKey}` as
                     | 'socialMedia.visitFacebook'
                     | 'socialMedia.visitInstagram'
-                    | 'socialMedia.visitTwitter'
                     | 'socialMedia.visitYouTube'
                 )}
                 target="_blank"
