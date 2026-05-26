@@ -54,6 +54,14 @@ export const Posts: CollectionConfig = {
         ],
       },
     },
+    /**
+     * Normalized version of content for diacritic-insensitive search.
+     * Auto-populated from content field via beforeChange hook.
+     * - Removes diacritics (é → e, ü → u)
+     * - Converts to lowercase
+     * - Hidden from admin UI
+     * - Indexed for fast search performance
+     */
     {
       name: 'normalizedContent',
       type: 'text',
@@ -65,7 +73,9 @@ export const Posts: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ siblingData }: { siblingData: { content?: unknown } }) => {
-            return siblingData.content ? normalizeText(extractLexicalText(siblingData.content as Parameters<typeof extractLexicalText>[0])) : ''
+            return siblingData.content
+              ? normalizeText(extractLexicalText(siblingData.content as Parameters<typeof extractLexicalText>[0]))
+              : ''
           },
         ],
       },
