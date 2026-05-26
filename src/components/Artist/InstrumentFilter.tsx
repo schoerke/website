@@ -37,11 +37,8 @@ const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, select
   const sortedInstruments = sortInstruments(instruments)
 
   return (
-    <div
-      role="group"
-      aria-label={tArtists('filterByInstrument')}
-      className="mb-6 flex flex-wrap justify-center gap-2"
-    >
+    <fieldset className="mb-6 flex flex-wrap justify-center gap-2 border-0 p-0 m-0">
+      <legend className="sr-only">{tArtists('filterByInstrument')}</legend>
       <ToggleGroup
         type="multiple"
         value={selected}
@@ -70,7 +67,7 @@ const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, select
           {tArtists('clearAll')}
         </button>
       )}
-    </div>
+    </fieldset>
   )
 }
 
