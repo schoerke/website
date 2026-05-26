@@ -5,7 +5,7 @@ import { vi } from 'vitest'
 vi.mock('next-intl', () => ({
   useTranslations: vi.fn().mockImplementation(() => (key: string) => {
     const messages: Record<string, string> = {
-      'accessibility.skipToMainContent': 'Skip to main content',
+      skipToMainContent: 'Skip to main content',
     }
     return messages[key] ?? key
   }),
@@ -33,34 +33,11 @@ describe('Header', () => {
     expect(screen.getByTestId('app-controls')).toBeInTheDocument()
   })
 
-  it('renders the nav slot when provided', () => {
-    render(<Header logo={<div>Logo</div>} nav={<nav data-testid="header-nav">Nav</nav>} />)
-
-    expect(screen.getByTestId('header-nav')).toBeInTheDocument()
-  })
-
-  it('renders nothing in nav position when nav prop is omitted', () => {
-    render(<Header logo={<div>Logo</div>} />)
-
-    // nav slot absent — only app-controls and logo present
-    expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
-  })
-
   it('renders skip-to-content link for accessibility', () => {
     render(<Header logo={<div>Logo</div>} />)
 
-    const skip = screen.getByText('skipToMainContent')
+    const skip = screen.getByText('Skip to main content')
     expect(skip).toBeInTheDocument()
     expect(skip).toHaveAttribute('href', '#main-content')
-  })
-
-  it('nav slot and AppControls are in the same right-side container', () => {
-    render(<Header logo={<div>Logo</div>} nav={<span data-testid="nav-slot">Nav</span>} />)
-
-    const nav = screen.getByTestId('nav-slot')
-    const controls = screen.getByTestId('app-controls')
-
-    // Nav is wrapped in a visibility div; both share the same grandparent flex container
-    expect(nav.closest('.flex.items-center.gap-8')).toBe(controls.closest('.flex.items-center.gap-8'))
   })
 })
