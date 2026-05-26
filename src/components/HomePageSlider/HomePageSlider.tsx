@@ -126,7 +126,7 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
               alt={slide.alt}
               fill
               className="object-cover object-top"
-              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
+              sizes="(max-width: 1024px) 100vw, 65vw"
               priority={idx === 0}
               ref={idx === 0 ? firstImage.ref : undefined}
               onLoad={idx === 0 ? firstImage.onLoad : undefined}

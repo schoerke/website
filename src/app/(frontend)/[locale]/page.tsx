@@ -1,4 +1,5 @@
 import ArtistMasonryGrid from '@/components/Artist/ArtistMasonryGrid'
+import HomePageSidebar from '@/components/HomePageSidebar/HomePageSidebar'
 import type { HomePageSlide } from '@/components/HomePageSlider/HomePageSlider'
 import HomePageSlider from '@/components/HomePageSlider/HomePageSlider'
 import SchoerkeLink from '@/components/ui/SchoerkeLink'
@@ -69,7 +70,10 @@ const HomePage = async ({ params }: HomePageProps) => {
       {newsSlides.length > 0 && (
         <section className="mb-16">
           <h2 className="font-playfair mb-8 text-4xl font-bold sm:text-5xl">{t('newsHeading')}</h2>
-          <HomePageSlider slides={newsSlides} interval={9000} />
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[65fr_35fr]">
+            <HomePageSlider slides={newsSlides} interval={9000} />
+            <HomePageSidebar />
+          </div>
         </section>
       )}
 
