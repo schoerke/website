@@ -1,0 +1,20 @@
+name: Warm Cache
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  warm:
+    name: Warm homepage cache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Vercel deployment
+        run: sleep 360
+
+      - name: Warm DE homepage
+        run: curl -s -o /dev/null -w "%{http_code} %{time_total}s" https://schoerke-website.vercel.app/de
+
+      - name: Warm EN homepage
+        run: curl -s -o /dev/null -w "%{http_code} %{time_total}s" https://schoerke-website.vercel.app/en
