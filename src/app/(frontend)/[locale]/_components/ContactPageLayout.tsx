@@ -1,12 +1,13 @@
 import TeamMemberCard from '@/components/Employee/TeamMemberCard'
+import ContactPageSidebar from '@/components/ContactPageSidebar/ContactPageSidebar'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import type { Employee, Page, Image as PayloadImage } from '@/payload-types'
 import Image from 'next/image'
 import React from 'react'
 
 interface ContactPageLayoutProps {
-  page: Page
-  locale: string
+  title: string
+  locale: 'de' | 'en'
   image?: PayloadImage | null
   teamPage?: Page | null
   employees?: Employee[]
@@ -15,7 +16,7 @@ interface ContactPageLayoutProps {
 }
 
 const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
-  page,
+  title,
   locale,
   image,
   teamPage,
@@ -24,24 +25,20 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
   mobileLabel = 'Mobile',
 }) => {
   return (
-    <div className="mx-auto flex max-w-7xl flex-col px-4 py-12 sm:px-6 lg:p-8">
-      <h1 className="font-playfair mb-12 mt-4 text-5xl font-bold sm:text-6xl lg:text-7xl">{page.title}</h1>
-      <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-8 lg:gap-12">
-        <div className="prose max-w-none md:w-1/2">
-          <PayloadRichText content={page.content} locale={locale} />
-        </div>
+    <div className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
+      <h1 className="font-playfair mb-8 text-4xl font-bold sm:text-5xl">{title}</h1>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[75fr_25fr] lg:items-start">
+        <ContactPageSidebar />
         {image && (
-          <div className="mb-0 md:mb-0 md:w-1/2">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg">
-              <Image
-                src={image.url || ''}
-                alt={image.alt || 'Wiesbaden, Germany'}
-                fill
-                className="object-cover"
-                sizes="(min-width: 768px) 50vw, 100vw"
-                priority
-              />
-            </div>
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg lg:order-first">{/* lg:order-first: sidebar is first in DOM (shows above image on mobile); image moves to left column on desktop */}
+            <Image
+              src={image.url || ''}
+              alt={image.alt || 'Wiesbaden, Germany'}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 75vw"
+              priority
+            />
           </div>
         )}
       </div>
@@ -51,7 +48,7 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
         <div className="mt-16">
           {teamPage && (
             <div className="mb-8">
-              <h2 id="team" className="font-playfair mb-6 text-4xl font-bold sm:text-5xl lg:text-6xl">
+              <h2 id="team" className="font-playfair mb-6 text-4xl font-bold sm:text-5xl">
                 {teamPage.title}
               </h2>
               <div className="prose max-w-none">

@@ -28,7 +28,6 @@ describe('getContactPageData', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(getPageBySlug).mockImplementation(async (slug) => {
-      if (slug === 'contact') return mockPage('Contact', 'contact') as never
       if (slug === 'team') return mockPage('Team', 'team') as never
       return null as never
     })
@@ -38,19 +37,24 @@ describe('getContactPageData', () => {
     vi.mocked(getImageByFilename).mockResolvedValue(mockImage as never)
   })
 
-  it('fetches contact page, team page, employees and image in parallel', async () => {
-    await getContactPageData('contact', 'en')
+  it('fetches team page, employees and image in parallel', async () => {
+    await getContactPageData('en')
 
-    expect(getPageBySlug).toHaveBeenCalledWith('contact', 'en')
     expect(getPageBySlug).toHaveBeenCalledWith('team', 'en')
     expect(getEmployees).toHaveBeenCalledWith('en')
     expect(getImageByFilename).toHaveBeenCalledWith('wiesbaden.webp')
   })
 
-  it('returns page, teamPage, employees, image and labels', async () => {
-    const result = await getContactPageData('contact', 'en')
+  it('does not fetch contact page from CMS', async () => {
+    await getContactPageData('en')
 
-    expect(result.page?.title).toBe('Contact')
+    expect(getPageBySlug).toHaveBeenCalledTimes(1)
+    expect(getPageBySlug).toHaveBeenCalledWith('team', 'en')
+  })
+
+  it('returns teamPage, employees, image and labels', async () => {
+    const result = await getContactPageData('en')
+
     expect(result.teamPage?.title).toBe('Team')
     expect(result.employees).toHaveLength(2)
     expect(result.wiesbadenImage?.url).toBe('/wiesbaden.webp')
@@ -58,28 +62,9 @@ describe('getContactPageData', () => {
     expect(result.mobileLabel).toBe('mobile')
   })
 
-  it('returns null page when CMS page does not exist', async () => {
-    vi.mocked(getPageBySlug).mockResolvedValue(null as never)
-    const result = await getContactPageData('kontakt', 'de')
-    expect(result.page).toBeNull()
-  })
-
-  it('works with kontakt slug for DE locale', async () => {
-    vi.mocked(getPageBySlug).mockImplementation(async (slug) => {
-      if (slug === 'kontakt') return mockPage('Kontakt', 'kontakt') as never
-      if (slug === 'team') return mockPage('Team', 'team') as never
-      return null as never
-    })
-
-    const result = await getContactPageData('kontakt', 'de')
-
-    expect(getPageBySlug).toHaveBeenCalledWith('kontakt', 'de')
-    expect(result.page?.title).toBe('Kontakt')
-  })
-
   it('returns empty employees array when none exist', async () => {
     vi.mocked(getEmployees).mockResolvedValue(createMockPaginatedDocs([]) as never)
-    const result = await getContactPageData('contact', 'en')
+    const result = await getContactPageData('en')
     expect(result.employees).toHaveLength(0)
   })
 })
