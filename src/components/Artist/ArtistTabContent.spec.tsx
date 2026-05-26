@@ -3,14 +3,7 @@ import type { Artist, Recording, Repertoire } from '@/payload-types'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import {
-  BiographyTab,
-  ConcertDatesTab,
-  DiscographyTab,
-  MediaTab,
-  RecordingsTab,
-  RepertoireTab,
-} from './ArtistTabContent'
+import { BiographyTab, ConcertDatesTab, MediaTab, RecordingsTab, RepertoireTab } from './ArtistTabContent'
 
 // Mock next-intl navigation (required for Link component in ProjectsTab)
 vi.mock('@/i18n/navigation', () => ({
@@ -224,68 +217,6 @@ describe('ArtistTabContent', () => {
 
       // Rich text component should still be present (just showing different content)
       expect(screen.getByTestId('rich-text')).toBeInTheDocument()
-    })
-  })
-
-  describe('DiscographyTab', () => {
-    it('should render empty message when no content', () => {
-      const emptyMessage = 'No discography available'
-      render(<DiscographyTab content={[]} emptyMessage={emptyMessage} />)
-
-      expect(screen.getByText(emptyMessage)).toBeInTheDocument()
-    })
-
-    it('should render empty message when content is undefined', () => {
-      const emptyMessage = 'No discography available'
-      render(<DiscographyTab content={undefined} emptyMessage={emptyMessage} />)
-
-      expect(screen.getByText(emptyMessage)).toBeInTheDocument()
-    })
-
-    it('should render discography sections', () => {
-      const content: Artist['discography'] = [
-        {
-          id: '1',
-          role: 'conductor',
-          recordings: createMockBiography(),
-        },
-      ]
-      render(<DiscographyTab content={content} emptyMessage="No discography" />)
-
-      expect(screen.getByText('conductor')).toBeInTheDocument()
-      expect(screen.getByTestId('rich-text')).toBeInTheDocument()
-    })
-
-    it('should format role names with underscores', () => {
-      const content: Artist['discography'] = [
-        {
-          id: '1',
-          role: 'ensemble_member',
-          recordings: createMockBiography(),
-        },
-      ]
-      render(<DiscographyTab content={content} emptyMessage="No discography" />)
-
-      expect(screen.getByText('ensemble member')).toBeInTheDocument()
-    })
-
-    it('should render multiple sections', () => {
-      const content: Artist['discography'] = [
-        {
-          id: '1',
-          role: 'conductor',
-          recordings: createMockBiography(),
-        },
-        {
-          id: '2',
-          role: 'soloist',
-          recordings: createMockBiography(),
-        },
-      ]
-      render(<DiscographyTab content={content} emptyMessage="No discography" />)
-
-      expect(screen.getByText('conductor')).toBeInTheDocument()
-      expect(screen.getByText('soloist')).toBeInTheDocument()
     })
   })
 

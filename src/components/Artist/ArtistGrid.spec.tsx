@@ -81,7 +81,6 @@ function createMockArtist(overrides?: Partial<Artist>): Artist {
     quote: null,
     contactPersons: null,
     repertoire: null,
-    discography: null,
     downloads: undefined,
     videoLinks: null,
     homepageURL: null,
