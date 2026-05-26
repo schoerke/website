@@ -6,6 +6,8 @@ type LocaleCode = 'de' | 'en' | 'all'
 /**
  * Retrieves all published recordings from the database.
  * Uses depth: 2 to populate artist relationships and their related data.
+ * Returns recordings in reverse chronological order (newest first).
+ * Recordings without a year are sorted by creation date.
  *
  * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de'
  * @returns A promise resolving to all published recordings with populated relationships
@@ -26,6 +28,7 @@ export const getAllRecordings = async (locale?: LocaleCode) => {
     locale: locale || 'de',
     depth: 2, // Populate artist relationships and their related data
     limit: 0, // Return all recordings (no limit)
+    sort: '-recordingYear,-createdAt', // Reverse chronological, fallback to creation date for undated recordings
   })
 }
 
@@ -33,6 +36,8 @@ export const getAllRecordings = async (locale?: LocaleCode) => {
  * Retrieves all published recordings associated with a specific artist.
  * Queries the artists relationship field for matching artist IDs.
  * Uses depth: 2 to populate artist relationships and cover art.
+ * Returns recordings in reverse chronological order (newest first).
+ * Recordings without a year are sorted by creation date.
  *
  * @param artistId - The artist's unique identifier
  * @param locale - Optional locale code ('de', 'en', or 'all'). Defaults to 'de'
@@ -57,6 +62,7 @@ export const getRecordingsByArtist = async (artistId: string, locale?: LocaleCod
     locale: locale || 'de',
     depth: 2, // Populate artist relationships and cover art
     limit: 0, // Return all recordings for artist (no limit)
+    sort: '-recordingYear,-createdAt', // Reverse chronological, fallback to creation date for undated recordings
   })
 }
 
