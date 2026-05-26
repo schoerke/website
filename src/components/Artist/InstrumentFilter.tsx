@@ -37,7 +37,7 @@ const InstrumentFilter: React.FC<InstrumentFilterProps> = ({ instruments, select
   const sortedInstruments = sortInstruments(instruments)
 
   return (
-    <fieldset className="mb-6 flex flex-wrap justify-center gap-2 border-0 p-0 m-0">
+    <fieldset className="mb-6 flex flex-wrap justify-center gap-2 border-0 p-0 m-0 min-w-0">
       <legend className="sr-only">{tArtists('filterByInstrument')}</legend>
       <ToggleGroup
         type="multiple"
