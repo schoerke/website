@@ -345,6 +345,11 @@ describe('Post Service', () => {
                   contains: expect.any(String),
                 },
               },
+              {
+                normalizedContent: {
+                  contains: expect.any(String),
+                },
+              },
             ],
           }),
         })
@@ -512,6 +517,11 @@ describe('Post Service', () => {
                   contains: expect.any(String),
                 },
               },
+              {
+                normalizedContent: {
+                  contains: expect.any(String),
+                },
+              },
             ],
           }),
         })
@@ -672,9 +682,7 @@ describe('Post Service', () => {
 
       await getNewsPostCountByArtist(1)
 
-      expect(mockPayload.count).toHaveBeenCalledWith(
-        expect.objectContaining({ locale: 'de' })
-      )
+      expect(mockPayload.count).toHaveBeenCalledWith(expect.objectContaining({ locale: 'de' }))
     })
   })
 })
