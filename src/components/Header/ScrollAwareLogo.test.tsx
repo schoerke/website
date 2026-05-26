@@ -15,6 +15,8 @@ import { describe, expect, it, beforeEach, afterEach } from 'vitest'
 import ScrollAwareLogo from './ScrollAwareLogo'
 
 const defaultProps = {
+  iconUrl: '/icon.svg',
+  iconAlt: 'Icon logo',
   fullUrl: '/full.svg',
   fullAlt: 'Full logo',
 }
@@ -34,21 +36,42 @@ describe('ScrollAwareLogo', () => {
     expect(screen.getByAltText('Full logo')).toBeInTheDocument()
   })
 
-  it('renders at full height (80px) at scroll top', () => {
+  it('renders the icon logo', () => {
     render(<ScrollAwareLogo {...defaultProps} />)
 
-    expect(screen.getByAltText('Full logo')).toHaveStyle({ height: '80px' })
+    expect(screen.getByAltText('Icon logo')).toBeInTheDocument()
   })
 
-  it('renders at minimum height (64px) when fully scrolled past range', () => {
+  it('icon logo is visible on mobile (sm:hidden)', () => {
+    render(<ScrollAwareLogo {...defaultProps} />)
+
+    const icon = screen.getByAltText('Icon logo')
+    expect(icon.closest('div') ?? icon).toHaveClass('sm:hidden')
+  })
+
+  it('full logo is hidden on mobile (hidden sm:block)', () => {
+    render(<ScrollAwareLogo {...defaultProps} />)
+
+    const full = screen.getByAltText('Full logo')
+    expect(full.closest('div') ?? full).toHaveClass('hidden')
+    expect(full.closest('div') ?? full).toHaveClass('sm:block')
+  })
+
+  it('renders at full height (64px) at scroll top', () => {
+    render(<ScrollAwareLogo {...defaultProps} />)
+
+    expect(screen.getByAltText('Full logo')).toHaveStyle({ height: '64px' })
+  })
+
+  it('renders at minimum height (48px) when fully scrolled past range', () => {
     Object.defineProperty(window, 'scrollY', { writable: true, value: 200 })
     render(<ScrollAwareLogo {...defaultProps} />)
 
     const img = screen.getByAltText('Full logo') as HTMLElement
-    expect(img.style.height).toBe('64px')
+    expect(img.style.height).toBe('48px')
   })
 
-  it('interpolates height continuously between 80px and 64px', () => {
+  it('interpolates height continuously between 64px and 48px', () => {
     render(<ScrollAwareLogo {...defaultProps} />)
 
     act(() => {
@@ -57,8 +80,8 @@ describe('ScrollAwareLogo', () => {
     })
 
     const img = screen.getByAltText('Full logo') as HTMLElement
-    // At 50% scroll: 80 - 0.5 * (80 - 64) = 72px
-    expect(img.style.height).toBe('72px')
+    // At 50% scroll: 64 - 0.5 * (64 - 48) = 56px
+    expect(img.style.height).toBe('56px')
   })
 
   it('restores to full height when scrolling back to top', () => {
@@ -74,7 +97,7 @@ describe('ScrollAwareLogo', () => {
       window.dispatchEvent(new Event('scroll'))
     })
 
-    expect((screen.getByAltText('Full logo') as HTMLElement).style.height).toBe('80px')
+    expect((screen.getByAltText('Full logo') as HTMLElement).style.height).toBe('64px')
   })
 
   it('syncs height on mount when page is already scrolled', () => {
@@ -82,13 +105,20 @@ describe('ScrollAwareLogo', () => {
 
     render(<ScrollAwareLogo {...defaultProps} />)
 
-    expect((screen.getByAltText('Full logo') as HTMLElement).style.height).toBe('64px')
+    expect((screen.getByAltText('Full logo') as HTMLElement).style.height).toBe('48px')
   })
 
-  it('renders fallback text when fullUrl is empty', () => {
-    render(<ScrollAwareLogo fullUrl="" fullAlt="Logo" />)
+  it('renders fallback text when iconUrl is empty', () => {
+    render(<ScrollAwareLogo iconUrl="" iconAlt="Logo" fullUrl="/full.svg" fullAlt="Full logo" />)
 
     expect(screen.getByText('KSSchoerke')).toBeInTheDocument()
+  })
+
+  it('renders nothing in desktop slot when fullUrl is empty', () => {
+    render(<ScrollAwareLogo iconUrl="/icon.svg" iconAlt="Icon" fullUrl="" fullAlt="Logo" />)
+
+    // Desktop div exists but contains no image
+    expect(screen.queryByAltText('Logo')).not.toBeInTheDocument()
   })
 
   it('removes scroll listener on unmount', () => {

@@ -4,16 +4,18 @@ import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 import { Link } from '@/i18n/navigation'
 
-const LOGO_HEIGHT_FULL = 80
-const LOGO_HEIGHT_SMALL = 64
+const LOGO_HEIGHT_FULL = 64
+const LOGO_HEIGHT_SMALL = 48
 const SCROLL_RANGE = 80 // px of scroll over which transition completes
 
 interface ScrollAwareLogoProps {
+  iconUrl: string
+  iconAlt: string
   fullUrl: string
   fullAlt: string
 }
 
-const ScrollAwareLogo: React.FC<ScrollAwareLogoProps> = ({ fullUrl, fullAlt }) => {
+const ScrollAwareLogo: React.FC<ScrollAwareLogoProps> = ({ iconUrl, iconAlt, fullUrl, fullAlt }) => {
   const imgRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
@@ -30,21 +32,39 @@ const ScrollAwareLogo: React.FC<ScrollAwareLogoProps> = ({ fullUrl, fullAlt }) =
 
   return (
     <Link href="/" aria-label="Home" className="flex items-center">
-      {fullUrl ? (
-        <Image
-          ref={imgRef}
-          src={fullUrl}
-          alt={fullAlt}
-          width={400}
-          height={120}
-          priority
-          unoptimized
-          className="hover:opacity-80"
-          style={{ width: 'auto', height: `${LOGO_HEIGHT_FULL}px` }}
-        />
-      ) : (
-        <span className="text-lg font-semibold">KSSchoerke</span>
-      )}
+      {/* Icon-only: mobile */}
+      <div className="sm:hidden">
+        {iconUrl ? (
+          <Image
+            src={iconUrl}
+            alt={iconAlt}
+            width={120}
+            height={120}
+            priority
+            unoptimized
+            className="hover:opacity-80"
+            style={{ width: 'auto', height: '40px' }}
+          />
+        ) : (
+          <span className="text-lg font-semibold">KSSchoerke</span>
+        )}
+      </div>
+      {/* Full logo: sm and up, scroll-shrink enabled */}
+      <div className="hidden sm:block">
+        {fullUrl && (
+          <Image
+            ref={imgRef}
+            src={fullUrl}
+            alt={fullAlt}
+            width={400}
+            height={120}
+            priority
+            unoptimized
+            className="hover:opacity-80"
+            style={{ width: 'auto', height: `${LOGO_HEIGHT_FULL}px` }}
+          />
+        )}
+      </div>
     </Link>
   )
 }
