@@ -22,6 +22,9 @@ vi.mock('@/components/Artist/ArtistMasonryGrid', () => ({
       artists.map((a) => React.createElement('span', { key: a.id }, a.name))
     ),
 }))
+vi.mock('@/components/HomePageSidebar/HomePageSidebar', () => ({
+  default: () => React.createElement('aside', { 'data-testid': 'homepage-sidebar' }),
+}))
 vi.mock('@/components/ui/SchoerkeLink', () => ({
   default: ({ href, children }: { href: string; children: React.ReactNode }) =>
     React.createElement('a', { href }, children),
