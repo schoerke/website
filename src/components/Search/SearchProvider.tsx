@@ -188,6 +188,7 @@ function SearchInputWithClear({ locale }: { locale: 'de' | 'en' }) {
         type="text"
         value={searchQuery}
         onChange={handleChange}
+        aria-label={locale === 'de' ? 'Suchen oder Befehl eingeben' : 'Search or type a command'}
         placeholder={locale === 'de' ? 'Suchen oder Befehl eingeben...' : 'Search or type a command...'}
         className="border-primary-platinum text-primary-black placeholder:text-primary-silver w-full border-b px-4 py-3 pr-12 text-base outline-none md:py-4"
         autoFocus
