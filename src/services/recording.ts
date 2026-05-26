@@ -1,4 +1,5 @@
 import config from '@/payload.config'
+import { sortRecordingsByYearDesc } from '@/services/utils/sortRecordings'
 import { getPayload } from 'payload'
 
 type LocaleCode = 'de' | 'en' | 'all'
@@ -18,7 +19,7 @@ type LocaleCode = 'de' | 'en' | 'all'
  */
 export const getAllRecordings = async (locale?: LocaleCode) => {
   const payload = await getPayload({ config })
-  return await payload.find({
+  const result = await payload.find({
     collection: 'recordings',
     where: {
       _status: {
@@ -28,13 +29,27 @@ export const getAllRecordings = async (locale?: LocaleCode) => {
     locale: locale || 'de',
     depth: 2, // Populate artist relationships and their related data
     limit: 0, // Return all recordings (no limit)
-    sort: '-recordingYear,-createdAt', // Reverse chronological, fallback to creation date for undated recordings
   })
+
+  /**
+   * WORKAROUND: Payload SQLite adapter's descending sort (`sort: '-recordingYear'`) returns
+   * ascending order instead. Using in-memory sort until framework issue resolved.
+   * 
+   * TODO: File issue at https://github.com/payloadcms/payload/issues
+   * TODO: Monitor performance if recordings collection exceeds 1000 records
+   */
+  const sorted = sortRecordingsByYearDesc(result.docs)
+
+  return {
+    ...result,
+    docs: sorted,
+  }
 }
 
 /**
  * Retrieves all published recordings associated with a specific artist.
- * Queries the artists relationship field for matching artist IDs.
+ * Queries the artists relationship field for matching artist IDs using `contains`
+ * operator (required for hasMany relationships).
  * Uses depth: 2 to populate artist relationships and cover art.
  * Returns recordings in reverse chronological order (newest first).
  * Recordings without a year are sorted by creation date.
@@ -49,11 +64,11 @@ export const getAllRecordings = async (locale?: LocaleCode) => {
  */
 export const getRecordingsByArtist = async (artistId: string, locale?: LocaleCode) => {
   const payload = await getPayload({ config })
-  return await payload.find({
+  const result = await payload.find({
     collection: 'recordings',
     where: {
       artists: {
-        equals: artistId,
+        contains: artistId, // Use `contains` for hasMany relationship arrays
       },
       _status: {
         equals: 'published',
@@ -62,8 +77,21 @@ export const getRecordingsByArtist = async (artistId: string, locale?: LocaleCod
     locale: locale || 'de',
     depth: 2, // Populate artist relationships and cover art
     limit: 0, // Return all recordings for artist (no limit)
-    sort: '-recordingYear,-createdAt', // Reverse chronological, fallback to creation date for undated recordings
   })
+
+  /**
+   * WORKAROUND: Payload SQLite adapter's descending sort (`sort: '-recordingYear'`) returns
+   * ascending order instead. Using in-memory sort until framework issue resolved.
+   * 
+   * TODO: File issue at https://github.com/payloadcms/payload/issues
+   * TODO: Monitor performance if recordings collection exceeds 1000 records
+   */
+  const sorted = sortRecordingsByYearDesc(result.docs)
+
+  return {
+    ...result,
+    docs: sorted,
+  }
 }
 
 /**
