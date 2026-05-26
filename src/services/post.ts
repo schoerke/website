@@ -244,8 +244,8 @@ export const getNewsPostCountByArtist = async (artistId: number, locale?: 'de' |
  */
 export function buildPostSearchWhere(
   search: string | undefined,
-  normalize: (text: string) => string = normalizeText,
-): { or: object[] } | undefined {
+  normalize: (text: string) => string = normalizeText
+): { or: Where[] } | undefined {
   if (!search || search.trim().length < 3) return undefined
   const normalized = normalize(search.trim())
   return {
@@ -282,7 +282,7 @@ export const getFilteredPosts = async (options: {
 
   // Filter by search text (searches title and body content fields)
   const searchWhere = buildPostSearchWhere(options.search)
-  if (searchWhere) Object.assign(where, searchWhere)
+  if (searchWhere) where.or = searchWhere.or
 
   return await payload.find({
     collection: 'posts',
@@ -372,7 +372,7 @@ export const getPaginatedPosts = async (options: {
 
   // Filter by search text (searches title and body content fields)
   const searchWhere = buildPostSearchWhere(options.search)
-  if (searchWhere) Object.assign(where, searchWhere)
+  if (searchWhere) where.or = searchWhere.or
 
   return await payload.find({
     collection: 'posts',
