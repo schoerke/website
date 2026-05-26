@@ -18,9 +18,13 @@ import { getPayload } from 'payload'
 import config from '../../../src/payload.config.js'
 
 const DRY_RUN = process.argv.includes('--dry-run')
-const SLUGS_ARG = process.argv.find(a => a.startsWith('--slugs='))
-const FILTER_SLUGS: string[] | null = SLUGS_ARG ? SLUGS_ARG.split('=')[1].split(',').map(s => s.trim()) : null
-const IDS_ARG = process.argv.find(a => a.startsWith('--ids='))
+const SLUGS_ARG = process.argv.find((a) => a.startsWith('--slugs='))
+const FILTER_SLUGS: string[] | null = SLUGS_ARG
+  ? SLUGS_ARG.split('=')[1]
+      .split(',')
+      .map((s) => s.trim())
+  : null
+const IDS_ARG = process.argv.find((a) => a.startsWith('--ids='))
 const FILTER_IDS: number[] | null = IDS_ARG ? IDS_ARG.split('=')[1].split(',').map(Number) : null
 
 async function main() {
@@ -50,9 +54,9 @@ async function main() {
 
   // Filter to target slugs/ids if provided
   const toDelete = FILTER_IDS
-    ? docs.filter(p => FILTER_IDS.includes(p.id as number))
+    ? docs.filter((p) => FILTER_IDS.includes(p.id as number))
     : FILTER_SLUGS
-      ? docs.filter(p => FILTER_SLUGS.includes(p.slug as string))
+      ? docs.filter((p) => FILTER_SLUGS.includes(p.slug as string))
       : docs
 
   if (toDelete.length === 0) {
@@ -61,7 +65,7 @@ async function main() {
   }
 
   console.log(`📋 Found ${toDelete.length} posts to delete:\n`)
-  toDelete.forEach(p => console.log(`  ID ${p.id}: "${p.title}" (slug: ${p.slug})`))
+  toDelete.forEach((p) => console.log(`  ID ${p.id}: "${p.title}" (slug: ${p.slug})`))
   console.log()
 
   if (DRY_RUN) {

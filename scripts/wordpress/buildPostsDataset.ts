@@ -87,8 +87,18 @@ const ARTIST_SLUG_MAP: Record<string, string> = {
 
 /** WordPress category names that are NOT artist names */
 const NON_ARTIST_CATEGORIES = new Set([
-  'News', 'Projects', 'Home', 'Startseite', 'Calendar', 'Kalender',
-  'Video', 'Diskography', 'Diskographie', 'Repertoire', 'Künstler', 'Artists',
+  'News',
+  'Projects',
+  'Home',
+  'Startseite',
+  'Calendar',
+  'Kalender',
+  'Video',
+  'Diskography',
+  'Diskographie',
+  'Repertoire',
+  'Künstler',
+  'Artists',
 ])
 
 // ============================================================================
@@ -140,11 +150,7 @@ interface PostLocaleData {
 // ============================================================================
 
 function getCategories(post: WPPost): string[] {
-  const cats = Array.isArray(post.category)
-    ? post.category
-    : post.category
-      ? [post.category]
-      : []
+  const cats = Array.isArray(post.category) ? post.category : post.category ? [post.category] : []
   return cats.map((c) => (typeof c === 'string' ? c : c['#text'] || '')).filter(Boolean)
 }
 
@@ -191,7 +197,7 @@ function withinDays(a: Date, b: Date, days: number): boolean {
 function findEnCounterpart(
   dePost: WPPost,
   enPosts: WPPost[],
-  enBySlug: Map<string, WPPost>,
+  enBySlug: Map<string, WPPost>
 ): { post: WPPost; method: 'slug' | 'fuzzy' } | null {
   // Pass 1
   const bySlug = enBySlug.get(dePost['wp:post_name'])
@@ -216,7 +222,7 @@ function findEnCounterpart(
 function findDeCounterpart(
   enPost: WPPost,
   dePosts: WPPost[],
-  deBySlug: Map<string, WPPost>,
+  deBySlug: Map<string, WPPost>
 ): { post: WPPost; method: 'slug' | 'fuzzy' } | null {
   const bySlug = deBySlug.get(enPost['wp:post_name'])
   if (bySlug) return { post: bySlug, method: 'slug' }
@@ -237,10 +243,7 @@ function findDeCounterpart(
  * Resolve featured image filename from WP attachment map.
  * Returns the cleaned filename or null if not found.
  */
-function resolveImageFilename(
-  post: WPPost,
-  attachmentUrlById: Map<number, string>,
-): string | null {
+function resolveImageFilename(post: WPPost, attachmentUrlById: Map<number, string>): string | null {
   const meta = getPostMeta(post)
   const thumbId = meta['_thumbnail_id']
   if (!thumbId) return null
@@ -391,9 +394,7 @@ async function buildPostsDataset(): Promise<void> {
   // EN posts without exact slug matches will fall back to using their own slug as the DE slug
   // (auto-translate). Reserve these slugs so fuzzy matching can't claim them.
   const autoTranslateSlugs = new Set(
-    enProjects
-      .filter((p) => !exactDeMatchByEnSlug.has(p['wp:post_name']))
-      .map((p) => p['wp:post_name']),
+    enProjects.filter((p) => !exactDeMatchByEnSlug.has(p['wp:post_name'])).map((p) => p['wp:post_name'])
   )
 
   // Pass 2: fuzzy match only for EN posts without exact match, using remaining available DE posts
@@ -403,7 +404,7 @@ async function buildPostsDataset(): Promise<void> {
     // Must be recomputed each iteration — usedDeSlugs grows as fuzzy matches are locked in above
     // Exclude DE posts already used AND DE posts whose slug is reserved for auto-translate fallback
     const availableDePosts = dePosts.filter(
-      (p) => !usedDeSlugs.has(p['wp:post_name']) && !autoTranslateSlugs.has(p['wp:post_name']),
+      (p) => !usedDeSlugs.has(p['wp:post_name']) && !autoTranslateSlugs.has(p['wp:post_name'])
     )
     const fuzzyMatch = findDeCounterpart(en, availableDePosts, new Map()) // slug pass already done
     if (fuzzyMatch) {
@@ -463,14 +464,18 @@ async function buildPostsDataset(): Promise<void> {
 
   // Summary
   const autoTranslateCount = dataset.filter(
-    (e) => e.en.source === 'auto-translate' || e.de.source === 'auto-translate',
+    (e) => e.en.source === 'auto-translate' || e.de.source === 'auto-translate'
   ).length
   const fullCount = dataset.length - autoTranslateCount
 
   console.log('\n✅ Dataset built successfully!')
   console.log(`\n📊 Summary:`)
-  console.log(`   DE News posts:     ${stats.deNewsTotal} total, ${stats.deNewsMatched} matched EN, ${stats.deNewsUnmatched} unmatched`)
-  console.log(`   EN Projects posts: ${stats.projTotal} total, ${stats.projMatched} matched DE, ${stats.projUnmatched} unmatched`)
+  console.log(
+    `   DE News posts:     ${stats.deNewsTotal} total, ${stats.deNewsMatched} matched EN, ${stats.deNewsUnmatched} unmatched`
+  )
+  console.log(
+    `   EN Projects posts: ${stats.projTotal} total, ${stats.projMatched} matched DE, ${stats.projUnmatched} unmatched`
+  )
   console.log(`   Total entries:     ${dataset.length}`)
   console.log(`   Both locales:      ${fullCount} (ready to import)`)
   console.log(`   Auto-translate:    ${autoTranslateCount} (skipped by default in import)`)

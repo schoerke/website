@@ -94,7 +94,7 @@ function processContent(html: string): string {
     // No <p> tags: \n\n = paragraph break, \n = linebreak
     html = html
       .split('\n\n')
-      .map(block => `<p>${block.replace(/\n/g, '<br>')}</p>`)
+      .map((block) => `<p>${block.replace(/\n/g, '<br>')}</p>`)
       .join('')
   }
   // Has <p> tags: already paragraph-structured, leave as-is

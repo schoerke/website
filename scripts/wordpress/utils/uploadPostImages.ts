@@ -72,7 +72,7 @@ async function uploadImage(
   payload: Awaited<ReturnType<typeof getPayload>>,
   filePath: string,
   filename: string,
-  mimeType: string,
+  mimeType: string
 ): Promise<number | null> {
   const buffer = await fs.readFile(filePath)
   const fileSize = buffer.length

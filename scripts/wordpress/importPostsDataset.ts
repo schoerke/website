@@ -47,11 +47,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DATA_DIR = path.join(__dirname, 'data')
 
 const DRY_RUN = process.argv.includes('--dry-run')
-const LIMIT_ARG = process.argv.find(a => a.startsWith('--limit='))
+const LIMIT_ARG = process.argv.find((a) => a.startsWith('--limit='))
 const LIMIT = LIMIT_ARG ? parseInt(LIMIT_ARG.split('=')[1], 10) : undefined
-const SLUGS_ARG = process.argv.find(a => a.startsWith('--slugs='))
-const FILTER_SLUGS: string[] | null = SLUGS_ARG ? SLUGS_ARG.split('=')[1].split(',').map(s => s.trim()) : null
-const DATASET_ARG = process.argv.find(a => a.startsWith('--dataset='))
+const SLUGS_ARG = process.argv.find((a) => a.startsWith('--slugs='))
+const FILTER_SLUGS: string[] | null = SLUGS_ARG
+  ? SLUGS_ARG.split('=')[1]
+      .split(',')
+      .map((s) => s.trim())
+  : null
+const DATASET_ARG = process.argv.find((a) => a.startsWith('--dataset='))
 const DATASET_PATH = DATASET_ARG ? path.resolve(DATASET_ARG.split('=')[1]) : path.join(DATA_DIR, 'posts-dataset.json')
 
 interface DatasetEntry {
@@ -88,7 +92,7 @@ async function main() {
   const entries = LIMIT ? dataset.slice(0, LIMIT) : dataset
   if (LIMIT) console.log(`⚠️  Limiting to first ${LIMIT} entr${LIMIT === 1 ? 'y' : 'ies'}\n`)
 
-  const filteredEntries = FILTER_SLUGS ? entries.filter(e => FILTER_SLUGS.includes(e.wpSlug)) : entries
+  const filteredEntries = FILTER_SLUGS ? entries.filter((e) => FILTER_SLUGS.includes(e.wpSlug)) : entries
   if (FILTER_SLUGS) console.log(`🎯 Targeting ${filteredEntries.length} of ${entries.length} entries by wpSlug\n`)
 
   // Load images-id-map
@@ -101,7 +105,7 @@ async function main() {
   // Build artist slug → ID map
   const artistResult = await payload.find({ collection: 'artists', limit: 200, depth: 0, locale: 'de' })
   const artistSlugToId: Record<string, number> = {}
-  artistResult.docs.forEach(a => {
+  artistResult.docs.forEach((a) => {
     if (a.slug) artistSlugToId[a.slug] = a.id as number
   })
   console.log(`🎨 ${Object.keys(artistSlugToId).length} artists loaded\n`)
@@ -141,7 +145,7 @@ async function main() {
 
   if (validationErrors.length > 0) {
     console.error('❌ Validation failed:\n')
-    validationErrors.forEach(e => console.error(`  ${e}`))
+    validationErrors.forEach((e) => console.error(`  ${e}`))
     process.exit(1)
   }
 
@@ -152,7 +156,7 @@ async function main() {
     console.log('📊 Preview (first 5 entries):\n')
     for (const entry of filteredEntries.slice(0, 5)) {
       const imageId = entry.imagePath ? imagesIdMap[entry.imagePath] : null
-      const artistIds = entry.artists.map(s => artistSlugToId[s])
+      const artistIds = entry.artists.map((s) => artistSlugToId[s])
       console.log(`  ${entry.de.slug}`)
       console.log(`    DE title:  "${entry.de.title}"`)
       console.log(`    EN title:  "${entry.en.title}"`)
@@ -165,9 +169,9 @@ async function main() {
     console.log('─'.repeat(60))
     console.log(`📊 Dry Run Summary:`)
     console.log(`  Would create: ${filteredEntries.length} posts`)
-    console.log(`  With images:  ${filteredEntries.filter(e => e.imagePath).length}`)
-    console.log(`  News:         ${filteredEntries.filter(e => e.category === 'news').length}`)
-    console.log(`  Projects:     ${filteredEntries.filter(e => e.category === 'projects').length}`)
+    console.log(`  With images:  ${filteredEntries.filter((e) => e.imagePath).length}`)
+    console.log(`  News:         ${filteredEntries.filter((e) => e.category === 'news').length}`)
+    console.log(`  Projects:     ${filteredEntries.filter((e) => e.category === 'projects').length}`)
     console.log('\n✅ Run without --dry-run to import.')
     process.exit(0)
   }
@@ -190,13 +194,15 @@ async function main() {
     })
 
     if (existing.totalDocs > 0) {
-      console.log(`  ⏭️  Skip [${i + 1}/${filteredEntries.length}]: "${entry.de.slug}" (already exists, ID ${existing.docs[0].id})`)
+      console.log(
+        `  ⏭️  Skip [${i + 1}/${filteredEntries.length}]: "${entry.de.slug}" (already exists, ID ${existing.docs[0].id})`
+      )
       skipped++
       continue
     }
 
     const imageId = entry.imagePath ? imagesIdMap[entry.imagePath] : undefined
-    const artistIds = entry.artists.map(s => artistSlugToId[s]).filter(Boolean)
+    const artistIds = entry.artists.map((s) => artistSlugToId[s]).filter(Boolean)
 
     const deContent = htmlToLexical(entry.de.contentHtml)
     const enContent = htmlToLexical(entry.en.contentHtml)
@@ -236,7 +242,9 @@ async function main() {
       console.log(`  ✅ [${i + 1}/${filteredEntries.length}] "${entry.de.slug}" (ID ${created_doc.id})`)
       created++
     } catch (err) {
-      console.error(`  ❌ [${i + 1}/${filteredEntries.length}] "${entry.de.slug}": ${err instanceof Error ? err.message : err}`)
+      console.error(
+        `  ❌ [${i + 1}/${filteredEntries.length}] "${entry.de.slug}": ${err instanceof Error ? err.message : err}`
+      )
       errors++
     }
   }
