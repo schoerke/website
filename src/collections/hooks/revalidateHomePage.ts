@@ -14,7 +14,11 @@ function revalidateHomePage(): void {
  * Revalidates the home page after a post is published or unpublished.
  * Skips draft-only saves (including autosave) to avoid continuous cache busting.
  */
-export const revalidateHomePageOnPostChange: CollectionAfterChangeHook = ({ doc, previousDoc }) => {
+export const revalidateHomePageOnPostChange: CollectionAfterChangeHook = ({ doc, previousDoc, req }) => {
+  if (req.context?.skipRevalidation) {
+    return doc
+  }
+
   const isPublished = doc._status === 'published'
   const wasPublished = previousDoc?._status === 'published'
 

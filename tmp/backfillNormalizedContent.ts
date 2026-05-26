@@ -49,6 +49,7 @@ async function main() {
               content: post.content,
             },
             locale,
+            context: { skipRevalidation: true },
           })
           process.stdout.write('.')
         } catch (err) {
