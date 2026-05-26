@@ -92,6 +92,8 @@ const LocaleSwitcher: React.FC<{ open: boolean; onOpenChange: (open: boolean) =>
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleEscapeKey)
     }
+    // onOpenChange is a useState setter (stable identity) — safe to omit
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   // Focus first option when drawer opens

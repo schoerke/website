@@ -42,11 +42,6 @@ vi.mock('@/actions/posts', () => ({
 
 describe('LocaleSwitcher', () => {
   // Controlled wrapper — LocaleSwitcher now requires open/onOpenChange props
-  const renderLocaleSwitcher = () => {
-    const { rerender } = render(<LocaleSwitcherWrapper />)
-    return { rerender }
-  }
-
   function LocaleSwitcherWrapper() {
     const [open, setOpen] = React.useState(false)
     return <LocaleSwitcher open={open} onOpenChange={setOpen} />
