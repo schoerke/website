@@ -1,35 +1,15 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { ReactNode } from 'react'
 import AppControls from '../ui/AppControls'
 
 interface HeaderProps {
   logo: ReactNode
-  nav?: ReactNode
 }
 
-const Header: React.FC<HeaderProps> = ({ logo, nav }) => {
+const Header: React.FC<HeaderProps> = ({ logo }) => {
   const t = useTranslations('custom.accessibility')
-  const [localeSwitcherOpen, setLocaleSwitcherOpen] = useState(false)
-  const [navVisible, setNavVisible] = useState(true)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-
-    if (localeSwitcherOpen) {
-      // Hide instantly on open
-      setNavVisible(false)
-    } else {
-      // Delay re-show until LocaleSwitcher finishes collapsing (300ms)
-      timeoutRef.current = setTimeout(() => setNavVisible(true), 300)
-    }
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    }
-  }, [localeSwitcherOpen])
 
   return (
     <header className="bg-primary-white sticky top-0 z-50 w-full">
@@ -44,13 +24,8 @@ const Header: React.FC<HeaderProps> = ({ logo, nav }) => {
         {/* Logo Branding */}
         {logo}
 
-        {/* Right side: nav + app controls grouped together */}
-        <div className="flex items-center gap-8">
-          {/* Nav visibility: hidden instantly on open, re-shown after 300ms on close
-              (intentionally instant — no fade-in, just waits for LocaleSwitcher to finish collapsing) */}
-          <div className={navVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}>{nav}</div>
-          <AppControls localeSwitcherOpen={localeSwitcherOpen} onLocaleSwitcherOpenChange={setLocaleSwitcherOpen} />
-        </div>
+        {/* App controls: locale switcher + search */}
+        <AppControls />
       </div>
     </header>
   )
