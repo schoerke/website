@@ -10,11 +10,39 @@ jobs:
     name: Warm homepage cache
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for Vercel deployment
-        run: sleep 360
+      - name: Wait for Vercel deployment to be ready
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          SHA="${{ github.sha }}"
+          echo "Waiting for deployment of SHA: $SHA"
+
+          for i in $(seq 1 30); do
+            STATE=$(curl -s \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v6/deployments?projectId=prj_KS2v04GAnLLPne2n1ILRFJaQ6iLk&sha=$SHA&target=production&limit=1" \
+              | jq -r '.deployments[0].state // "PENDING"')
+
+            echo "Attempt $i: state=$STATE"
+
+            if [ "$STATE" = "READY" ]; then
+              echo "Deployment is ready."
+              exit 0
+            fi
+
+            if [ "$STATE" = "ERROR" ] || [ "$STATE" = "CANCELED" ]; then
+              echo "Deployment failed with state: $STATE"
+              exit 1
+            fi
+
+            sleep 20
+          done
+
+          echo "Timed out waiting for deployment (10 minutes)"
+          exit 1
 
       - name: Warm DE homepage
-        run: curl -s -o /dev/null -w "%{http_code} %{time_total}s" https://schoerke-website.vercel.app/de
+        run: curl -s -o /dev/null -w "%{http_code} %{time_total}s\n" https://schoerke-website.vercel.app/de
 
       - name: Warm EN homepage
-        run: curl -s -o /dev/null -w "%{http_code} %{time_total}s" https://schoerke-website.vercel.app/en
+        run: curl -s -o /dev/null -w "%{http_code} %{time_total}s\n" https://schoerke-website.vercel.app/en
