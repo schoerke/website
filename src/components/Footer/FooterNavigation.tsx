@@ -19,7 +19,7 @@ const FooterNavigation = async ({ locale }: FooterNavigationProps) => {
   ]
 
   return (
-    <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-between">
+    <div className="relative z-10 flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex-shrink-0">
         <FooterLogo />
       </div>
