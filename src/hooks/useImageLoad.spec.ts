@@ -33,7 +33,7 @@ describe('useImageLoad', () => {
 
   it('should set loaded to true via ref when image is already complete', () => {
     const { result } = renderHook(() => useImageLoad())
-    const fakeNode = { complete: true } as HTMLImageElement
+    const fakeNode = { complete: true, naturalWidth: 42 } as HTMLImageElement
     act(() => {
       result.current.ref(fakeNode)
     })
@@ -73,7 +73,7 @@ describe('useImageLoad', () => {
     act(() => {
       result.current.onLoad()
     })
-    const fakeNode = { complete: true } as HTMLImageElement
+    const fakeNode = { complete: true, naturalWidth: 42 } as HTMLImageElement
     act(() => {
       result.current.ref(fakeNode)
     })

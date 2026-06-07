@@ -14,7 +14,7 @@ const useImageLoad = (): UseImageLoadResult => {
   const loadedRef = useRef(false)
 
   const ref = useCallback((node: HTMLImageElement | null) => {
-    if (node?.complete && !loadedRef.current) {
+    if (node?.complete && node.naturalWidth > 0 && !loadedRef.current) {
       loadedRef.current = true
       setLoaded(true)
     }
