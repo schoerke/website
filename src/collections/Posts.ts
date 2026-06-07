@@ -7,6 +7,7 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { AudioEmbed } from '@/blocks/AudioEmbed'
 import { VideoEmbed } from '@/blocks/VideoEmbed'
 import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '@/collections/hooks/revalidateHomePage'
+import { revalidatePostOnChange, revalidatePostOnDelete } from '@/collections/hooks/revalidatePost'
 import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
 import { categoryOptions } from '@/data/options'
 import { normalizeText } from '@/utils/search/normalizeText'
@@ -175,8 +176,8 @@ export const Posts: CollectionConfig = {
     },
   ],
   hooks: {
-    afterChange: [syncArtistProjects, revalidateHomePageOnPostChange],
-    afterDelete: [revalidateHomePageOnPostDelete],
+    afterChange: [syncArtistProjects, revalidateHomePageOnPostChange, revalidatePostOnChange],
+    afterDelete: [revalidateHomePageOnPostDelete, revalidatePostOnDelete],
   },
   versions: {
     drafts: {
