@@ -1,7 +1,9 @@
 'use client'
 
 import type { Recording } from '@/payload-types'
+import { SiApplemusic, SiSpotify } from '@icons-pack/react-simple-icons'
 import { useTranslations } from 'next-intl'
+import React from 'react'
 
 interface RecordingListItemProps {
   recording: Recording
@@ -39,9 +41,9 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={t('listenOnSpotifyFor', { title: recording.title })}
-                className="text-xs text-gray-500 hover:text-gray-900 hover:underline"
+                className="text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
               >
-                {t('listenOnSpotify')}
+                <SiSpotify width={20} height={20} aria-hidden="true" />
                 <span className="sr-only"> ({t('opensInNewTab')})</span>
               </a>
             )}
@@ -51,9 +53,9 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={t('listenOnAppleMusicFor', { title: recording.title })}
-                className="text-xs text-gray-500 hover:text-gray-900 hover:underline"
+                className="text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
               >
-                {t('listenOnAppleMusic')}
+                <SiApplemusic width={20} height={20} aria-hidden="true" />
                 <span className="sr-only"> ({t('opensInNewTab')})</span>
               </a>
             )}
