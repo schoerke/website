@@ -10,21 +10,26 @@
  * @see src/components/Footer/FooterInfo.tsx
  */
 
+import { SiFacebook, SiInstagram, SiYoutube } from '@icons-pack/react-simple-icons'
+
 export const SOCIAL_MEDIA_LINKS = [
   {
     platform: 'youtube',
     url: 'https://youtube.com/@kuenstlersekretariatschoerke',
-    icon: 'Youtube',
+    Icon: SiYoutube,
+    ariaKey: 'visitYouTube',
   },
   {
     platform: 'facebook',
     url: 'https://facebook.com/kuenstlersekretariat.schoerke',
-    icon: 'Facebook',
+    Icon: SiFacebook,
+    ariaKey: 'visitFacebook',
   },
   {
     platform: 'instagram',
     url: 'https://instagram.com/ks.schoerke',
-    icon: 'Instagram',
+    Icon: SiInstagram,
+    ariaKey: 'visitInstagram',
   },
 ] as const
 
