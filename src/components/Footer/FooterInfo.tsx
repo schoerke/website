@@ -1,23 +1,10 @@
 import { SOCIAL_MEDIA_LINKS } from '@/constants/socialMedia'
 import { Link } from '@/i18n/navigation'
-import { Facebook, Instagram, Youtube } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import NextLink from 'next/link'
 
 type FooterInfoProps = {
   locale: string
-}
-
-const iconMap = {
-  Facebook,
-  Instagram,
-  Youtube,
-}
-
-const translationKeyMap: Record<string, string> = {
-  Facebook: 'visitFacebook',
-  Instagram: 'visitInstagram',
-  Youtube: 'visitYouTube',
 }
 
 const FooterInfo = async ({ locale }: FooterInfoProps) => {
@@ -67,34 +54,23 @@ const FooterInfo = async ({ locale }: FooterInfoProps) => {
 
         {/* Social Media Icons */}
         <div className="flex items-center gap-4">
-          {SOCIAL_MEDIA_LINKS.filter((link) => link.url).map((link) => {
-            const iconName = link.icon as keyof typeof iconMap
-            const IconComponent = iconMap[iconName]
-            const translationKey = translationKeyMap[link.icon]
-
-            if (!IconComponent) {
-              console.warn(`Icon not found for platform: ${link.platform}`)
-              return null
-            }
-
-            return (
-              <a
-                key={link.platform}
-                href={link.url}
-                aria-label={tFooter(
-                  `socialMedia.${translationKey}` as
-                    | 'socialMedia.visitFacebook'
-                    | 'socialMedia.visitInstagram'
-                    | 'socialMedia.visitYouTube'
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-800"
-              >
-                <IconComponent size={24} aria-hidden="true" />
-              </a>
-            )
-          })}
+          {SOCIAL_MEDIA_LINKS.filter((link) => link.url).map(({ platform, url, Icon, ariaKey }) => (
+            <a
+              key={platform}
+              href={url}
+              aria-label={tFooter(
+                `socialMedia.${ariaKey}` as
+                  | 'socialMedia.visitFacebook'
+                  | 'socialMedia.visitInstagram'
+                  | 'socialMedia.visitYouTube'
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-600 transition duration-150 ease-in-out hover:text-gray-800"
+            >
+              <Icon width={24} height={24} aria-hidden="true" />
+            </a>
+          ))}
         </div>
       </div>
     </div>
