@@ -109,11 +109,11 @@ describe('RecordingListItem', () => {
       })
     )
 
-    const link = screen.getByText('Listen on Spotify')
+    const link = screen.getByRole('link', { name: 'Listen on Spotify: Beethoven - Violin Concerto' })
     expect(link).toBeInTheDocument()
-    expect(link.closest('a')).toHaveAttribute('href', 'https://open.spotify.com/album/123')
-    expect(link.closest('a')).toHaveAttribute('target', '_blank')
-    expect(link.closest('a')).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(link).toHaveAttribute('href', 'https://open.spotify.com/album/123')
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
   it('renders Apple Music link when appleMusicURL is provided', () => {
@@ -124,11 +124,11 @@ describe('RecordingListItem', () => {
       })
     )
 
-    const link = screen.getByText('Listen on Apple Music')
+    const link = screen.getByRole('link', { name: 'Listen on Apple Music: Beethoven - Violin Concerto' })
     expect(link).toBeInTheDocument()
-    expect(link.closest('a')).toHaveAttribute('href', 'https://music.apple.com/album/123')
-    expect(link.closest('a')).toHaveAttribute('target', '_blank')
-    expect(link.closest('a')).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(link).toHaveAttribute('href', 'https://music.apple.com/album/123')
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
   it('sets aria-label with interpolated title for Spotify link', () => {
@@ -156,8 +156,8 @@ describe('RecordingListItem', () => {
   it('renders no streaming links when none are provided', () => {
     renderItem(createMockRecording({ spotifyURL: null, appleMusicURL: null }))
 
-    expect(screen.queryByText('Listen on Spotify')).not.toBeInTheDocument()
-    expect(screen.queryByText('Listen on Apple Music')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Listen on Spotify/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Listen on Apple Music/ })).not.toBeInTheDocument()
   })
 
   it('renders both streaming links when both URLs are provided', () => {
@@ -168,7 +168,7 @@ describe('RecordingListItem', () => {
       })
     )
 
-    expect(screen.getByText('Listen on Spotify')).toBeInTheDocument()
-    expect(screen.getByText('Listen on Apple Music')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Listen on Spotify/ })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Listen on Apple Music/ })).toBeInTheDocument()
   })
 })

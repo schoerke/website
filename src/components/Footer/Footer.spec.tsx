@@ -27,10 +27,9 @@ describe('Footer Components - Structure and Configuration', () => {
       })
     })
 
-    it('should have icon names for all platforms', () => {
-      const expectedIcons = ['Youtube', 'Facebook', 'Instagram']
-      SOCIAL_MEDIA_LINKS.forEach((link, index) => {
-        expect(link.icon).toBe(expectedIcons[index])
+    it('should have icon components for all platforms', () => {
+      SOCIAL_MEDIA_LINKS.forEach((link) => {
+        expect(link.Icon).toBeTruthy()
       })
     })
   })
