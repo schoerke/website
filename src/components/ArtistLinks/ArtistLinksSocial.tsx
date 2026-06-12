@@ -1,7 +1,8 @@
 'use client'
 
 import SchoerkeLink from '@/components/ui/SchoerkeLink'
-import { CalendarDays, ExternalLink, Facebook, Instagram, Music, Twitter, Youtube } from 'lucide-react'
+import { CalendarDays, ExternalLink } from 'lucide-react'
+import { SiFacebook, SiInstagram, SiSpotify, SiX, SiYoutube } from '@icons-pack/react-simple-icons'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
@@ -44,36 +45,42 @@ const ArtistLinksSocial: React.FC<ArtistLinksSocialProps> = ({
       icon: CalendarDays,
       label: t('ariaLabels.calendar'),
       platform: 'calendar',
+      lucide: true,
     },
     {
       url: facebookURL,
-      icon: Facebook,
+      icon: SiFacebook,
       label: t('ariaLabels.facebook'),
       platform: 'facebook',
+      lucide: false,
     },
     {
       url: instagramURL,
-      icon: Instagram,
+      icon: SiInstagram,
       label: t('ariaLabels.instagram'),
       platform: 'instagram',
+      lucide: false,
     },
     {
       url: twitterURL,
-      icon: Twitter,
+      icon: SiX,
       label: t('ariaLabels.twitter'),
       platform: 'twitter',
+      lucide: false,
     },
     {
       url: youtubeURL,
-      icon: Youtube,
+      icon: SiYoutube,
       label: t('ariaLabels.youtube'),
       platform: 'youtube',
+      lucide: false,
     },
     {
       url: spotifyURL,
-      icon: Music,
+      icon: SiSpotify,
       label: t('ariaLabels.spotify'),
       platform: 'spotify',
+      lucide: false,
     },
   ].filter((link) => Boolean(link.url))
 
@@ -108,7 +115,7 @@ const ArtistLinksSocial: React.FC<ArtistLinksSocialProps> = ({
       {/* Social media icons */}
       {socialLinks.length > 0 && (
         <div className="flex flex-wrap gap-3 md:justify-end">
-          {socialLinks.map(({ url, icon: Icon, label, platform }) => (
+          {socialLinks.map(({ url, icon: Icon, label, platform, lucide }) => (
             <a
               key={platform}
               href={url!}
@@ -117,7 +124,11 @@ const ArtistLinksSocial: React.FC<ArtistLinksSocialProps> = ({
               className="text-primary-black hover:text-primary-black/70 focus-visible:outline-primary-yellow transition duration-150 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
               aria-label={label}
             >
-              <Icon className="h-6 w-6" aria-hidden={true} />
+              {lucide ? (
+                <Icon className="h-6 w-6" aria-hidden={true} />
+              ) : (
+                <Icon width={24} height={24} aria-hidden={true} />
+              )}
             </a>
           ))}
         </div>
