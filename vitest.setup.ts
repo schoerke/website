@@ -8,10 +8,26 @@ process.env.NEXT_PUBLIC_S3_HOSTNAME = process.env.NEXT_PUBLIC_S3_HOSTNAME || 'ht
 process.env.EMAIL_FROM = process.env.EMAIL_FROM || 'test@example.com'
 
 // Suppress happy-dom warnings for valid HTML5 elements not yet supported in its browser simulation
+// Suppress Next.js Image "fill" warnings in tests — parent element has no position/height in jsdom
 const originalConsoleError = console.error
 console.error = (...args: unknown[]) => {
   if (typeof args[0] === 'string' && args[0].includes('is unrecognized in this browser')) return
+  if (typeof args[0] === 'string' && args[0].includes('has "fill"')) return
   originalConsoleError(...args)
+}
+
+// Next.js Image "fill" warnings also come through console.warn via warnOnce
+const originalConsoleWarn = console.warn
+console.warn = (...args: unknown[]) => {
+  if (typeof args[0] === 'string' && args[0].includes('has "fill"')) return
+  originalConsoleWarn(...args)
+}
+
+// Suppress revalidation hook logs — noisy in test output, not test-relevant
+const originalConsoleLog = console.log
+console.log = (...args: unknown[]) => {
+  if (typeof args[0] === 'string' && args[0].startsWith('[revalidate]')) return
+  originalConsoleLog(...args)
 }
 
 // Mock next-intl navigation Link as simple anchor
