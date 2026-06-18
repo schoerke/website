@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
+import { revalidateEmployeeOnChange, revalidateEmployeeOnDelete } from '@/collections/hooks/revalidateEmployee'
 
 export const Employees: CollectionConfig = {
   slug: 'employees',
@@ -83,4 +84,8 @@ export const Employees: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [revalidateEmployeeOnChange],
+    afterDelete: [revalidateEmployeeOnDelete],
+  },
 }

@@ -1,4 +1,5 @@
 import { INSTRUMENTS } from '@/constants/options'
+import { revalidateArtistOnChange, revalidateArtistOnDelete } from '@/collections/hooks/revalidateArtist'
 import { createSlugHook } from '@/utils/slug'
 import { validateURL, validateVideoURL } from '@/validators/fields'
 import type { TFunction } from '@payloadcms/translations'
@@ -438,4 +439,8 @@ export const Artists: CollectionConfig = {
       ],
     },
   ],
+  hooks: {
+    afterChange: [revalidateArtistOnChange],
+    afterDelete: [revalidateArtistOnDelete],
+  },
 }
