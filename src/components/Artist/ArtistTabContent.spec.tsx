@@ -201,7 +201,7 @@ describe('ArtistTabContent', () => {
 
       expect(screen.getByText('Orchestral Works')).toBeInTheDocument()
       expect(screen.getByText('Chamber Music')).toBeInTheDocument()
-      expect(screen.getByRole('group', { name: 'Filter repertoire by section' })).toBeInTheDocument()
+      expect(screen.getByRole('radiogroup', { name: 'Filter repertoire by section' })).toBeInTheDocument()
     })
 
     it('should switch between repertoire sections', async () => {
