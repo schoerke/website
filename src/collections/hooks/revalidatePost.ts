@@ -32,24 +32,50 @@ async function getSlugForLocale(id: number, locale: 'de' | 'en', req: PayloadReq
 
 /**
  * Revalidates all locale-specific paths for a post across every relevant category.
- * Fetches slugs for all locales in parallel and deduplicates identical slugs.
- * Called from afterChange hooks only — afterDelete uses doc.slug directly.
+ * Fetches slugs for all locales in parallel, then calls revalidatePath with the
+ * actual URL path (e.g. /de/news/my-post) for each locale+slug combination.
+ *
+ * Why actual URLs, not route group paths:
+ * Next.js tags each cached page with two implicit tags:
+ *   1. The file-system pattern path (e.g. /(frontend)/[locale]/news/[slug]/layout)
+ *   2. The resolved URL pathname (e.g. /de/news/my-post)
+ * revalidatePath matches against these stored tags. A hybrid like
+ * "/(frontend)/[locale]/news/my-post-slug" matches neither tag and has no effect.
+ * Passing the resolved URL (e.g. /de/news/my-post) reliably hits tag #2.
  */
+/**
+ * Revalidates category list pages (e.g. /de/news, /en/projects) for all affected categories.
+ * Called alongside detail page revalidation so the list reflects the change immediately.
+ */
+function revalidatePostListPages(categories: string[]): void {
+  const relevantCategories = categories.filter((c) => CATEGORY_PATHS[c])
+  for (const locale of LOCALES) {
+    for (const category of relevantCategories) {
+      const path = `/${locale}/${CATEGORY_PATHS[category]}`
+      revalidatePath(path)
+      console.log(`[revalidate] Post list page revalidated: ${path}`)
+    }
+  }
+}
+
 async function revalidatePostPaths(id: number, categories: string[], req: PayloadRequest): Promise<void> {
   const relevantCategories = categories.filter((c) => CATEGORY_PATHS[c])
   if (relevantCategories.length === 0) return
 
+  // Revalidate list pages immediately (no async needed)
+  revalidatePostListPages(relevantCategories)
+
   // Fetch localized slugs in parallel — slugs may differ between DE and EN
-  const slugs = await Promise.all(LOCALES.map((locale) => getSlugForLocale(id, locale, req)))
+  const slugEntries = await Promise.all(
+    LOCALES.map(async (locale) => ({ locale, slug: await getSlugForLocale(id, locale, req) }))
+  )
 
-  // Deduplicate in case slugs are identical across locales
-  const uniqueSlugs = [...new Set(slugs.filter((s): s is string => s !== null))]
-
-  for (const slug of uniqueSlugs) {
+  for (const { locale, slug } of slugEntries) {
+    if (!slug) continue
     for (const category of relevantCategories) {
-      // [locale] is a route segment wildcard — invalidates all locales for this slug
-      const path = `/(frontend)/[locale]/${CATEGORY_PATHS[category]}/${slug}`
-      revalidatePath(path, 'page')
+      // Use the resolved URL path — matches the pathname implicit tag on the cached page
+      const path = `/${locale}/${CATEGORY_PATHS[category]}/${slug}`
+      revalidatePath(path)
       console.log(`[revalidate] Post path revalidated: ${path} (id: ${id})`)
     }
   }
@@ -81,8 +107,12 @@ export const revalidatePostOnChange: CollectionAfterChangeHook<Post> = async ({ 
 /**
  * afterDelete hook: revalidates post detail pages after a published post is deleted.
  * Cannot use findByID — document is already gone from DB. Uses doc.slug directly.
- * doc.slug reflects the locale active during the delete request; [slug] pattern
- * wildcard covers the other locale.
+ *
+ * Known limitation: post slugs are localized (DE and EN may differ). On delete we only
+ * have the slug for the locale active at delete time. We revalidate both locale paths
+ * using that same slug — if slugs differ across locales, the other locale's detail page
+ * stays stale until next request. This is acceptable for deletes; list pages are always
+ * correctly revalidated regardless.
  */
 export const revalidatePostOnDelete: CollectionAfterDeleteHook<Post> = async ({ doc, req }) => {
   if (req.context?.skipRevalidation) return doc
@@ -92,16 +122,19 @@ export const revalidatePostOnDelete: CollectionAfterDeleteHook<Post> = async ({ 
   const relevantCategories = categories.filter((c) => CATEGORY_PATHS[c])
   if (relevantCategories.length === 0) return doc
 
+  // Revalidate list pages
+  revalidatePostListPages(relevantCategories)
+
   const slug = doc.slug
   if (!slug) return doc
 
   for (const category of relevantCategories) {
     const pathSegment = CATEGORY_PATHS[category]
-    // Literal slug — covers the locale active during delete
-    revalidatePath(`/(frontend)/[locale]/${pathSegment}/${slug}`, 'page')
-    // Pattern wildcard — covers the other locale whose slug we can't fetch
-    revalidatePath(`/(frontend)/[locale]/${pathSegment}/[slug]`, 'page')
-    console.log(`[revalidate] Post delete revalidated: /${pathSegment}/${slug} (id: ${doc.id})`)
+    for (const locale of LOCALES) {
+      // Use resolved URL path — matches the pathname implicit tag on the cached page
+      revalidatePath(`/${locale}/${pathSegment}/${slug}`)
+      console.log(`[revalidate] Post delete revalidated: /${locale}/${pathSegment}/${slug} (id: ${doc.id})`)
+    }
   }
 
   return doc
