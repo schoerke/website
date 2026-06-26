@@ -3,6 +3,7 @@
 import { Link } from '@/i18n/navigation'
 import type { Image as PayloadImage, Post } from '@/payload-types'
 import { formatDate } from '@/utils/post'
+import { isValidUrl } from '@/utils/image'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
@@ -16,7 +17,7 @@ interface NewsFeedListProps {
 
 function getImageUrl(img: PayloadImage | null | undefined, defaultImg: string | null | undefined): string {
   // Use post's image if available and valid
-  if (img && typeof img === 'object' && img.url && img.url !== 'null' && !img.url.includes('/null')) return img.url
+  if (img && typeof img === 'object' && isValidUrl(img.url)) return img.url
 
   // Fall back to default image string path
   if (defaultImg && typeof defaultImg === 'string') return defaultImg
