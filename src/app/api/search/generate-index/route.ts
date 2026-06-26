@@ -50,9 +50,18 @@ interface SearchIndex {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const payload = await getPayload({ config })
+
+    // Require authentication — this endpoint writes files to public/
+    const { user } = await payload.auth({ headers: new Headers(request.headers) })
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (user.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     // Generate index for both locales
     const locales: Array<'de' | 'en'> = ['de', 'en']
@@ -64,13 +73,13 @@ export async function GET() {
       const results = await payload.find({
         collection: 'search',
         locale,
-        limit: 1000, // High limit to get all results
+        limit: 0, // 0 = no cap, returns all documents
         sort: '-priority',
       })
 
       // Group results by collection/category
       const index: SearchIndex = {
-        version: '2025-11-24',
+        version: new Date().toISOString().split('T')[0],
         locale,
         updated: new Date().toISOString(),
         results: {
