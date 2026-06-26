@@ -76,14 +76,6 @@ const createMockImage = (overrides?: Partial<PayloadImage>): PayloadImage => ({
       filesize: 50000,
       filename: 'artist-thumbnail.jpg',
     },
-    tablet: {
-      url: 'https://example.com/artist-tablet.jpg',
-      width: 1024,
-      height: 768,
-      mimeType: 'image/jpeg',
-      filesize: 150000,
-      filename: 'artist-tablet.jpg',
-    },
   },
   ...overrides,
 })
@@ -146,8 +138,8 @@ describe('ArtistCard', () => {
 
       const img = screen.getByTestId('artist-image')
       expect(img).toBeInTheDocument()
-      // Should use tablet size URL
-      expect(img).toHaveAttribute('src', 'https://example.com/artist-tablet.jpg')
+      // Should use original full-res URL for Next.js image optimization
+      expect(img).toHaveAttribute('src', 'https://example.com/artist.jpg')
       expect(img).toHaveAttribute('alt', 'John Doe')
     })
 
@@ -180,7 +172,7 @@ describe('ArtistCard', () => {
       expect(img).toHaveAttribute('src', '/api/images/file/default-avatar.webp')
     })
 
-    it('should fall back to main URL when tablet size is not available', () => {
+    it('should use original URL regardless of tablet size availability', () => {
       const image = createMockImage({ sizes: {} })
       renderWithIntl(<ArtistCard {...defaultProps} image={image} />)
 
