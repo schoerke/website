@@ -83,7 +83,7 @@ describe('NewsFeedList', () => {
       createdAt: '2024-01-15T10:00:00.000Z',
     })
 
-    renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" />)
+    renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" category="news" showDate={true} />)
 
     // Check that a date is rendered (exact format depends on locale)
     // The formatDate function in NewsFeedList uses 'en' locale
@@ -121,5 +121,29 @@ describe('NewsFeedList', () => {
     expect(image).toBeInTheDocument()
     // Check that the src includes the R2 endpoint or filename
     expect(image.getAttribute('src')).toBeTruthy()
+  })
+
+  it('should show date for news posts', () => {
+    const post = createMockPost({
+      title: 'News Post',
+      createdAt: '2024-03-10T00:00:00.000Z',
+      categories: ['news'],
+    })
+
+    renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" category="news" showDate={true} />)
+
+    expect(screen.getByRole('time')).toBeInTheDocument()
+  })
+
+  it('should hide date for projects posts', () => {
+    const post = createMockPost({
+      title: 'Project Post',
+      createdAt: '2024-03-10T00:00:00.000Z',
+      categories: ['projects'],
+    })
+
+    renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" category="projects" showDate={false} />)
+
+    expect(screen.queryByRole('time')).not.toBeInTheDocument()
   })
 })
