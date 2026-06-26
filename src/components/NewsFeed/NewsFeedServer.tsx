@@ -167,6 +167,7 @@ const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
         emptyMessage={emptyMessage}
         category={translationCategory as 'news' | 'projects'}
         defaultImage={defaultImagePath}
+        showDate={translationCategory !== 'projects'}
       />
 
       {/* Pagination controls (bottom) */}

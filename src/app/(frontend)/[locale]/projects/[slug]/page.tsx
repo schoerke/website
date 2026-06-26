@@ -62,6 +62,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       backButtonLabel={t('goBack')}
       relatedArtistLabel={t('relatedArtist')}
       relatedArtistsLabel={t('relatedArtists')}
+      showDate={false}
     />
   )
 }

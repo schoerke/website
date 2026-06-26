@@ -2,6 +2,7 @@
 
 import { Link } from '@/i18n/navigation'
 import type { Image as PayloadImage, Post } from '@/payload-types'
+import { formatDate } from '@/utils/post'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
 
@@ -10,6 +11,7 @@ interface NewsFeedListProps {
   emptyMessage: string
   category?: 'news' | 'projects'
   defaultImage?: string | null
+  showDate?: boolean
 }
 
 function getImageUrl(img: PayloadImage | null | undefined, defaultImg: string | null | undefined): string {
@@ -21,11 +23,6 @@ function getImageUrl(img: PayloadImage | null | undefined, defaultImg: string | 
 
   // Final fallback to placeholder
   return '/placeholder.jpg'
-}
-
-function formatDate(dateString: string, locale: string): string {
-  const date = new Date(dateString)
-  return date.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
 interface RichTextNode {
@@ -55,7 +52,7 @@ function extractTextPreview(content: Post['content'], maxLength: number = 180): 
   return fullText.substring(0, maxLength).trim() + '...'
 }
 
-const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, category = 'news', defaultImage = null }) => {
+const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, category = 'news', defaultImage = null, showDate = true }) => {
   const t = useTranslations(`custom.pages.${category}`)
   const locale = useLocale()
 
@@ -107,8 +104,9 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
                   <p className="mb-2 hidden text-sm leading-relaxed text-gray-600 sm:block sm:text-base">{preview}</p>
                 )}
                 <div className="flex items-center gap-3 text-xs text-gray-500 sm:text-sm">
-                  {/* Date shown inline */}
-                  <time dateTime={new Date(post.createdAt).toISOString()}>{formatDate(post.createdAt, locale)}</time>
+                  {showDate && (
+                    <time dateTime={new Date(post.createdAt).toISOString()}>{formatDate(post.createdAt, locale)}</time>
+                  )}
                   <span
                     aria-hidden="true"
                     className="focus-visible:outline-primary-yellow after:bg-primary-yellow relative hidden font-medium text-gray-600 transition duration-150 ease-in-out after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:text-gray-800 group-hover:after:w-full sm:inline"

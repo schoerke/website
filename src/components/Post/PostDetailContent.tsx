@@ -21,6 +21,8 @@ interface PostDetailContentProps {
   backButtonLabel: string
   relatedArtistLabel: string
   relatedArtistsLabel: string
+  /** Whether to show the publication date. Defaults to true. */
+  showDate?: boolean
 }
 
 const PostDetailContent: React.FC<PostDetailContentProps> = ({
@@ -35,6 +37,7 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
   backButtonLabel,
   relatedArtistLabel,
   relatedArtistsLabel,
+  showDate = true,
 }) => {
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -50,9 +53,11 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
             {title}
           </h1>
 
-          <div className="flex items-center gap-4 text-sm text-gray-600">
-            <time dateTime={createdAt}>{formatDate(createdAt, locale)}</time>
-          </div>
+          {showDate && (
+            <div className="flex items-center gap-4 text-sm text-gray-600">
+              <time dateTime={createdAt}>{formatDate(createdAt, locale)}</time>
+            </div>
+          )}
         </header>
 
         {/* Featured image */}
