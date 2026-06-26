@@ -37,22 +37,22 @@ describe('Image Utilities', () => {
   })
 
   describe('getImageUrl', () => {
-    it('should prefer tablet size URL when available', () => {
+    it('should return original URL when sizes are present', () => {
       const image = {
         url: 'https://example.com/original.jpg',
         sizes: {
-          tablet: {
-            url: 'https://example.com/tablet.jpg',
-            width: 800,
-            height: 600,
+          thumbnail: {
+            url: 'https://example.com/thumbnail.jpg',
+            width: 400,
+            height: 300,
             mimeType: 'image/jpeg',
-            filesize: 50000,
-            filename: 'tablet.jpg',
+            filesize: 20000,
+            filename: 'thumbnail.jpg',
           },
         },
       } as PayloadImage
 
-      expect(getImageUrl(image)).toBe('https://example.com/tablet.jpg')
+      expect(getImageUrl(image)).toBe('https://example.com/original.jpg')
     })
 
     it('should fallback to original URL when tablet size is not available', () => {
@@ -108,22 +108,22 @@ describe('Image Utilities', () => {
   })
 
   describe('getValidImageUrl', () => {
-    it('should return tablet URL for valid PayloadImage', () => {
+    it('should return original URL when sizes are present', () => {
       const image = {
         url: 'https://example.com/original.jpg',
         sizes: {
-          tablet: {
-            url: 'https://example.com/tablet.jpg',
-            width: 800,
-            height: 600,
+          thumbnail: {
+            url: 'https://example.com/thumbnail.jpg',
+            width: 400,
+            height: 300,
             mimeType: 'image/jpeg',
-            filesize: 50000,
-            filename: 'tablet.jpg',
+            filesize: 20000,
+            filename: 'thumbnail.jpg',
           },
         },
       } as PayloadImage
 
-      expect(getValidImageUrl(image)).toBe('https://example.com/tablet.jpg')
+      expect(getValidImageUrl(image)).toBe('https://example.com/original.jpg')
     })
 
     it('should return original URL when tablet size is not available', () => {

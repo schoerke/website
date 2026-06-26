@@ -20,8 +20,9 @@ export function isImageObject(obj: unknown): obj is PayloadImage {
 }
 
 /**
- * Extracts the best available image URL from a PayloadImage object.
- * Prefers tablet size for consistency and better caching across the app.
+ * Extracts the full-resolution image URL from a PayloadImage object.
+ * Returns the original URL so Next.js /_next/image can generate correct
+ * srcset variants at any requested size based on the <Image> sizes prop.
  *
  * @param image - PayloadImage object
  * @returns Image URL string or null if no valid URL is available
@@ -38,8 +39,8 @@ export function isImageObject(obj: unknown): obj is PayloadImage {
  * ```
  */
 export function getImageUrl(image: PayloadImage): string | null {
-  // Prefer tablet size for consistency with ArtistCard (better caching)
-  if (image.sizes?.tablet?.url) return image.sizes.tablet.url
+  // Return full-res original so Next.js image optimization can generate
+  // correct srcset variants at any requested size via /_next/image
   if (image.url) return image.url
   return null
 }
@@ -81,13 +82,9 @@ export function getValidImageUrl(image: PayloadImage | number | null | undefined
   // If image is a number or null/undefined, return default avatar
   if (!image || typeof image === 'number') return DEFAULT_AVATAR_PATH
 
-  // If image is an object, try to extract URL
+  // If image is an object, return full-res original URL so Next.js image
+  // optimization can generate correct srcset variants via /_next/image
   if (typeof image === 'object') {
-    // Prefer tablet size for consistency
-    const tabletUrl = image.sizes?.tablet?.url
-    if (isValidUrl(tabletUrl)) return tabletUrl
-
-    // Fallback to original URL
     if (isValidUrl(image.url)) return image.url
   }
 
