@@ -38,6 +38,12 @@ import { beforeSyncHook } from './utils/search/beforeSyncHook'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const payloadSecret = process.env.PAYLOAD_SECRET
+if (!payloadSecret) throw new Error('PAYLOAD_SECRET environment variable is required')
+if (!process.env.DATABASE_URI) throw new Error('DATABASE_URI environment variable is required')
+if (!process.env.DATABASE_AUTH_TOKEN) throw new Error('DATABASE_AUTH_TOKEN environment variable is required')
+if (!process.env.BLOB_READ_WRITE_TOKEN) throw new Error('BLOB_READ_WRITE_TOKEN environment variable is required')
+
 export default buildConfig({
   admin: {
     importMap: {
@@ -56,8 +62,8 @@ export default buildConfig({
   globals: [HomePageGlobal],
   db: sqliteAdapter({
     client: {
-      url: process.env.DATABASE_URI!,
-      authToken: process.env.DATABASE_AUTH_TOKEN!,
+      url: process.env.DATABASE_URI,
+      authToken: process.env.DATABASE_AUTH_TOKEN,
     },
   }),
   editor: lexicalEditor(),
@@ -149,7 +155,7 @@ export default buildConfig({
       collections: {
         images: true,
       },
-      token: process.env.BLOB_READ_WRITE_TOKEN!,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
 
     // Cloudflare R2 Storage for Documents collection (PDFs + ZIPs)
@@ -176,11 +182,11 @@ export default buildConfig({
       },
     }),
   ],
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: payloadSecret,
   sharp,
   upload: {
     limits: {
-      fileSize: 60_000_000, // 60 MB in bytes (temporarily increased for migration)
+      fileSize: 60_000_000, // 60 MB to support lare zip files for documents
     },
   },
   typescript: {

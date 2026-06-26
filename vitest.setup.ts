@@ -4,6 +4,8 @@ import '@testing-library/jest-dom/vitest'
 // Only set if not already defined (allows .env to take precedence)
 process.env.PAYLOAD_SECRET = process.env.PAYLOAD_SECRET || 'test-secret-key'
 process.env.DATABASE_URI = process.env.DATABASE_URI || 'file:./test.db'
+process.env.DATABASE_AUTH_TOKEN = process.env.DATABASE_AUTH_TOKEN || 'test-auth-token'
+process.env.BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_test1234567890_abcdefghijklmnopqrstuvwxyz'
 process.env.NEXT_PUBLIC_S3_HOSTNAME = process.env.NEXT_PUBLIC_S3_HOSTNAME || 'https://example.r2.dev'
 process.env.EMAIL_FROM = process.env.EMAIL_FROM || 'test@example.com'
 
