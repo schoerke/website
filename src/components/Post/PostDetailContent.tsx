@@ -1,10 +1,10 @@
 import BackButton from '@/components/ui/BackButton'
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import SchoerkeLink from '@/components/ui/SchoerkeLink'
+import PostFeaturedImage from '@/components/Post/PostFeaturedImage'
 import type { Artist, Post } from '@/payload-types'
 import { formatDate } from '@/utils/post'
 import { ChevronLeft } from 'lucide-react'
-import Image from 'next/image'
 
 interface PostDetailContentProps {
   title: string
@@ -63,14 +63,7 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
         {/* Featured image */}
         {imageUrl && (
           <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg">
-            <Image
-              src={imageUrl}
-              alt={title}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 896px) 100vw, 896px"
-            />
+            <PostFeaturedImage src={imageUrl} alt={title} />
           </div>
         )}
 
