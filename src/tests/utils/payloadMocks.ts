@@ -22,7 +22,7 @@ export function createMockPost(overrides?: Partial<Post>): Post {
         version: 1,
       },
     },
-    category: 'news',
+    categories: ['news'],
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
     _status: 'published',
