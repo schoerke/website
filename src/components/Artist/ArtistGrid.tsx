@@ -4,8 +4,9 @@ import ArtistCard from '@/components/Artist/ArtistCard'
 import { INSTRUMENT_PRIORITY } from '@/components/Artist/artistConstants'
 import InstrumentFilter from '@/components/Artist/InstrumentFilter'
 import ImageSlider from '@/components/ui/ImageSlider'
-import type { Artist, Image } from '@/payload-types'
+import type { Artist } from '@/payload-types'
 import { shuffleArray } from '@/utils/array'
+import { isImageObject, isValidUrl } from '@/utils/image'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 
@@ -56,31 +57,6 @@ function sortArtists(artists: Artist[]): Artist[] {
   })
 }
 
-/**
- * Check if a URL string is valid (not null, not empty, not the string "null")
- */
-function isValidUrl(url: unknown): url is string {
-  return typeof url === 'string' && url !== '' && url !== 'null' && !url.includes('/null')
-}
-
-/**
- * Get the first valid image URL from a Payload image object
- * Prioritizes: tablet -> original -> card -> thumbnail
- */
-function getValidImageUrl(image: Image | null | undefined): string | null {
-  if (!image) return null
-
-  const sizes = image.sizes
-
-  // Check available sizes in priority order
-  if (sizes?.tablet?.url && isValidUrl(sizes.tablet.url)) return sizes.tablet.url
-  if (image.url && isValidUrl(image.url)) return image.url
-  if (sizes?.card?.url && isValidUrl(sizes.card.url)) return sizes.card.url
-  if (sizes?.thumbnail?.url && isValidUrl(sizes.thumbnail.url)) return sizes.thumbnail.url
-
-  return null
-}
-
 const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
   const [selectedInstruments, setSelectedInstruments] = useState<string[]>([])
   const t = useTranslations('custom.pages.artists')
@@ -114,10 +90,11 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
 
     return sliderArtists
       .map((artist) => {
-        // Type guard: ensure image is an Image object, not a number
-        const image = typeof artist.image === 'object' ? artist.image : null
-        const imageUrl = getValidImageUrl(image)
-        if (!imageUrl) return null
+        // Type guard: ensure image is a valid Image object, not a number or null
+        const image = isImageObject(artist.image) ? artist.image : null
+        if (!image) return null
+        const imageUrl = image.url
+        if (!isValidUrl(imageUrl)) return null
 
         return {
           src: imageUrl,
