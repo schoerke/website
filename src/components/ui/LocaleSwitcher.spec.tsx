@@ -267,6 +267,7 @@ describe('LocaleSwitcher', () => {
         back: vi.fn(),
         forward: vi.fn(),
         refresh: vi.fn(),
+        bfcacheId: 'mock-bfcache',
       }
       vi.mocked(useRouter).mockReturnValue(mockRouter)
 
@@ -296,6 +297,7 @@ describe('LocaleSwitcher', () => {
         back: vi.fn(),
         forward: vi.fn(),
         refresh: vi.fn(),
+        bfcacheId: 'mock-bfcache',
       }
       vi.mocked(useRouter).mockReturnValue(mockRouter)
 
@@ -318,6 +320,7 @@ describe('LocaleSwitcher', () => {
         back: vi.fn(),
         forward: vi.fn(),
         refresh: vi.fn(),
+        bfcacheId: 'mock-bfcache',
       }
       vi.mocked(useRouter).mockReturnValue(mockRouter)
 
@@ -327,7 +330,8 @@ describe('LocaleSwitcher', () => {
       await user.click(screen.getByRole('button', { name: 'English' }))
 
       await waitFor(() => {
-        expect(screen.queryByRole('button', { name: 'Deutsch' })).not.toBeInTheDocument()
+        const liveRegion = document.querySelector('output')
+        expect(liveRegion).toHaveTextContent('Language changed to English')
       })
     })
   })
@@ -392,6 +396,7 @@ describe('LocaleSwitcher', () => {
       back: vi.fn(),
       forward: vi.fn(),
       refresh: vi.fn(),
+      bfcacheId: 'mock-bfcache',
     })
 
     it.each(['/news/[slug]', '/projects/[slug]'] as const)(
