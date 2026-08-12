@@ -41,8 +41,9 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={t('listenOnSpotifyFor', { title: recording.title })}
-                className="text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
+                className="inline-flex items-center gap-2 text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
               >
+                <span className="hidden text-sm lg:inline">{t('listenOnSpotify')}</span>
                 <SiSpotify width={20} height={20} aria-hidden="true" />
                 <span className="sr-only"> ({t('opensInNewTab')})</span>
               </a>
@@ -53,8 +54,9 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={t('listenOnAppleMusicFor', { title: recording.title })}
-                className="text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
+                className="inline-flex items-center gap-2 text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
               >
+                <span className="hidden text-sm lg:inline">{t('listenOnAppleMusic')}</span>
                 <SiApplemusic width={20} height={20} aria-hidden="true" />
                 <span className="sr-only"> ({t('opensInNewTab')})</span>
               </a>
