@@ -84,247 +84,37 @@ inspection of an exported backup, use `sqlite3`. Only reach for custom scripts w
 **Note:** `turso db import` creates a **new** database — it does NOT overwrite an existing one. See MEMORY.md §4.2
 for the correct full-restore procedure.
 
-### Incident Log
+## Operational Knowledge (see MEMORY.md)
 
-**2025-11-30: Unauthorized Database Token Generation**
+**MEMORY.md** is the authoritative record of operational lessons, environment facts, incident history, and
+hard-won workflows. It is mandatory reading before any database, migration, or deployment work.
 
-- **What happened:** Agent generated a new Turso database auth token without user permission
-- **Root cause:** When cleaning up R2 environment variables, `DATABASE_AUTH_TOKEN` was accidentally removed from `.env`.
-  Agent ran `turso db tokens create` without asking first.
-- **Impact:** Created a new token that could have invalidated Vercel deployment or other environments using the old
-  token
-- **Resolution:** User provided original token, which was restored to `.env`
-- **Prevention:**
-  - **NEVER generate new database credentials without explicit permission**
-  - When environment variables are missing, ask user to provide them - don't generate new ones
-  - Add to database protection policy: Credential generation requires explicit approval
-  - Be more careful with grep filters when removing env vars (check each line individually)
+### Always Use Payload Local API for Production Data Operations
 
-**2025-11-30: Foreign Key Constraint Errors During Employee Migration**
+**CRITICAL: NEVER use raw SQL or `@libsql/client` to copy or write data to production.** Always use Payload's
+Local API — bypassing it skips hooks, never populates versions tables, and breaks the admin list view.
+Full explanation, code patterns, and the 2026-04-27 posts incident: `MEMORY.md` §11.
 
-- **What happened:** Employee migration failed with "FOREIGN KEY constraint failed" errors
-- **Root cause:** `media-id-map.json` contained outdated Payload image IDs that didn't exist in database
-- **Impact:** Migration failed for all 4 employees until image IDs were corrected
-- **Resolution:**
-  1. Uploaded missing employee images to Vercel Blob
-  2. Updated `media-id-map.json` with correct database IDs
-  3. Verified IDs existed before re-running migration
-- **Prevention:** Always verify foreign key references exist in database before running migrations that create
-  relationships
+### Payload CMS + SQLite: Array Field Renames
 
-**2025-11-24: Remote Database Modified Without Verification**
+**CRITICAL: Read this before renaming any array/block/relationship field in a Payload collection.** Each
+array field has its own SQLite table; a naive rename + schema push DROPS the old table and loses data. The
+correct approach is a Payload migration file (not a pre-migration script). Full walkthrough + the 2026-04-18
+video-loss incident: `MEMORY.md` §12.
 
-- **What happened:** Made database changes (media seeding, biography updates) on remote Turso database without verifying
-  configuration
-- **Root cause:** Failed to check `.env` DATABASE_URI before running database operations
-- **Impact:** 2 media files uploaded, artist biography data modified on remote development database
-- **Prevention:** Added mandatory database environment verification step above
+### Library-Specific Knowledge
 
-**2026-04-27: Post versions table emptied, admin showed "No Results"**
+- Payload search plugin + localization: `MEMORY.md` §13.1
+- WordPress migration data integrity: `MEMORY.md` §13.2
+- WordPress migration file uploads: `MEMORY.md` §13.3
+- WordPress filename timestamp postfixes: `MEMORY.md` §13.4
+- Vercel Blob storage/bandwidth: `MEMORY.md` §13.5
 
-- **What happened:** Prod admin showed 137 ghost posts with `id: null`, then after deleting orphaned `_posts_v`
-  rows it showed "No Results" — all 168 real posts were invisible in the admin.
-- **Root cause:** Posts had originally been migrated to prod via raw SQL (`@libsql/client` direct copy), bypassing
-  Payload's Local API. This means Payload hooks never ran, so `_posts_v` (versions table) was never populated.
-  The Payload admin list view queries `_posts_v`, not `posts` directly. When orphaned version rows were deleted,
-  the table was left empty and the admin showed nothing.
-- **Impact:** ~1 hour of remediation; posts had to be fully re-imported via Local API.
-- **Resolution:** Wiped all posts from prod tables, then ran `importPostsDataset.ts` directly against prod DB
-  (with `.env` pointed at prod). Payload Local API created all posts, versions, and related rows correctly.
-- **Prevention:** See "Always Use Payload Local API for Production Data Operations" section below.
+### Historical Incidents (pre-2026-08)
 
-**2026-04-18: Video data lost during Payload field rename (youtubeLinks → videoLinks)**
-
-- **What happened:** Olga Scheps' 2 YouTube videos were lost after renaming the `youtubeLinks` array field to
-  `videoLinks` in the Payload Artists collection config
-- **Root cause:** Fundamental misunderstanding of how Payload handles array field renames with the SQLite adapter.
-  See "Payload CMS + SQLite: How Array Field Renames Work" section below for the full explanation.
-- **Impact:** 2 video entries permanently deleted from the remote development database
-- **Prevention:** Added mandatory migration pattern for Payload array field renames below
-
-## Always Use Payload Local API for Production Data Operations
-
-**CRITICAL: NEVER use raw SQL or `@libsql/client` to copy or write data to production.**
-
-### Why Raw SQL Is Dangerous
-
-Payload CMS is not just a database — it's a system with hooks, lifecycle events, and internal tables that must
-all stay in sync. When you bypass Payload's Local API and write directly to SQLite:
-
-- `_posts_v`, `_recordings_v`, etc. (versions tables) are **never populated** — the admin list view will show
-  nothing or ghost entries
-- Search index (`search` collection) is **never updated**
-- `afterChange` hooks **never run** (search sync, slug generation, etc.)
-- Relationship integrity is fragile — foreign key mismatches cause silent failures
-
-### The Correct Pattern for Migrating Data to Production
-
-**Step 1:** Point `.env` at prod:
-
-```bash
-# In .env, swap DATABASE_URI and DATABASE_AUTH_TOKEN to production values
-```
-
-**Step 2:** Run the import/seed script (which uses Payload Local API):
-
-```bash
-npx tsx scripts/wordpress/importPostsDataset.ts
-npx tsx scripts/wordpress/importRecordingsDataset.ts
-```
-
-**Step 3:** Restore `.env` to dev immediately after:
-
-```bash
-# Swap DATABASE_URI and DATABASE_AUTH_TOKEN back to development values
-```
-
-### The Correct Pattern for Deleting Data from Production
-
-Always use `payload.delete()` — never raw `DELETE FROM` SQL:
-
-```typescript
-import 'dotenv/config'
-import config from '@/payload.config'
-import { getPayload } from 'payload'
-
-const payload = await getPayload({ config })
-
-// Find records to delete
-const results = await payload.find({
-  collection: 'recordings',
-  where: { artists: { contains: artistId } },
-  depth: 0,
-  limit: 100,
-})
-
-// Delete each one via Local API
-for (const doc of results.docs) {
-  await payload.delete({ collection: 'recordings', id: doc.id })
-}
-```
-
-### When Raw SQL IS Acceptable
-
-- **Read-only queries** for inspection/verification (e.g., `SELECT COUNT(*)`)
-- **Schema inspection** (`PRAGMA table_info(...)`)
-- **Deleting orphaned rows** that Payload itself cannot see (e.g., rows with `parent_id IS NULL`) — but only
-  after verifying they are truly orphaned and not real data
-
-### The `.env` Swap Workflow
-
-Every time you need to operate on prod:
-
-1. Comment out dev `DATABASE_URI` + `DATABASE_AUTH_TOKEN`
-2. Uncomment prod values
-3. Run script
-4. Immediately restore dev values
-5. Verify with `grep DATABASE_URI .env` that you're back on dev
-
-**Never leave `.env` pointing at prod after a session ends.**
-
----
-
-## Payload CMS + SQLite: How Array Field Renames Work
-
-**CRITICAL: Read this before renaming any array/block/relationship field in a Payload collection.**
-
-### How Payload stores array fields in SQLite
-
-Each Payload `array` field is stored in its **own table**, named after the collection and field:
-
-- `artists` collection + `youtubeLinks` field → table `artists_youtube_links`
-- `artists` collection + `videoLinks` field → table `artists_video_links`
-
-These are separate tables. Renaming the field in the collection config does NOT rename the table — Payload sees
-the old table as belonging to a deleted field and the new table as belonging to a new (empty) field.
-
-### What happens when you rename an array field and accept the schema push
-
-When you start the dev server after renaming an array field, Payload presents a schema diff prompt. If you accept:
-
-1. Payload **drops** `artists_youtube_links` (old field, treated as deleted)
-2. Payload **creates** `artists_video_links` (new field, treated as new — empty)
-
-**Any data written to `artists_video_links` before the schema push is also lost**, because Payload drops and
-recreates the table. This is what happened: the migration script wrote data to `videoLinks` while the collection
-config still said `youtubeLinks`. But when the schema push ran, it saw both `artists_youtube_links` (to drop) and
-`artists_video_links` (to also drop and recreate, because it wasn't in the schema snapshot yet).
-
-### The correct way to rename an array field with data preservation
-
-**NEVER use a pre-migration script + schema push. Use a Payload migration file instead.**
-
-A Payload migration file has `up()` and `down()` functions with direct SQL access. This runs atomically
-**as part of** the schema change, not before or after it.
-
-#### Step-by-step process:
-
-**Step 1: Create a migration file**
-
-```bash
-pnpm payload migrate:create rename-youtube-links-to-video-links
-```
-
-This generates a file in `src/migrations/` with empty `up()` and `down()` functions.
-
-**Step 2: Write the migration SQL**
-
-```typescript
-import { type MigrateUpArgs, type MigrateDownArgs, sql } from '@payloadcms/db-sqlite'
-
-export async function up({ db }: MigrateUpArgs): Promise<void> {
-  // 1. Create the new table with the same schema as the old one
-  await db.run(sql`
-    CREATE TABLE IF NOT EXISTS artists_video_links (
-      _order integer NOT NULL,
-      _parent_id integer NOT NULL REFERENCES artists(id),
-      id text PRIMARY KEY,
-      url text,
-      CONSTRAINT artists_video_links_parent_id_fk
-        FOREIGN KEY (_parent_id) REFERENCES artists(id) ON DELETE CASCADE
-    )
-  `)
-
-  // 2. Create the locales table if the field is localized
-  // (check the existing _locales table structure and replicate it)
-
-  // 3. Copy data from old table to new table
-  await db.run(sql`
-    INSERT INTO artists_video_links SELECT * FROM artists_youtube_links
-  `)
-
-  // 4. Drop the old table
-  await db.run(sql`DROP TABLE IF EXISTS artists_youtube_links`)
-}
-
-export async function down({ db }: MigrateDownArgs): Promise<void> {
-  await db.run(sql`
-    CREATE TABLE IF NOT EXISTS artists_youtube_links AS SELECT * FROM artists_video_links
-  `)
-  await db.run(sql`DROP TABLE IF EXISTS artists_video_links`)
-}
-```
-
-**Step 3: Run the migration before starting the dev server**
-
-```bash
-pnpm payload migrate
-```
-
-**Step 4: Update the collection config** (rename the field in `Artists.ts`)
-
-**Step 5: Start the dev server** — the schema push will now see the new table already exists with the correct
-structure and will accept it without data loss.
-
-### Summary: Pre-migration script is NOT sufficient
-
-| Approach                                   | Data safe? | Why                                                             |
-| ------------------------------------------ | ---------- | --------------------------------------------------------------- |
-| Script writes data → schema push           | ❌         | Schema push drops and recreates the table, wiping script output |
-| Payload migration file (SQL) → schema push | ✅         | Migration runs atomically before schema push sees the table     |
-| Schema push first → script writes data     | ✅         | Table already exists, script writes to live table               |
-
-The safest approach for any array/block field rename with existing data is always **the Payload migration file**.
+Full incident log: `MEMORY.md` §14. Includes: unauthorized token generation (2025-11-30), employee migration
+FK failures (2025-11-30), unverified remote DB modifications (2025-11-24), posts versions table emptied
+(2026-04-27), video data lost on array rename (2026-04-18).
 
 ## Environment Variable Management Policy
 
@@ -435,8 +225,6 @@ grep -E "CLOUDFLARE|R2|S3_" .env
 - **Error Handling:** Prefer explicit error handling; avoid silent failures
 - **Linting:** Follows Next.js, Prettier, and TypeScript ESLint rules
 - **Ignore:** build, dist, node_modules, temp, .git, .yarn, .tmp
-
-_This file is for agentic coding agents. Update if project conventions change._
 
 ## React Component Pattern
 
@@ -661,9 +449,6 @@ import { BiographyTab, RepertoireTab } from './ArtistTabContent'
 - **Not** for general utility components or unrelated components
 
 ### When to Deviate
-
-**NEVER.** Always follow this pattern unless explicitly instructed otherwise by the user.
-
 ## Data Fetching Pattern
 
 **CRITICAL: Use Server Actions for client component data fetching, NEVER use REST API fetch() calls.**
@@ -812,188 +597,6 @@ When converting REST API calls to server actions:
 5. ✅ Remove REST API endpoint if no longer needed
 6. ✅ Update tests to mock server action instead of fetch()
 7. ✅ Verify relationship data populates correctly
-
-## Library-Specific Knowledge
-
-### Payload CMS Search Plugin with Localization
-
-**Critical Understanding:** When using `@payloadcms/plugin-search` with localized collections:
-
-1. **How it works:**
-   - Setting `localize: true` makes the SEARCH collection itself localized (not the source collections)
-   - The plugin's `afterChange` hook fires once per API request, using `req.locale`
-   - Each search record is created with a specific `locale` parameter
-   - To index content in multiple locales, you need separate API calls for each locale
-
-2. **Correct implementation:**
-
-   ```typescript
-   // Create English version
-   const doc = await payload.create({
-     collection: 'artists',
-     data: artistData,
-     locale: 'en', // Explicitly set locale
-   })
-
-   // Update German version (adds second locale to same document)
-   await payload.update({
-     collection: 'artists',
-     id: doc.id,
-     data: { biography: germanBiography },
-     locale: 'de', // Explicitly set different locale
-   })
-
-   // This creates TWO search records: one for EN, one for DE
-   ```
-
-3. **When confused about plugin behavior:**
-   - DO NOT guess or experiment with config options
-   - Check the plugin's source code on GitHub: `packages/plugin-search/src/`
-   - Look for official template examples that use the plugin
-   - Read the actual implementation, not just type definitions
-
-### WordPress Migration Data Integrity
-
-**Critical Rule:** When migrating data from WordPress, **preserve the original data structure** unless explicitly
-instructed otherwise.
-
-**Example incident (2025-11-25):**
-
-- Jonian Ilias Kadesha had `['Violin', 'Chamber Music']` in WordPress
-- Agent attempted to filter out "Chamber Music" globally, affecting ALL artists
-- **Correct approach:** Only apply fixes to specific artists when explicitly requested
-- **Never make broad assumptions** about data cleanup during migrations
-
-**Guidelines:**
-
-1. **Migrate data as-is** - Don't assume certain values are "wrong" or should be filtered
-2. **Fix specific records** - If one artist needs correction, create a targeted fix script
-3. **Ask before cleanup** - If you think data should be transformed, ask the user first
-4. **Document exceptions** - If an artist needs special handling, document why in the migration script
-
-### WordPress Migration File Uploads
-
-**Critical Rule:** Always verify that media files are uploaded to Payload BEFORE running migrations that reference them.
-
-**Common Issue Pattern (2025-11-30):**
-
-Migration fails with "FOREIGN KEY constraint failed" when trying to link to images that don't exist.
-
-**Root Causes:**
-
-1. `media-id-map.json` contains IDs from a previous/different database state
-2. Files were downloaded but never uploaded to current storage (Vercel Blob)
-3. Attachment IDs in WordPress XML don't resolve to actual files
-
-**Resolution Process:**
-
-1. **Check existing uploads:**
-
-   ```bash
-   # Query database to see what's actually there
-   payload.count({ collection: 'images' })
-   ```
-
-2. **Verify ID mapping:**
-
-   ```bash
-   # Check if mapped IDs exist in database
-   cat media-id-map.json | jq '.["filename.jpg"]'  # Get mapped ID
-   # Then verify that ID exists in images collection
-   ```
-
-3. **Upload missing files:**
-
-   ```typescript
-   await payload.create({
-     collection: 'images',
-     data: { alt: 'Description' },
-     filePath: './path/to/file.jpg',
-   })
-   ```
-
-4. **Update mapping:**
-   - Update `media-id-map.json` with correct IDs from database
-   - Re-run migration after verification
-
-**Prevention:**
-
-- Always run a query to list existing image IDs before migration
-- Verify all referenced IDs exist in database
-- Upload ALL media files before running content migrations
-- Keep `media-id-map.json` in sync with actual database state
-
-### WordPress Filename Timestamp Postfixes
-
-**Critical Rule:** WordPress adds timestamp postfixes to filenames when images are edited or re-uploaded. Migration
-scripts MUST clean these postfixes to avoid cluttering the database.
-
-**Common Pattern (2025-11-30):**
-
-WordPress adds `-e[timestamp]` to filenames:
-
-- `Mario-Venzago-1_c-Alberto-Venzago-e1762933634869.jpg`
-- `Claire-Huangci_IMG_2143-Mateusz-Zahora-scaled-e1734089581370.jpg`
-
-Without cleaning, the database accumulates filenames with timestamp postfixes that require manual cleanup.
-
-**Solution:**
-
-All migration scripts now use `cleanWordPressFilename()` utility from `scripts/wordpress/utils/fieldMappers.ts`:
-
-```typescript
-import { cleanWordPressFilename } from './utils/fieldMappers'
-
-// Clean filename before lookup
-let filename = new URL(attachmentUrl).pathname.split('/').pop()
-filename = cleanWordPressFilename(filename)
-```
-
-**Files Updated (2025-11-30):**
-
-- `scripts/wordpress/utils/fieldMappers.ts` - Added `cleanWordPressFilename()` utility
-- `scripts/wordpress/migrateArtists.ts` - Cleans featured images, PDFs, ZIPs
-- `scripts/wordpress/migrateEmployees.ts` - Cleans employee images
-- `scripts/wordpress/utils/uploadLocalMedia.ts` - Cleans filenames before upload
-- `scripts/wordpress/utils/downloadMedia.sh` - Cleans filenames during download
-
-**Prevention:**
-
-- All future WordPress migrations will automatically clean timestamp postfixes
-- No manual cleanup required after migrations
-- Database will contain clean, descriptive filenames
-
-### Vercel Blob Storage and Bandwidth Management
-
-**Critical Understanding (2025-11-30):** Vercel Blob has a 10 GB/month bandwidth limit on the free tier. Large files
-like ZIP archives can quickly exhaust this limit.
-
-**Current Status:**
-
-- 866 MB / 10 GB bandwidth used (8.6%)
-- 139 files totaling 731.55 MB stored
-- **21 ZIP files: 721.93 MB** (artist photo galleries, 40-60 MB each)
-- Images: ~8 MB (JPG, WEBP, PNG)
-- PDFs: ~4 MB
-
-**Issue:**
-
-- Artist gallery ZIP downloads consume significant bandwidth
-- ~12 full downloads of all galleries would exhaust monthly limit
-- Large files (>10 MB) should not be stored in Vercel Blob
-
-**Recommendations:**
-
-1. **For large downloads (ZIPs, large PDFs):** Use Cloudflare R2 (unlimited egress bandwidth)
-2. **For images:** Vercel Blob is fine (small files, Next.js optimization)
-3. **Monitor bandwidth:** Check Vercel dashboard regularly during development
-
-**Prevention:**
-
-- Always analyze storage before uploading large files
-- Use `tmp/analyzeBlobUsage.ts` to audit Blob storage
-- Consider bandwidth impact of file downloads
-- See `docs/todo.md` for detailed migration plan
 
 ## Library Installation Policy
 
