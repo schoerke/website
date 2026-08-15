@@ -145,4 +145,51 @@ describe('enforceRepertoireOrderOnly hook', () => {
 
     expect(result).toEqual(data)
   })
+
+  it('should handle admin form values ({ relationTo, value }) and block removal', async () => {
+    const originalDoc = createMockArtist({ repertoire: [10, 20, 30] })
+    const adminFormData = createMockArtist({
+      repertoire: [
+        { relationTo: 'repertoire', value: 10 },
+        { relationTo: 'repertoire', value: 20 },
+      ] as unknown as number[],
+    })
+
+    await expect(
+      enforceRepertoireOrderOnly({
+        data: adminFormData,
+        originalDoc,
+        operation: 'update',
+        context: {},
+        req: {} as unknown as HookArgs['req'],
+      } as unknown as HookArgs)
+    ).rejects.toThrow(
+      'Repertoire lists are managed on the Repertoire document. Link or unlink artists there, then reorder the list here.'
+    )
+  })
+
+  it('should handle admin form values ({ relationTo, value }) and allow reorder', async () => {
+    const originalDoc = createMockArtist({
+      repertoire: [
+        { relationTo: 'repertoire', value: 10 },
+        { relationTo: 'repertoire', value: 20 },
+      ] as unknown as number[],
+    })
+    const adminFormData = createMockArtist({
+      repertoire: [
+        { relationTo: 'repertoire', value: 20 },
+        { relationTo: 'repertoire', value: 10 },
+      ] as unknown as number[],
+    })
+
+    const result = await enforceRepertoireOrderOnly({
+      data: adminFormData,
+      originalDoc,
+      operation: 'update',
+      context: {},
+      req: {} as unknown as HookArgs['req'],
+    } as unknown as HookArgs)
+
+    expect(result).toEqual(adminFormData)
+  })
 })

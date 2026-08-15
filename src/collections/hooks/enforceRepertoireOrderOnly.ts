@@ -3,7 +3,11 @@ import type { CollectionBeforeChangeHook } from 'payload'
 
 /**
  * Extracts the numeric IDs from a repertoire relationship value.
- * Handles both raw IDs and populated objects.
+ *
+ * Handles all three shapes Payload can produce:
+ * - raw ID: `number` or `string`
+ * - populated object: `{ id, ... }` (Local API with depth)
+ * - admin form value: `{ relationTo, value }` (admin UI / REST)
  *
  * @param items - The relationship field value
  * @returns Array of numeric IDs
@@ -11,7 +15,14 @@ import type { CollectionBeforeChangeHook } from 'payload'
 function extractRepertoireIds(items: unknown): number[] {
   if (!Array.isArray(items)) return []
   return items
-    .map((item) => (typeof item === 'number' || typeof item === 'string' ? Number(item) : (item as { id: number }).id))
+    .map((item) => {
+      if (typeof item === 'number' || typeof item === 'string') return Number(item)
+      if (typeof item !== 'object' || item === null) return NaN
+      const obj = item as { id?: unknown; value?: unknown }
+      if (typeof obj.id === 'number' || typeof obj.id === 'string') return Number(obj.id)
+      if (typeof obj.value === 'number' || typeof obj.value === 'string') return Number(obj.value)
+      return NaN
+    })
     .filter((id): id is number => !Number.isNaN(id))
 }
 
