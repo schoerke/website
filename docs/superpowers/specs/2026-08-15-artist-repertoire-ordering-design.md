@@ -3,7 +3,8 @@
 **Date:** 2026-08-15
 **Status:** Approved
 **Context:** Client request for per-artist ordering of repertoire sections on artist detail pages, using
-drag-and-drop in the Payload admin.
+drag-and-drop in the Payload admin. Also introduces a migrations-only database workflow (`push: false`) —
+schema changes flow through migration files instead of Payload's dev auto-push.
 
 ## Overview
 
@@ -61,42 +62,105 @@ This mirrors the already-shipped "Artist Projects Ordering" feature
 
 ## Database Migration Workflow
 
-**Concern:** Changing the schema in dev auto-pushes to whatever DB `.env` points at. Prod never auto-pushes
-(Payload only runs migrations in prod when `prodMigrations` is wired into the adapter — it is not configured in
-this project). The migration-file workflow is not yet used in this project.
+**Decision: Migrations-only everywhere.** Disable Payload's dev auto-push so all schema changes flow through
+migration files, in dev and prod alike.
 
-**Chosen workflow — Payload migration files:**
+### Why this is safe and documented
 
-1. Edit `src/collections/Artists.ts` (`repertoire` array → relationship). Do **not** start the dev server
-   (that would auto-push).
-2. Generate a migration file (reads config, diffs against last snapshot, writes `.ts` + `.json`, **no DB
-   writes**):
-   ```bash
-   pnpm payload migrate:create artist-repertoire-ordering
-   ```
-3. Review the generated SQL in `src/migrations/<timestamp>.ts`. Expected changes:
-   - Drop `artists_repertoire` and `artists_repertoire_locales` (empty tables — zero data affected)
-   - Create the relationship rows (`artists_rels` path `repertoire`) mechanism
-   - `down()` must reverse the changes
-4. Apply to **dev** (`.env` already points at remote dev DB):
+Payload's sqlite adapter supports `push: false` to disable the dev schema push
+(`node_modules/@payloadcms/db-sqlite/dist/connect.js` skips `pushDevSchema` when `this.push !== false`).
+Payload docs recommend this for SQLite: *"You can disable `db push` and rely solely on migrations to keep your
+local database in sync with your Payload Config. In SQLite, migrations are a fundamental aspect of working with
+Payload."* The prod behavior is unchanged (Payload never auto-pushes in production regardless).
+
+### Config change: `src/payload.config.ts`
+
+```typescript
+db: sqliteAdapter({
+  client: {
+    url: process.env.DATABASE_URI,
+    authToken: process.env.DATABASE_AUTH_TOKEN,
+  },
+  push: false, // Schema changes only via migrations, dev and prod alike
+}),
+```
+
+**Effects:**
+
+- Dev server no longer auto-migrates. Every schema change requires: `migrate:create` → review SQL → `migrate`
+- The `dev` `batch:-1` row (recorded by past auto-pushes in `payload_migrations`) stops being created, so the
+  "data loss will occur" warning no longer appears on future `migrate` runs. The existing `batch:-1` row
+  remains in the dev DB (harmless — warning shows once on first `migrate` run).
+- **Caveat:** a schema change you forget to migrate surfaces as a runtime DB error on dev server start until you
+  run `pnpm payload migrate`.
+
+### Migration files in this project today
+
+- `src/migrations/index.ts` exports an empty `migrations` array — no migration workflow has been used.
+- `src/migrations/20260310_203659.json` is a **stale** schema snapshot (March 2026): it still contains `issues`,
+  `images`, `home_page`, `artists_discography`, `artists_youtube_links`. The current schema has since renamed
+  collections/tables (e.g., `images` → `media`, `youtubeLinks` → `videoLinks`). The generated schema file
+  `src/payload-generated-schema.ts` is also stale (its `artists_rels` only lists `employeesID`, but the live DB
+  also has `posts_id`).
+- Because the snapshot is stale, `pnpm payload migrate:create` would diff March's schema against the current
+  config and generate a **giant, unrelated migration**. **Do not use `migrate:create` for this change.**
+
+### Chosen workflow — hand-written migration file
+
+1. Write the migration file by hand in `src/migrations/<timestamp>-artist-repertoire-ordering.ts` using the
+   `up()`/`down()` SQL pattern documented in AGENTS.md ("Payload CMS + SQLite: How Array Field Renames Work").
+   No DB writes during authoring.
+2. Review the SQL (below).
+3. Apply to **dev** (`.env` already points at remote dev DB):
    ```bash
    pnpm payload migrate
    ```
-5. Run the backfill script (Local API, idempotent — reverses `repertoire.artists` → `artist.repertoire`
+4. Run the backfill script (Local API, idempotent — reverses `repertoire.artists` → `artist.repertoire`
    arrays). See "Data Backfill" below.
-6. For **prod**: follow the `.env` swap workflow (comment dev DB values, uncomment prod values), run
+5. For **prod**: follow the `.env` swap workflow (comment dev DB values, uncomment prod values), run
    `pnpm payload migrate`, then restore `.env` to dev. Never leave `.env` pointed at prod.
+6. Replace the stale `20260310_203659.json` snapshot with a fresh one generated from the current schema so
+   future `migrate:create` calls diff correctly (see Task in plan).
 
-**Why low risk:**
+### Expected SQL in the migration
 
-- The array tables being dropped are empty (verified)
+Verified against the live dev DB (`PRAGMA` + schema reads):
+
+**Up:**
+
+- Add `repertoire_id` column to `artists_rels` (relationships store one FK column per related collection in
+  the shared `_rels` table):
+  ```sql
+  ALTER TABLE artists_rels ADD COLUMN repertoire_id integer;
+  CREATE INDEX artists_rels_repertoire_id_idx ON artists_rels (repertoire_id);
+  ```
+  Foreign key addition on SQLite requires table recreation — instead, rely on Payload's own FK management on
+  next connection, OR recreate the `artists_rels` table with the FK. **Plan step will detail the exact SQL**
+  (the adapter's generated migration for `projects`/`employees` shows the FK pattern: `repertoire_id` →
+  `repertoire.id`, `ON DELETE CASCADE`).
+- Drop the two empty array tables (zero data — verified 0 rows in dev):
+  ```sql
+  DROP TABLE artists_repertoire_locales;
+  DROP TABLE artists_repertoire;
+  ```
+
+**Down:**
+
+- Recreate `artists_repertoire` and `artists_repertoire_locales` (schema copied from
+  `src/payload-generated-schema.ts` lines 53-88)
+- Drop `repertoire_id` from `artists_rels`
+
+### Why low risk
+
+- The array tables being dropped are empty (verified 0 rows)
 - Backfill reads existing data, transforms nothing destructively, and is idempotent
 - Repertoire collection stays untouched and remains source of truth; `artist.repertoire` arrays are pure
   presentation ordering and can be rebuilt at any time
 - Rollback = revert config + `payload migrate` down
+- No more surprise auto-pushes in dev — migrations are explicit and reviewed
 
-**DB protection policy:** migration creation is read-only; applying migrations and backfill require explicit
-user confirmation and DB environment verification per AGENTS.md.
+**DB protection policy:** authoring migration files is read-only; applying migrations and running the backfill
+require explicit user confirmation and DB environment verification per AGENTS.md.
 
 ## Schema Changes
 
@@ -241,16 +305,18 @@ afterward via drag-and-drop.
 
 ## Deployment Steps
 
-1. Edit `Artists.ts` (repertoire → relationship) and add `syncArtistRepertoire` to Repertoire collection
-2. `pnpm payload generate:types` to refresh types
-3. `pnpm payload migrate:create artist-repertoire-ordering`
-4. Review generated SQL
-5. Apply to dev: `pnpm payload migrate` (`.env` → dev)
+1. Add `push: false` to the sqlite adapter in `src/payload.config.ts` (migrations-only workflow)
+2. Edit `Artists.ts` (repertoire → relationship) and add `syncArtistRepertoire` to Repertoire collection
+3. `pnpm payload generate:types` to refresh types
+4. Write the hand-crafted migration file (see "Expected SQL in the migration" above) — **not** `migrate:create`
+   (stale snapshot would generate unrelated changes)
+5. Review migration SQL; run `pnpm payload migrate` against dev (`.env` → dev)
 6. Run backfill on dev: `pnpm tsx scripts/db/backfillArtistRepertoire.ts`
-7. Update frontend (`getArtistBySlug`, `ArtistTabs`, delete `actions/repertoires.ts`)
-8. Tests, lint, build, format
-9. Deploy to staging/prod; run migration + backfill against prod via `.env` swap
-10. Restore `.env` to dev; verify with `grep DATABASE_URI .env`
+7. Replace stale snapshot `20260310_203659.json` with fresh one so future `migrate:create` diffs correctly
+8. Update frontend (`getArtistBySlug`, `ArtistTabs`, delete `actions/repertoires.ts`)
+9. Tests, lint, build, format
+10. Deploy to staging/prod; run migration + backfill against prod via `.env` swap
+11. Restore `.env` to dev; verify with `grep DATABASE_URI .env`
 
 ## Future Enhancements
 
