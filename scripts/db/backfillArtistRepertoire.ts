@@ -5,6 +5,16 @@
  * repertoire docs linked to each artist, then appending them to the artist's
  * repertoire array. Idempotent — safe to re-run.
  *
+ * ⚠️ CRITICAL — ALWAYS run against production with NODE_ENV=production:
+ * Without it, Payload's connect() runs `pushDevSchema` in dev mode, which re-adds
+ * the `dev` batch:-1 marker to `payload_migrations` and breaks future `payload migrate`
+ * runs (the interactive data-loss prompt silently cancels in CI). NODE_ENV=production
+ * makes connect() skip the push entirely.
+ *
+ *   # Run against production (inline env, no .env swap):
+ *   NODE_ENV=production DATABASE_URI=libsql://ksschoerke-production-... DATABASE_AUTH_TOKEN=<prod> \
+ *     pnpm tsx scripts/db/backfillArtistRepertoire.ts --apply
+ *
  * Safety features:
  * - Dry run mode by default (preview changes without applying)
  * - Preserves existing repertoire order if any exists
@@ -30,6 +40,17 @@ async function getConfig() {
 
 async function run() {
   const isDryRun = !process.argv.includes('--apply')
+
+  // Guard: connecting to the production DB without NODE_ENV=production triggers
+  // pushDevSchema, which re-adds the dev batch:-1 marker and breaks future migrate runs.
+  const isProd = (process.env.DATABASE_URI || '').includes('ksschoerke-production')
+  if (isProd && process.env.NODE_ENV !== 'production') {
+    console.error(
+      '❌ ABORT: connecting to production requires NODE_ENV=production.\n' +
+        '   Run with: NODE_ENV=production ... (prevents pushDevSchema from re-adding the dev marker)'
+    )
+    process.exit(1)
+  }
 
   if (isDryRun) {
     console.log('🔍 DRY RUN MODE - No changes will be applied')
