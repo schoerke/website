@@ -546,7 +546,7 @@ describe('Filter Function', () => {
 - [Vitest Documentation](https://vitest.dev/)
 - [Payload CMS Documentation](https://payloadcms.com/docs)
 - [Testing Best Practices](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
-- Project: `docs/server-actions-pattern.md` - Data fetching patterns
+- Project: `docs/patterns/data-fetching.md` - Data fetching patterns
 - Project: `AGENTS.md` - Code style guidelines
 
 ## Questions?
