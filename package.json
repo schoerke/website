@@ -7,6 +7,7 @@
   "scripts": {
     "prepare": "git config core.hooksPath .git-hooks",
     "build": "pnpm generate:search-index && cross-env NODE_OPTIONS=--no-deprecation next build --webpack",
+    "build:ci": "pnpm migrate && pnpm build",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --webpack",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "format": "oxfmt --write .",
