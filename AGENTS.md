@@ -59,6 +59,26 @@ This includes:
 3. Check if recovery is possible from backups
 4. Update these instructions to prevent recurrence
 
+### Available Tooling (check BEFORE writing new scripts)
+
+This project runs on Turso (SQLite), deployed to Vercel. The following tools are already available — prefer them
+over writing ad-hoc scripts:
+
+- **Turso CLI** (`turso`, authenticated) — native database operations without touching `.env`:
+  - `turso db list` — list databases (dev + prod)
+  - `turso db export <db>` — **full SQLite snapshot backup** to a local `.db` file (covers ALL tables, no `.env`
+    swap needed; uses CLI credentials)
+  - `turso db shell <db>` — interactive SQL shell
+  - `turso db import <file> --database <db>` — restore a snapshot (destructive, requires approval)
+  - Databases: `ksschoerke-development`, `ksschoerke-production`
+- **`sqlite3`** (macOS built-in) — inspect/query exported `.db` backup files locally (read-only)
+- **`payload` CLI** (`pnpm payload ...`) — `migrate:create`, `migrate`, `migrate:status`, `generate:types`,
+  `generate:importmap`, `run <script>`
+- **`scripts/db/dumpCollection.ts`** (`pnpm dump <collection>`) — per-collection JSON exports to `data/dumps/`
+
+**Rule:** for full-database backups, use `turso db export` — never a hand-rolled script. For read-only
+inspection of an exported backup, use `sqlite3`. Only reach for custom scripts when none of these fit.
+
 ### Incident Log
 
 **2025-11-30: Unauthorized Database Token Generation**

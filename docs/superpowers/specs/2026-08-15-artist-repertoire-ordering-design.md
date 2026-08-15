@@ -181,14 +181,22 @@ If it remains, the `build:ci` migrate step breaks:
 
 **One-time prod cleanup before the first `build:ci` deploy:**
 
-1. `.env` swap to prod (AGENTS.md approval flow)
-2. Delete the metadata row: `payload.delete` on the `payload-migrations` collection where `name: 'dev'` (or
-   equivalent Local API call) — this is a metadata row, zero content data affected
-3. Verify with a read-only query that `payload_migrations` is now empty
-4. Restore `.env` to dev
+1. **MANDATORY full backup first, before any `.env` change** — `turso db export ksschoerke-production` writes a
+   complete SQLite snapshot (`data/dumps/ksschoerke-production-<timestamp>.db`) covering every table including
+   `payload_migrations`. Uses Turso CLI credentials (not `.env`), so no swap is needed and a `.env`
+   misconfiguration cannot affect it. Verify the file is non-empty and readable (`sqlite3 ... SELECT COUNT(*) FROM
+   payload_migrations` → 1) **before** any write. If it fails, STOP.
+2. `.env` swap to prod (AGENTS.md approval flow)
+3. Delete the metadata row: `payload.delete` on the `payload-migrations` collection where `name: 'dev'` (or
+   equivalent Local API call) — this is a metadata row, zero content data affected. The script prints the full
+   row contents to stdout before deleting
+4. Verify with a read-only query that `payload_migrations` is now empty
+5. Restore `.env` to dev; keep the Turso snapshot as the restore point
 
 After cleanup, `payload migrate` runs the repertoire migration with no prompt, and prod now tracks migrations
-correctly. This cleanup is a **prod DB modification** and requires explicit user approval per AGENTS.md.
+correctly. This cleanup is a **prod DB modification** and requires explicit user approval per AGENTS.md. If the
+backup cannot be produced or verified, the cleanup must not proceed. Restore path (destructive, separate approval
+required): `turso db import data/dumps/ksschoerke-production-<timestamp>.db --database ksschoerke-production`.
 
 **Rejected alternative — `.env` swap for migrations:** manually flipping dev/prod DB lines in `.env` and running
 `pnpm payload migrate` locally is error-prone (risk of leaving `.env` pointed at prod) and unnecessary. The build
@@ -383,7 +391,8 @@ appropriate here). Initial order is arbitrary; editors reorder afterward via dra
    (`buildCommand: pnpm run build:ci`) — **note:** `pnpm ci` is a reserved pnpm built-in (clean install); a custom
    script named `ci` would never run
 10. Tests, lint, build, format
-11. One-time prod cleanup: delete the `dev` marker row from prod `payload_migrations` (`.env` swap + approval) so
+11. One-time prod cleanup: **Turso CLI full backup first** (`turso db export ksschoerke-production`, before any
+    `.env` change), then delete the `dev` marker row from prod `payload_migrations` (`.env` swap + approval) so
     `build:ci` migrate runs non-interactively — see "CRITICAL prerequisite" above
 12. Deploy to prod — Vercel build runs `pnpm migrate` against prod first, then builds
 13. Run backfill against prod via Local API script (after deploy, once prod schema migrated)

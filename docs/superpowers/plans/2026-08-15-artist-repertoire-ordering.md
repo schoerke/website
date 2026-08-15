@@ -1467,9 +1467,60 @@ git commit -m "build: add build:ci script and vercel buildCommand for migrations
 **Context:** verified 2026-08-15 that prod `payload_migrations` contains `[{ name: 'dev', batch: -1 }]`. This
 row makes every `payload migrate` show the interactive data-loss prompt (cancels in non-TTY CI → migrate skips
 silently). Must be deleted from prod **before** the first `build:ci` deploy. This is a prod DB modification —
-requires explicit user approval + `.env` swap per AGENTS.md.
+requires explicit user approval per AGENTS.md.
 
-- [ ] **Step 1: Create the temporary cleanup script**
+**Safety rule (MANDATORY, non-negotiable):** the full prod backup via Turso CLI (Steps 1-2) happens **first**,
+before any `.env` swap and before any write. It uses Turso CLI credentials (not `.env`), so it does not require a
+swap and cannot be affected by a `.env` misconfiguration. If the backup cannot be produced or verified, STOP and
+do not proceed.
+
+- [ ] **Step 1: Full prod backup via Turso CLI (BEFORE any .env change)**
+
+Prereq: `turso` CLI installed and authenticated (verified working 2026-08-15: `turso db list` shows
+`ksschoerke-production`).
+
+Run:
+```bash
+mkdir -p data/dumps
+turso db export ksschoerke-production --output-file data/dumps/ksschoerke-production-$(date +%Y%m%d-%H%M%S).db
+```
+
+Expected: produces `data/dumps/ksschoerke-production-<timestamp>.db` — a full SQLite snapshot of the entire prod
+database (all collections, versions tables, rels tables, and `payload_migrations`), plus a `<timestamp>.db-wal`
+log file if present.
+
+**Verify the backup is non-empty before proceeding:**
+```bash
+ls -la data/dumps/ksschoerke-production-*.db
+```
+
+**Verify the snapshot is readable and contains the migrations table:**
+```bash
+sqlite3 data/dumps/ksschoerke-production-<timestamp>.db "SELECT COUNT(*) FROM payload_migrations;"
+```
+Expected: prints `1` (the dev marker row is captured in the backup).
+
+**If the file is missing, 0 bytes, or sqlite3 errors, STOP — do not run the cleanup.**
+
+- [ ] **Step 2: Verify the backup contents**
+
+Confirm the backup is complete by checking a content table:
+```bash
+sqlite3 data/dumps/ksschoerke-production-<timestamp>.db "SELECT COUNT(*) FROM artists;"
+```
+Expected: prints the prod artist count (should match the live DB). Also verify `payload_migrations` row matches
+what we saw live: `SELECT name, batch FROM payload_migrations;` → `dev | -1`.
+
+**Only after Steps 1-2 succeed, continue to the cleanup.**
+
+- [ ] **Step 3: Swap `.env` to prod**
+
+Edit `.env`: comment dev `DATABASE_URI`/`DATABASE_AUTH_TOKEN`, uncomment prod values. Confirm:
+`grep DATABASE_URI .env` shows `ksschoerke-production-zeitchef`.
+
+**This step requires explicit user confirmation per AGENTS.md before continuing.**
+
+- [ ] **Step 4: Create the temporary cleanup script**
 
 Create `scripts/db/clearDevMigrationMarker.ts`:
 
@@ -1478,6 +1529,9 @@ Create `scripts/db/clearDevMigrationMarker.ts`:
  * TEMPORARY — deletes the `dev` marker row from payload_migrations.
  * Created by past dev-mode pushes to prod. Must run once before the
  * first build:ci deploy so `payload migrate` runs non-interactively.
+ *
+ * Prints the full row contents to stdout before deleting, so the backup
+ * can be reconstructed from the transcript if needed.
  *
  * Usage: pnpm tsx scripts/db/clearDevMigrationMarker.ts
  */
@@ -1502,6 +1556,14 @@ async function run() {
   })
 
   console.log(`Found ${docs.length} dev marker row(s)`)
+  if (docs.length === 0) {
+    console.log('Nothing to delete.')
+    process.exit(0)
+  }
+
+  // Print full rows for the transcript before deleting
+  console.log('Deleting row(s):')
+  console.log(JSON.stringify(docs, null, 2))
 
   for (const doc of docs) {
     await payload.delete({ collection: 'payload-migrations', id: doc.id })
@@ -1521,40 +1583,41 @@ run().catch((error) => {
 })
 ```
 
-- [ ] **Step 2: Swap `.env` to prod**
-
-Edit `.env`: comment dev `DATABASE_URI`/`DATABASE_AUTH_TOKEN`, uncomment prod values. Confirm:
-`grep DATABASE_URI .env` shows `ksschoerke-production-zeitchef`.
-
-**This step requires explicit user confirmation per AGENTS.md before running the script.**
-
-- [ ] **Step 3: Run the cleanup against prod**
+- [ ] **Step 5: Run the cleanup against prod (requires explicit user approval)**
 
 Run: `pnpm tsx scripts/db/clearDevMigrationMarker.ts`
-Expected: prints `Found 1 dev marker row(s)`, `Deleted row <id>`, then `payload_migrations now has 0 row(s)`.
+Expected: prints `Found 1 dev marker row(s)`, then the full JSON of the row being deleted, then `Deleted row <id>`,
+then `payload_migrations now has 0 row(s)`.
 
-- [ ] **Step 4: Verify read-only**
+**If more than 1 row is found, STOP and review before deleting anything.**
+
+- [ ] **Step 6: Verify read-only**
 
 Run: `pnpm tsx -e "import 'dotenv/config'; import { createClient } from '@libsql/client'; const db = createClient({url: process.env.DATABASE_URI, authToken: process.env.DATABASE_AUTH_TOKEN}); db.execute('SELECT * FROM payload_migrations').then(r => console.log(JSON.stringify(r.rows)))"`
 Expected: `[]`.
 
-- [ ] **Step 5: Restore `.env` to dev**
+- [ ] **Step 7: Restore `.env` to dev**
 
 Edit `.env` back: uncomment dev, comment prod. Confirm: `grep DATABASE_URI .env` shows
 `ksschoerke-development-zeitchef`. Never leave `.env` pointed at prod.
 
-- [ ] **Step 6: Delete the temporary script**
+- [ ] **Step 8: Delete the temporary cleanup script**
 
 ```bash
 rm scripts/db/clearDevMigrationMarker.ts
 ```
 
-- [ ] **Step 7: Commit**
+The Turso backup in `data/dumps/ksschoerke-production-<timestamp>.db` is kept as the restore point. Note it in the
+commit message.
+
+- [ ] **Step 9: Commit**
 
 ```bash
 git add -A
-git commit -m "chore(db): document prod dev-migration-marker cleanup (metadata row)"
+git commit -m "chore(db): prod dev-migration-marker cleanup (turso backup at data/dumps/ksschoerke-production-<timestamp>.db)"
 ```
+
+**Restore path (if ever needed):** `turso db import data/dumps/ksschoerke-production-<timestamp>.db --database ksschoerke-production` re-imports the snapshot. This is a destructive restore and requires separate explicit approval — it is documented here only as a recovery reference.
 
 ---
 
