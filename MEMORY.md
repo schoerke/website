@@ -32,9 +32,10 @@ operations — use Turso CLI or inline env vars instead** (see §5).
 
 **Reliable prod access without `.env` swap:**
 ```bash
-turso db shell ksschoerke-production "SELECT ..."          # read/write via CLI credentials
+turso db shell ksschoerke-production "SELECT ..."          # read/write via CLI credentials (approval required per opencode.json)
 turso db export ksschoerke-production --output-file data/dumps/NAME.db   # full snapshot backup
 ```
+**Prefer the Payload Local API for reading content data** — see §11.
 
 ---
 
@@ -266,7 +267,11 @@ project's deployments or env vars (`vercel env ls` returns empty; `vercel ls` sh
 ## 11. Payload Local API vs Raw SQL for Prod Data Operations
 
 **The rule (kept in AGENTS.md):** NEVER use raw SQL or `@libsql/client` to copy or write data to production.
-Use Payload's Local API.
+Use Payload's Local API. For **reading content data** (artists, repertoires, posts, etc.), prefer what the Local
+API returns (small `tsx` read script, `pnpm dump <collection>`, or an existing service/action). Turso CLI remains
+appropriate for DB/SQL-specific work — schema inspection, migration verification, row-count checks,
+backup/restore/clone, env identity, and queries the Local API can't easily express. Every `turso` command requires
+approval per `opencode.json`.
 
 ### Why raw SQL is dangerous
 
@@ -312,10 +317,14 @@ for (const doc of results.docs) {
 
 ### When raw SQL IS acceptable
 
-- **Read-only queries** for inspection/verification (e.g., `SELECT COUNT(*)`)
-- **Schema inspection** (`PRAGMA table_info(...)`)
+- **DB/SQL-specific work where the Local API is the wrong tool:** schema inspection (`PRAGMA table_info(...)`),
+  migration verification, row-count checks (`SELECT COUNT(*)`), backup/restore/clone, env identity — with user
+  approval (`opencode.json` gates every `turso` command)
 - **Deleting orphaned rows** Payload itself cannot see (e.g., `parent_id IS NULL`) — only after verifying they are
   truly orphaned and not real data
+
+**Content data reads (artists, repertoires, posts, etc.) are NOT raw-SQL work** — use the Local API (a `tsx` read
+script or `pnpm dump <collection>`), which returns the same shape the app consumes; raw SQL returns storage format.
 
 ### Related incidents
 

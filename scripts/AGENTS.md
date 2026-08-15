@@ -31,7 +31,11 @@ Rules for anything in `scripts/` (or `tmp/` for scratch). This file loads when w
 
 ## Reading the DB
 
-- Read-only prod checks: `turso db shell ksschoerke-production "SQL"` (no `.env` swap).
+- **Read content data (artists, repertoires, etc.) via the Payload Local API** — a small `tsx` read script or
+  `pnpm dump <collection>` (returns the same shape the app consumes).
+- `turso db shell` remains appropriate for DB/SQL-specific work — schema inspection, migration verification,
+  row-count checks, backup/restore/clone, env identity. Every `turso` command still requires approval per
+  `opencode.json`.
 - Full backups: `turso db export ksschoerke-production --output-file data/dumps/NAME.db`.
 - `turso db import` creates a NEW database — it cannot overwrite an existing one.
 

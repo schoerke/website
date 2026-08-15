@@ -47,10 +47,14 @@ This includes:
 
 ### What You CAN Do Without Approval:
 
-- ✅ Read operations (dumps, queries, API calls that only read)
-- ✅ Creating backup files
+- ✅ Read operations via **Payload Local API** (`pnpm dump <collection>`, `tsx` read script, existing services/actions)
+- ✅ Creating backup files (local copies, e.g. `sqlite3` on exported `.db` — note: `turso db export` requires approval per `opencode.json`)
 - ✅ Writing migration scripts without executing them
 - ✅ Analyzing data structure
+- ✅ Read-only inspection of an **exported** `.db` backup with `sqlite3`
+
+Note: `opencode.json` requires approval for **every `turso` command** (shell, export, import, list) — the permission
+layer gates those even though they may be read-only. Prefer Local API reads over `turso db shell`.
 
 **If you violate this policy and cause data loss, immediately:**
 
@@ -80,6 +84,10 @@ over writing ad-hoc scripts:
 
 **Rule:** for full-database backups, use `turso db export` — never a hand-rolled script. For read-only
 inspection of an exported backup, use `sqlite3`. Only reach for custom scripts when none of these fit.
+**Reading content data (artists, repertoires, posts, etc.): use Payload Local API via `pnpm dump <collection>` or a
+small `tsx` read script.** Turso CLI is appropriate for DB/SQL-specific work (schema inspection, migration
+verification, row-count checks, backup/restore/clone, env identity). Every `turso` command requires approval per
+`opencode.json`.
 
 **Note:** `turso db import` creates a **new** database — it does NOT overwrite an existing one. For backup,
 restore, clone prod→dev, and schema-parity procedures, see `docs/turso-operations.md` (verified methods).
@@ -92,11 +100,17 @@ hard-won workflows. It is mandatory reading before any database, migration, or d
 **Payload CMS operational patterns** (migrations, hooks, relationships, admin behaviors, search):
 `docs/patterns/payload.md` (loaded automatically via `opencode.json`).
 
-### Always Use Payload Local API for Production Data Operations
+### Always Use Payload Local API for Database Operations
 
 **CRITICAL: NEVER use raw SQL or `@libsql/client` to copy or write data to production.** Always use Payload's
 Local API — bypassing it skips hooks, never populates versions tables, and breaks the admin list view.
 Full explanation, code patterns, and the 2026-04-27 posts incident: `MEMORY.md` §11.
+
+**CRITICAL: for reading content data (artists, repertoires, posts, etc.), prefer what Payload's Local API returns**
+(a small `tsx` read script, `pnpm dump <collection>`, or an existing service/action). **Turso CLI is appropriate for
+DB/SQL-specific work** — schema inspection (`PRAGMA`), migration verification, row-count checks, backup/restore/
+clone, env identity, and queries the Local API can't easily express. Every `turso` command still requires approval
+per `opencode.json`.
 
 ### Payload CMS + SQLite: Array Field Renames
 

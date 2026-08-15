@@ -98,6 +98,10 @@ value.length > max`.
 tables (`_posts_v` etc.), updates search. Raw copies skip all of it → admin list breaks (2026-04-27 incident).
 Full detail: `MEMORY.md` §11.
 
+For **reading content data**, prefer the Local API (`pnpm dump <collection>`, `tsx` read script, service/action).
+Turso stays right for DB/SQL-specific work (schema inspection, migration verification, counts, backups, env
+identity) — every `turso` command requires approval per `opencode.json`.
+
 ---
 
 ## Search plugin
