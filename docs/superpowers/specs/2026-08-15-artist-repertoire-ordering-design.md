@@ -65,7 +65,9 @@ This mirrors the already-shipped "Artist Projects Ordering" feature
 
 **Decision: Follow the Payload-documented workflow.** Keep `push: true` in dev (Payload's intended sandbox
 workflow), generate migration files with `migrate:create`, and apply them to prod automatically in the build
-pipeline. Do **not** disable push in dev, and do **not** use `.env` swaps for prod.
+pipeline. Do **not** disable push in dev, and do **not** use `.env` swaps to apply migrations to prod (the build
+pipeline handles those). `.env` swaps remain the correct mechanism for one-off **data scripts** (backfill, the
+`batch:-1` cleanup) that run outside the pipeline.
 
 ### Why this is the right approach
 
@@ -157,6 +159,12 @@ re-applying `up()` to the already-pushed schema errors. `build` stays clean; onl
 **Why safe on Vercel:** `NODE_ENV=production` means Payload never auto-pushes during build; `migrate` sets
 `PAYLOAD_MIGRATING=true`; failures abort the deploy inside a transaction.
 
+**Vercel preview deploys also run `build:ci`:** preview (PR/branch) builds use the same `build:ci` command, so a
+preview deploy will also run `migrate` against prod. This is idempotent and safe (`payload_migrations` tracks
+applied migrations; the repertoire migration is non-destructive), but be aware: **a preview build can apply the
+migration to prod before the production deploy.** The migration is committed before the deploy, so this is
+acceptable — but the prod `batch:-1` cleanup (below) must happen before any preview build is triggered.
+
 **CRITICAL prerequisite — prod `batch:-1` cleanup (verified 2026-08-15):**
 
 A read-only query of prod confirmed `payload_migrations` contains `[{ name: 'dev', batch: -1 }]`. This row was
@@ -182,13 +190,10 @@ If it remains, the `build:ci` migrate step breaks:
 After cleanup, `payload migrate` runs the repertoire migration with no prompt, and prod now tracks migrations
 correctly. This cleanup is a **prod DB modification** and requires explicit user approval per AGENTS.md.
 
-**Why `build:ci` and not `migrate` inside `build`:** a local `pnpm build` would otherwise run `migrate` against
-the dev DB, where the `batch:-1` row triggers the interactive data-loss warning (hangs/fails the build) and where
-re-applying `up()` to the already-pushed schema errors. `build` stays clean; only Vercel runs `build:ci`.
-
-**Rejected alternative — `.env` swap:** manually flipping dev/prod DB lines in `.env` and running
+**Rejected alternative — `.env` swap for migrations:** manually flipping dev/prod DB lines in `.env` and running
 `pnpm payload migrate` locally is error-prone (risk of leaving `.env` pointed at prod) and unnecessary. The build
-pipeline already has prod credentials.
+pipeline already has prod credentials. Note: the `.env` swap remains the correct mechanism for **data scripts**
+(backfill) that run outside the build pipeline — see "Data Backfill".
 
 **Manual Drizzle access:** drizzle-kit 0.31.7 is installed (transitive via `@payloadcms/drizzle`) and usable
 manually (`drizzle-kit generate/push/pull`) if finer control is ever needed, but it requires a `drizzle.config.ts`
@@ -258,6 +263,8 @@ Key features:
 - `filterOptions` shows only repertoire docs already linked to this artist
 - `maxRows: 5` + server-side `validate` enforce the limit
 - Run `pnpm payload generate:types` to refresh `payload-types.ts`
+- **Delete** the now-orphaned `src/collections/components/RepertoireRowLabel.tsx` (array-field row label, unused
+  by the relationship field) and run `pnpm payload generate:importmap` to refresh the admin import map
 
 ## Sync Hooks
 
@@ -271,7 +278,8 @@ Behavior:
   ID to the artist's `repertoire` array (if not present). For each removed artist, remove the ID.
 - **`afterDelete`:** remove this doc's ID from every artist that still references it.
 - Context flag `req.context.syncingRepertoire` prevents infinite loops.
-- Skip drafts (defense-in-depth; Repertoire currently has no drafts).
+- **Drafts:** Repertoire collection has no versions/drafts, so no `_status` draft-skip is needed (unlike the
+  projects hook). No draft handling required.
 - Batched `find` + `Promise.all` updates (per projects implementation learnings) to avoid N+1.
 - Reuse `extractIds()` helper for ID/object relationship handling.
 - Errors logged, never block the repertoire save/delete.
@@ -291,8 +299,8 @@ Add manual repertoire population to `getArtistBySlug`, mirroring the existing pr
 ### `src/components/Artist/ArtistTabs.tsx`
 
 - Remove the `fetchRepertoiresByArtist` server-action import, the repertoire state, and the lazy-fetch effect
-- Pass `artist.repertoire` (populated `Repertoire[]`) directly to `RepertoireTab`
-- Keep the loading prop path as a fallback (already has data, so it renders immediately)
+- Pass `artist.repertoire` (populated `Repertoire[]`) directly to `RepertoireTab` with `loading={false}` (data is
+  pre-loaded, so it renders immediately)
 
 ### `src/components/Artist/ArtistTabContent.tsx`
 
@@ -314,8 +322,8 @@ Idempotent Local API script, run after the migration:
 3. For each artist, update `repertoire` to the current array ∪ new IDs (append, no duplicates)
 4. Log progress; exit 0
 
-Run against dev first, then prod via the `.env` swap workflow. Initial order is arbitrary; editors reorder
-afterward via drag-and-drop.
+Run against dev first, then prod via the `.env` swap workflow (data script, not a migration — the swap is
+appropriate here). Initial order is arbitrary; editors reorder afterward via drag-and-drop.
 
 ## Edge Cases & Error Handling
 
@@ -330,11 +338,12 @@ afterward via drag-and-drop.
 
 ## Testing
 
-### Unit tests (mirror the projects suite, ~24 tests)
+### Unit tests (mirror the projects suite, ~26 tests)
 
 - `src/collections/hooks/syncArtistRepertoire.spec.ts`:
   - added artist → append; removed artist → remove; batch query behavior; parallel updates; loop prevention;
-    draft handling; error handling; null/empty arrays; duplicates; afterDelete behavior
+    error handling; null/empty arrays; duplicates; missing previousDoc; **afterDelete** removes doc from all
+    artists referencing it; afterDelete loop-prevention; afterDelete error handling
 - `src/services/artist.spec.ts`: repertoire population preserves order; handles ID vs object refs
 - `src/components/Artist/ArtistTabs.spec.tsx`: remove `fetchRepertoiresByArtist` mock; verify repertoire
   renders from `artist.repertoire` prop
@@ -362,8 +371,9 @@ afterward via drag-and-drop.
 1. Delete stale snapshot `20260310_203659.json`; run `pnpm payload migrate:create baseline`; delete the generated
    baseline `.ts` but keep the fresh `.json` — **must run before any schema edit** so the baseline captures the
    current schema
-2. Edit `Artists.ts` (repertoire → relationship) and add `syncArtistRepertoire` to Repertoire collection
-3. `pnpm payload generate:types` to refresh types
+2. Edit `Artists.ts` (repertoire → relationship), delete `RepertoireRowLabel.tsx`, and add `syncArtistRepertoire`
+   to Repertoire collection
+3. `pnpm payload generate:types` + `pnpm payload generate:importmap` to refresh types and admin import map
 4. Start dev server, accept dev schema push (dev DB only), verify repertoire relationship field in admin
 5. Run `pnpm payload migrate:create artist-repertoire-ordering` (diffs fresh baseline snapshot vs new config)
 6. Review generated migration SQL (expected changes above); commit the migration file

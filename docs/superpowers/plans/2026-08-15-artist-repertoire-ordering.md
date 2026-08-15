@@ -163,18 +163,27 @@ Notes:
 - Keep the field inside the existing `Repertoire` tab (`label: { en: 'Repertoire', de: 'Repertoire' }`).
 - `filterOptions` limits the picker to repertoire docs already linked to this artist (mirrors the `projects`
   field at Artists.ts:257).
-- Remove the `RowLabel` component import if it was only used by this array field. Check
-  `src/collections/components/RepertoireRowLabel.tsx` — leave the file but remove the `admin.components.RowLabel`
-  reference if present.
+- The `RowLabel` component (`src/collections/components/RepertoireRowLabel.tsx`) was only used by this array
+  field — it becomes orphaned. Delete it and regenerate the admin import map.
 
-- [ ] **Step 2: Regenerate TypeScript types**
+- [ ] **Step 2: Delete the orphaned RowLabel component and regenerate import map**
+
+```bash
+git rm src/collections/components/RepertoireRowLabel.tsx
+pnpm payload generate:importmap
+```
+
+Run: `pnpm payload generate:importmap`
+Expected: `src/app/(payload)/admin/importMap.js` no longer references `RepertoireRowLabel`.
+
+- [ ] **Step 3: Regenerate TypeScript types**
 
 Run: `pnpm payload generate:types`
 
 Expected: `src/payload-types.ts` updated — `Artist.repertoire` changes from the array shape
 (`{ title, content, id }[] | null`) to `(number | Repertoire)[] | null`.
 
-- [ ] **Step 3: Start dev server and accept the schema push**
+- [ ] **Step 4: Start dev server and accept the schema push**
 
 Run: `pnpm dev` (this connects to the **dev** DB, NODE_ENV=development)
 
@@ -188,10 +197,10 @@ picker limited to linked repertoire docs.
 **DB protection note:** this push only touches the remote dev DB (`ksschoerke-development-zeitchef`, confirmed in
 `.env`). No prod interaction.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add src/collections/Artists.ts src/payload-types.ts
+git add -A
 git commit -m "feat(artist): change repertoire field from array to relationship"
 ```
 
@@ -659,6 +668,105 @@ describe('syncArtistRepertoire hook', () => {
 Run: `pnpm test src/collections/hooks/syncArtistRepertoire.spec.ts`
 Expected: FAIL — `syncArtistRepertoire` is not exported from `./syncArtistRepertoire` (module not found).
 
+- [ ] **Step 3: Write the afterDelete hook tests**
+
+Append a second describe block to `syncArtistRepertoire.spec.ts`. Update the import at the top of the file to also
+import the delete hook:
+
+```typescript
+import { syncArtistRepertoire, syncArtistRepertoireOnDelete } from './syncArtistRepertoire'
+```
+
+Append after the existing closing `})` of the `describe('syncArtistRepertoire hook', ...)` block:
+
+```typescript
+describe('syncArtistRepertoireOnDelete hook', () => {
+  const createMockRequest = (overrides?: Partial<PayloadRequest>): PayloadRequest =>
+    ({
+      payload: {
+        logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+        find: vi.fn(),
+        update: vi.fn(),
+      },
+      context: {},
+      ...overrides,
+    }) as unknown as PayloadRequest
+
+  const createMockArtist = (overrides?: Partial<Artist>): Artist =>
+    ({
+      id: 456,
+      name: 'Test Artist',
+      slug: 'test-artist',
+      instrument: [],
+      repertoire: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ...overrides,
+    }) as Artist
+
+  const createMockFindResult = <T>(docs: T[]): FindResult<T> => ({
+    docs,
+    totalDocs: docs.length,
+    limit: docs.length,
+    totalPages: 1,
+    page: 1,
+    pagingCounter: 1,
+    hasPrevPage: false,
+    hasNextPage: false,
+    prevPage: null,
+    nextPage: null,
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should remove deleted repertoire from all artists that reference it', async () => {
+    const req = createMockRequest()
+    const artist1 = createMockArtist({ id: 1, repertoire: [123, 456] })
+    const artist2 = createMockArtist({ id: 2, repertoire: [123] })
+    vi.mocked(req.payload.find).mockResolvedValue(createMockFindResult([artist1, artist2]))
+    vi.mocked(req.payload.update).mockResolvedValue({} as Artist)
+
+    await syncArtistRepertoireOnDelete({ doc: { id: 123 }, req, context: {} } as never)
+
+    expect(req.payload.find).toHaveBeenCalledWith({
+      collection: 'artists',
+      where: { repertoire: { contains: 123 } },
+      limit: 1000,
+    })
+    expect(req.payload.update).toHaveBeenCalledTimes(2)
+    expect(req.payload.update).toHaveBeenCalledWith({ collection: 'artists', id: 1, data: { repertoire: [456] } })
+    expect(req.payload.update).toHaveBeenCalledWith({ collection: 'artists', id: 2, data: { repertoire: [] } })
+  })
+
+  it('should skip when context.syncingRepertoire is true', async () => {
+    const req = createMockRequest({ context: { syncingRepertoire: true } })
+
+    await syncArtistRepertoireOnDelete({ doc: { id: 123 }, req, context: { syncingRepertoire: true } } as never)
+
+    expect(req.payload.find).not.toHaveBeenCalled()
+    expect(req.payload.update).not.toHaveBeenCalled()
+  })
+
+  it('should log error without blocking repertoire delete', async () => {
+    const req = createMockRequest()
+    vi.mocked(req.payload.find).mockRejectedValue(new Error('Database connection failed'))
+
+    await syncArtistRepertoireOnDelete({ doc: { id: 123 }, req, context: {} } as never)
+
+    expect(req.payload.logger.error).toHaveBeenCalledWith(
+      'Failed to remove repertoire 123 from artists: Database connection failed'
+    )
+  })
+})
+```
+
+- [ ] **Step 4: Run tests to verify the delete-hook tests fail**
+
+Run: `pnpm test src/collections/hooks/syncArtistRepertoire.spec.ts`
+Expected: FAIL — `syncArtistRepertoireOnDelete` is not exported (module not found / undefined).
+
 ---
 
 ## Task 5: Implement the sync hooks
@@ -823,7 +931,7 @@ export const syncArtistRepertoireOnDelete: CollectionAfterDeleteHook = async ({ 
 - [ ] **Step 2: Run tests to verify they pass**
 
 Run: `pnpm test src/collections/hooks/syncArtistRepertoire.spec.ts`
-Expected: PASS (all tests).
+Expected: PASS (all afterChange + afterDelete hook tests).
 
 - [ ] **Step 3: Commit**
 
@@ -1331,6 +1439,10 @@ Create `vercel.json` at the repo root:
 
 Run: `pnpm build`
 Expected: builds successfully. `migrate` is NOT run locally — only `pnpm run build:ci` runs it (used by Vercel).
+
+**Note:** Vercel preview (PR/branch) deploys also run `build:ci`, so a preview build applies pending migrations
+to prod too. This is idempotent and safe, but ensure the Task 12 prod `batch:-1` cleanup ran before triggering any
+preview deploy.
 
 - [ ] **Step 4: Verify the script runs as intended**
 
