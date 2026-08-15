@@ -144,10 +144,18 @@ export const MediaTab: React.FC<MediaTabProps> = ({
         className="mb-6 flex flex-wrap justify-start gap-2"
         aria-label="Select media type"
       >
-        <ToggleGroupItem value="images" aria-label={t('media.images')}>
+        <ToggleGroupItem
+          value="images"
+          aria-label={t('media.images')}
+          className="rounded-none border-b-2 border-transparent data-[state=on]:border-primary-yellow data-[state=on]:bg-transparent"
+        >
           {t('media.images')}
         </ToggleGroupItem>
-        <ToggleGroupItem value="videos" aria-label={t('media.videos')}>
+        <ToggleGroupItem
+          value="videos"
+          aria-label={t('media.videos')}
+          className="rounded-none border-b-2 border-transparent data-[state=on]:border-primary-yellow data-[state=on]:bg-transparent"
+        >
           {t('media.videos')}
         </ToggleGroupItem>
       </ToggleGroup>

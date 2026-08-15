@@ -306,6 +306,21 @@ describe('ArtistTabContent', () => {
       render(<MediaTab images={[]} videos={[]} emptyMessage="No media available" />)
       expect(screen.getByText('No media available')).toBeInTheDocument()
     })
+
+    it('styles section toggles as underline subtabs matching Repertoire', () => {
+      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" />)
+
+      const imagesButton = screen.getByRole('radio', { name: 'Images' })
+      const videosButton = screen.getByRole('radio', { name: 'Videos' })
+
+      for (const button of [imagesButton, videosButton]) {
+        expect(button).toHaveClass('rounded-none')
+        expect(button).toHaveClass('border-b-2')
+        expect(button).toHaveClass('border-transparent')
+        expect(button).toHaveClass('data-[state=on]:border-primary-yellow')
+        expect(button).toHaveClass('data-[state=on]:bg-transparent')
+      }
+    })
   })
 
   describe('ConcertDatesTab', () => {
