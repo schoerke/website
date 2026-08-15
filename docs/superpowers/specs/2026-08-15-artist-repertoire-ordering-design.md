@@ -5,7 +5,7 @@
 **Context:** Client request for per-artist ordering of repertoire sections on artist detail pages, using
 drag-and-drop in the Payload admin. Also introduces this project's first Payload migration workflow —
 schema changes flow through `migrate:create` migration files, applied to prod automatically in the build
-pipeline (`ci` script).
+pipeline (`build:ci` script).
 
 ## Overview
 
@@ -119,23 +119,27 @@ Key facts confirmed from source (`node_modules/@payloadcms/db-sqlite/dist/connec
 
 ### Applying migrations to prod — build pipeline (no `.env` swaps)
 
-Use a dedicated `ci` script, not `migrate` inside `build`. This keeps local builds migration-free.
+Use a dedicated `build:ci` script, not `migrate` inside `build`. This keeps local builds migration-free.
 
-**Add a `ci` script to `package.json`:**
+**Warning:** `pnpm ci` is a **reserved pnpm built-in** (clean install). A custom script named `ci` would never
+run via `pnpm ci` (pnpm 10.33.2 verified: `pnpm ci --help` prints the clean-install usage). The script must be
+named differently — use `build:ci` and invoke it with `pnpm run build:ci`.
+
+**Add a `build:ci` script to `package.json`:**
 
 ```json
 "scripts": {
   "build": "pnpm generate:search-index && cross-env NODE_OPTIONS=--no-deprecation next build --webpack",
-  "ci": "pnpm migrate && pnpm build"
+  "build:ci": "pnpm migrate && pnpm build"
 }
 ```
 
-**Point Vercel at `ci` via `vercel.json`** (git-tracked, explicit — Vercel currently auto-detects Next.js and
-defaults to `pnpm build`):
+**Point Vercel at `build:ci` via `vercel.json`** (git-tracked, explicit — Vercel currently auto-detects Next.js
+and defaults to `pnpm build`):
 
 ```json
 {
-  "buildCommand": "pnpm ci"
+  "buildCommand": "pnpm run build:ci"
 }
 ```
 
@@ -146,13 +150,41 @@ On every Vercel deploy:
 - `pnpm build` then runs `generate:search-index` (reindexes against the new schema — safe, migration already
   applied) and `next build`.
 
-**Why `ci` and not `migrate` inside `build`:** a local `pnpm build` would otherwise run `migrate` against the
-dev DB, where the `batch:-1` row triggers the interactive data-loss warning (hangs/fails the build) and where
-re-applying `up()` to the already-pushed schema errors. `build` stays clean; only Vercel runs `ci`.
+**Why `build:ci` and not `migrate` inside `build`:** a local `pnpm build` would otherwise run `migrate` against
+the dev DB, where the `batch:-1` row triggers the interactive data-loss warning (hangs/fails the build) and where
+re-applying `up()` to the already-pushed schema errors. `build` stays clean; only Vercel runs `build:ci`.
 
 **Why safe on Vercel:** `NODE_ENV=production` means Payload never auto-pushes during build; `migrate` sets
-`PAYLOAD_MIGRATING=true`; prod has no `batch:-1` row (never pushed) so no data-loss warning; failures abort the
-deploy inside a transaction.
+`PAYLOAD_MIGRATING=true`; failures abort the deploy inside a transaction.
+
+**CRITICAL prerequisite — prod `batch:-1` cleanup (verified 2026-08-15):**
+
+A read-only query of prod confirmed `payload_migrations` contains `[{ name: 'dev', batch: -1 }]`. This row was
+created by past `npx tsx` prod operations (AGENTS.md's old `.env` swap workflow runs scripts with
+`NODE_ENV` unset, so `pushDevSchema` pushed to prod and recorded the dev marker).
+
+If it remains, the `build:ci` migrate step breaks:
+
+- `migrate.js` (drizzle) detects the `batch:-1` row and shows the interactive *"data loss will occur"* prompt
+  (lines 30-45)
+- The prompt is only filtered **in-memory**; the row is never deleted, so **every deploy prompts again**
+- In Vercel's non-TTY build, `prompts` cancels → `process.exit(0)` → **migrate silently exits without running**,
+  the build continues on the old schema, and the deploy ships without the schema change
+
+**One-time prod cleanup before the first `build:ci` deploy:**
+
+1. `.env` swap to prod (AGENTS.md approval flow)
+2. Delete the metadata row: `payload.delete` on the `payload-migrations` collection where `name: 'dev'` (or
+   equivalent Local API call) — this is a metadata row, zero content data affected
+3. Verify with a read-only query that `payload_migrations` is now empty
+4. Restore `.env` to dev
+
+After cleanup, `payload migrate` runs the repertoire migration with no prompt, and prod now tracks migrations
+correctly. This cleanup is a **prod DB modification** and requires explicit user approval per AGENTS.md.
+
+**Why `build:ci` and not `migrate` inside `build`:** a local `pnpm build` would otherwise run `migrate` against
+the dev DB, where the `batch:-1` row triggers the interactive data-loss warning (hangs/fails the build) and where
+re-applying `up()` to the already-pushed schema errors. `build` stays clean; only Vercel runs `build:ci`.
 
 **Rejected alternative — `.env` swap:** manually flipping dev/prod DB lines in `.env` and running
 `pnpm payload migrate` locally is error-prone (risk of leaving `.env` pointed at prod) and unnecessary. The build
@@ -327,24 +359,29 @@ afterward via drag-and-drop.
 
 ## Deployment Steps
 
-1. Edit `Artists.ts` (repertoire → relationship) and add `syncArtistRepertoire` to Repertoire collection
-2. `pnpm payload generate:types` to refresh types
-3. Delete stale snapshot `20260310_203659.json`; run `pnpm payload migrate:create baseline`; delete the generated
-   baseline `.ts` but keep the fresh `.json`
-4. Run `pnpm payload migrate:create artist-repertoire-ordering` (diffs fresh baseline snapshot vs new config)
-5. Review generated migration SQL (expected changes above); commit the migration file
-6. Dev DB is already updated by push — verify repertoire field renders in admin; no `migrate` against dev
-7. Run backfill on dev: `pnpm tsx scripts/db/backfillArtistRepertoire.ts`
+1. Delete stale snapshot `20260310_203659.json`; run `pnpm payload migrate:create baseline`; delete the generated
+   baseline `.ts` but keep the fresh `.json` — **must run before any schema edit** so the baseline captures the
+   current schema
+2. Edit `Artists.ts` (repertoire → relationship) and add `syncArtistRepertoire` to Repertoire collection
+3. `pnpm payload generate:types` to refresh types
+4. Start dev server, accept dev schema push (dev DB only), verify repertoire relationship field in admin
+5. Run `pnpm payload migrate:create artist-repertoire-ordering` (diffs fresh baseline snapshot vs new config)
+6. Review generated migration SQL (expected changes above); commit the migration file
+7. Run backfill on dev: `pnpm tsx scripts/db/backfillArtistRepertoire.ts --apply`
 8. Update frontend (`getArtistBySlug`, `ArtistTabs`, delete `actions/repertoires.ts`)
-9. Add `ci` script to `package.json` (`pnpm migrate && pnpm build`) and `vercel.json` (`buildCommand: pnpm ci`)
+9. Add `build:ci` script to `package.json` (`pnpm migrate && pnpm build`) and `vercel.json`
+   (`buildCommand: pnpm run build:ci`) — **note:** `pnpm ci` is a reserved pnpm built-in (clean install); a custom
+   script named `ci` would never run
 10. Tests, lint, build, format
-11. Deploy to prod — Vercel build runs `pnpm migrate` against prod first, then builds
-12. Run backfill against prod via Local API script (after deploy, once prod schema migrated)
+11. One-time prod cleanup: delete the `dev` marker row from prod `payload_migrations` (`.env` swap + approval) so
+    `build:ci` migrate runs non-interactively — see "CRITICAL prerequisite" above
+12. Deploy to prod — Vercel build runs `pnpm migrate` against prod first, then builds
+13. Run backfill against prod via Local API script (after deploy, once prod schema migrated)
 
 
 ## Future Enhancements
 
-- Wire `prodMigrations` into the sqlite adapter as an alternative to the `ci` script (only for long-running
+- Wire `prodMigrations` into the sqlite adapter as an alternative to the `build:ci` script (only for long-running
   servers; docs warn it slows serverless cold starts, so not recommended for Vercel)
 - Show section count badge in admin list view
 
