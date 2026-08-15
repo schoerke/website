@@ -61,6 +61,9 @@ This includes:
 
 ### Available Tooling (check BEFORE writing new scripts)
 
+> **⚠️ READ `MEMORY.md` FIRST** — it documents operational lessons, environment facts, the 2026-08-15 prod
+> incident, and hard-won workflows. It is mandatory reading before any database, migration, or deployment work.
+
 This project runs on Turso (SQLite), deployed to Vercel. The following tools are already available — prefer them
 over writing ad-hoc scripts:
 
@@ -69,7 +72,6 @@ over writing ad-hoc scripts:
   - `turso db export <db>` — **full SQLite snapshot backup** to a local `.db` file (covers ALL tables, no `.env`
     swap needed; uses CLI credentials)
   - `turso db shell <db>` — interactive SQL shell
-  - `turso db import <file> --database <db>` — restore a snapshot (destructive, requires approval)
   - Databases: `ksschoerke-development`, `ksschoerke-production`
 - **`sqlite3`** (macOS built-in) — inspect/query exported `.db` backup files locally (read-only)
 - **`payload` CLI** (`pnpm payload ...`) — `migrate:create`, `migrate`, `migrate:status`, `generate:types`,
@@ -78,6 +80,9 @@ over writing ad-hoc scripts:
 
 **Rule:** for full-database backups, use `turso db export` — never a hand-rolled script. For read-only
 inspection of an exported backup, use `sqlite3`. Only reach for custom scripts when none of these fit.
+
+**Note:** `turso db import` creates a **new** database — it does NOT overwrite an existing one. See MEMORY.md §4.2
+for the correct full-restore procedure.
 
 ### Incident Log
 
