@@ -1,5 +1,6 @@
 import type { Artist } from '@/payload-types'
 import type { CollectionBeforeChangeHook } from 'payload'
+import { APIError } from 'payload'
 
 /**
  * Extracts the numeric IDs from a repertoire relationship value.
@@ -62,8 +63,13 @@ export const enforceRepertoireOrderOnly: CollectionBeforeChangeHook = async ({ c
   const added = nextIds.filter((id) => !previousIds.includes(id))
 
   if (removed.length > 0 || added.length > 0) {
-    throw new Error(
-      'Repertoire lists are managed on the Repertoire document. Link or unlink artists there, then reorder the list here.'
+    // Use APIError with isPublic: true — a plain Error gets sanitized to a generic
+    // "Something went wrong" message in the admin UI; APIError surfaces the real message.
+    throw new APIError(
+      'Repertoire lists are managed on the Repertoire document. Link or unlink artists there, then reorder the list here.',
+      400,
+      undefined,
+      true
     )
   }
 
