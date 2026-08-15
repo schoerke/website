@@ -164,13 +164,13 @@ export const Artists: CollectionConfig = {
               },
               admin: {
                 description: {
-                  en: "Repertoire sections shown on this artist's page. Drag to reorder. Maximum 5 sections.",
-                  de: 'Repertoire-Abschnitte auf der Seite dieses Künstlers. Ziehen zum Sortieren. Maximal 5 Abschnitte.',
+                  en: "Repertoire lists shown on this artist's page. Drag to reorder. Maximum 5 lists.",
+                  de: 'Repertoire-Listen auf der Seite dieses Künstlers. Ziehen zum Sortieren. Maximal 5 Listen.',
                 },
               },
               validate: (value: unknown) => {
                 if (Array.isArray(value) && value.length > 5) {
-                  return 'Maximum 5 repertoire sections per artist. Please remove some before adding more.'
+                  return 'Maximum 5 repertoire lists per artist. Please remove some before adding more.'
                 }
                 return true
               },

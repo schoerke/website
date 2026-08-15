@@ -66,6 +66,28 @@ export const Repertoire: CollectionConfig = {
           de: 'Künstler, die dieses Repertoire aufführen. Kann für Duos/Ensembles mit mehreren Künstlern verknüpft werden.',
         },
       },
+      validate: async (value, { req }) => {
+        if (!Array.isArray(value)) return true
+        for (const item of value) {
+          const artistId =
+            typeof item === 'number' || typeof item === 'string'
+              ? Number(item)
+              : typeof item === 'object' && item !== null
+                ? Number((item as { value: number | string }).value)
+                : NaN
+          if (Number.isNaN(artistId)) continue
+          const result = await req.payload.findByID({
+            collection: 'artists',
+            id: artistId,
+            select: { name: true, repertoire: true },
+            depth: 0,
+          })
+          if (result?.repertoire && Array.isArray(result.repertoire) && result.repertoire.length >= 5) {
+            return `"${result.name}" already has 5 repertoire lists. Remove a list before adding more.`
+          }
+        }
+        return true
+      },
     },
     {
       name: 'content',
