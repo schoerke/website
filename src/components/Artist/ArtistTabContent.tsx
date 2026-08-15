@@ -91,7 +91,7 @@ export const RepertoireTab: React.FC<RepertoireTabProps> = ({ repertoires, loadi
               key={repertoire.id || index}
               value={index.toString()}
               aria-label={repertoire.title || `Section ${index + 1}`}
-              className="capitalize"
+              className="rounded-none border-b-2 border-transparent data-[state=on]:border-primary-yellow data-[state=on]:bg-transparent"
             >
               {repertoire.title}
             </ToggleGroupItem>
