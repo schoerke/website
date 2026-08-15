@@ -189,35 +189,9 @@ export interface Artist {
     [k: string]: unknown;
   };
   /**
-   * Organize repertoire into sections. Add a section for each category (e.g., Solo, Chamber Music, Orchestral). Max. 5 sections.
+   * Repertoire sections shown on this artist's page. Drag to reorder. Maximum 5 sections.
    */
-  repertoire?:
-    | {
-        /**
-         * Title for this repertoire section (e.g., "Solo Repertoire", "Chamber Music")
-         */
-        title: string;
-        /**
-         * List of works in this repertoire section. No images or embedded media allowed.
-         */
-        content: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        };
-        id?: string | null;
-      }[]
-    | null;
+  repertoire?: (number | Repertoire)[] | null;
   /**
    * Projects are automatically added when linked from Posts. Drag to reorder. Maximum 10 projects per artist.
    */
@@ -304,6 +278,45 @@ export interface Employee {
   mobile: string;
   image?: (number | null) | Image;
   order: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "repertoire".
+ */
+export interface Repertoire {
+  id: number;
+  /**
+   * Examples: "Duo Ruth Killius & Thomas Zehetmair", "Christian Zacharias Play/Conduct", "Maurice Steger Recorder", "Mario Venzago Conductor"
+   */
+  title: string;
+  /**
+   * Artist(s) performing this repertoire. Can link to multiple artists for duos/ensembles.
+   */
+  artists?: (number | Artist)[] | null;
+  /**
+   * List of works in this repertoire section (text only, no links)
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Select artist roles for this repertoire (optional). For Play/Conduct, select both Solo AND Conductor.
+   */
+  roles?: ('solo' | 'chamber' | 'conductor')[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -460,45 +473,6 @@ export interface Recording {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "repertoire".
- */
-export interface Repertoire {
-  id: number;
-  /**
-   * Examples: "Duo Ruth Killius & Thomas Zehetmair", "Christian Zacharias Play/Conduct", "Maurice Steger Recorder", "Mario Venzago Conductor"
-   */
-  title: string;
-  /**
-   * Artist(s) performing this repertoire. Can link to multiple artists for duos/ensembles.
-   */
-  artists?: (number | Artist)[] | null;
-  /**
-   * List of works in this repertoire section (text only, no links)
-   */
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  /**
-   * Select artist roles for this repertoire (optional). For Play/Conduct, select both Solo AND Conductor.
-   */
-  roles?: ('solo' | 'chamber' | 'conductor')[] | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -687,13 +661,7 @@ export interface ArtistsSelect<T extends boolean = true> {
   contactPersons?: T;
   quote?: T;
   biography?: T;
-  repertoire?:
-    | T
-    | {
-        title?: T;
-        content?: T;
-        id?: T;
-      };
+  repertoire?: T;
   projects?: T;
   downloads?:
     | T

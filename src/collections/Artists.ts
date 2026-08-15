@@ -154,8 +154,9 @@ export const Artists: CollectionConfig = {
           fields: [
             {
               name: 'repertoire',
-              type: 'array',
-              required: false,
+              type: 'relationship',
+              relationTo: 'repertoire',
+              hasMany: true,
               maxRows: 5,
               label: {
                 en: 'Repertoire',
@@ -173,54 +174,20 @@ export const Artists: CollectionConfig = {
               },
               admin: {
                 description: {
-                  en: 'Organize repertoire into sections. Add a section for each category (e.g., Solo, Chamber Music, Orchestral). Max. 5 sections.',
-                  de: 'Repertoire in Abschnitte organisieren. Fügen Sie für jede Kategorie einen Abschnitt hinzu (z.B. Solo, Kammermusik, Orchestral). Max. 5 Abschnitte.',
-                },
-                initCollapsed: true,
-                components: {
-                  RowLabel: './collections/components/RepertoireRowLabel',
+                  en: "Repertoire sections shown on this artist's page. Drag to reorder. Maximum 5 sections.",
+                  de: 'Repertoire-Abschnitte auf der Seite dieses Künstlers. Ziehen zum Sortieren. Maximal 5 Abschnitte.',
                 },
               },
               validate: (value: unknown) => {
                 if (Array.isArray(value) && value.length > 5) {
-                  return 'You can only add up to 5 repertoire sections.'
+                  return 'Maximum 5 repertoire sections per artist. Please remove some before adding more.'
                 }
                 return true
               },
-              fields: [
-                {
-                  name: 'title',
-                  type: 'text',
-                  required: true,
-                  localized: true,
-                  label: {
-                    en: 'Section Title',
-                    de: 'Abschnittstitel',
-                  },
-                  admin: {
-                    description: {
-                      en: 'Title for this repertoire section (e.g., "Solo Repertoire", "Chamber Music")',
-                      de: 'Titel für diesen Repertoire-Abschnitt (z.B. "Solo-Repertoire", "Kammermusik")',
-                    },
-                  },
-                },
-                {
-                  name: 'content',
-                  type: 'richText',
-                  required: true,
-                  localized: true,
-                  label: {
-                    en: 'Content',
-                    de: 'Inhalt',
-                  },
-                  admin: {
-                    description: {
-                      en: 'List of works in this repertoire section. No images or embedded media allowed.',
-                      de: 'Liste der Werke in diesem Repertoire-Abschnitt. Keine Bilder oder eingebetteten Medien erlaubt.',
-                    },
-                  },
-                },
-              ],
+              filterOptions: ({ id }) =>
+                ({
+                  and: [{ artists: { contains: id } }],
+                }) as const,
             },
           ],
         },
