@@ -1491,20 +1491,25 @@ Expected: prints artist count and `dev | -1`. If it errors or shows 0 artists, S
 cp data/dumps/ksschoerke-production-<timestamp>.db data/dumps/test-migration.db
 ```
 
-- [ ] **Step 4: Run the migration against the local copy**
+- [ ] **Step 4: Replicate the prod sequence on the local copy — remove the dev marker, then migrate**
 
-Run with the DB pointed at the local file (dummy token — libsql ignores it for `file:`):
+The local copy still contains the `dev` `batch:-1` row, which would trigger the interactive data-loss prompt on
+`payload migrate` (and that prompt cancels silently in non-TTY execution). To mirror the real prod sequence
+(Task 13 cleanup → deploy migrate) and keep this non-interactive, delete the marker row from the **local copy
+only** first:
+
+```bash
+sqlite3 data/dumps/test-migration.db "DELETE FROM payload_migrations WHERE batch = -1; SELECT COUNT(*) FROM payload_migrations;"
+```
+Expected: prints `0` — marker removed, no prompt will appear.
+
+Then run the migration against the local file (dummy token — libsql ignores it for `file:`):
 
 ```bash
 DATABASE_URI="file:$(pwd)/data/dumps/test-migration.db" DATABASE_AUTH_TOKEN=local-test pnpm payload migrate
 ```
 
-Expected: the `artist_repertoire_ordering` migration runs against the local file.
-
-**Note:** the local copy still contains the `dev` `batch:-1` row, so `migrate` may show the interactive data-loss
-prompt. This is a local file — safe to accept (it only filters the row in-memory for this run). If the prompt
-hangs in non-TTY, instead run the Task 13 cleanup against the local copy first (point the cleanup script at the
-local file), then `migrate`.
+Expected: the `artist_repertoire_ordering` migration runs against the local file with no prompt.
 
 - [ ] **Step 5: Verify the migration applied correctly to the local copy**
 
@@ -1728,41 +1733,32 @@ git commit -m "chore: final cleanup"
 
 ## Deployment Note
 
-**Step 0 — prod `batch:-1` cleanup (required once, before first `build:ci` deploy):**
+**Pre-deploy prod prep (follows Tasks 12 and 13, in that order):**
 
 Verified 2026-08-15: prod `payload_migrations` contains `[{ name: 'dev', batch: -1 }]` (created by past
 `npx tsx` prod operations running in dev mode). If not removed, the Vercel `build:ci` migrate step hits the
 interactive data-loss prompt, which cancels in non-TTY CI → migrate silently skips → broken deploy. The row is
 filtered only in-memory, so it would recur every deploy.
 
-Run once against prod (`.env` swap + explicit user approval per AGENTS.md):
-
-- Swap `.env` to prod
-- Delete the metadata row via Local API:
-  ```typescript
-  // scripts/db/clearDevMigrationMarker.ts (temporary, delete after use)
-  const { docs } = await payload.find({
-    collection: 'payload-migrations',
-    where: { name: { equals: 'dev' } },
-  })
-  for (const doc of docs) {
-    await payload.delete({ collection: 'payload-migrations', id: doc.id })
-  }
-  ```
-- Verify read-only: `payload_migrations` empty
-- Restore `.env` to dev
+- **Task 12 (first):** `turso db export ksschoerke-production` → full prod snapshot backup (uses Turso CLI
+  credentials, no `.env` swap), verify it, then **test the migration against a local copy** of that snapshot
+  (up + down + data-preservation checks). Prod is NOT modified during Task 12.
+- **Task 13 (second):** confirm the Task 12 backup exists, swap `.env` to prod, delete the single `dev` marker
+  row via Local API, verify `payload_migrations` empty, restore `.env` to dev.
+- Only after both succeed, trigger the deploy.
 
 Then the normal flow:
 
 1. `pnpm run build:ci` runs → `pnpm migrate` applies `artist_repertoire_ordering` to the **prod** DB (no prompt
-   after Step 0)
+   after Task 13)
 2. `pnpm build` → `generate:search-index` reindexes against new schema, then `next build`
 3. After deploy, run the backfill against prod (once) to populate artist repertoire arrays:
    `pnpm tsx scripts/db/backfillArtistRepertoire.ts --apply` with `.env` pointed at prod (or from a prod
    environment), then restore `.env`.
 
 **DB protection policy:** the `batch:-1` cleanup, applying the migration to prod (via deploy), and running the
-backfill against prod all require explicit user confirmation and DB environment verification per AGENTS.md.
+backfill against prod all require explicit user confirmation and DB environment verification per AGENTS.md. If
+anything goes wrong on prod, restore the Task 12 snapshot: `turso db import data/dumps/ksschoerke-production-<timestamp>.db --database ksschoerke-production` (destructive, requires separate approval).
 
 ---
 
