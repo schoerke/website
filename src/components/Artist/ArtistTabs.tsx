@@ -1,7 +1,6 @@
 'use client'
 
 import { fetchRecordingsByArtist } from '@/actions/recordings'
-import { fetchRepertoiresByArtist } from '@/actions/repertoires'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
@@ -35,8 +34,6 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
   const [recordings, setRecordings] = useState<Recording[]>([])
   const [recordingsFetched, setRecordingsFetched] = useState(false)
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
-  const [repertoires, setRepertoires] = useState<Repertoire[]>([])
-  const [repertoiresFetched, setRepertoiresFetched] = useState(false)
 
   // Available tabs
   const tabs: TabId[] = (['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]).filter(
@@ -107,36 +104,6 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
     }
   }, [activeTab, artist.id, locale, recordingsFetched])
 
-  // Fetch repertoires when repertoire tab is selected
-  useEffect(() => {
-    if (activeTab !== 'repertoire' || repertoiresFetched) {
-      return
-    }
-
-    let cancelled = false
-
-    const loadRepertoires = async () => {
-      try {
-        const data = await fetchRepertoiresByArtist(artist.id.toString(), locale as 'de' | 'en')
-        if (!cancelled) {
-          setRepertoires(data.docs || [])
-          setRepertoiresFetched(true)
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.error('Failed to fetch repertoires:', err)
-          setRepertoiresFetched(true)
-        }
-      }
-    }
-
-    loadRepertoires()
-
-    return () => {
-      cancelled = true
-    }
-  }, [activeTab, artist.id, locale, repertoiresFetched])
-
   // Extract unique roles from recordings, sorted by canonical order in RECORDING_ROLES
   const roleOrder = RECORDING_ROLES.map((r) => r.value)
   const availableRoles = Array.from(new Set(recordings.flatMap((recording) => recording.roles || []))).sort((a, b) => {
@@ -151,8 +118,10 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
       ? recordings
       : recordings.filter((recording) => recording.roles?.includes(selectedRole as Recording['roles'][number]))
 
+  // Repertoire is pre-populated on the artist via getArtistBySlug (order preserved)
+  const repertoires = (artist.repertoire ?? []).filter((r): r is Repertoire => typeof r === 'object' && r !== null)
+
   // Compute loading states: show loading if tab is active but data not yet fetched
-  const shouldShowRepertoireLoading = activeTab === 'repertoire' && !repertoiresFetched
   const shouldShowRecordingsLoading = activeTab === 'discography' && !recordingsFetched
 
   return (
@@ -205,7 +174,7 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
         {activeTab === 'repertoire' && (
           <RepertoireTab
             repertoires={repertoires}
-            loading={shouldShowRepertoireLoading}
+            loading={false}
             emptyMessage={t('empty.repertoire')}
           />
         )}

@@ -11,10 +11,6 @@ vi.mock('@/actions/recordings', () => ({
   fetchRecordingsByArtist: vi.fn(),
 }))
 
-vi.mock('@/actions/repertoires', () => ({
-  fetchRepertoiresByArtist: vi.fn(),
-}))
-
 // Mock NewsFeedClient
 vi.mock('../NewsFeed/NewsFeedClient', () => ({
   default: ({ category, artistId, emptyMessage }: { category: string; artistId: string; emptyMessage: string }) => (
@@ -179,7 +175,6 @@ const renderWithIntl = (ui: React.ReactElement) => {
 
 describe('ArtistTabs', async () => {
   const { fetchRecordingsByArtist } = await import('@/actions/recordings')
-  const { fetchRepertoiresByArtist } = await import('@/actions/repertoires')
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -214,20 +209,7 @@ describe('ArtistTabs', async () => {
   describe('Tab switching', () => {
     it('should switch to repertoire tab when clicked', async () => {
       const user = userEvent.setup()
-      const artist = createMockArtist()
-
-      vi.mocked(fetchRepertoiresByArtist).mockResolvedValue({
-        docs: [createMockRepertoire()],
-        totalDocs: 1,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
+      const artist = createMockArtist({ repertoire: [createMockRepertoire()] })
 
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
@@ -391,81 +373,27 @@ describe('ArtistTabs', async () => {
     })
   })
 
-  describe('Lazy loading - Repertoires', () => {
-    it('should fetch repertoires when repertoire tab is clicked', async () => {
+  describe('Repertoire tab', () => {
+    it('should render repertoire sections from artist prop', async () => {
       const user = userEvent.setup()
-      const artist = createMockArtist()
-      const mockRepertoires = [createMockRepertoire({ id: 1 }), createMockRepertoire({ id: 2 })]
-
-      vi.mocked(fetchRepertoiresByArtist).mockResolvedValue({
-        docs: mockRepertoires,
-        totalDocs: 2,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
+      const artist = createMockArtist({
+        repertoire: [createMockRepertoire({ id: 1 }), createMockRepertoire({ id: 2 })],
       })
 
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
-
-      expect(fetchRepertoiresByArtist).not.toHaveBeenCalled()
 
       const repertoireTabs = screen.getAllByText('Repertoire')
       await user.click(repertoireTabs[0])
 
       await waitFor(() => {
         expect(screen.getByTestId('repertoire-tab')).toBeInTheDocument()
-      })
-
-      expect(fetchRepertoiresByArtist).toHaveBeenCalledWith('1', 'en')
-
-      await waitFor(() => {
         expect(screen.getByText('2 repertoires')).toBeInTheDocument()
       })
     })
 
-    it('should not fetch repertoires again when switching back', async () => {
+    it('should show empty message when artist has no repertoire', async () => {
       const user = userEvent.setup()
-      const artist = createMockArtist()
-
-      vi.mocked(fetchRepertoiresByArtist).mockResolvedValue({
-        docs: [createMockRepertoire()],
-        totalDocs: 1,
-        limit: 10,
-        totalPages: 1,
-        page: 1,
-        pagingCounter: 1,
-        hasPrevPage: false,
-        hasNextPage: false,
-        prevPage: null,
-        nextPage: null,
-      })
-
-      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
-
-      const repertoireTabs = screen.getAllByText('Repertoire')
-      await user.click(repertoireTabs[0])
-
-      await waitFor(() => {
-        expect(fetchRepertoiresByArtist).toHaveBeenCalledTimes(1)
-      })
-
-      const mediaTabs = screen.getAllByText('Media')
-      await user.click(mediaTabs[0])
-      await user.click(repertoireTabs[0])
-
-      expect(fetchRepertoiresByArtist).toHaveBeenCalledTimes(1)
-    })
-
-    it('should handle repertoires fetch error gracefully', async () => {
-      const user = userEvent.setup()
-      const artist = createMockArtist()
-
-      vi.mocked(fetchRepertoiresByArtist).mockRejectedValue(new Error('Network error'))
+      const artist = createMockArtist({ repertoire: [] })
 
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
@@ -475,8 +403,6 @@ describe('ArtistTabs', async () => {
       await waitFor(() => {
         expect(screen.getByText('No repertoire available')).toBeInTheDocument()
       })
-
-      expect(console.error).toHaveBeenCalledWith('Failed to fetch repertoires:', expect.any(Error))
     })
   })
 
