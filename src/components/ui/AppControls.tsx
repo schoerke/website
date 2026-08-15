@@ -4,7 +4,6 @@ import { getShortcutDisplay, usePlatform } from '@/hooks/usePlatform'
 import { useKBar } from 'kbar'
 import { Menu, Search } from 'lucide-react'
 import { useLocale } from 'next-intl'
-import { useState } from 'react'
 import LocaleSwitcher from './LocaleSwitcher'
 
 const AppControls: React.FC = () => {
@@ -12,14 +11,13 @@ const AppControls: React.FC = () => {
   const locale = useLocale()
   const platform = usePlatform()
   const shortcutKey = getShortcutDisplay(platform, 'K')
-  const [localeSwitcherOpen, setLocaleSwitcherOpen] = useState(false)
 
   const searchLabel = locale === 'de' ? 'Suchen' : 'Search'
 
   return (
     <div className="flex h-10 items-center rounded-full bg-gray-100">
       {/* Locale Switcher - left side */}
-      <LocaleSwitcher open={localeSwitcherOpen} onOpenChange={setLocaleSwitcherOpen} />
+      <LocaleSwitcher />
 
       {/* Vertical Divider - shorter than full height */}
       <div className="h-6 w-px bg-gray-300" />
