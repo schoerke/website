@@ -78,18 +78,21 @@ FK**, array tables dropped, `payload_migrations` empty. A later build's `migrate
 ### 4.2 Restoring prod from a snapshot was chaotic
 
 `turso db import <file> --database <db>` **does not overwrite an existing database** — it CREATES A NEW database
-(AGENTS.md's old documentation was wrong). To fully restore prod:
+(older AGENTS.md text was wrong). What we learned during the restore:
 
 1. `turso db export ksschoerke-production` → snapshot (this works).
 2. `sqlite3 snapshot.db ".dump" | turso db shell ksschoerke-production` **fails**: (a) dump needs empty tables,
    (b) sqlite3 emits `unistr()` calls that Turso's SQLite build doesn't support.
-3. Working approach: drop all tables one-at-a-time (`DROP TABLE IF EXISTS`), then bulk-insert rows via
-   `@libsql/client` with **batched multi-row inserts** (row-by-row over HTTP is too slow and times out), with
-   `PRAGMA foreign_keys=OFF` during insert, then recreate all indexes.
+3. **The correct, verified method:** `turso db shell <db> .dump > file.sql`, wipe all target tables
+   (`DROP TABLE IF EXISTS` one-at-a-time, `PRAGMA foreign_keys=OFF`), then
+   `turso db shell <db> < file.sql`. FKs and indexes are preserved.
 4. Verify: compare every table's `COUNT(*)` and index set snapshot vs restored.
 
-**Lesson:** never `turso db import` expecting an overwrite. Full restore is a multi-step, high-risk operation —
-take a fresh export of the current (even broken) state first as a second safety net.
+**The full verified procedures (backup, dump, restore, clone prod→dev, schema parity) live in
+`docs/turso-operations.md` — use that file, not ad-hoc attempts.**
+
+**Lesson:** never `turso db import` expecting an overwrite. Take a fresh export of the current (even broken) state
+first as a second safety net.
 
 ### 4.3 `dev|-1` marker in `payload_migrations` re-adds itself and breaks CI migrations
 

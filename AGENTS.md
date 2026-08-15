@@ -81,8 +81,8 @@ over writing ad-hoc scripts:
 **Rule:** for full-database backups, use `turso db export` — never a hand-rolled script. For read-only
 inspection of an exported backup, use `sqlite3`. Only reach for custom scripts when none of these fit.
 
-**Note:** `turso db import` creates a **new** database — it does NOT overwrite an existing one. See MEMORY.md §4.2
-for the correct full-restore procedure.
+**Note:** `turso db import` creates a **new** database — it does NOT overwrite an existing one. For backup,
+restore, clone prod→dev, and schema-parity procedures, see `docs/turso-operations.md` (verified methods).
 
 ## Operational Knowledge (see MEMORY.md)
 
