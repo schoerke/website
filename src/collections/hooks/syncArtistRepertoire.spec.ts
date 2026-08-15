@@ -131,6 +131,7 @@ describe('syncArtistRepertoire hook', () => {
         collection: 'artists',
         id: 1,
         data: { repertoire: [123] },
+        context: { syncingRepertoire: true },
       })
     })
 
@@ -172,6 +173,7 @@ describe('syncArtistRepertoire hook', () => {
         collection: 'artists',
         id: 1,
         data: { repertoire: [999, 888, 123] },
+        context: { syncingRepertoire: true },
       })
     })
 
@@ -198,8 +200,18 @@ describe('syncArtistRepertoire hook', () => {
         limit: 2,
       })
       expect(req.payload.update).toHaveBeenCalledTimes(2)
-      expect(req.payload.update).toHaveBeenCalledWith({ collection: 'artists', id: 1, data: { repertoire: [123] } })
-      expect(req.payload.update).toHaveBeenCalledWith({ collection: 'artists', id: 2, data: { repertoire: [123] } })
+      expect(req.payload.update).toHaveBeenCalledWith({
+        collection: 'artists',
+        id: 1,
+        data: { repertoire: [123] },
+        context: { syncingRepertoire: true },
+      })
+      expect(req.payload.update).toHaveBeenCalledWith({
+        collection: 'artists',
+        id: 2,
+        data: { repertoire: [123] },
+        context: { syncingRepertoire: true },
+      })
     })
   })
 
@@ -224,6 +236,7 @@ describe('syncArtistRepertoire hook', () => {
         collection: 'artists',
         id: 1,
         data: { repertoire: [456] },
+        context: { syncingRepertoire: true },
       })
     })
 
@@ -303,8 +316,18 @@ describe('syncArtistRepertoire hook', () => {
         where: { id: { in: [3, 2] } },
         limit: 2,
       })
-      expect(req.payload.update).toHaveBeenCalledWith({ collection: 'artists', id: 3, data: { repertoire: [123] } })
-      expect(req.payload.update).toHaveBeenCalledWith({ collection: 'artists', id: 2, data: { repertoire: [] } })
+      expect(req.payload.update).toHaveBeenCalledWith({
+        collection: 'artists',
+        id: 3,
+        data: { repertoire: [123] },
+        context: { syncingRepertoire: true },
+      })
+      expect(req.payload.update).toHaveBeenCalledWith({
+        collection: 'artists',
+        id: 2,
+        data: { repertoire: [] },
+        context: { syncingRepertoire: true },
+      })
     })
 
     it('should handle missing previousDoc', async () => {
@@ -326,6 +349,7 @@ describe('syncArtistRepertoire hook', () => {
         collection: 'artists',
         id: 1,
         data: { repertoire: [123] },
+        context: { syncingRepertoire: true },
       })
     })
   })
@@ -388,6 +412,7 @@ describe('syncArtistRepertoire hook', () => {
         collection: 'artists',
         id: 1,
         data: { repertoire: [123] },
+        context: { syncingRepertoire: true },
       })
     })
   })
@@ -449,8 +474,18 @@ describe('syncArtistRepertoireOnDelete hook', () => {
       limit: 1000,
     })
     expect(req.payload.update).toHaveBeenCalledTimes(2)
-    expect(req.payload.update).toHaveBeenCalledWith({ collection: 'artists', id: 1, data: { repertoire: [456] } })
-    expect(req.payload.update).toHaveBeenCalledWith({ collection: 'artists', id: 2, data: { repertoire: [] } })
+    expect(req.payload.update).toHaveBeenCalledWith({
+      collection: 'artists',
+      id: 1,
+      data: { repertoire: [456] },
+      context: { syncingRepertoire: true },
+    })
+    expect(req.payload.update).toHaveBeenCalledWith({
+      collection: 'artists',
+      id: 2,
+      data: { repertoire: [] },
+      context: { syncingRepertoire: true },
+    })
   })
 
   it('should skip when context.syncingRepertoire is true', async () => {

@@ -1,0 +1,60 @@
+import type { Artist } from '@/payload-types'
+import type { CollectionBeforeChangeHook } from 'payload'
+
+/**
+ * Extracts the numeric IDs from a repertoire relationship value.
+ * Handles both raw IDs and populated objects.
+ *
+ * @param items - The relationship field value
+ * @returns Array of numeric IDs
+ */
+function extractRepertoireIds(items: unknown): number[] {
+  if (!Array.isArray(items)) return []
+  return items
+    .map((item) => (typeof item === 'number' || typeof item === 'string' ? Number(item) : (item as { id: number }).id))
+    .filter((id): id is number => !Number.isNaN(id))
+}
+
+/**
+ * Prevents removing repertoire docs from an artist's `repertoire` array.
+ *
+ * The `artist.repertoire` field is a derived, order-only list: repertoire docs are
+ * linked/unlinked on the Repertoire collection (source of truth), and the artist's
+ * list is populated by `syncArtistRepertoire`. Editors may reorder the list but
+ * cannot add or remove entries from the artist side.
+ *
+ * Behavior:
+ * - Allows reordering (same set of IDs, different order)
+ * - Blocks removals with a clear error
+ * - Blocks additions with a clear error (link via the Repertoire doc instead)
+ * - Skips when `context.syncingRepertoire` is set (updates from our own sync hooks)
+ * - Skips on create (no prior state to diff against)
+ *
+ * @see docs/superpowers/specs/2026-08-15-artist-repertoire-ordering-design.md
+ */
+export const enforceRepertoireOrderOnly: CollectionBeforeChangeHook = async ({ context, data, operation, originalDoc }) => {
+  // Skip updates coming from our own sync hooks
+  if (context.syncingRepertoire) {
+    return data
+  }
+
+  // Nothing to diff on create
+  if (operation === 'create' || !originalDoc) {
+    return data
+  }
+
+  const previousIds = extractRepertoireIds((originalDoc as Artist).repertoire)
+  const nextIds = extractRepertoireIds(data.repertoire)
+
+  // Allow pure reordering — same set of IDs
+  const removed = previousIds.filter((id) => !nextIds.includes(id))
+  const added = nextIds.filter((id) => !previousIds.includes(id))
+
+  if (removed.length > 0 || added.length > 0) {
+    throw new Error(
+      'Repertoire lists are managed on the Repertoire document. Link or unlink artists there, then reorder the list here.'
+    )
+  }
+
+  return data
+}

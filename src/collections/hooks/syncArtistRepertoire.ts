@@ -91,6 +91,8 @@ export const syncArtistRepertoire: CollectionAfterChangeHook = async ({ doc, pre
             data: {
               repertoire: newRepertoire,
             },
+            // Propagate the sync flag so the Artists beforeChange hook allows this removal
+            context: { syncingRepertoire: true },
           })
         )
       }
@@ -136,6 +138,8 @@ export const syncArtistRepertoireOnDelete: CollectionAfterDeleteHook = async ({ 
         data: {
           repertoire: newRepertoire,
         },
+        // Propagate the sync flag so the Artists beforeChange hook allows this removal
+        context: { syncingRepertoire: true },
       })
     })
 

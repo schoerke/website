@@ -1,4 +1,5 @@
 import { INSTRUMENTS } from '@/constants/options'
+import { enforceRepertoireOrderOnly } from '@/collections/hooks/enforceRepertoireOrderOnly'
 import { revalidateArtistOnChange, revalidateArtistOnDelete } from '@/collections/hooks/revalidateArtist'
 import { createSlugHook } from '@/utils/slug'
 import { validateURL, validateVideoURL } from '@/validators/fields'
@@ -397,6 +398,7 @@ export const Artists: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeChange: [enforceRepertoireOrderOnly],
     afterChange: [revalidateArtistOnChange],
     afterDelete: [revalidateArtistOnDelete],
   },
