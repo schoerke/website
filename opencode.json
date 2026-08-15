@@ -1,6 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": ["docs/patterns/react-components.md", "docs/patterns/data-fetching.md"],
+  "instructions": [
+    "docs/patterns/react-components.md",
+    "docs/patterns/data-fetching.md",
+    "docs/patterns/payload.md"
+  ],
   "permission": {
     "bash": {
       "*": "allow",

@@ -89,6 +89,9 @@ restore, clone prod→dev, and schema-parity procedures, see `docs/turso-operati
 **MEMORY.md** is the authoritative record of operational lessons, environment facts, incident history, and
 hard-won workflows. It is mandatory reading before any database, migration, or deployment work.
 
+**Payload CMS operational patterns** (migrations, hooks, relationships, admin behaviors, search):
+`docs/patterns/payload.md` (loaded automatically via `opencode.json`).
+
 ### Always Use Payload Local API for Production Data Operations
 
 **CRITICAL: NEVER use raw SQL or `@libsql/client` to copy or write data to production.** Always use Payload's
