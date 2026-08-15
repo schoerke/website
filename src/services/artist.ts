@@ -1,4 +1,4 @@
-import type { Artist, Post } from '@/payload-types'
+import type { Artist, Post, Repertoire } from '@/payload-types'
 import config from '@/payload.config'
 import { getPayload } from 'payload'
 
@@ -12,17 +12,19 @@ type LocaleCode = 'de' | 'en' | 'all'
  * @returns A promise resolving to the first matching artist document, or undefined if not found
  *
  * @remarks
- * **Manual Project Population:**
- * This function uses depth:2 for initial population, then makes a second query to manually
- * populate the `artist.projects` array. This ensures:
+ * **Manual Project & Repertoire Population:**
+ * This function uses depth:2 for initial population, then makes additional queries to manually
+ * populate the `artist.projects` and `artist.repertoire` arrays. This ensures:
  * - Projects are fully populated with their images (depth:2 level)
- * - Project ordering from the database is preserved
+ * - Repertoire sections are fully populated
+ * - Ordering from the database (relationship array order) is preserved
  * - Consistent behavior across Payload versions
  *
  * **Performance Impact:**
  * - Query 1: `artists.find()` with depth:2 (~50-100ms)
- * - Query 2: `posts.find()` for projects (~30-70ms)
- * - Total overhead: ~80-170ms per page load
+ * - Query 2: `posts.find()` for projects (~30-70ms) — only if artist has projects
+ * - Query 3: `repertoire.find()` for repertoire (~20-50ms) — only if artist has repertoire
+ * - Total overhead: ~100-220ms per page load
  *
  * **Optimization Opportunity:**
  * The manual population may be unnecessary with current Payload versions. The second query
@@ -54,7 +56,10 @@ export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
     fallbackLocale: 'de',
   })
 
-  const artist = result.docs[0] as Artist & { projects?: (number | { id: number } | Post)[] }
+  const artist = result.docs[0] as Artist & {
+    projects?: (number | { id: number } | Post)[]
+    repertoire?: (number | { id: number } | Repertoire)[]
+  }
 
   // Manually populate projects if they exist (depth doesn't always work for relationship arrays)
   if (artist?.projects && Array.isArray(artist.projects) && artist.projects.length > 0) {
@@ -74,6 +79,29 @@ export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
       // Maintain the order from artist.projects array
       const projectsMap = new Map(projectsResult.docs.map((p) => [p.id, p]))
       artist.projects = projectIds.map((id) => projectsMap.get(id)).filter((p): p is Post => p !== undefined)
+    }
+  }
+
+  // Manually populate repertoire if it exists (mirrors projects population)
+  if (artist?.repertoire && Array.isArray(artist.repertoire) && artist.repertoire.length > 0) {
+    const repertoireIds = artist.repertoire
+      .map((r: number | { id: number } | Repertoire) => (typeof r === 'number' ? r : r.id))
+      .filter((id): id is number => typeof id === 'number')
+
+    if (repertoireIds.length > 0) {
+      const repertoireResult = await payload.find({
+        collection: 'repertoire',
+        where: { id: { in: repertoireIds } },
+        depth: 1,
+        locale: locale || 'de',
+        fallbackLocale: 'de',
+      })
+
+      // Maintain the order from artist.repertoire array
+      const repertoireMap = new Map(repertoireResult.docs.map((r) => [r.id, r]))
+      artist.repertoire = repertoireIds
+        .map((id) => repertoireMap.get(id))
+        .filter((r): r is Repertoire => r !== undefined)
     }
   }
 

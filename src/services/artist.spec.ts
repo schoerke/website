@@ -1,4 +1,4 @@
-import { createMockArtist, createMockPaginatedDocs } from '@/tests/utils/payloadMocks'
+import { createMockArtist, createMockPaginatedDocs, createMockRepertoire } from '@/tests/utils/payloadMocks'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getArtistBySlug, getArtistListData } from './artist'
@@ -59,6 +59,42 @@ describe('Artist Service', () => {
       const result = await getArtistBySlug('nonexistent-slug')
 
       expect(result).toBeUndefined()
+    })
+
+    it('should populate repertoire preserving array order', async () => {
+      const mockArtist = createMockArtist({ id: 7, repertoire: [30, 10, 20] })
+      const repertoires = [
+        createMockRepertoire({ id: 10 }),
+        createMockRepertoire({ id: 20 }),
+        createMockRepertoire({ id: 30 }),
+      ]
+
+      vi.mocked(mockPayload.find)
+        .mockResolvedValueOnce(createMockPaginatedDocs([mockArtist]))
+        .mockResolvedValueOnce(createMockPaginatedDocs(repertoires))
+
+      const result = await getArtistBySlug('test-artist')
+
+      // Second query: repertoire collection by IDs
+      expect(mockPayload.find).toHaveBeenNthCalledWith(2, {
+        collection: 'repertoire',
+        where: { id: { in: [30, 10, 20] } },
+        depth: 1,
+        locale: 'de',
+        fallbackLocale: 'de',
+      })
+      // Order preserved from artist.repertoire array, not query result order
+      expect(result?.repertoire?.map((r) => (typeof r === 'object' && r !== null ? r.id : r))).toEqual([30, 10, 20])
+    })
+
+    it('should skip repertoire population when artist has none', async () => {
+      const mockArtist = createMockArtist({ id: 7 })
+      vi.mocked(mockPayload.find).mockResolvedValueOnce(createMockPaginatedDocs([mockArtist]))
+
+      const result = await getArtistBySlug('test-artist')
+
+      expect(mockPayload.find).toHaveBeenCalledTimes(1)
+      expect(result).toEqual(mockArtist)
     })
   })
 
