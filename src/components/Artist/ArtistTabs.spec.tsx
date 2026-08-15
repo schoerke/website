@@ -83,8 +83,8 @@ vi.mock('./ArtistTabContent', () => ({
           ? `${videos.length} videos`
           : emptyMessage
         : images && images.length > 0
-          ? `${images.length} images`
-          : emptyMessage}
+        ? `${images.length} images`
+        : emptyMessage}
     </div>
   ),
   ProjectsTab: ({ projects, emptyMessage }: { projects: unknown[]; emptyMessage: string }) => (
@@ -180,6 +180,7 @@ describe('ArtistTabs', async () => {
     vi.clearAllMocks()
     // Reset window.location.hash
     window.location.hash = ''
+    sessionStorage.clear()
     // Mock console.error to avoid cluttering test output
     vi.spyOn(console, 'error').mockImplementation(() => {})
   })
@@ -371,6 +372,133 @@ describe('ArtistTabs', async () => {
         expect(screen.getByText('No recordings available')).toBeInTheDocument()
       })
     })
+
+    it('should refetch recordings when navigating to a different artist while on discography', async () => {
+      const user = userEvent.setup()
+      const artistA = createMockArtist({ id: 1 })
+      const artistB = createMockArtist({ id: 2 })
+
+      vi.mocked(fetchRecordingsByArtist).mockResolvedValue({
+        docs: [createMockRecording()],
+        totalDocs: 1,
+        limit: 10,
+        totalPages: 1,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      const { rerender } = renderWithIntl(<ArtistTabs artist={artistA} locale="en" hasNews={true} hasProjects={true} />)
+
+      const discographyTabs = screen.getAllByText('Discography')
+      await user.click(discographyTabs[0])
+
+      await waitFor(() => {
+        expect(fetchRecordingsByArtist).toHaveBeenCalledWith('1', 'en')
+      })
+
+      // Navigate to a different artist (same locale) — recordings must refetch
+      rerender(
+        <NextIntlTestProvider messages={testMessages} locale="en">
+          <ArtistTabs artist={artistB} locale="en" hasNews={true} hasProjects={true} />
+        </NextIntlTestProvider>
+      )
+
+      await waitFor(() => {
+        expect(fetchRecordingsByArtist).toHaveBeenCalledWith('2', 'en')
+      })
+    })
+
+    it('should retry recordings fetch after an error when revisiting the discography tab', async () => {
+      const user = userEvent.setup()
+      const artist = createMockArtist()
+
+      vi.mocked(fetchRecordingsByArtist)
+        .mockRejectedValueOnce(new Error('Network error'))
+        .mockResolvedValueOnce({
+          docs: [createMockRecording()],
+          totalDocs: 1,
+          limit: 10,
+          totalPages: 1,
+          page: 1,
+          pagingCounter: 1,
+          hasPrevPage: false,
+          hasNextPage: false,
+          prevPage: null,
+          nextPage: null,
+        })
+
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      const discographyTabs = screen.getAllByText('Discography')
+      await user.click(discographyTabs[0])
+
+      await waitFor(() => {
+        expect(screen.getByText('No recordings available')).toBeInTheDocument()
+      })
+
+      // Leave and re-enter the tab — should retry the failed fetch
+      await user.click(screen.getAllByText('Media')[0])
+      await user.click(screen.getAllByText('Discography')[0])
+
+      await waitFor(() => {
+        expect(screen.getByText('1 recordings')).toBeInTheDocument()
+      })
+      expect(fetchRecordingsByArtist).toHaveBeenCalledTimes(2)
+    })
+
+    it('should keep current recordings visible while refetching after a locale change', async () => {
+      type RecordingsResult = Awaited<ReturnType<typeof fetchRecordingsByArtist>>
+      const user = userEvent.setup()
+      const artist = createMockArtist()
+
+      let resolveFirstFetch: ((value: RecordingsResult) => void) | undefined
+      vi.mocked(fetchRecordingsByArtist).mockImplementation(
+        () =>
+          new Promise<RecordingsResult>((resolve) => {
+            resolveFirstFetch = resolve
+          })
+      )
+
+      const { rerender } = renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      const discographyTabs = screen.getAllByText('Discography')
+      await user.click(discographyTabs[0])
+
+      await waitFor(() => {
+        expect(fetchRecordingsByArtist).toHaveBeenCalled()
+      })
+
+      resolveFirstFetch?.({
+        docs: [createMockRecording()],
+        totalDocs: 1,
+        limit: 10,
+        totalPages: 1,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText('1 recordings')).toBeInTheDocument()
+      })
+
+      // Locale change triggers a refetch, but existing data stays visible (no loading flash)
+      rerender(
+        <NextIntlTestProvider messages={testMessages} locale="de">
+          <ArtistTabs artist={artist} locale="de" hasNews={true} hasProjects={true} />
+        </NextIntlTestProvider>
+      )
+
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+      expect(screen.getByText('1 recordings')).toBeInTheDocument()
+    })
   })
 
   describe('Repertoire tab', () => {
@@ -451,8 +579,31 @@ describe('ArtistTabs', async () => {
     })
   })
 
-  describe('Locale-based reset', () => {
-    it('should reset state when locale changes', async () => {
+  describe('Locale change', () => {
+    it('should keep the active tab when locale changes', async () => {
+      const artist = createMockArtist()
+
+      const { rerender } = renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      const user = userEvent.setup()
+      const mediaTabs = screen.getAllByText('Media')
+      await user.click(mediaTabs[0])
+      expect(screen.getByTestId('media-tab')).toBeInTheDocument()
+
+      // Change locale - active tab should be preserved
+      // Hash cleared to simulate next-intl navigation (which drops the hash)
+      window.location.hash = ''
+      rerender(
+        <NextIntlTestProvider messages={testMessages} locale="de">
+          <ArtistTabs artist={artist} locale="de" hasNews={true} hasProjects={true} />
+        </NextIntlTestProvider>
+      )
+
+      expect(screen.getByTestId('media-tab')).toBeInTheDocument()
+      expect(screen.queryByTestId('biography-tab')).not.toBeInTheDocument()
+    })
+
+    it('should refetch recordings in the new locale when on discography tab', async () => {
       const artist = createMockArtist()
 
       vi.mocked(fetchRecordingsByArtist).mockResolvedValue({
@@ -470,7 +621,6 @@ describe('ArtistTabs', async () => {
 
       const { rerender } = renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
-      // Switch to discography tab
       const user = userEvent.setup()
       const discographyTabs = screen.getAllByText('Discography')
       await user.click(discographyTabs[0])
@@ -479,26 +629,97 @@ describe('ArtistTabs', async () => {
         expect(fetchRecordingsByArtist).toHaveBeenCalledWith('1', 'en')
       })
 
-      // Change locale - should reset to biography tab
-      // Clear hash to simulate navigation or explicit reset
+      // Change locale while on discography - should refetch for the new locale
+      // Hash cleared to simulate next-intl navigation (which drops the hash)
       window.location.hash = ''
-
       rerender(
         <NextIntlTestProvider messages={testMessages} locale="de">
           <ArtistTabs artist={artist} locale="de" hasNews={true} hasProjects={true} />
         </NextIntlTestProvider>
       )
 
-      // Should show biography tab (initial state)
-      expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
-
-      // If we switch to discography again, it should fetch with new locale
-      const newDiscographyTabs = screen.getAllByText('Discography')
-      await user.click(newDiscographyTabs[0])
-
       await waitFor(() => {
         expect(fetchRecordingsByArtist).toHaveBeenCalledWith('1', 'de')
       })
+
+      expect(screen.getByTestId('recordings-tab')).toBeInTheDocument()
+    })
+
+    it('should not refetch recordings when locale changes on a non-discography tab', async () => {
+      const artist = createMockArtist()
+
+      vi.mocked(fetchRecordingsByArtist).mockResolvedValue({
+        docs: [createMockRecording()],
+        totalDocs: 1,
+        limit: 10,
+        totalPages: 1,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      const { rerender } = renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      const user = userEvent.setup()
+      const mediaTabs = screen.getAllByText('Media')
+      await user.click(mediaTabs[0])
+
+      // Change locale while on media tab
+      // Hash cleared to simulate next-intl navigation (which drops the hash)
+      window.location.hash = ''
+      rerender(
+        <NextIntlTestProvider messages={testMessages} locale="de">
+          <ArtistTabs artist={artist} locale="de" hasNews={true} hasProjects={true} />
+        </NextIntlTestProvider>
+      )
+
+      expect(fetchRecordingsByArtist).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Tab persistence', () => {
+    it('persists the active tab to sessionStorage when the tab changes', async () => {
+      const user = userEvent.setup()
+      const artist = createMockArtist()
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      const mediaTabs = screen.getAllByText('Media')
+      await user.click(mediaTabs[0])
+
+      const stored = JSON.parse(sessionStorage.getItem('/artists/test-artist') ?? 'null')
+      expect(stored).toEqual({ tab: 'media', mediaSection: 'images' })
+    })
+
+    it('restores the active tab from sessionStorage when no hash is present', async () => {
+      // Simulate a remount on the same artist page (e.g. locale switch where
+      // Next.js unmounts the client tree and the hash was dropped by navigation)
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+      sessionStorage.setItem('/artists/test-artist', JSON.stringify({ tab: 'media', mediaSection: 'videos' }))
+
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('media-tab')).toBeInTheDocument()
+        expect(screen.queryByTestId('biography-tab')).not.toBeInTheDocument()
+      })
+    })
+
+    it('prefers the URL hash over sessionStorage when both are present', () => {
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+      window.location.hash = '#repertoire'
+      sessionStorage.setItem('/artists/test-artist', JSON.stringify({ tab: 'media', mediaSection: 'images' }))
+
+      const artist = createMockArtist({ repertoire: [createMockRepertoire()] })
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      expect(screen.getByTestId('repertoire-tab')).toBeInTheDocument()
+      expect(screen.queryByTestId('media-tab')).not.toBeInTheDocument()
     })
   })
 

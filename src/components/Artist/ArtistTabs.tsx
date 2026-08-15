@@ -5,7 +5,7 @@ import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import NewsFeedClient from '../NewsFeed/NewsFeedClient'
 import { BiographyTab, MediaTab, ProjectsTab, RecordingsTab, RepertoireTab } from './ArtistTabContent'
 
@@ -24,16 +24,48 @@ function getInitialTab(): TabId {
   return 'biography'
 }
 
+type MediaSection = 'images' | 'videos'
+
+// Strip the locale prefix so the key is identical across languages
+// (e.g. /de/artists/foo and /en/artists/foo both map to /artists/foo)
+function getTabStorageKey(pathname: string): string {
+  return pathname.replace(/^\/(de|en)(?=\/)/, '') || '/'
+}
+
+function readStoredTab(pathname: string): { tab: TabId; mediaSection?: MediaSection } | null {
+  try {
+    const raw = sessionStorage.getItem(getTabStorageKey(pathname))
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { tab?: unknown; mediaSection?: unknown }
+    if (typeof parsed.tab !== 'string') return null
+    const mediaSection: MediaSection | undefined =
+      parsed.mediaSection === 'videos' ? 'videos' : parsed.mediaSection === 'images' ? 'images' : undefined
+    return { tab: parsed.tab as TabId, mediaSection }
+  } catch {
+    return null
+  }
+}
+
+function storeTab(pathname: string, tab: TabId, mediaSection: MediaSection): void {
+  try {
+    sessionStorage.setItem(getTabStorageKey(pathname), JSON.stringify({ tab, mediaSection }))
+  } catch {
+    // Storage unavailable (private mode, quota) — persistence is best-effort
+  }
+}
+
 /**
- * Internal component that manages tab state and data fetching.
- * Uses key prop on parent to reset all state when locale changes.
+ * Manages tab state and data fetching. State (active tab, media section, role filter)
+ * is intentionally NOT reset when the locale changes so the user keeps their place;
+ * locale-dependent data (recordings) is refetched for the new locale instead.
  */
-const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasProjects }) => {
+const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasProjects }) => {
   const t = useTranslations('custom.pages.artist')
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab)
   const [recordings, setRecordings] = useState<Recording[]>([])
   const [recordingsFetched, setRecordingsFetched] = useState(false)
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
+  const fetchedLocaleRef = useRef<{ locale: 'de' | 'en'; artistId: number } | null>(null)
 
   // Available tabs
   const tabs: TabId[] = (['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]).filter(
@@ -44,17 +76,27 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
     }
   )
 
-  const [mediaSection, setMediaSection] = useState<'images' | 'videos'>('images')
+  const [mediaSection, setMediaSection] = useState<MediaSection>('images')
 
-  // Read hash from URL after hydration to set initial tab
+  // Read hash from URL after hydration to set initial tab; fall back to the
+  // sessionStorage snapshot so the tab survives a locale switch that causes a
+  // remount (e.g. App Router unmounting the client tree during navigation).
   useEffect(() => {
     const hash = window.location.hash.slice(1) // e.g. "media-videos"
     const mediaMatch = /^media-(images|videos)$/.exec(hash)
     if (mediaMatch) {
       setActiveTab('media')
-      setMediaSection(mediaMatch[1] as 'images' | 'videos')
+      setMediaSection(mediaMatch[1] as MediaSection)
     } else if (tabs.includes(hash as TabId)) {
       setActiveTab(hash as TabId)
+    } else {
+      const stored = readStoredTab(window.location.pathname)
+      if (stored && tabs.includes(stored.tab)) {
+        setActiveTab(stored.tab)
+        if (stored.tab === 'media' && stored.mediaSection) {
+          setMediaSection(stored.mediaSection)
+        }
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only run once after mount
@@ -62,6 +104,7 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
   // Update URL hash when tab changes
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab)
+    storeTab(window.location.pathname, tab, mediaSection)
     if (tab === 'media') {
       window.history.pushState(null, '', `#media-${mediaSection}`)
     } else {
@@ -69,28 +112,47 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
     }
   }
 
-  const handleMediaSectionChange = (section: 'images' | 'videos') => {
+  const handleMediaSectionChange = (section: MediaSection) => {
     setMediaSection(section)
+    storeTab(window.location.pathname, 'media', section)
     window.history.pushState(null, '', `#media-${section}`)
   }
 
-  // Fetch recordings when discography tab is selected
+  // Fetch recordings when discography tab is selected, refetching when the
+  // locale or artist changes so content matches the active language. The ref
+  // is keyed on both locale and artist id: without artist id, navigating from
+  // one artist's discography to another's would keep the first artist's data.
   useEffect(() => {
-    if (activeTab !== 'discography' || recordingsFetched) {
+    if (activeTab !== 'discography') {
+      return
+    }
+
+    const lang = locale as 'de' | 'en'
+    const fetched = fetchedLocaleRef.current
+    if (fetched?.locale === lang && fetched.artistId === artist.id) {
       return
     }
 
     let cancelled = false
 
+    // Clear on first fetch or when switching artists; keep existing data
+    // visible while only refreshing for a new locale.
+    if (fetched === null || fetched.artistId !== artist.id) {
+      setRecordings([])
+      setRecordingsFetched(false)
+    }
+
     const loadRecordings = async () => {
       try {
-        const data = await fetchRecordingsByArtist(artist.id.toString(), locale as 'de' | 'en')
+        const data = await fetchRecordingsByArtist(artist.id.toString(), lang)
         if (!cancelled) {
           setRecordings(data.docs || [])
+          fetchedLocaleRef.current = { locale: lang, artistId: artist.id }
           setRecordingsFetched(true)
         }
       } catch (err) {
         if (!cancelled) {
+          // Don't record the fetch as done so a later tab visit retries.
           console.error('Failed to fetch recordings:', err)
           setRecordingsFetched(true)
         }
@@ -102,7 +164,7 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
     return () => {
       cancelled = true
     }
-  }, [activeTab, artist.id, locale, recordingsFetched])
+  }, [activeTab, artist.id, locale])
 
   // Extract unique roles from recordings, sorted by canonical order in RECORDING_ROLES
   const roleOrder = RECORDING_ROLES.map((r) => r.value)
@@ -172,11 +234,7 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
       <div key={activeTab} className="animate-in fade-in duration-300">
         {activeTab === 'biography' && <BiographyTab content={artist.biography} quote={artist.quote} />}
         {activeTab === 'repertoire' && (
-          <RepertoireTab
-            repertoires={repertoires}
-            loading={false}
-            emptyMessage={t('empty.repertoire')}
-          />
+          <RepertoireTab repertoires={repertoires} loading={false} emptyMessage={t('empty.repertoire')} />
         )}
         {activeTab === 'discography' && (
           <RecordingsTab
@@ -214,14 +272,6 @@ const ArtistTabsInner: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, h
       </div>
     </div>
   )
-}
-
-/**
- * ArtistTabs component with locale-based reset.
- * Uses key prop to reset all internal state when locale changes.
- */
-const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasProjects }) => {
-  return <ArtistTabsInner key={locale} artist={artist} locale={locale} hasNews={hasNews} hasProjects={hasProjects} />
 }
 
 export default ArtistTabs
