@@ -1,6 +1,6 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-sqlite'
 
-export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): Promise<void> {
   await db.run(sql`DROP TABLE \`artists_repertoire\`;`)
   await db.run(sql`DROP TABLE \`artists_repertoire_locales\`;`)
   await db.run(sql`PRAGMA foreign_keys=OFF;`)
@@ -30,7 +30,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.run(sql`CREATE INDEX \`artists_rels_posts_id_idx\` ON \`artists_rels\` (\`posts_id\`);`)
 }
 
-export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs): Promise<void> {
   await db.run(sql`CREATE TABLE \`artists_repertoire\` (
   	\`_order\` integer NOT NULL,
   	\`_parent_id\` integer NOT NULL,
