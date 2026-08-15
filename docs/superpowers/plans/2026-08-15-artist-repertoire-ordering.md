@@ -1458,7 +1458,115 @@ git commit -m "build: add build:ci script and vercel buildCommand for migrations
 
 ---
 
-## Task 12: Prod batch:-1 cleanup (one-time, pre-deploy)
+## Task 12: Local pre-flight test of the migration (before touching prod)
+
+**Files:**
+- Create (temporary): none — uses Turso CLI + `sqlite3` + `payload migrate` with a `file:` DB URI
+- Modify: none (uses a throwaway local copy of the prod snapshot)
+
+**Goal:** execute the `artist_repertoire_ordering` migration against a **local byte-identical copy** of the prod
+database, verify up + down, and confirm no data loss — **before** the migration ever touches real prod. This is
+the true "test on dev first" step: if it fails here, prod is untouched and you still have the pristine export.
+
+- [ ] **Step 1: Export prod snapshot (safety net + test source)**
+
+```bash
+mkdir -p data/dumps
+turso db export ksschoerke-production --output-file data/dumps/ksschoerke-production-$(date +%Y%m%d-%H%M%S).db
+```
+
+Expected: produces `data/dumps/ksschoerke-production-<timestamp>.db`. This file is BOTH the pre-migration backup
+AND the source for the local test.
+
+- [ ] **Step 2: Verify the export is valid**
+
+```bash
+sqlite3 data/dumps/ksschoerke-production-<timestamp>.db "SELECT COUNT(*) FROM artists; SELECT name, batch FROM payload_migrations;"
+```
+Expected: prints artist count and `dev | -1`. If it errors or shows 0 artists, STOP.
+
+- [ ] **Step 3: Create a local test copy**
+
+```bash
+cp data/dumps/ksschoerke-production-<timestamp>.db data/dumps/test-migration.db
+```
+
+- [ ] **Step 4: Run the migration against the local copy**
+
+Run with the DB pointed at the local file (dummy token — libsql ignores it for `file:`):
+
+```bash
+DATABASE_URI="file:$(pwd)/data/dumps/test-migration.db" DATABASE_AUTH_TOKEN=local-test pnpm payload migrate
+```
+
+Expected: the `artist_repertoire_ordering` migration runs against the local file.
+
+**Note:** the local copy still contains the `dev` `batch:-1` row, so `migrate` may show the interactive data-loss
+prompt. This is a local file — safe to accept (it only filters the row in-memory for this run). If the prompt
+hangs in non-TTY, instead run the Task 13 cleanup against the local copy first (point the cleanup script at the
+local file), then `migrate`.
+
+- [ ] **Step 5: Verify the migration applied correctly to the local copy**
+
+```bash
+sqlite3 data/dumps/test-migration.db "PRAGMA table_info(artists_rels);"
+```
+Expected: `artists_rels` now has a `repertoire_id` column.
+
+```bash
+sqlite3 data/dumps/test-migration.db "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('artists_repertoire','artists_repertoire_locales');"
+```
+Expected: no rows (both array tables dropped).
+
+```bash
+sqlite3 data/dumps/test-migration.db "SELECT COUNT(*) FROM artists; SELECT COUNT(*) FROM repertoire; SELECT COUNT(*) FROM artists_rels;"
+```
+Expected: artist count unchanged from Step 2, repertoire count unchanged, `artists_rels` row count ≥ the
+pre-migration count (the rels table is recreated with `INSERT ... SELECT`, so existing contactPersons/projects
+rows must still be present).
+
+**Verify the critical data-preservation invariant:** every `artists_rels` row that existed before the migration
+still exists after (the table-recreation must copy all rows). Compare counts if recorded before.
+
+- [ ] **Step 6: Test the down migration**
+
+Run:
+```bash
+DATABASE_URI="file:$(pwd)/data/dumps/test-migration.db" DATABASE_AUTH_TOKEN=local-test pnpm payload migrate:down
+```
+Expected: rolls back — `artists_repertoire` + `artists_repertoire_locales` recreated, `repertoire_id` removed from
+`artists_rels`.
+
+Verify:
+```bash
+sqlite3 data/dumps/test-migration.db "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'artists_repertoire%';"
+```
+Expected: both array tables present again.
+
+- [ ] **Step 7: Re-run up (leave the local copy in migrated state for reference)**
+
+```bash
+DATABASE_URI="file:$(pwd)/data/dumps/test-migration.db" DATABASE_AUTH_TOKEN=local-test pnpm payload migrate
+```
+
+- [ ] **Step 8: Clean up the local test copy**
+
+```bash
+rm data/dumps/test-migration.db
+```
+
+The prod export (`ksschoerke-production-<timestamp>.db`) is KEPT as the restore point.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add -A
+git commit -m "chore(db): verify migration against local prod snapshot copy"
+```
+
+---
+
+## Task 13: Prod batch:-1 cleanup (one-time, pre-deploy)
 
 **Files:**
 - Create (temporary): `scripts/db/clearDevMigrationMarker.ts`
@@ -1469,58 +1577,28 @@ row makes every `payload migrate` show the interactive data-loss prompt (cancels
 silently). Must be deleted from prod **before** the first `build:ci` deploy. This is a prod DB modification —
 requires explicit user approval per AGENTS.md.
 
-**Safety rule (MANDATORY, non-negotiable):** the full prod backup via Turso CLI (Steps 1-2) happens **first**,
-before any `.env` swap and before any write. It uses Turso CLI credentials (not `.env`), so it does not require a
-swap and cannot be affected by a `.env` misconfiguration. If the backup cannot be produced or verified, STOP and
-do not proceed.
+**Safety rule (MANDATORY, non-negotiable):** a full prod backup via Turso CLI already exists from Task 12 Step 1
+(`data/dumps/ksschoerke-production-<timestamp>.db`) and was verified. That same export is the restore point for
+this cleanup. If it does not exist or cannot be verified, STOP and re-run Task 12 before proceeding.
 
-- [ ] **Step 1: Full prod backup via Turso CLI (BEFORE any .env change)**
+- [ ] **Step 1: Confirm the Task 12 backup exists (no re-export needed)**
 
-Prereq: `turso` CLI installed and authenticated (verified working 2026-08-15: `turso db list` shows
-`ksschoerke-production`).
-
-Run:
-```bash
-mkdir -p data/dumps
-turso db export ksschoerke-production --output-file data/dumps/ksschoerke-production-$(date +%Y%m%d-%H%M%S).db
-```
-
-Expected: produces `data/dumps/ksschoerke-production-<timestamp>.db` — a full SQLite snapshot of the entire prod
-database (all collections, versions tables, rels tables, and `payload_migrations`), plus a `<timestamp>.db-wal`
-log file if present.
-
-**Verify the backup is non-empty before proceeding:**
 ```bash
 ls -la data/dumps/ksschoerke-production-*.db
+sqlite3 data/dumps/ksschoerke-production-<timestamp>.db "SELECT COUNT(*) FROM artists; SELECT name, batch FROM payload_migrations;"
 ```
-
-**Verify the snapshot is readable and contains the migrations table:**
-```bash
-sqlite3 data/dumps/ksschoerke-production-<timestamp>.db "SELECT COUNT(*) FROM payload_migrations;"
-```
-Expected: prints `1` (the dev marker row is captured in the backup).
+Expected: the export file exists, prints the prod artist count, and `dev | -1` for the migrations marker.
 
 **If the file is missing, 0 bytes, or sqlite3 errors, STOP — do not run the cleanup.**
 
-- [ ] **Step 2: Verify the backup contents**
-
-Confirm the backup is complete by checking a content table:
-```bash
-sqlite3 data/dumps/ksschoerke-production-<timestamp>.db "SELECT COUNT(*) FROM artists;"
-```
-Expected: prints the prod artist count (should match the live DB). Also verify `payload_migrations` row matches
-what we saw live: `SELECT name, batch FROM payload_migrations;` → `dev | -1`.
-
-**Only after Steps 1-2 succeed, continue to the cleanup.**
-
-- [ ] **Step 3: Swap `.env` to prod**
+- [ ] **Step 2: Swap `.env` to prod**
 
 Edit `.env`: comment dev `DATABASE_URI`/`DATABASE_AUTH_TOKEN`, uncomment prod values. Confirm:
 `grep DATABASE_URI .env` shows `ksschoerke-production-zeitchef`.
 
 **This step requires explicit user confirmation per AGENTS.md before continuing.**
 
-- [ ] **Step 4: Create the temporary cleanup script**
+- [ ] **Step 3: Create the temporary cleanup script**
 
 Create `scripts/db/clearDevMigrationMarker.ts`:
 
@@ -1583,7 +1661,7 @@ run().catch((error) => {
 })
 ```
 
-- [ ] **Step 5: Run the cleanup against prod (requires explicit user approval)**
+- [ ] **Step 4: Run the cleanup against prod (requires explicit user approval)**
 
 Run: `pnpm tsx scripts/db/clearDevMigrationMarker.ts`
 Expected: prints `Found 1 dev marker row(s)`, then the full JSON of the row being deleted, then `Deleted row <id>`,
@@ -1591,17 +1669,17 @@ then `payload_migrations now has 0 row(s)`.
 
 **If more than 1 row is found, STOP and review before deleting anything.**
 
-- [ ] **Step 6: Verify read-only**
+- [ ] **Step 5: Verify read-only**
 
 Run: `pnpm tsx -e "import 'dotenv/config'; import { createClient } from '@libsql/client'; const db = createClient({url: process.env.DATABASE_URI, authToken: process.env.DATABASE_AUTH_TOKEN}); db.execute('SELECT * FROM payload_migrations').then(r => console.log(JSON.stringify(r.rows)))"`
 Expected: `[]`.
 
-- [ ] **Step 7: Restore `.env` to dev**
+- [ ] **Step 6: Restore `.env` to dev**
 
 Edit `.env` back: uncomment dev, comment prod. Confirm: `grep DATABASE_URI .env` shows
 `ksschoerke-development-zeitchef`. Never leave `.env` pointed at prod.
 
-- [ ] **Step 8: Delete the temporary cleanup script**
+- [ ] **Step 7: Delete the temporary cleanup script**
 
 ```bash
 rm scripts/db/clearDevMigrationMarker.ts
@@ -1610,7 +1688,7 @@ rm scripts/db/clearDevMigrationMarker.ts
 The Turso backup in `data/dumps/ksschoerke-production-<timestamp>.db` is kept as the restore point. Note it in the
 commit message.
 
-- [ ] **Step 9: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add -A
@@ -1621,7 +1699,7 @@ git commit -m "chore(db): prod dev-migration-marker cleanup (turso backup at dat
 
 ---
 
-## Task 13: Final verification
+## Task 14: Final verification
 
 - [ ] **Step 1: Run all checks**
 

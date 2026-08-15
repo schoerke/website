@@ -186,12 +186,16 @@ If it remains, the `build:ci` migrate step breaks:
    `payload_migrations`. Uses Turso CLI credentials (not `.env`), so no swap is needed and a `.env`
    misconfiguration cannot affect it. Verify the file is non-empty and readable (`sqlite3 ... SELECT COUNT(*) FROM
    payload_migrations` → 1) **before** any write. If it fails, STOP.
-2. `.env` swap to prod (AGENTS.md approval flow)
-3. Delete the metadata row: `payload.delete` on the `payload-migrations` collection where `name: 'dev'` (or
+2. **Test the migration against a local copy first** — copy the export to `data/dumps/test-migration.db`, run
+   `payload migrate` against it (via a `file:` DB URI with a dummy token), verify `artists_rels.repertoire_id`
+   added, array tables dropped, and artist/repertoire/rels row counts unchanged; test `migrate:down` reverses it;
+   then re-run up and delete the test copy. If anything fails, prod is untouched and the pristine export remains.
+3. `.env` swap to prod (AGENTS.md approval flow)
+4. Delete the metadata row: `payload.delete` on the `payload-migrations` collection where `name: 'dev'` (or
    equivalent Local API call) — this is a metadata row, zero content data affected. The script prints the full
    row contents to stdout before deleting
-4. Verify with a read-only query that `payload_migrations` is now empty
-5. Restore `.env` to dev; keep the Turso snapshot as the restore point
+5. Verify with a read-only query that `payload_migrations` is now empty
+6. Restore `.env` to dev; keep the Turso snapshot as the restore point
 
 After cleanup, `payload migrate` runs the repertoire migration with no prompt, and prod now tracks migrations
 correctly. This cleanup is a **prod DB modification** and requires explicit user approval per AGENTS.md. If the
@@ -391,8 +395,9 @@ appropriate here). Initial order is arbitrary; editors reorder afterward via dra
    (`buildCommand: pnpm run build:ci`) — **note:** `pnpm ci` is a reserved pnpm built-in (clean install); a custom
    script named `ci` would never run
 10. Tests, lint, build, format
-11. One-time prod cleanup: **Turso CLI full backup first** (`turso db export ksschoerke-production`, before any
-    `.env` change), then delete the `dev` marker row from prod `payload_migrations` (`.env` swap + approval) so
+11. One-time prod prep: **Turso CLI full backup first** (`turso db export ksschoerke-production`, before any
+    `.env` change), then **test the migration against a local copy of the snapshot** (up + down + verify data
+    preserved), then delete the `dev` marker row from prod `payload_migrations` (`.env` swap + approval) so
     `build:ci` migrate runs non-interactively — see "CRITICAL prerequisite" above
 12. Deploy to prod — Vercel build runs `pnpm migrate` against prod first, then builds
 13. Run backfill against prod via Local API script (after deploy, once prod schema migrated)
