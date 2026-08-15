@@ -189,7 +189,7 @@ export interface Artist {
     [k: string]: unknown;
   };
   /**
-   * Repertoire sections shown on this artist's page. Drag to reorder. Maximum 5 sections.
+   * Repertoire lists shown on this artist's page. Drag to reorder. Maximum 5 lists.
    */
   repertoire?: (number | Repertoire)[] | null;
   /**
