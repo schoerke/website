@@ -1,3 +1,4 @@
+import { syncArtistRepertoire, syncArtistRepertoireOnDelete } from '@/collections/hooks/syncArtistRepertoire'
 import {
   BoldFeature,
   HeadingFeature,
@@ -141,4 +142,8 @@ export const Repertoire: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [syncArtistRepertoire],
+    afterDelete: [syncArtistRepertoireOnDelete],
+  },
 }

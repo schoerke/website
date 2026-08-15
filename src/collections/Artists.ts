@@ -162,16 +162,6 @@ export const Artists: CollectionConfig = {
                 en: 'Repertoire',
                 de: 'Repertoire',
               },
-              labels: {
-                singular: {
-                  en: 'Repertoire Section',
-                  de: 'Repertoire-Abschnitt',
-                },
-                plural: {
-                  en: 'Repertoire Sections',
-                  de: 'Repertoire-Abschnitte',
-                },
-              },
               admin: {
                 description: {
                   en: "Repertoire sections shown on this artist's page. Drag to reorder. Maximum 5 sections.",
