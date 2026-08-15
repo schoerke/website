@@ -3,8 +3,9 @@
 **Date:** 2026-08-15
 **Status:** Approved
 **Context:** Client request for per-artist ordering of repertoire sections on artist detail pages, using
-drag-and-drop in the Payload admin. Also introduces a migrations-only database workflow (`push: false`) —
-schema changes flow through migration files instead of Payload's dev auto-push.
+drag-and-drop in the Payload admin. Also introduces this project's first Payload migration workflow —
+schema changes flow through `migrate:create` migration files, applied to prod automatically in the build
+pipeline (`ci` script).
 
 ## Overview
 
@@ -62,82 +63,116 @@ This mirrors the already-shipped "Artist Projects Ordering" feature
 
 ## Database Migration Workflow
 
-**Decision: Migrations-only everywhere.** Disable Payload's dev auto-push so all schema changes flow through
-migration files, in dev and prod alike.
+**Decision: Follow the Payload-documented workflow.** Keep `push: true` in dev (Payload's intended sandbox
+workflow), generate migration files with `migrate:create`, and apply them to prod automatically in the build
+pipeline. Do **not** disable push in dev, and do **not** use `.env` swaps for prod.
 
-### Why this is safe and documented
+### Why this is the right approach
 
-Payload's sqlite adapter supports `push: false` to disable the dev schema push
-(`node_modules/@payloadcms/db-sqlite/dist/connect.js` skips `pushDevSchema` when `this.push !== false`).
-Payload docs recommend this for SQLite: *"You can disable `db push` and rely solely on migrations to keep your
-local database in sync with your Payload Config. In SQLite, migrations are a fundamental aspect of working with
-Payload."* The prod behavior is unchanged (Payload never auto-pushes in production regardless).
+Payload's official docs (https://payloadcms.com/docs/database/migrations) state:
 
-### Config change: `src/payload.config.ts`
+> *"We suggest that you leave `push` as its default setting and treat your local dev database as a sandbox."*
 
-```typescript
-db: sqliteAdapter({
-  client: {
-    url: process.env.DATABASE_URI,
-    authToken: process.env.DATABASE_AUTH_TOKEN,
-  },
-  push: false, // Schema changes only via migrations, dev and prod alike
-}),
-```
+> *"Do not mix 'push' and migrations with your local development database. If you use 'push' locally, and then try
+> to migrate, Payload will throw a warning."*
 
-**Effects:**
+Key facts confirmed from source (`node_modules/@payloadcms/db-sqlite/dist/connect.js`) and docs:
 
-- Dev server no longer auto-migrates. Every schema change requires: `migrate:create` → review SQL → `migrate`
-- The `dev` `batch:-1` row (recorded by past auto-pushes in `payload_migrations`) stops being created, so the
-  "data loss will occur" warning no longer appears on future `migrate` runs. The existing `batch:-1` row
-  remains in the dev DB (harmless — warning shows once on first `migrate` run).
-- **Caveat:** a schema change you forget to migrate surfaces as a runtime DB error on dev server start until you
-  run `pnpm payload migrate`.
+- **Dev auto-push never touches prod.** The schema push only runs when `process.env.NODE_ENV !== 'production'`.
+  Vercel builds run with `NODE_ENV=production`, so prod is never auto-migrated.
+- **Migrations run in transactions** — a failed migration rolls back and fails the deploy, leaving prod DB
+  untouched.
+- `payload migrate` sets `PAYLOAD_MIGRATING=true`, so it never triggers a schema push.
+- `payload_migrations` table tracks which migration files have run; `migrate` is idempotent and skips applied ones.
 
 ### Migration files in this project today
 
-- `src/migrations/index.ts` exports an empty `migrations` array — no migration workflow has been used.
+- `src/migrations/index.ts` exports an empty `migrations` array — no migration workflow has been used yet.
 - `src/migrations/20260310_203659.json` is a **stale** schema snapshot (March 2026): it still contains `issues`,
   `images`, `home_page`, `artists_discography`, `artists_youtube_links`. The current schema has since renamed
   collections/tables (e.g., `images` → `media`, `youtubeLinks` → `videoLinks`). The generated schema file
   `src/payload-generated-schema.ts` is also stale (its `artists_rels` only lists `employeesID`, but the live DB
   also has `posts_id`).
 - Because the snapshot is stale, `pnpm payload migrate:create` would diff March's schema against the current
-  config and generate a **giant, unrelated migration**. **Do not use `migrate:create` for this change.**
+  config and generate a **giant, unrelated migration**. A fresh baseline snapshot must be established first.
 
-### Chosen workflow — hand-written migration file
+### Establishing a fresh baseline
 
-1. Write the migration file by hand in `src/migrations/<timestamp>-artist-repertoire-ordering.ts` using the
-   `up()`/`down()` SQL pattern documented in AGENTS.md ("Payload CMS + SQLite: How Array Field Renames Work").
-   No DB writes during authoring.
-2. Review the SQL (below).
-3. Apply to **dev** (`.env` already points at remote dev DB):
-   ```bash
-   pnpm payload migrate
-   ```
-4. Run the backfill script (Local API, idempotent — reverses `repertoire.artists` → `artist.repertoire`
-   arrays). See "Data Backfill" below.
-5. For **prod**: follow the `.env` swap workflow (comment dev DB values, uncomment prod values), run
-   `pnpm payload migrate`, then restore `.env` to dev. Never leave `.env` pointed at prod.
-6. Replace the stale `20260310_203659.json` snapshot with a fresh one generated from the current schema so
-   future `migrate:create` calls diff correctly (see Task in plan).
+1. Delete the stale `src/migrations/20260310_203659.json` snapshot.
+2. Run `pnpm payload migrate:create baseline` — with no snapshot present, Payload diffs against the empty
+   default snapshot and generates a full CREATE-schema migration (the baseline) plus a fresh `.json` snapshot of
+   the current schema.
+3. **Delete the generated baseline `.ts` file** (it must never run — the dev DB already matches the current
+   schema; running it against prod would fail since tables exist). **Keep the fresh `.json` snapshot** it wrote —
+   that becomes the reference point for all future `migrate:create` diffs.
+4. Verify with `pnpm payload migrate:status` (no pending migrations).
 
-### Expected SQL in the migration
+### Generating and applying the repertoire migration
 
-Verified against the live dev DB (`PRAGMA` + schema reads):
+1. After the schema change, run `pnpm payload migrate:create artist-repertoire-ordering` — now diffs the fresh
+   baseline snapshot against the new config and generates **exactly** the repertoire change (drizzle-kit
+   auto-generates the SQL, guaranteeing it matches what Payload expects).
+2. Review the generated SQL in `src/migrations/<timestamp>-artist-repertoire-ordering.ts` (see expected changes
+   below) and commit it.
+3. Dev DB: already updated by push — no action needed.
+4. Prod DB: applied automatically by the build pipeline (below).
+
+### Applying migrations to prod — build pipeline (no `.env` swaps)
+
+Use a dedicated `ci` script, not `migrate` inside `build`. This keeps local builds migration-free.
+
+**Add a `ci` script to `package.json`:**
+
+```json
+"scripts": {
+  "build": "pnpm generate:search-index && cross-env NODE_OPTIONS=--no-deprecation next build --webpack",
+  "ci": "pnpm migrate && pnpm build"
+}
+```
+
+**Point Vercel at `ci` via `vercel.json`** (git-tracked, explicit — Vercel currently auto-detects Next.js and
+defaults to `pnpm build`):
+
+```json
+{
+  "buildCommand": "pnpm ci"
+}
+```
+
+On every Vercel deploy:
+
+- `pnpm migrate` connects to prod (Vercel sets prod env vars), runs pending `src/migrations/*.ts` against prod
+  DB, records them in `payload_migrations`.
+- `pnpm build` then runs `generate:search-index` (reindexes against the new schema — safe, migration already
+  applied) and `next build`.
+
+**Why `ci` and not `migrate` inside `build`:** a local `pnpm build` would otherwise run `migrate` against the
+dev DB, where the `batch:-1` row triggers the interactive data-loss warning (hangs/fails the build) and where
+re-applying `up()` to the already-pushed schema errors. `build` stays clean; only Vercel runs `ci`.
+
+**Why safe on Vercel:** `NODE_ENV=production` means Payload never auto-pushes during build; `migrate` sets
+`PAYLOAD_MIGRATING=true`; prod has no `batch:-1` row (never pushed) so no data-loss warning; failures abort the
+deploy inside a transaction.
+
+**Rejected alternative — `.env` swap:** manually flipping dev/prod DB lines in `.env` and running
+`pnpm payload migrate` locally is error-prone (risk of leaving `.env` pointed at prod) and unnecessary. The build
+pipeline already has prod credentials.
+
+**Manual Drizzle access:** drizzle-kit 0.31.7 is installed (transitive via `@payloadcms/drizzle`) and usable
+manually (`drizzle-kit generate/push/pull`) if finer control is ever needed, but it requires a `drizzle.config.ts`
+and does not maintain Payload's `payload_migrations` table. Prefer Payload's own `migrate:create` / `migrate`
+CLI, which wraps drizzle-kit.
+
+### Expected SQL in the migration (auto-generated by drizzle-kit)
+
+Verified against the live dev DB (`PRAGMA` + schema reads). The auto-generated `up()` should contain:
 
 **Up:**
 
-- Add `repertoire_id` column to `artists_rels` (relationships store one FK column per related collection in
-  the shared `_rels` table):
-  ```sql
-  ALTER TABLE artists_rels ADD COLUMN repertoire_id integer;
-  CREATE INDEX artists_rels_repertoire_id_idx ON artists_rels (repertoire_id);
-  ```
-  Foreign key addition on SQLite requires table recreation — instead, rely on Payload's own FK management on
-  next connection, OR recreate the `artists_rels` table with the FK. **Plan step will detail the exact SQL**
-  (the adapter's generated migration for `projects`/`employees` shows the FK pattern: `repertoire_id` →
-  `repertoire.id`, `ON DELETE CASCADE`).
+- Add `repertoire_id` column to `artists_rels` (relationships store one FK column per related collection in the
+  shared `_rels` table). SQLite cannot add an FK column via `ALTER TABLE`, so drizzle-kit generates a table
+  recreation: create `artists_rels_new`, `INSERT ... SELECT` existing rows (preserving contactPersons/projects
+  data), drop old, rename, rebuild indexes, add FK `repertoire_id → repertoire.id ON DELETE CASCADE`.
 - Drop the two empty array tables (zero data — verified 0 rows in dev):
   ```sql
   DROP TABLE artists_repertoire_locales;
@@ -146,21 +181,8 @@ Verified against the live dev DB (`PRAGMA` + schema reads):
 
 **Down:**
 
-- Recreate `artists_repertoire` and `artists_repertoire_locales` (schema copied from
-  `src/payload-generated-schema.ts` lines 53-88)
-- Drop `repertoire_id` from `artists_rels`
-
-### Why low risk
-
-- The array tables being dropped are empty (verified 0 rows)
-- Backfill reads existing data, transforms nothing destructively, and is idempotent
-- Repertoire collection stays untouched and remains source of truth; `artist.repertoire` arrays are pure
-  presentation ordering and can be rebuilt at any time
-- Rollback = revert config + `payload migrate` down
-- No more surprise auto-pushes in dev — migrations are explicit and reviewed
-
-**DB protection policy:** authoring migration files is read-only; applying migrations and running the backfill
-require explicit user confirmation and DB environment verification per AGENTS.md.
+- Recreate `artists_repertoire` and `artists_repertoire_locales` (schema verified from live DB)
+- Drop `repertoire_id` from `artists_rels` (reverse table recreation)
 
 ## Schema Changes
 
@@ -305,22 +327,25 @@ afterward via drag-and-drop.
 
 ## Deployment Steps
 
-1. Add `push: false` to the sqlite adapter in `src/payload.config.ts` (migrations-only workflow)
-2. Edit `Artists.ts` (repertoire → relationship) and add `syncArtistRepertoire` to Repertoire collection
-3. `pnpm payload generate:types` to refresh types
-4. Write the hand-crafted migration file (see "Expected SQL in the migration" above) — **not** `migrate:create`
-   (stale snapshot would generate unrelated changes)
-5. Review migration SQL; run `pnpm payload migrate` against dev (`.env` → dev)
-6. Run backfill on dev: `pnpm tsx scripts/db/backfillArtistRepertoire.ts`
-7. Replace stale snapshot `20260310_203659.json` with fresh one so future `migrate:create` diffs correctly
+1. Edit `Artists.ts` (repertoire → relationship) and add `syncArtistRepertoire` to Repertoire collection
+2. `pnpm payload generate:types` to refresh types
+3. Delete stale snapshot `20260310_203659.json`; run `pnpm payload migrate:create baseline`; delete the generated
+   baseline `.ts` but keep the fresh `.json`
+4. Run `pnpm payload migrate:create artist-repertoire-ordering` (diffs fresh baseline snapshot vs new config)
+5. Review generated migration SQL (expected changes above); commit the migration file
+6. Dev DB is already updated by push — verify repertoire field renders in admin; no `migrate` against dev
+7. Run backfill on dev: `pnpm tsx scripts/db/backfillArtistRepertoire.ts`
 8. Update frontend (`getArtistBySlug`, `ArtistTabs`, delete `actions/repertoires.ts`)
-9. Tests, lint, build, format
-10. Deploy to staging/prod; run migration + backfill against prod via `.env` swap
-11. Restore `.env` to dev; verify with `grep DATABASE_URI .env`
+9. Add `ci` script to `package.json` (`pnpm migrate && pnpm build`) and `vercel.json` (`buildCommand: pnpm ci`)
+10. Tests, lint, build, format
+11. Deploy to prod — Vercel build runs `pnpm migrate` against prod first, then builds
+12. Run backfill against prod via Local API script (after deploy, once prod schema migrated)
+
 
 ## Future Enhancements
 
-- Wire `prodMigrations` into the sqlite adapter so prod deploys auto-run migrations
+- Wire `prodMigrations` into the sqlite adapter as an alternative to the `ci` script (only for long-running
+  servers; docs warn it slows serverless cold starts, so not recommended for Vercel)
 - Show section count badge in admin list view
 
 ---
