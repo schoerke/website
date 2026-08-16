@@ -354,6 +354,9 @@ export interface Post {
    */
   artists?: (number | Artist)[] | null;
   image?: (number | null) | Image;
+  /**
+   * Auto-set when logged in as an employee.
+   */
   createdBy: number | Employee;
   updatedAt: string;
   createdAt: string;
