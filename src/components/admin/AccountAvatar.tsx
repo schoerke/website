@@ -4,6 +4,9 @@ import type { Payload, User } from 'payload'
 
 import { resolveAccountAvatarImage } from '@/utils/avatar'
 
+// Admin chrome: plain <img> is intentional (remote Gravatar + Payload's own /api/images URLs, no next/image remote patterns).
+/* oxlint-disable no-img-element */
+
 interface AccountAvatarProps {
   payload: Payload
   user: User | null
