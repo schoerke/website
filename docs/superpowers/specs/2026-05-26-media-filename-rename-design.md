@@ -49,6 +49,7 @@ Add ability for admins to rename image and document filenames through the Payloa
 ```
 
 **Field behavior:**
+
 - Displays current filename basename (e.g., `artist-photo` from `artist-photo.jpg`)
 - User edits and saves
 - `beforeChange` hook intercepts, sanitizes input, renames storage file, updates `filename` field
@@ -61,6 +62,7 @@ Add ability for admins to rename image and document filenames through the Payloa
 **Function:** `sanitizeFilename(input: string, extension: string): string`
 
 **Rules applied:**
+
 1. Convert to lowercase
 2. Replace whitespace with hyphens
 3. Remove special characters (keep alphanumeric, hyphens, underscores, dots)
@@ -69,12 +71,14 @@ Add ability for admins to rename image and document filenames through the Payloa
 6. Append original extension
 
 **Examples:**
+
 - `"Artist Photo!.jpg"` → `"artist-photo.jpg"`
 - `"Künstler_Foto"` → `"kunstler_foto.pdf"`
 - `"My  File--Name"` → `"my-file-name.jpg"`
 - `"123"` → `"123.png"`
 
 **Extension preservation:**
+
 - Extract extension from current `filename` field
 - User cannot modify extension
 - Sanitized basename + original extension = new filename
@@ -106,6 +110,7 @@ Add ability for admins to rename image and document filenames through the Payloa
 - **Storage operation fails** → Throw error, database unchanged, admin sees error message
 
 **Atomicity guarantee:**
+
 - Storage rename happens before database update
 - If storage fails, hook throws error → Payload aborts save → database unchanged
 - If database update fails, old storage file still exists (manually clean up via storage dashboard)
@@ -142,17 +147,21 @@ const s3 = new S3Client({
 })
 
 // Copy object to new key
-await s3.send(new CopyObjectCommand({
-  Bucket: process.env.CLOUDFLARE_S3_BUCKET,
-  CopySource: `${process.env.CLOUDFLARE_S3_BUCKET}/${oldFilename}`,
-  Key: newFilename,
-}))
+await s3.send(
+  new CopyObjectCommand({
+    Bucket: process.env.CLOUDFLARE_S3_BUCKET,
+    CopySource: `${process.env.CLOUDFLARE_S3_BUCKET}/${oldFilename}`,
+    Key: newFilename,
+  })
+)
 
 // Delete old object
-await s3.send(new DeleteObjectCommand({
-  Bucket: process.env.CLOUDFLARE_S3_BUCKET,
-  Key: oldFilename,
-}))
+await s3.send(
+  new DeleteObjectCommand({
+    Bucket: process.env.CLOUDFLARE_S3_BUCKET,
+    Key: oldFilename,
+  })
+)
 ```
 
 ## User Experience
@@ -174,16 +183,19 @@ await s3.send(new DeleteObjectCommand({
 ### Error States
 
 **Conflict detected:**
+
 ```
 ❌ Filename already exists: artist-portrait-2024.jpg. Choose different name.
 ```
 
 **Empty after sanitization:**
+
 ```
 ❌ Filename cannot be empty.
 ```
 
 **Storage operation failed:**
+
 ```
 ❌ Failed to rename file in storage. Try again.
 ```
@@ -238,11 +250,13 @@ await s3.send(new DeleteObjectCommand({
 ### Automated Tests (Optional)
 
 **Unit tests:** `src/hooks/renameFile.test.ts`
+
 - Test `sanitizeFilename()` function with various inputs
 - Test extension extraction logic
 - Mock Payload API, verify hook logic flow
 
 **Integration tests:** (Requires test database + storage)
+
 - Mock `@vercel/blob` SDK
 - Mock AWS S3 SDK
 - Verify database updated only after storage success
@@ -267,17 +281,20 @@ await s3.send(new DeleteObjectCommand({
 ### File Structure
 
 **New files:**
+
 - `src/hooks/renameFile.ts` - Main hook implementation
 - `src/utils/sanitizeFilename.ts` - Sanitization function (reusable)
 - `src/utils/storage.ts` - Storage adapter wrappers (Blob, R2)
 
 **Modified files:**
+
 - `src/collections/Images.ts` - Add `newFilename` field
 - `src/collections/Documents.ts` - Add `newFilename` field
 
 ### Environment Variables Required
 
 Already exist in `.env`:
+
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob authentication
 - `CLOUDFLARE_S3_BUCKET` - R2 bucket name
 - `CLOUDFLARE_S3_ACCESS_KEY` - R2 access key
@@ -287,6 +304,7 @@ Already exist in `.env`:
 ### Dependencies
 
 Already installed:
+
 - `@vercel/blob` - Vercel Blob SDK
 - `@aws-sdk/client-s3` - AWS S3 SDK (for R2)
 

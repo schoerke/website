@@ -57,7 +57,7 @@
 
 ## Data Migration: Posts
 
-- [ ] Migrate posts from old site to new site
+- [x] Migrate posts from old site to new site
 
 - Migrating translations impossible
 - Migrate all projects
@@ -107,6 +107,8 @@
 - [ ] Setup [Seo Plugin](https://payloadcms.com/docs/plugins/seo)
 - [ ] Setup [Redirect Plugin](https://payloadcms.com/docs/plugins/redirects)
 
+- what redirects do we need? (e.g. old site URLs, non-localized URLs, etc.)
+
 ## UI
 
 - Add "Back to top" button
@@ -124,3 +126,7 @@
 - [ ] Reuse the ImageSlider on the homepage or other pages
 - [ ] Add tests for ImageSlider, ImageSlide, and artist detail page
 - [ ] Update documentation for new components and features
+
+## pnpm
+
+- [ ] Update `pnpm` to latest version 11

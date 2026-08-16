@@ -13,6 +13,7 @@
 ## File Structure
 
 **New files:**
+
 - `src/utils/sanitizeFilename.ts` - Sanitization function (reusable utility)
 - `src/utils/storage/blob.ts` - Vercel Blob rename operations
 - `src/utils/storage/r2.ts` - R2 rename operations
@@ -20,6 +21,7 @@
 - `src/utils/sanitizeFilename.test.ts` - Unit tests for sanitization
 
 **Modified files:**
+
 - `src/collections/Images.ts` - Add `newFilename` field + hook
 - `src/collections/Documents.ts` - Add `newFilename` field + hook
 
@@ -28,6 +30,7 @@
 ## Task 1: Sanitization Utility
 
 **Files:**
+
 - Create: `src/utils/sanitizeFilename.ts`
 - Create: `src/utils/sanitizeFilename.test.ts`
 
@@ -155,6 +158,7 @@ git commit -m "feat(utils): add filename sanitization utility
 ## Task 2: Vercel Blob Storage Operations
 
 **Files:**
+
 - Create: `src/utils/storage/blob.ts`
 
 ### Step 1: Create Vercel Blob rename function
@@ -228,6 +232,7 @@ git commit -m "feat(storage): add Vercel Blob rename utility
 ## Task 3: R2 Storage Operations
 
 **Files:**
+
 - Create: `src/utils/storage/r2.ts`
 
 ### Step 1: Create R2 rename function
@@ -257,7 +262,9 @@ export async function renameFileInR2(oldFilename: string, newFilename: string): 
   const endpoint = process.env.CLOUDFLARE_S3_API_ENDPOINT
 
   if (!bucket || !accessKeyId || !secretAccessKey || !endpoint) {
-    throw new Error('R2 environment variables not configured (CLOUDFLARE_S3_BUCKET, CLOUDFLARE_S3_ACCESS_KEY, CLOUDFLARE_SECRET, CLOUDFLARE_S3_API_ENDPOINT)')
+    throw new Error(
+      'R2 environment variables not configured (CLOUDFLARE_S3_BUCKET, CLOUDFLARE_S3_ACCESS_KEY, CLOUDFLARE_SECRET, CLOUDFLARE_S3_API_ENDPOINT)'
+    )
   }
 
   const s3 = new S3Client({
@@ -317,6 +324,7 @@ git commit -m "feat(storage): add R2 rename utility
 ## Task 4: Rename Hook Implementation
 
 **Files:**
+
 - Create: `src/hooks/renameFile.ts`
 
 ### Step 1: Implement beforeChange hook
@@ -445,6 +453,7 @@ git commit -m "feat(hooks): add file rename beforeChange hook
 ## Task 5: Add Field to Images Collection
 
 **Files:**
+
 - Modify: `src/collections/Images.ts`
 
 ### Step 1: Add newFilename field with hook
@@ -518,6 +527,7 @@ git commit -m "feat(images): add filename rename field
 ## Task 6: Add Field to Documents Collection
 
 **Files:**
+
 - Modify: `src/collections/Documents.ts`
 
 ### Step 1: Add newFilename field with hook
@@ -591,6 +601,7 @@ git commit -m "feat(documents): add filename rename field
 ## Task 7: Manual Testing
 
 **Files:**
+
 - None (manual verification)
 
 ### Step 1: Test in development environment
@@ -693,6 +704,7 @@ Expected: Relationships unaffected (ID-based, not filename-based)
 ## Task 8: Run Full Test Suite
 
 **Files:**
+
 - None (verification)
 
 ### Step 1: Run all tests
@@ -768,12 +780,14 @@ After completing all tasks, verify:
 If issues discovered in production:
 
 1. **Revert commits:**
+
    ```bash
    git revert HEAD~6..HEAD
    git push origin main
    ```
 
 2. **Deploy rollback:**
+
    ```bash
    vercel --prod
    ```

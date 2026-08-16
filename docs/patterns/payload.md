@@ -8,6 +8,7 @@ and `docs/turso-operations.md` (DB ops). Loaded every session via `opencode.json
 ## Migrations
 
 ### The workflow that works
+
 - Dev: edit collection config → `pnpm dev` → accept dev schema push (dev only).
 - Generate migration: `pnpm payload migrate:create <name>` — does NOT connect to DB, only diffs snapshots + writes
   `.ts`/`.json`.
@@ -15,6 +16,7 @@ and `docs/turso-operations.md` (DB ops). Loaded every session via `opencode.json
 - `pnpm payload migrate` on the server (via `build:ci`) applies pending migrations to prod.
 
 ### Idempotency is MANDATORY
+
 `build:ci` runs migrations on EVERY Vercel build (previews included) → a migration can re-run against an
 already-migrated DB. Guard every `up()`/`down()`:
 
@@ -29,9 +31,11 @@ async function alreadyApplied(db: MigrateUpArgs['db']): Promise<boolean> {
 // up(): if (await alreadyApplied(db)) return
 // down(): if (!(await alreadyApplied(db))) return
 ```
+
 Use `DROP TABLE IF EXISTS`, `CREATE TABLE IF NOT EXISTS`, `CREATE INDEX IF NOT EXISTS` everywhere.
 
 ### The SQLite FK / ALTER trap
+
 `ALTER TABLE ... ADD COLUMN ... REFERENCES x(id)` creates an FK with **NO ACTION** (no cascade). Payload's schema
 push may add a column with **no FK at all**. To get `ON DELETE CASCADE` you must **recreate the table** (create
 `__new_...`, `INSERT ... SELECT`, drop, rename) — see
@@ -42,6 +46,7 @@ properly. So dev and prod can legitimately differ in FK presence. Verify against
 not dev's live schema.
 
 ### `dev|-1` marker
+
 - Written by `pushDevSchema` on any dev-mode connection.
 - Makes `payload migrate` show the interactive "data loss" prompt, which **silently cancels in CI** → migration
   skipped.
@@ -53,21 +58,26 @@ not dev's live schema.
 ## Hooks
 
 ### Errors: use APIError, not Error
-A plain `throw new Error('msg')` surfaces as generic *"Something went wrong"* in the admin. Show the real message:
+
+A plain `throw new Error('msg')` surfaces as generic _"Something went wrong"_ in the admin. Show the real message:
+
 ```typescript
 import { APIError } from 'payload'
 throw new APIError('Your real message', 400, undefined, true) // isPublic: true
 ```
 
 ### afterChange runs AFTER commit
+
 `afterChange` fires post-commit. Throwing there shows an error but the write already happened. For validation that
 must reject before any write, use a field `validate` or `beforeChange`.
 
 ### Admin relationship chips remove optimistically
+
 Clicking ✕ on a relationship chip updates client state immediately — no API call until **Save**. Hooks only fire
 on Save. Don't expect a toast at chip-removal time.
 
 ### Nested update context
+
 `payload.update({ ... , context })` flows into `req.context` in hooks. Pass `context: { syncingX: true }` to
 prevent loops when a hook writes the same collection. Revalidation hooks check `req.context?.skipRevalidation` —
 scripts must pass `context: { skipRevalidation: true }` (revalidatePath throws outside Next server context).
@@ -77,16 +87,19 @@ scripts must pass `context: { skipRevalidation: true }` (revalidatePath throws o
 ## Relationships
 
 ### Value shapes
+
 - Non-polymorphic hasMany saves/reads as **`number[]`** (plain IDs).
 - Polymorphic uses `{ relationTo, value }` objects.
 - Admin form data arrives as `{ relationTo, value }`; `originalDoc` from Local API may be populated `{ id, ... }`.
   Handle all three when reading relationship values in hooks/validators.
 
 ### Order preservation
+
 `payload.find` does NOT preserve `id in [...]` query order. `getArtistBySlug` does manual project + repertoire
 population with a Map to keep relationship-array order.
 
 ### maxRows is UI-only; add server validate
+
 `maxRows` on a relationship field is not enforced by the API. Add a `validate` that checks `Array.isArray(value) &&
 value.length > max`.
 
@@ -113,6 +126,7 @@ When confused, read the plugin source — don't guess config.
 ---
 
 ## Generated files to keep in sync
+
 - `src/payload-types.ts` — `pnpm payload generate:types`
 - `src/app/(payload)/admin/importMap.js` — `pnpm payload generate:importmap` (after adding/removing admin
   components)

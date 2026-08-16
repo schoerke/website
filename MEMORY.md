@@ -2,7 +2,7 @@
 
 This file is the authoritative record of operational lessons, environment facts, and hard-won workflows for this
 project. **Read it fully before any database, migration, or deployment work.** AGENTS.md covers policy and
-conventions; this file covers *what actually happened* and *what must not happen again*.
+conventions; this file covers _what actually happened_ and _what must not happen again_.
 
 ---
 
@@ -22,19 +22,21 @@ conventions; this file covers *what actually happened* and *what must not happen
 Two Turso databases, both in `eu-west`. **`ksschoerke-development` is the sandbox; `ksschoerke-production` is
 live.** There is no local SQLite in normal use.
 
-| Name | Turso db name | URI host |
-|---|---|---|
-| Dev | `ksschoerke-development` | `ksschoerke-development-zeitchef.aws-eu-west-1.turso.io` |
-| Prod | `ksschoerke-production` | `ksschoerke-production-zeitchef.aws-eu-west-1.turso.io` |
+| Name | Turso db name            | URI host                                                 |
+| ---- | ------------------------ | -------------------------------------------------------- |
+| Dev  | `ksschoerke-development` | `ksschoerke-development-zeitchef.aws-eu-west-1.turso.io` |
+| Prod | `ksschoerke-production`  | `ksschoerke-production-zeitchef.aws-eu-west-1.turso.io`  |
 
 `.env` always holds BOTH pairs; dev is active (uncommented), prod is commented. **Do not swap `.env` to run
 operations — use Turso CLI or inline env vars instead** (see §5).
 
 **Reliable prod access without `.env` swap:**
+
 ```bash
 turso db shell ksschoerke-production "SELECT ..."          # read/write via CLI credentials (approval required per opencode.json)
 turso db export ksschoerke-production --output-file data/dumps/NAME.db   # full snapshot backup
 ```
+
 **Prefer the Payload Local API for reading content data** — see §11.
 
 ---
@@ -69,6 +71,7 @@ FK**, array tables dropped, `payload_migrations` empty. A later build's `migrate
 `no such table: artists_repertoire`.
 
 **Root causes:**
+
 1. `build:ci` runs migrations on all deployments (previews included) — this is **by design**, so migrations MUST
    be idempotent (see §6).
 2. Any `tsx` script connecting to prod with `NODE_ENV` unset runs `pushDevSchema`, which mutates schema AND
@@ -104,6 +107,7 @@ three times** and kept coming back because any dev-mode connection (e.g. `tsx` s
 `NODE_ENV=production`) re-adds it.
 
 **Rules to prevent recurrence:**
+
 - NEVER run a `tsx`/script against prod with `NODE_ENV` unset. Always `NODE_ENV=production` for prod-targeting
   scripts (prevents `pushDevSchema`).
 - If you ever see `payload_migrations` contain `dev|-1`, delete it BEFORE the next deploy:
@@ -112,8 +116,9 @@ three times** and kept coming back because any dev-mode connection (e.g. `tsx` s
 
 ### 4.4 Plain `Error` in a hook → generic "Something went wrong" toast
 
-Throwing `new Error('msg')` from a Payload hook surfaces only *"Something went wrong"* in the admin (messages
+Throwing `new Error('msg')` from a Payload hook surfaces only _"Something went wrong"_ in the admin (messages
 are sanitized). To show the real message use:
+
 ```ts
 import { APIError } from 'payload'
 throw new APIError('Your real message', 400, undefined, true) // isPublic: true
@@ -129,6 +134,7 @@ Clicking ✕ on a relationship chip removes it **client-side immediately**; no A
 ## 5. Deploy & Migration Workflow (Current, Working)
 
 ### Build pipeline
+
 - `vercel.json`: `"buildCommand": "pnpm run build:ci"` → `build:ci` = `pnpm migrate && pnpm build`.
 - `pnpm migrate` runs on EVERY Vercel build (production AND preview). It applies pending migrations from
   `src/migrations/*.ts` against prod and records them in `payload_migrations`.
@@ -136,6 +142,7 @@ Clicking ✕ on a relationship chip removes it **client-side immediately**; no A
 - **`pnpm ci` is a reserved pnpm built-in** (clean install) — do NOT name a custom script `ci`.
 
 ### Making a schema change (the safe path)
+
 1. Edit collection config; run `pnpm dev`, accept the dev schema push (dev DB only).
 2. `pnpm payload migrate:create <name>` — generates `.ts` + `.json`. It does NOT connect to the DB
    (`disableDBConnect`), it only diffs snapshots and writes files.
@@ -144,6 +151,7 @@ Clicking ✕ on a relationship chip removes it **client-side immediately**; no A
 5. Commit. Deploy applies it to prod via `build:ci`.
 
 ### Migration snapshot/baseline
+
 - `src/migrations/*.json` files are schema snapshots used for diffing. The original
   `20260310_203659.json` was **stale** and replaced with a fresh baseline (`20260815_124301_baseline.json`).
 - `migrate:create` diffs against the latest `.json`. If snapshots get out of sync, delete the stale one and
@@ -157,6 +165,7 @@ Because `build:ci` runs migrations on every build (previews included), a migrati
 already-migrated DB. It MUST be a safe no-op if already applied.
 
 **Pattern used (copy from `20260815_125014_artist_repertoire_ordering.ts`):**
+
 ```ts
 async function alreadyApplied(db: MigrateUpArgs['db']): Promise<boolean> {
   const { rows } = await db.run(
@@ -168,6 +177,7 @@ async function alreadyApplied(db: MigrateUpArgs['db']): Promise<boolean> {
 // in up(): if (await alreadyApplied(db)) return
 // in down(): if (!(await alreadyApplied(db))) return
 ```
+
 Use `DROP TABLE IF EXISTS`, `CREATE TABLE IF NOT EXISTS`, `CREATE INDEX IF NOT EXISTS` everywhere.
 
 **The SQLite FK/ALTER trap:** `ALTER TABLE ... ADD COLUMN ... REFERENCES x(id)` creates an FK with **NO ACTION**
@@ -185,6 +195,7 @@ the FK properly. So dev DB and prod DB can legitimately differ in FK presence. V
 ## 7. Scripts — Prod-Safe Conventions
 
 ### Backfill / data scripts
+
 - `scripts/db/backfillArtistRepertoire.ts` has a **guard**: it aborts if `DATABASE_URI` contains
   `ksschoerke-production` and `NODE_ENV !== 'production'`. Keep this guard pattern in all prod-targeting scripts.
 - **Run against prod WITHOUT touching `.env`:**
@@ -197,6 +208,7 @@ the FK properly. So dev DB and prod DB can legitimately differ in FK presence. V
 - Inline env vars override `.env` (verified: `@next/env` only fills unset vars).
 
 ### Revalidation hooks vs scripts
+
 Artist `afterChange` runs `revalidateArtistOnChange`, which calls `revalidatePath` — **this throws outside a
 Next.js server context**. Scripts that `payload.update` artists must pass
 `context: { syncingRepertoire: true, skipRevalidation: true }` (the revalidate hook checks
@@ -206,19 +218,19 @@ Next.js server context**. Scripts that `payload.update` artists must pass
 
 ## 8. Tooling Reference (verified working)
 
-| Task | Command |
-|---|---|
-| Full prod backup | `turso db export ksschoerke-production --output-file data/dumps/NAME.db` |
-| Inspect prod (read/write) | `turso db shell ksschoerke-production "SQL"` |
-| Inspect an exported `.db` | `sqlite3 data/dumps/NAME.db "SQL"` |
-| Delete `dev|-1` marker | `echo "DELETE FROM payload_migrations WHERE name='dev';" \| turso db shell ksschoerke-production` |
-| Check migration status | `pnpm payload migrate:status` |
-| Create migration file | `pnpm payload migrate:create <name>` |
-| Run pending migrations | `pnpm payload migrate` |
-| Rollback last batch | `pnpm payload migrate:down` |
-| Regenerate types | `pnpm payload generate:types` |
-| Regenerate importmap | `pnpm payload generate:importmap` |
-| Regenerate DB schema file | `pnpm payload generate:db-schema` |
+| Task                      | Command                                                                  |
+| ------------------------- | ------------------------------------------------------------------------ |
+| Full prod backup          | `turso db export ksschoerke-production --output-file data/dumps/NAME.db` |
+| Inspect prod (read/write) | `turso db shell ksschoerke-production "SQL"`                             |
+| Inspect an exported `.db` | `sqlite3 data/dumps/NAME.db "SQL"`                                       |
+| Delete `dev               | -1` marker                                                               | `echo "DELETE FROM payload_migrations WHERE name='dev';" \| turso db shell ksschoerke-production` |
+| Check migration status    | `pnpm payload migrate:status`                                            |
+| Create migration file     | `pnpm payload migrate:create <name>`                                     |
+| Run pending migrations    | `pnpm payload migrate`                                                   |
+| Rollback last batch       | `pnpm payload migrate:down`                                              |
+| Regenerate types          | `pnpm payload generate:types`                                            |
+| Regenerate importmap      | `pnpm payload generate:importmap`                                        |
+| Regenerate DB schema file | `pnpm payload generate:db-schema`                                        |
 
 **Vercel CLI caveat:** the `vercel` CLI is scoped to the `zeitweb` team and does NOT show the real `schoerke`
 project's deployments or env vars (`vercel env ls` returns empty; `vercel ls` shows only old failed builds).
@@ -406,11 +418,11 @@ pnpm payload migrate
 
 ### Summary
 
-| Approach | Data safe? | Why |
-|---|---|---|
-| Script writes data → schema push | ❌ | Schema push drops and recreates the table, wiping script output |
-| Payload migration file (SQL) → schema push | ✅ | Migration runs atomically before schema push sees the table |
-| Schema push first → script writes data | ✅ | Table already exists, script writes to live table |
+| Approach                                   | Data safe? | Why                                                             |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------- |
+| Script writes data → schema push           | ❌         | Schema push drops and recreates the table, wiping script output |
+| Payload migration file (SQL) → schema push | ✅         | Migration runs atomically before schema push sees the table     |
+| Schema push first → script writes data     | ✅         | Table already exists, script writes to live table               |
 
 ---
 

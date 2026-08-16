@@ -12,17 +12,18 @@
 
 ## File Map
 
-| Action | File |
-|--------|------|
-| Create | `src/components/HomePageSidebar/HomePageSidebar.tsx` |
+| Action | File                                                      |
+| ------ | --------------------------------------------------------- |
+| Create | `src/components/HomePageSidebar/HomePageSidebar.tsx`      |
 | Create | `src/components/HomePageSidebar/HomePageSidebar.test.tsx` |
-| Modify | `src/app/(frontend)/[locale]/page.tsx` |
+| Modify | `src/app/(frontend)/[locale]/page.tsx`                    |
 
 ---
 
 ### Task 1: Create `HomePageSidebar` component
 
 **Files:**
+
 - Create: `src/components/HomePageSidebar/HomePageSidebar.tsx`
 
 - [ ] **Step 1: Write the component**
@@ -70,6 +71,7 @@ Expected: no output (no errors)
 ### Task 2: Write tests for `HomePageSidebar`
 
 **Files:**
+
 - Create: `src/components/HomePageSidebar/HomePageSidebar.test.tsx`
 
 - [ ] **Step 1: Write the failing tests**
@@ -152,6 +154,7 @@ git commit -m "feat: add HomePageSidebar with hardcoded contact info"
 ### Task 3: Update homepage layout to use grid with sidebar
 
 **Files:**
+
 - Modify: `src/app/(frontend)/[locale]/page.tsx`
 
 - [ ] **Step 1: Add import for HomePageSidebar**
@@ -167,26 +170,30 @@ import HomePageSidebar from '@/components/HomePageSidebar/HomePageSidebar'
 Find this block (lines 69–74):
 
 ```tsx
-{newsSlides.length > 0 && (
-  <section className="mb-16">
-    <h2 className="font-playfair mb-8 text-4xl font-bold sm:text-5xl">{t('newsHeading')}</h2>
-    <HomePageSlider slides={newsSlides} interval={9000} />
-  </section>
-)}
+{
+  newsSlides.length > 0 && (
+    <section className="mb-16">
+      <h2 className="font-playfair mb-8 text-4xl font-bold sm:text-5xl">{t('newsHeading')}</h2>
+      <HomePageSlider slides={newsSlides} interval={9000} />
+    </section>
+  )
+}
 ```
 
 Replace with:
 
 ```tsx
-{newsSlides.length > 0 && (
-  <section className="mb-16">
-    <h2 className="font-playfair mb-8 text-4xl font-bold sm:text-5xl">{t('newsHeading')}</h2>
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[65fr_35fr]">
-      <HomePageSlider slides={newsSlides} interval={9000} />
-      <HomePageSidebar />
-    </div>
-  </section>
-)}
+{
+  newsSlides.length > 0 && (
+    <section className="mb-16">
+      <h2 className="font-playfair mb-8 text-4xl font-bold sm:text-5xl">{t('newsHeading')}</h2>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[65fr_35fr]">
+        <HomePageSlider slides={newsSlides} interval={9000} />
+        <HomePageSidebar />
+      </div>
+    </section>
+  )
+}
 ```
 
 - [ ] **Step 3: Update `sizes` prop in `HomePageSlider` for correct image sizing**
@@ -194,7 +201,7 @@ Replace with:
 In `src/components/HomePageSlider/HomePageSlider.tsx`, update the `sizes` prop on the `<Image>` component (line 129):
 
 ```tsx
-sizes="(max-width: 1024px) 100vw, 65vw"
+sizes = '(max-width: 1024px) 100vw, 65vw'
 ```
 
 This ensures Next.js requests appropriately sized images now that the carousel is ~65% width on desktop.

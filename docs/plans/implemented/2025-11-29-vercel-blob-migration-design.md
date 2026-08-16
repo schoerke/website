@@ -219,9 +219,7 @@ async function uploadFile(filePath: string, mimeType: string, collection: 'image
     // Small file: Use Payload API (server upload)
     return await payload.create({
       collection,
-      data: {
-        /* metadata */
-      },
+      data: {/* metadata */},
       filePath,
     })
   } else {

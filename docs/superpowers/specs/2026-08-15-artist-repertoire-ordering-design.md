@@ -73,10 +73,10 @@ pipeline handles those). `.env` swaps remain the correct mechanism for one-off *
 
 Payload's official docs (https://payloadcms.com/docs/database/migrations) state:
 
-> *"We suggest that you leave `push` as its default setting and treat your local dev database as a sandbox."*
+> _"We suggest that you leave `push` as its default setting and treat your local dev database as a sandbox."_
 
-> *"Do not mix 'push' and migrations with your local development database. If you use 'push' locally, and then try
-> to migrate, Payload will throw a warning."*
+> _"Do not mix 'push' and migrations with your local development database. If you use 'push' locally, and then try
+> to migrate, Payload will throw a warning."_
 
 Key facts confirmed from source (`node_modules/@payloadcms/db-sqlite/dist/connect.js`) and docs:
 
@@ -173,7 +173,7 @@ created by past `npx tsx` prod operations (AGENTS.md's old `.env` swap workflow 
 
 If it remains, the `build:ci` migrate step breaks:
 
-- `migrate.js` (drizzle) detects the `batch:-1` row and shows the interactive *"data loss will occur"* prompt
+- `migrate.js` (drizzle) detects the `batch:-1` row and shows the interactive _"data loss will occur"_ prompt
   (lines 30-45)
 - The prompt is only filtered **in-memory**; the row is never deleted, so **every deploy prompts again**
 - In Vercel's non-TTY build, `prompts` cancels → `process.exit(0)` → **migrate silently exits without running**,
@@ -185,7 +185,7 @@ If it remains, the `build:ci` migrate step breaks:
    complete SQLite snapshot (`data/dumps/ksschoerke-production-<timestamp>.db`) covering every table including
    `payload_migrations`. Uses Turso CLI credentials (not `.env`), so no swap is needed and a `.env`
    misconfiguration cannot affect it. Verify the file is non-empty and readable (`sqlite3 ... SELECT COUNT(*) FROM
-   payload_migrations` → 1) **before** any write. If it fails, STOP.
+payload_migrations` → 1) **before** any write. If it fails, STOP.
 2. **Test the migration against a local copy first** — copy the export to `data/dumps/test-migration.db`, run
    `payload migrate` against it (via a `file:` DB URI with a dummy token), verify `artists_rels.repertoire_id`
    added, array tables dropped, and artist/repertoire/rels row counts unchanged; test `migrate:down` reverses it;
@@ -401,7 +401,6 @@ appropriate here). Initial order is arbitrary; editors reorder afterward via dra
     `build:ci` migrate runs non-interactively — see "CRITICAL prerequisite" above
 12. Deploy to prod — Vercel build runs `pnpm migrate` against prod first, then builds
 13. Run backfill against prod via Local API script (after deploy, once prod schema migrated)
-
 
 ## Future Enhancements
 

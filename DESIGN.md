@@ -37,15 +37,15 @@ render in both; German runs ~30% longer than English — never use tight fixed-w
 
 ### Color (exact)
 
-| Role            | Hex       | Usage                                                    |
-| --------------- | --------- | -------------------------------------------------------- |
-| Mikado Yellow   | `#FCC302` | Primary CTA, active/hover/focus emphasis, progress, underlines |
-| Platinum        | `#E3E3E3` | Alternate section bg, footer lower band, hairline tints   |
-| Silver          | `#ADB2B4` | Muted/secondary text, meta, captions, borders, placeholders |
-| Raisin Black    | `#222126` | Headings, body text, dark surfaces, text on yellow        |
-| White           | `#FFFFFF` | Primary background                                        |
-| Success         | `#4A9D3F` | Success states (forms)                                    |
-| Error           | `#DC2626` | Error states (validation, destructive)                    |
+| Role          | Hex       | Usage                                                          |
+| ------------- | --------- | -------------------------------------------------------------- |
+| Mikado Yellow | `#FCC302` | Primary CTA, active/hover/focus emphasis, progress, underlines |
+| Platinum      | `#E3E3E3` | Alternate section bg, footer lower band, hairline tints        |
+| Silver        | `#ADB2B4` | Muted/secondary text, meta, captions, borders, placeholders    |
+| Raisin Black  | `#222126` | Headings, body text, dark surfaces, text on yellow             |
+| White         | `#FFFFFF` | Primary background                                             |
+| Success       | `#4A9D3F` | Success states (forms)                                         |
+| Error         | `#DC2626` | Error states (validation, destructive)                         |
 
 Rules: white bg dominant; raisin-black text; silver only for meta/captions/placeholder (never body copy on white);
 hairline borders at `rgba(173,178,180,0.4)` or platinum; focus rings `2px` yellow with `2px` offset. Contrast:
@@ -57,18 +57,18 @@ black-on-yellow ~8.4:1 (required), never white text on yellow, white text on pho
 - **Display:** Playfair Display (400–900, italic available) — all headings, card titles, quotes.
 - **UI/Body:** Inter (400–700 variable) — body, labels, nav, buttons, meta.
 
-| Token   | Font     | Size (mobile → desktop) | Weight | LH   | Use                                  |
-| ------- | -------- | ----------------------- | ------ | ---- | ------------------------------------ |
-| Display | Playfair | 3rem → 5rem             | 700    | 1.05 | Homepage H1, hero                    |
-| H1      | Playfair | 2.5rem → 3.5rem         | 700    | 1.1  | Page titles                          |
-| H2      | Playfair | 2rem → 2.75rem          | 700    | 1.15 | Section headlines                    |
-| H3      | Playfair | 1.5rem → 1.875rem       | 700    | 1.25 | Card titles, subsections             |
-| H4      | Playfair | 1.25rem → 1.375rem      | 600    | 1.3  | Artist names, small headings         |
-| Lead    | Inter    | 1.125rem                | 400    | 1.6  | Intro paragraphs                     |
-| Body    | Inter    | 1rem                    | 400    | 1.6  | Default text (max ~65–75ch)          |
-| Small   | Inter    | 0.875rem                | 400    | 1.5  | Secondary, meta                      |
-| Caption | Inter    | 0.75rem                 | 400    | 1.4  | Credits, footnotes                   |
-| Overline| Inter    | 0.75rem, UPPERCASE      | 600    | 1.2  | Section labels, letter-spacing 0.08em |
+| Token    | Font     | Size (mobile → desktop) | Weight | LH   | Use                                   |
+| -------- | -------- | ----------------------- | ------ | ---- | ------------------------------------- |
+| Display  | Playfair | 3rem → 5rem             | 700    | 1.05 | Homepage H1, hero                     |
+| H1       | Playfair | 2.5rem → 3.5rem         | 700    | 1.1  | Page titles                           |
+| H2       | Playfair | 2rem → 2.75rem          | 700    | 1.15 | Section headlines                     |
+| H3       | Playfair | 1.5rem → 1.875rem       | 700    | 1.25 | Card titles, subsections              |
+| H4       | Playfair | 1.25rem → 1.375rem      | 600    | 1.3  | Artist names, small headings          |
+| Lead     | Inter    | 1.125rem                | 400    | 1.6  | Intro paragraphs                      |
+| Body     | Inter    | 1rem                    | 400    | 1.6  | Default text (max ~65–75ch)           |
+| Small    | Inter    | 0.875rem                | 400    | 1.5  | Secondary, meta                       |
+| Caption  | Inter    | 0.75rem                 | 400    | 1.4  | Credits, footnotes                    |
+| Overline | Inter    | 0.75rem, UPPERCASE      | 600    | 1.2  | Section labels, letter-spacing 0.08em |
 
 ### Spacing & layout
 

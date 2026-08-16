@@ -15,7 +15,8 @@ Rules for anything in `scripts/` (or `tmp/` for scratch). This file loads when w
   ```typescript
   const isProd = (process.env.DATABASE_URI || '').includes('ksschoerke-production')
   if (isProd && process.env.NODE_ENV !== 'production') {
-    console.error('❌ ABORT: production requires NODE_ENV=production'); process.exit(1)
+    console.error('❌ ABORT: production requires NODE_ENV=production')
+    process.exit(1)
   }
   ```
 - **Destructive scripts default to dry-run** with an explicit `--apply` flag.

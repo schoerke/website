@@ -107,6 +107,7 @@ turso db shell ksschoerke-development "SELECT COUNT(*) FROM artists;"
 ```
 
 **Notes:**
+
 - Dev inherits prod's `payload_migrations` (no `dev|-1`). First `pnpm dev` re-adds `dev|-1` — harmless in dev.
 - If you only need schema parity (e.g. after a migration), see §5 below.
 
