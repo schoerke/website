@@ -296,7 +296,7 @@ export interface Repertoire {
    */
   artists?: (number | Artist)[] | null;
   /**
-   * List of works in this repertoire section (text only, no links)
+   * List of works in this repertoire section (text, video/audio embeds; links are not supported)
    */
   content: {
     root: {

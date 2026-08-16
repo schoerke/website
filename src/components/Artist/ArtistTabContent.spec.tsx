@@ -16,7 +16,11 @@ vi.mock('@/i18n/navigation', () => ({
 
 // Mock child components
 vi.mock('@/components/ui/PayloadRichText', () => ({
-  default: ({ content }: { content: unknown }) => <div data-testid="rich-text">{JSON.stringify(content)}</div>,
+  default: ({ content, locale }: { content: unknown; locale?: string }) => (
+    <div data-testid="rich-text" data-locale={locale}>
+      {JSON.stringify(content)}
+    </div>
+  ),
 }))
 
 vi.mock('@/components/Recording/EmptyRecordings', () => ({
@@ -62,6 +66,7 @@ vi.mock('./ImageGallery', () => ({
 }))
 
 vi.mock('next-intl', () => ({
+  useLocale: () => 'de',
   useTranslations: () => (key: string) => {
     const map: Record<string, string> = {
       'media.images': 'Images',
@@ -189,6 +194,7 @@ describe('ArtistTabContent', () => {
       render(<RepertoireTab repertoires={repertoires} loading={false} emptyMessage="No repertoire" />)
 
       expect(screen.getByTestId('rich-text')).toBeInTheDocument()
+      expect(screen.getByTestId('rich-text')).toHaveAttribute('data-locale', 'de')
       expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument()
     })
 

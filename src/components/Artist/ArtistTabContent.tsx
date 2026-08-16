@@ -10,7 +10,7 @@ import { Link } from '@/i18n/navigation'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import React from 'react'
 import ImageGallery from './ImageGallery'
 import VideoAccordion from './VideoAccordion'
@@ -43,6 +43,7 @@ interface RepertoireTabProps {
 
 export const RepertoireTab: React.FC<RepertoireTabProps> = ({ repertoires, loading, emptyMessage }) => {
   const [selectedSection, setSelectedSection] = React.useState<number>(0)
+  const locale = useLocale()
 
   if (loading) {
     return (
@@ -101,7 +102,7 @@ export const RepertoireTab: React.FC<RepertoireTabProps> = ({ repertoires, loadi
 
       {/* Selected section content */}
       <div className="prose max-w-none">
-        <PayloadRichText content={repertoires[selectedSection]?.content} />
+        <PayloadRichText content={repertoires[selectedSection]?.content} locale={locale} />
       </div>
     </div>
   )

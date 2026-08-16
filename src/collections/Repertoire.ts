@@ -1,5 +1,8 @@
 import { syncArtistRepertoire, syncArtistRepertoireOnDelete } from '@/collections/hooks/syncArtistRepertoire'
+import { AudioEmbed } from '@/blocks/AudioEmbed'
+import { VideoEmbed } from '@/blocks/VideoEmbed'
 import {
+  BlocksFeature,
   BoldFeature,
   HeadingFeature,
   InlineToolbarFeature,
@@ -100,8 +103,8 @@ export const Repertoire: CollectionConfig = {
       },
       admin: {
         description: {
-          en: 'List of works in this repertoire section (text only, no links)',
-          de: 'Liste der Werke in diesem Repertoire-Abschnitt (nur Text, keine Links)',
+          en: 'List of works in this repertoire section (text, video/audio embeds; links are not supported)',
+          de: 'Liste der Werke in diesem Repertoire-Abschnitt (Text, Video-/Audio-Einbettungen; Links werden nicht unterstützt)',
         },
       },
       // Configure Lexical editor to exclude LinkFeature
@@ -119,6 +122,10 @@ export const Repertoire: CollectionConfig = {
           UnorderedListFeature(),
           // Inline toolbar for text selection
           InlineToolbarFeature(),
+          // Audio/video embed blocks (same as posts)
+          BlocksFeature({
+            blocks: [VideoEmbed, AudioEmbed],
+          }),
           // LinkFeature is intentionally excluded
         ],
       }),
