@@ -25,6 +25,7 @@ import { default as default_5d7df25549d17ac254463835bb20df74 } from '../../../co
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
+import { default as default_d82f5ee63e8a51b1e29d2f3544b2f758 } from '../../../components/admin/AccountAvatar'
 import { default as default_c6286fbc7f62f2ce3ef9c604e9c02147 } from '../../../components/graphics/Icon'
 import { default as default_e577ad08317d2e8977edf3e679038fc8 } from '../../../components/graphics/Logo'
 import { default as default_a1eeeec2736090de4650c7935efda071 } from '../../../components/admin/LocaleSwitcherHider'
@@ -61,6 +62,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
+  "/components/admin/AccountAvatar#default": default_d82f5ee63e8a51b1e29d2f3544b2f758,
   "/components/graphics/Icon#default": default_c6286fbc7f62f2ce3ef9c604e9c02147,
   "/components/graphics/Logo#default": default_e577ad08317d2e8977edf3e679038fc8,
   "/components/admin/LocaleSwitcherHider#default": default_a1eeeec2736090de4650c7935efda071,

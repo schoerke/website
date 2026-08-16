@@ -46,6 +46,9 @@ if (!process.env.BLOB_READ_WRITE_TOKEN) throw new Error('BLOB_READ_WRITE_TOKEN e
 
 export default buildConfig({
   admin: {
+    avatar: {
+      Component: '/components/admin/AccountAvatar',
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
