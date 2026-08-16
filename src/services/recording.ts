@@ -34,7 +34,7 @@ export const getAllRecordings = async (locale?: LocaleCode) => {
   /**
    * WORKAROUND: Payload SQLite adapter's descending sort (`sort: '-recordingYear'`) returns
    * ascending order instead. Using in-memory sort until framework issue resolved.
-   * 
+   *
    * TODO: File issue at https://github.com/payloadcms/payload/issues
    * TODO: Monitor performance if recordings collection exceeds 1000 records
    */
@@ -82,7 +82,7 @@ export const getRecordingsByArtist = async (artistId: string, locale?: LocaleCod
   /**
    * WORKAROUND: Payload SQLite adapter's descending sort (`sort: '-recordingYear'`) returns
    * ascending order instead. Using in-memory sort until framework issue resolved.
-   * 
+   *
    * TODO: File issue at https://github.com/payloadcms/payload/issues
    * TODO: Monitor performance if recordings collection exceeds 1000 records
    */

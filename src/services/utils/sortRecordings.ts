@@ -3,10 +3,10 @@ import type { Recording } from '@/payload-types'
 /**
  * Sorts recordings by year descending, then by creation date descending.
  * Recordings without a year are sorted to the end, ordered by creation date.
- * 
+ *
  * @param recordings - Array of recordings to sort
  * @returns Sorted array (descending: newest year first, then newest createdAt)
- * 
+ *
  * @example
  * const sorted = sortRecordingsByYearDesc([
  *   { recordingYear: 2016, createdAt: '2024-01-01' },

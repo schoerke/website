@@ -44,7 +44,12 @@ function extractRepertoireIds(items: unknown): number[] {
  *
  * @see docs/superpowers/specs/2026-08-15-artist-repertoire-ordering-design.md
  */
-export const enforceRepertoireOrderOnly: CollectionBeforeChangeHook = async ({ context, data, operation, originalDoc }) => {
+export const enforceRepertoireOrderOnly: CollectionBeforeChangeHook = async ({
+  context,
+  data,
+  operation,
+  originalDoc,
+}) => {
   // Skip updates coming from our own sync hooks
   if (context.syncingRepertoire) {
     return data

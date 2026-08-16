@@ -37,16 +37,12 @@
       "indexes": {
         "artists_instrument_order_idx": {
           "name": "artists_instrument_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "artists_instrument_parent_idx": {
           "name": "artists_instrument_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         }
       },
@@ -55,12 +51,8 @@
           "name": "artists_instrument_parent_fk",
           "tableFrom": "artists_instrument",
           "tableTo": "artists",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -111,16 +103,12 @@
       "indexes": {
         "artists_video_links_order_idx": {
           "name": "artists_video_links_order_idx",
-          "columns": [
-            "_order"
-          ],
+          "columns": ["_order"],
           "isUnique": false
         },
         "artists_video_links_parent_id_idx": {
           "name": "artists_video_links_parent_id_idx",
-          "columns": [
-            "_parent_id"
-          ],
+          "columns": ["_parent_id"],
           "isUnique": false
         }
       },
@@ -129,12 +117,8 @@
           "name": "artists_video_links_parent_id_fk",
           "tableFrom": "artists_video_links",
           "tableTo": "artists",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -178,23 +162,17 @@
       "indexes": {
         "artists_gallery_images_order_idx": {
           "name": "artists_gallery_images_order_idx",
-          "columns": [
-            "_order"
-          ],
+          "columns": ["_order"],
           "isUnique": false
         },
         "artists_gallery_images_parent_id_idx": {
           "name": "artists_gallery_images_parent_id_idx",
-          "columns": [
-            "_parent_id"
-          ],
+          "columns": ["_parent_id"],
           "isUnique": false
         },
         "artists_gallery_images_image_idx": {
           "name": "artists_gallery_images_image_idx",
-          "columns": [
-            "image_id"
-          ],
+          "columns": ["image_id"],
           "isUnique": false
         }
       },
@@ -203,12 +181,8 @@
           "name": "artists_gallery_images_image_id_images_id_fk",
           "tableFrom": "artists_gallery_images",
           "tableTo": "images",
-          "columnsFrom": [
-            "image_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["image_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -216,12 +190,8 @@
           "name": "artists_gallery_images_parent_id_fk",
           "tableFrom": "artists_gallery_images",
           "tableTo": "artists",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -344,51 +314,37 @@
       "indexes": {
         "artists_name_idx": {
           "name": "artists_name_idx",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         },
         "artists_image_idx": {
           "name": "artists_image_idx",
-          "columns": [
-            "image_id"
-          ],
+          "columns": ["image_id"],
           "isUnique": false
         },
         "artists_slug_idx": {
           "name": "artists_slug_idx",
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "isUnique": true
         },
         "artists_downloads_downloads_biography_p_d_f_idx": {
           "name": "artists_downloads_downloads_biography_p_d_f_idx",
-          "columns": [
-            "downloads_biography_p_d_f_id"
-          ],
+          "columns": ["downloads_biography_p_d_f_id"],
           "isUnique": false
         },
         "artists_downloads_downloads_gallery_z_i_p_idx": {
           "name": "artists_downloads_downloads_gallery_z_i_p_idx",
-          "columns": [
-            "downloads_gallery_z_i_p_id"
-          ],
+          "columns": ["downloads_gallery_z_i_p_id"],
           "isUnique": false
         },
         "artists_updated_at_idx": {
           "name": "artists_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "artists_created_at_idx": {
           "name": "artists_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         }
       },
@@ -397,12 +353,8 @@
           "name": "artists_image_id_images_id_fk",
           "tableFrom": "artists",
           "tableTo": "images",
-          "columnsFrom": [
-            "image_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["image_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -410,12 +362,8 @@
           "name": "artists_downloads_biography_p_d_f_id_documents_id_fk",
           "tableFrom": "artists",
           "tableTo": "documents",
-          "columnsFrom": [
-            "downloads_biography_p_d_f_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["downloads_biography_p_d_f_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -423,12 +371,8 @@
           "name": "artists_downloads_gallery_z_i_p_id_documents_id_fk",
           "tableFrom": "artists",
           "tableTo": "documents",
-          "columnsFrom": [
-            "downloads_gallery_z_i_p_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["downloads_gallery_z_i_p_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -479,10 +423,7 @@
       "indexes": {
         "artists_locales_locale_parent_id_unique": {
           "name": "artists_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -491,12 +432,8 @@
           "name": "artists_locales_parent_id_fk",
           "tableFrom": "artists_locales",
           "tableTo": "artists",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -561,44 +498,32 @@
       "indexes": {
         "artists_rels_order_idx": {
           "name": "artists_rels_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "artists_rels_parent_idx": {
           "name": "artists_rels_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "artists_rels_path_idx": {
           "name": "artists_rels_path_idx",
-          "columns": [
-            "path"
-          ],
+          "columns": ["path"],
           "isUnique": false
         },
         "artists_rels_employees_id_idx": {
           "name": "artists_rels_employees_id_idx",
-          "columns": [
-            "employees_id"
-          ],
+          "columns": ["employees_id"],
           "isUnique": false
         },
         "artists_rels_repertoire_id_idx": {
           "name": "artists_rels_repertoire_id_idx",
-          "columns": [
-            "repertoire_id"
-          ],
+          "columns": ["repertoire_id"],
           "isUnique": false
         },
         "artists_rels_posts_id_idx": {
           "name": "artists_rels_posts_id_idx",
-          "columns": [
-            "posts_id"
-          ],
+          "columns": ["posts_id"],
           "isUnique": false
         }
       },
@@ -607,12 +532,8 @@
           "name": "artists_rels_parent_fk",
           "tableFrom": "artists_rels",
           "tableTo": "artists",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -620,12 +541,8 @@
           "name": "artists_rels_employees_fk",
           "tableFrom": "artists_rels",
           "tableTo": "employees",
-          "columnsFrom": [
-            "employees_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["employees_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -633,12 +550,8 @@
           "name": "artists_rels_repertoire_fk",
           "tableFrom": "artists_rels",
           "tableTo": "repertoire",
-          "columnsFrom": [
-            "repertoire_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["repertoire_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -646,12 +559,8 @@
           "name": "artists_rels_posts_fk",
           "tableFrom": "artists_rels",
           "tableTo": "posts",
-          "columnsFrom": [
-            "posts_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["posts_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -732,23 +641,17 @@
       "indexes": {
         "employees_image_idx": {
           "name": "employees_image_idx",
-          "columns": [
-            "image_id"
-          ],
+          "columns": ["image_id"],
           "isUnique": false
         },
         "employees_updated_at_idx": {
           "name": "employees_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "employees_created_at_idx": {
           "name": "employees_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         }
       },
@@ -757,12 +660,8 @@
           "name": "employees_image_id_images_id_fk",
           "tableFrom": "employees",
           "tableTo": "images",
-          "columnsFrom": [
-            "image_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["image_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -806,10 +705,7 @@
       "indexes": {
         "employees_locales_locale_parent_id_unique": {
           "name": "employees_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -818,12 +714,8 @@
           "name": "employees_locales_parent_id_fk",
           "tableFrom": "employees_locales",
           "tableTo": "employees",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -870,23 +762,17 @@
       "indexes": {
         "pages_updated_at_idx": {
           "name": "pages_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "pages_created_at_idx": {
           "name": "pages_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         },
         "pages__status_idx": {
           "name": "pages__status_idx",
-          "columns": [
-            "_status"
-          ],
+          "columns": ["_status"],
           "isUnique": false
         }
       },
@@ -944,18 +830,12 @@
       "indexes": {
         "pages_slug_idx": {
           "name": "pages_slug_idx",
-          "columns": [
-            "slug",
-            "_locale"
-          ],
+          "columns": ["slug", "_locale"],
           "isUnique": true
         },
         "pages_locales_locale_parent_id_unique": {
           "name": "pages_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -964,12 +844,8 @@
           "name": "pages_locales_parent_id_fk",
           "tableFrom": "pages_locales",
           "tableTo": "pages",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1065,72 +941,52 @@
       "indexes": {
         "_pages_v_parent_idx": {
           "name": "_pages_v_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "_pages_v_version_version_updated_at_idx": {
           "name": "_pages_v_version_version_updated_at_idx",
-          "columns": [
-            "version_updated_at"
-          ],
+          "columns": ["version_updated_at"],
           "isUnique": false
         },
         "_pages_v_version_version_created_at_idx": {
           "name": "_pages_v_version_version_created_at_idx",
-          "columns": [
-            "version_created_at"
-          ],
+          "columns": ["version_created_at"],
           "isUnique": false
         },
         "_pages_v_version_version__status_idx": {
           "name": "_pages_v_version_version__status_idx",
-          "columns": [
-            "version__status"
-          ],
+          "columns": ["version__status"],
           "isUnique": false
         },
         "_pages_v_created_at_idx": {
           "name": "_pages_v_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         },
         "_pages_v_updated_at_idx": {
           "name": "_pages_v_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "_pages_v_snapshot_idx": {
           "name": "_pages_v_snapshot_idx",
-          "columns": [
-            "snapshot"
-          ],
+          "columns": ["snapshot"],
           "isUnique": false
         },
         "_pages_v_published_locale_idx": {
           "name": "_pages_v_published_locale_idx",
-          "columns": [
-            "published_locale"
-          ],
+          "columns": ["published_locale"],
           "isUnique": false
         },
         "_pages_v_latest_idx": {
           "name": "_pages_v_latest_idx",
-          "columns": [
-            "latest"
-          ],
+          "columns": ["latest"],
           "isUnique": false
         },
         "_pages_v_autosave_idx": {
           "name": "_pages_v_autosave_idx",
-          "columns": [
-            "autosave"
-          ],
+          "columns": ["autosave"],
           "isUnique": false
         }
       },
@@ -1139,12 +995,8 @@
           "name": "_pages_v_parent_id_pages_id_fk",
           "tableFrom": "_pages_v",
           "tableTo": "pages",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1202,18 +1054,12 @@
       "indexes": {
         "_pages_v_version_version_slug_idx": {
           "name": "_pages_v_version_version_slug_idx",
-          "columns": [
-            "version_slug",
-            "_locale"
-          ],
+          "columns": ["version_slug", "_locale"],
           "isUnique": false
         },
         "_pages_v_locales_locale_parent_id_unique": {
           "name": "_pages_v_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -1222,12 +1068,8 @@
           "name": "_pages_v_locales_parent_id_fk",
           "tableFrom": "_pages_v_locales",
           "tableTo": "_pages_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1271,16 +1113,12 @@
       "indexes": {
         "posts_categories_order_idx": {
           "name": "posts_categories_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "posts_categories_parent_idx": {
           "name": "posts_categories_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         }
       },
@@ -1289,12 +1127,8 @@
           "name": "posts_categories_parent_fk",
           "tableFrom": "posts_categories",
           "tableTo": "posts",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1355,37 +1189,27 @@
       "indexes": {
         "posts_image_idx": {
           "name": "posts_image_idx",
-          "columns": [
-            "image_id"
-          ],
+          "columns": ["image_id"],
           "isUnique": false
         },
         "posts_created_by_idx": {
           "name": "posts_created_by_idx",
-          "columns": [
-            "created_by_id"
-          ],
+          "columns": ["created_by_id"],
           "isUnique": false
         },
         "posts_updated_at_idx": {
           "name": "posts_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "posts_created_at_idx": {
           "name": "posts_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         },
         "posts__status_idx": {
           "name": "posts__status_idx",
-          "columns": [
-            "_status"
-          ],
+          "columns": ["_status"],
           "isUnique": false
         }
       },
@@ -1394,12 +1218,8 @@
           "name": "posts_image_id_images_id_fk",
           "tableFrom": "posts",
           "tableTo": "images",
-          "columnsFrom": [
-            "image_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["image_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1407,12 +1227,8 @@
           "name": "posts_created_by_id_employees_id_fk",
           "tableFrom": "posts",
           "tableTo": "employees",
-          "columnsFrom": [
-            "created_by_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1484,34 +1300,22 @@
       "indexes": {
         "posts_normalized_title_idx": {
           "name": "posts_normalized_title_idx",
-          "columns": [
-            "normalized_title",
-            "_locale"
-          ],
+          "columns": ["normalized_title", "_locale"],
           "isUnique": false
         },
         "posts_normalized_content_idx": {
           "name": "posts_normalized_content_idx",
-          "columns": [
-            "normalized_content",
-            "_locale"
-          ],
+          "columns": ["normalized_content", "_locale"],
           "isUnique": false
         },
         "posts_slug_idx": {
           "name": "posts_slug_idx",
-          "columns": [
-            "slug",
-            "_locale"
-          ],
+          "columns": ["slug", "_locale"],
           "isUnique": true
         },
         "posts_locales_locale_parent_id_unique": {
           "name": "posts_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -1520,12 +1324,8 @@
           "name": "posts_locales_parent_id_fk",
           "tableFrom": "posts_locales",
           "tableTo": "posts",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1576,30 +1376,22 @@
       "indexes": {
         "posts_rels_order_idx": {
           "name": "posts_rels_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "posts_rels_parent_idx": {
           "name": "posts_rels_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "posts_rels_path_idx": {
           "name": "posts_rels_path_idx",
-          "columns": [
-            "path"
-          ],
+          "columns": ["path"],
           "isUnique": false
         },
         "posts_rels_artists_id_idx": {
           "name": "posts_rels_artists_id_idx",
-          "columns": [
-            "artists_id"
-          ],
+          "columns": ["artists_id"],
           "isUnique": false
         }
       },
@@ -1608,12 +1400,8 @@
           "name": "posts_rels_parent_fk",
           "tableFrom": "posts_rels",
           "tableTo": "posts",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1621,12 +1409,8 @@
           "name": "posts_rels_artists_fk",
           "tableFrom": "posts_rels",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artists_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artists_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1670,16 +1454,12 @@
       "indexes": {
         "_posts_v_version_categories_order_idx": {
           "name": "_posts_v_version_categories_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "_posts_v_version_categories_parent_idx": {
           "name": "_posts_v_version_categories_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         }
       },
@@ -1688,12 +1468,8 @@
           "name": "_posts_v_version_categories_parent_fk",
           "tableFrom": "_posts_v_version_categories",
           "tableTo": "_posts_v",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1803,86 +1579,62 @@
       "indexes": {
         "_posts_v_parent_idx": {
           "name": "_posts_v_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "_posts_v_version_version_image_idx": {
           "name": "_posts_v_version_version_image_idx",
-          "columns": [
-            "version_image_id"
-          ],
+          "columns": ["version_image_id"],
           "isUnique": false
         },
         "_posts_v_version_version_created_by_idx": {
           "name": "_posts_v_version_version_created_by_idx",
-          "columns": [
-            "version_created_by_id"
-          ],
+          "columns": ["version_created_by_id"],
           "isUnique": false
         },
         "_posts_v_version_version_updated_at_idx": {
           "name": "_posts_v_version_version_updated_at_idx",
-          "columns": [
-            "version_updated_at"
-          ],
+          "columns": ["version_updated_at"],
           "isUnique": false
         },
         "_posts_v_version_version_created_at_idx": {
           "name": "_posts_v_version_version_created_at_idx",
-          "columns": [
-            "version_created_at"
-          ],
+          "columns": ["version_created_at"],
           "isUnique": false
         },
         "_posts_v_version_version__status_idx": {
           "name": "_posts_v_version_version__status_idx",
-          "columns": [
-            "version__status"
-          ],
+          "columns": ["version__status"],
           "isUnique": false
         },
         "_posts_v_created_at_idx": {
           "name": "_posts_v_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         },
         "_posts_v_updated_at_idx": {
           "name": "_posts_v_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "_posts_v_snapshot_idx": {
           "name": "_posts_v_snapshot_idx",
-          "columns": [
-            "snapshot"
-          ],
+          "columns": ["snapshot"],
           "isUnique": false
         },
         "_posts_v_published_locale_idx": {
           "name": "_posts_v_published_locale_idx",
-          "columns": [
-            "published_locale"
-          ],
+          "columns": ["published_locale"],
           "isUnique": false
         },
         "_posts_v_latest_idx": {
           "name": "_posts_v_latest_idx",
-          "columns": [
-            "latest"
-          ],
+          "columns": ["latest"],
           "isUnique": false
         },
         "_posts_v_autosave_idx": {
           "name": "_posts_v_autosave_idx",
-          "columns": [
-            "autosave"
-          ],
+          "columns": ["autosave"],
           "isUnique": false
         }
       },
@@ -1891,12 +1643,8 @@
           "name": "_posts_v_parent_id_posts_id_fk",
           "tableFrom": "_posts_v",
           "tableTo": "posts",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1904,12 +1652,8 @@
           "name": "_posts_v_version_image_id_images_id_fk",
           "tableFrom": "_posts_v",
           "tableTo": "images",
-          "columnsFrom": [
-            "version_image_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_image_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1917,12 +1661,8 @@
           "name": "_posts_v_version_created_by_id_employees_id_fk",
           "tableFrom": "_posts_v",
           "tableTo": "employees",
-          "columnsFrom": [
-            "version_created_by_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_created_by_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1994,34 +1734,22 @@
       "indexes": {
         "_posts_v_version_version_normalized_title_idx": {
           "name": "_posts_v_version_version_normalized_title_idx",
-          "columns": [
-            "version_normalized_title",
-            "_locale"
-          ],
+          "columns": ["version_normalized_title", "_locale"],
           "isUnique": false
         },
         "_posts_v_version_version_normalized_content_idx": {
           "name": "_posts_v_version_version_normalized_content_idx",
-          "columns": [
-            "version_normalized_content",
-            "_locale"
-          ],
+          "columns": ["version_normalized_content", "_locale"],
           "isUnique": false
         },
         "_posts_v_version_version_slug_idx": {
           "name": "_posts_v_version_version_slug_idx",
-          "columns": [
-            "version_slug",
-            "_locale"
-          ],
+          "columns": ["version_slug", "_locale"],
           "isUnique": false
         },
         "_posts_v_locales_locale_parent_id_unique": {
           "name": "_posts_v_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -2030,12 +1758,8 @@
           "name": "_posts_v_locales_parent_id_fk",
           "tableFrom": "_posts_v_locales",
           "tableTo": "_posts_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2086,30 +1810,22 @@
       "indexes": {
         "_posts_v_rels_order_idx": {
           "name": "_posts_v_rels_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "_posts_v_rels_parent_idx": {
           "name": "_posts_v_rels_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "_posts_v_rels_path_idx": {
           "name": "_posts_v_rels_path_idx",
-          "columns": [
-            "path"
-          ],
+          "columns": ["path"],
           "isUnique": false
         },
         "_posts_v_rels_artists_id_idx": {
           "name": "_posts_v_rels_artists_id_idx",
-          "columns": [
-            "artists_id"
-          ],
+          "columns": ["artists_id"],
           "isUnique": false
         }
       },
@@ -2118,12 +1834,8 @@
           "name": "_posts_v_rels_parent_fk",
           "tableFrom": "_posts_v_rels",
           "tableTo": "_posts_v",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2131,12 +1843,8 @@
           "name": "_posts_v_rels_artists_fk",
           "tableFrom": "_posts_v_rels",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artists_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artists_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2180,16 +1888,12 @@
       "indexes": {
         "recordings_roles_order_idx": {
           "name": "recordings_roles_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "recordings_roles_parent_idx": {
           "name": "recordings_roles_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         }
       },
@@ -2198,12 +1902,8 @@
           "name": "recordings_roles_parent_fk",
           "tableFrom": "recordings_roles",
           "tableTo": "recordings",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2292,30 +1992,22 @@
       "indexes": {
         "recordings_cover_art_idx": {
           "name": "recordings_cover_art_idx",
-          "columns": [
-            "cover_art_id"
-          ],
+          "columns": ["cover_art_id"],
           "isUnique": false
         },
         "recordings_updated_at_idx": {
           "name": "recordings_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "recordings_created_at_idx": {
           "name": "recordings_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         },
         "recordings__status_idx": {
           "name": "recordings__status_idx",
-          "columns": [
-            "_status"
-          ],
+          "columns": ["_status"],
           "isUnique": false
         }
       },
@@ -2324,12 +2016,8 @@
           "name": "recordings_cover_art_id_images_id_fk",
           "tableFrom": "recordings",
           "tableTo": "images",
-          "columnsFrom": [
-            "cover_art_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["cover_art_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2380,10 +2068,7 @@
       "indexes": {
         "recordings_locales_locale_parent_id_unique": {
           "name": "recordings_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -2392,12 +2077,8 @@
           "name": "recordings_locales_parent_id_fk",
           "tableFrom": "recordings_locales",
           "tableTo": "recordings",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2448,30 +2129,22 @@
       "indexes": {
         "recordings_rels_order_idx": {
           "name": "recordings_rels_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "recordings_rels_parent_idx": {
           "name": "recordings_rels_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "recordings_rels_path_idx": {
           "name": "recordings_rels_path_idx",
-          "columns": [
-            "path"
-          ],
+          "columns": ["path"],
           "isUnique": false
         },
         "recordings_rels_artists_id_idx": {
           "name": "recordings_rels_artists_id_idx",
-          "columns": [
-            "artists_id"
-          ],
+          "columns": ["artists_id"],
           "isUnique": false
         }
       },
@@ -2480,12 +2153,8 @@
           "name": "recordings_rels_parent_fk",
           "tableFrom": "recordings_rels",
           "tableTo": "recordings",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2493,12 +2162,8 @@
           "name": "recordings_rels_artists_fk",
           "tableFrom": "recordings_rels",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artists_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artists_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2542,16 +2207,12 @@
       "indexes": {
         "_recordings_v_version_roles_order_idx": {
           "name": "_recordings_v_version_roles_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "_recordings_v_version_roles_parent_idx": {
           "name": "_recordings_v_version_roles_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         }
       },
@@ -2560,12 +2221,8 @@
           "name": "_recordings_v_version_roles_parent_fk",
           "tableFrom": "_recordings_v_version_roles",
           "tableTo": "_recordings_v",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2703,79 +2360,57 @@
       "indexes": {
         "_recordings_v_parent_idx": {
           "name": "_recordings_v_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "_recordings_v_version_version_cover_art_idx": {
           "name": "_recordings_v_version_version_cover_art_idx",
-          "columns": [
-            "version_cover_art_id"
-          ],
+          "columns": ["version_cover_art_id"],
           "isUnique": false
         },
         "_recordings_v_version_version_updated_at_idx": {
           "name": "_recordings_v_version_version_updated_at_idx",
-          "columns": [
-            "version_updated_at"
-          ],
+          "columns": ["version_updated_at"],
           "isUnique": false
         },
         "_recordings_v_version_version_created_at_idx": {
           "name": "_recordings_v_version_version_created_at_idx",
-          "columns": [
-            "version_created_at"
-          ],
+          "columns": ["version_created_at"],
           "isUnique": false
         },
         "_recordings_v_version_version__status_idx": {
           "name": "_recordings_v_version_version__status_idx",
-          "columns": [
-            "version__status"
-          ],
+          "columns": ["version__status"],
           "isUnique": false
         },
         "_recordings_v_created_at_idx": {
           "name": "_recordings_v_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         },
         "_recordings_v_updated_at_idx": {
           "name": "_recordings_v_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "_recordings_v_snapshot_idx": {
           "name": "_recordings_v_snapshot_idx",
-          "columns": [
-            "snapshot"
-          ],
+          "columns": ["snapshot"],
           "isUnique": false
         },
         "_recordings_v_published_locale_idx": {
           "name": "_recordings_v_published_locale_idx",
-          "columns": [
-            "published_locale"
-          ],
+          "columns": ["published_locale"],
           "isUnique": false
         },
         "_recordings_v_latest_idx": {
           "name": "_recordings_v_latest_idx",
-          "columns": [
-            "latest"
-          ],
+          "columns": ["latest"],
           "isUnique": false
         },
         "_recordings_v_autosave_idx": {
           "name": "_recordings_v_autosave_idx",
-          "columns": [
-            "autosave"
-          ],
+          "columns": ["autosave"],
           "isUnique": false
         }
       },
@@ -2784,12 +2419,8 @@
           "name": "_recordings_v_parent_id_recordings_id_fk",
           "tableFrom": "_recordings_v",
           "tableTo": "recordings",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2797,12 +2428,8 @@
           "name": "_recordings_v_version_cover_art_id_images_id_fk",
           "tableFrom": "_recordings_v",
           "tableTo": "images",
-          "columnsFrom": [
-            "version_cover_art_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_cover_art_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2853,10 +2480,7 @@
       "indexes": {
         "_recordings_v_locales_locale_parent_id_unique": {
           "name": "_recordings_v_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -2865,12 +2489,8 @@
           "name": "_recordings_v_locales_parent_id_fk",
           "tableFrom": "_recordings_v_locales",
           "tableTo": "_recordings_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2921,30 +2541,22 @@
       "indexes": {
         "_recordings_v_rels_order_idx": {
           "name": "_recordings_v_rels_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "_recordings_v_rels_parent_idx": {
           "name": "_recordings_v_rels_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "_recordings_v_rels_path_idx": {
           "name": "_recordings_v_rels_path_idx",
-          "columns": [
-            "path"
-          ],
+          "columns": ["path"],
           "isUnique": false
         },
         "_recordings_v_rels_artists_id_idx": {
           "name": "_recordings_v_rels_artists_id_idx",
-          "columns": [
-            "artists_id"
-          ],
+          "columns": ["artists_id"],
           "isUnique": false
         }
       },
@@ -2953,12 +2565,8 @@
           "name": "_recordings_v_rels_parent_fk",
           "tableFrom": "_recordings_v_rels",
           "tableTo": "_recordings_v",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2966,12 +2574,8 @@
           "name": "_recordings_v_rels_artists_fk",
           "tableFrom": "_recordings_v_rels",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artists_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artists_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3015,16 +2619,12 @@
       "indexes": {
         "repertoire_roles_order_idx": {
           "name": "repertoire_roles_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "repertoire_roles_parent_idx": {
           "name": "repertoire_roles_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         }
       },
@@ -3033,12 +2633,8 @@
           "name": "repertoire_roles_parent_fk",
           "tableFrom": "repertoire_roles",
           "tableTo": "repertoire",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3077,16 +2673,12 @@
       "indexes": {
         "repertoire_updated_at_idx": {
           "name": "repertoire_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "repertoire_created_at_idx": {
           "name": "repertoire_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         }
       },
@@ -3137,10 +2729,7 @@
       "indexes": {
         "repertoire_locales_locale_parent_id_unique": {
           "name": "repertoire_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -3149,12 +2738,8 @@
           "name": "repertoire_locales_parent_id_fk",
           "tableFrom": "repertoire_locales",
           "tableTo": "repertoire",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3205,30 +2790,22 @@
       "indexes": {
         "repertoire_rels_order_idx": {
           "name": "repertoire_rels_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "repertoire_rels_parent_idx": {
           "name": "repertoire_rels_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "repertoire_rels_path_idx": {
           "name": "repertoire_rels_path_idx",
-          "columns": [
-            "path"
-          ],
+          "columns": ["path"],
           "isUnique": false
         },
         "repertoire_rels_artists_id_idx": {
           "name": "repertoire_rels_artists_id_idx",
-          "columns": [
-            "artists_id"
-          ],
+          "columns": ["artists_id"],
           "isUnique": false
         }
       },
@@ -3237,12 +2814,8 @@
           "name": "repertoire_rels_parent_fk",
           "tableFrom": "repertoire_rels",
           "tableTo": "repertoire",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3250,12 +2823,8 @@
           "name": "repertoire_rels_artists_fk",
           "tableFrom": "repertoire_rels",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artists_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artists_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3306,16 +2875,12 @@
       "indexes": {
         "users_sessions_order_idx": {
           "name": "users_sessions_order_idx",
-          "columns": [
-            "_order"
-          ],
+          "columns": ["_order"],
           "isUnique": false
         },
         "users_sessions_parent_id_idx": {
           "name": "users_sessions_parent_id_idx",
-          "columns": [
-            "_parent_id"
-          ],
+          "columns": ["_parent_id"],
           "isUnique": false
         }
       },
@@ -3324,12 +2889,8 @@
           "name": "users_sessions_parent_id_fk",
           "tableFrom": "users_sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3432,23 +2993,17 @@
       "indexes": {
         "users_updated_at_idx": {
           "name": "users_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "users_created_at_idx": {
           "name": "users_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         },
         "users_email_idx": {
           "name": "users_email_idx",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         }
       },
@@ -3606,30 +3161,22 @@
       "indexes": {
         "images_updated_at_idx": {
           "name": "images_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "images_created_at_idx": {
           "name": "images_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         },
         "images_filename_idx": {
           "name": "images_filename_idx",
-          "columns": [
-            "filename"
-          ],
+          "columns": ["filename"],
           "isUnique": true
         },
         "images_sizes_thumbnail_sizes_thumbnail_filename_idx": {
           "name": "images_sizes_thumbnail_sizes_thumbnail_filename_idx",
-          "columns": [
-            "sizes_thumbnail_filename"
-          ],
+          "columns": ["sizes_thumbnail_filename"],
           "isUnique": false
         }
       },
@@ -3752,23 +3299,17 @@
       "indexes": {
         "documents_updated_at_idx": {
           "name": "documents_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "documents_created_at_idx": {
           "name": "documents_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         },
         "documents_filename_idx": {
           "name": "documents_filename_idx",
-          "columns": [
-            "filename"
-          ],
+          "columns": ["filename"],
           "isUnique": true
         }
       },
@@ -3835,37 +3376,27 @@
       "indexes": {
         "search_display_title_idx": {
           "name": "search_display_title_idx",
-          "columns": [
-            "display_title"
-          ],
+          "columns": ["display_title"],
           "isUnique": false
         },
         "search_slug_idx": {
           "name": "search_slug_idx",
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "isUnique": false
         },
         "search_locale_idx": {
           "name": "search_locale_idx",
-          "columns": [
-            "locale"
-          ],
+          "columns": ["locale"],
           "isUnique": false
         },
         "search_updated_at_idx": {
           "name": "search_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "search_created_at_idx": {
           "name": "search_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         }
       },
@@ -3909,10 +3440,7 @@
       "indexes": {
         "search_locales_locale_parent_id_unique": {
           "name": "search_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -3921,12 +3449,8 @@
           "name": "search_locales_parent_id_fk",
           "tableFrom": "search_locales",
           "tableTo": "search",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3998,51 +3522,37 @@
       "indexes": {
         "search_rels_order_idx": {
           "name": "search_rels_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "search_rels_parent_idx": {
           "name": "search_rels_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "search_rels_path_idx": {
           "name": "search_rels_path_idx",
-          "columns": [
-            "path"
-          ],
+          "columns": ["path"],
           "isUnique": false
         },
         "search_rels_artists_id_idx": {
           "name": "search_rels_artists_id_idx",
-          "columns": [
-            "artists_id"
-          ],
+          "columns": ["artists_id"],
           "isUnique": false
         },
         "search_rels_employees_id_idx": {
           "name": "search_rels_employees_id_idx",
-          "columns": [
-            "employees_id"
-          ],
+          "columns": ["employees_id"],
           "isUnique": false
         },
         "search_rels_pages_id_idx": {
           "name": "search_rels_pages_id_idx",
-          "columns": [
-            "pages_id"
-          ],
+          "columns": ["pages_id"],
           "isUnique": false
         },
         "search_rels_repertoire_id_idx": {
           "name": "search_rels_repertoire_id_idx",
-          "columns": [
-            "repertoire_id"
-          ],
+          "columns": ["repertoire_id"],
           "isUnique": false
         }
       },
@@ -4051,12 +3561,8 @@
           "name": "search_rels_parent_fk",
           "tableFrom": "search_rels",
           "tableTo": "search",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4064,12 +3570,8 @@
           "name": "search_rels_artists_fk",
           "tableFrom": "search_rels",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artists_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artists_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4077,12 +3579,8 @@
           "name": "search_rels_employees_fk",
           "tableFrom": "search_rels",
           "tableTo": "employees",
-          "columnsFrom": [
-            "employees_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["employees_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4090,12 +3588,8 @@
           "name": "search_rels_pages_fk",
           "tableFrom": "search_rels",
           "tableTo": "pages",
-          "columnsFrom": [
-            "pages_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pages_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4103,12 +3597,8 @@
           "name": "search_rels_repertoire_fk",
           "tableFrom": "search_rels",
           "tableTo": "repertoire",
-          "columnsFrom": [
-            "repertoire_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["repertoire_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4145,9 +3635,7 @@
       "indexes": {
         "payload_kv_key_idx": {
           "name": "payload_kv_key_idx",
-          "columns": [
-            "key"
-          ],
+          "columns": ["key"],
           "isUnique": true
         }
       },
@@ -4193,23 +3681,17 @@
       "indexes": {
         "payload_locked_documents_global_slug_idx": {
           "name": "payload_locked_documents_global_slug_idx",
-          "columns": [
-            "global_slug"
-          ],
+          "columns": ["global_slug"],
           "isUnique": false
         },
         "payload_locked_documents_updated_at_idx": {
           "name": "payload_locked_documents_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "payload_locked_documents_created_at_idx": {
           "name": "payload_locked_documents_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         }
       },
@@ -4323,93 +3805,67 @@
       "indexes": {
         "payload_locked_documents_rels_order_idx": {
           "name": "payload_locked_documents_rels_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "payload_locked_documents_rels_parent_idx": {
           "name": "payload_locked_documents_rels_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_path_idx": {
           "name": "payload_locked_documents_rels_path_idx",
-          "columns": [
-            "path"
-          ],
+          "columns": ["path"],
           "isUnique": false
         },
         "payload_locked_documents_rels_artists_id_idx": {
           "name": "payload_locked_documents_rels_artists_id_idx",
-          "columns": [
-            "artists_id"
-          ],
+          "columns": ["artists_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_employees_id_idx": {
           "name": "payload_locked_documents_rels_employees_id_idx",
-          "columns": [
-            "employees_id"
-          ],
+          "columns": ["employees_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_pages_id_idx": {
           "name": "payload_locked_documents_rels_pages_id_idx",
-          "columns": [
-            "pages_id"
-          ],
+          "columns": ["pages_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_posts_id_idx": {
           "name": "payload_locked_documents_rels_posts_id_idx",
-          "columns": [
-            "posts_id"
-          ],
+          "columns": ["posts_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_recordings_id_idx": {
           "name": "payload_locked_documents_rels_recordings_id_idx",
-          "columns": [
-            "recordings_id"
-          ],
+          "columns": ["recordings_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_repertoire_id_idx": {
           "name": "payload_locked_documents_rels_repertoire_id_idx",
-          "columns": [
-            "repertoire_id"
-          ],
+          "columns": ["repertoire_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_users_id_idx": {
           "name": "payload_locked_documents_rels_users_id_idx",
-          "columns": [
-            "users_id"
-          ],
+          "columns": ["users_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_images_id_idx": {
           "name": "payload_locked_documents_rels_images_id_idx",
-          "columns": [
-            "images_id"
-          ],
+          "columns": ["images_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_documents_id_idx": {
           "name": "payload_locked_documents_rels_documents_id_idx",
-          "columns": [
-            "documents_id"
-          ],
+          "columns": ["documents_id"],
           "isUnique": false
         },
         "payload_locked_documents_rels_search_id_idx": {
           "name": "payload_locked_documents_rels_search_id_idx",
-          "columns": [
-            "search_id"
-          ],
+          "columns": ["search_id"],
           "isUnique": false
         }
       },
@@ -4418,12 +3874,8 @@
           "name": "payload_locked_documents_rels_parent_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "payload_locked_documents",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4431,12 +3883,8 @@
           "name": "payload_locked_documents_rels_artists_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artists_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artists_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4444,12 +3892,8 @@
           "name": "payload_locked_documents_rels_employees_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "employees",
-          "columnsFrom": [
-            "employees_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["employees_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4457,12 +3901,8 @@
           "name": "payload_locked_documents_rels_pages_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "pages",
-          "columnsFrom": [
-            "pages_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pages_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4470,12 +3910,8 @@
           "name": "payload_locked_documents_rels_posts_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "posts",
-          "columnsFrom": [
-            "posts_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["posts_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4483,12 +3919,8 @@
           "name": "payload_locked_documents_rels_recordings_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "recordings",
-          "columnsFrom": [
-            "recordings_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["recordings_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4496,12 +3928,8 @@
           "name": "payload_locked_documents_rels_repertoire_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "repertoire",
-          "columnsFrom": [
-            "repertoire_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["repertoire_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4509,12 +3937,8 @@
           "name": "payload_locked_documents_rels_users_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4522,12 +3946,8 @@
           "name": "payload_locked_documents_rels_images_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "images",
-          "columnsFrom": [
-            "images_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["images_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4535,12 +3955,8 @@
           "name": "payload_locked_documents_rels_documents_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "documents",
-          "columnsFrom": [
-            "documents_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["documents_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4548,12 +3964,8 @@
           "name": "payload_locked_documents_rels_search_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "search",
-          "columnsFrom": [
-            "search_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["search_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4606,23 +4018,17 @@
       "indexes": {
         "payload_preferences_key_idx": {
           "name": "payload_preferences_key_idx",
-          "columns": [
-            "key"
-          ],
+          "columns": ["key"],
           "isUnique": false
         },
         "payload_preferences_updated_at_idx": {
           "name": "payload_preferences_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "payload_preferences_created_at_idx": {
           "name": "payload_preferences_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         }
       },
@@ -4673,30 +4079,22 @@
       "indexes": {
         "payload_preferences_rels_order_idx": {
           "name": "payload_preferences_rels_order_idx",
-          "columns": [
-            "order"
-          ],
+          "columns": ["order"],
           "isUnique": false
         },
         "payload_preferences_rels_parent_idx": {
           "name": "payload_preferences_rels_parent_idx",
-          "columns": [
-            "parent_id"
-          ],
+          "columns": ["parent_id"],
           "isUnique": false
         },
         "payload_preferences_rels_path_idx": {
           "name": "payload_preferences_rels_path_idx",
-          "columns": [
-            "path"
-          ],
+          "columns": ["path"],
           "isUnique": false
         },
         "payload_preferences_rels_users_id_idx": {
           "name": "payload_preferences_rels_users_id_idx",
-          "columns": [
-            "users_id"
-          ],
+          "columns": ["users_id"],
           "isUnique": false
         }
       },
@@ -4705,12 +4103,8 @@
           "name": "payload_preferences_rels_parent_fk",
           "tableFrom": "payload_preferences_rels",
           "tableTo": "payload_preferences",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4718,12 +4112,8 @@
           "name": "payload_preferences_rels_users_fk",
           "tableFrom": "payload_preferences_rels",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4776,16 +4166,12 @@
       "indexes": {
         "payload_migrations_updated_at_idx": {
           "name": "payload_migrations_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
+          "columns": ["updated_at"],
           "isUnique": false
         },
         "payload_migrations_created_at_idx": {
           "name": "payload_migrations_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         }
       },
@@ -4874,10 +4260,7 @@
       "indexes": {
         "home_page_locales_locale_parent_id_unique": {
           "name": "home_page_locales_locale_parent_id_unique",
-          "columns": [
-            "_locale",
-            "_parent_id"
-          ],
+          "columns": ["_locale", "_parent_id"],
           "isUnique": true
         }
       },
@@ -4886,12 +4269,8 @@
           "name": "home_page_locales_parent_id_fk",
           "tableFrom": "home_page_locales",
           "tableTo": "home_page",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
