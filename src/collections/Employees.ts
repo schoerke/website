@@ -47,6 +47,7 @@ export const Employees: CollectionConfig = {
       name: 'email',
       required: true,
       type: 'email',
+      unique: true,
     },
     {
       label: {
