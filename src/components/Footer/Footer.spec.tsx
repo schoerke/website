@@ -56,16 +56,14 @@ describe('Footer Components - Structure and Configuration', () => {
   describe('Footer Legal Links', () => {
     it('should have correct legal link structure', () => {
       const expectedLegalLinks = [
-        { href: '/impressum', external: false },
-        { href: '/datenschutz', external: false },
-        { href: '/brand', external: true },
+        { href: '/impressum' },
+        { href: '/datenschutz' },
       ]
 
       // This verifies the data structure matches what FooterInfo expects
-      expect(expectedLegalLinks).toHaveLength(3)
+      expect(expectedLegalLinks).toHaveLength(2)
       expectedLegalLinks.forEach((link) => {
         expect(link.href).toBeTruthy()
-        expect(typeof link.external).toBe('boolean')
       })
     })
   })

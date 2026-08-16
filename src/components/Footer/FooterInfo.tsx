@@ -1,7 +1,6 @@
 import { SOCIAL_MEDIA_LINKS } from '@/constants/socialMedia'
 import { Link } from '@/i18n/navigation'
 import { getTranslations } from 'next-intl/server'
-import NextLink from 'next/link'
 
 type FooterInfoProps = {
   locale: string
@@ -13,12 +12,10 @@ const FooterInfo = async ({ locale }: FooterInfoProps) => {
 
   const legalLinks: Array<{
     text: string
-    href: '/impressum' | '/datenschutz' | '/brand'
-    external: boolean
+    href: '/impressum' | '/datenschutz'
   }> = [
-    { text: t('impressum.title'), href: '/impressum', external: false },
-    { text: t('datenschutz.title'), href: '/datenschutz', external: false },
-    { text: t('brand.title'), href: '/brand', external: true },
+    { text: t('impressum.title'), href: '/impressum' },
+    { text: t('datenschutz.title'), href: '/datenschutz' },
   ]
 
   return (
@@ -32,21 +29,12 @@ const FooterInfo = async ({ locale }: FooterInfoProps) => {
           <ul className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
             {legalLinks.map((link) => (
               <li key={link.href}>
-                {link.external ? (
-                  <NextLink
-                    href={link.href}
-                    className="text-sm text-gray-600 transition duration-150 ease-in-out hover:text-gray-800"
-                  >
-                    {link.text}
-                  </NextLink>
-                ) : (
-                  <Link
-                    href={link.href as '/impressum' | '/datenschutz'}
-                    className="text-sm text-gray-600 transition duration-150 ease-in-out hover:text-gray-800"
-                  >
-                    {link.text}
-                  </Link>
-                )}
+                <Link
+                  href={link.href}
+                  className="text-sm text-gray-600 transition duration-150 ease-in-out hover:text-gray-800"
+                >
+                  {link.text}
+                </Link>
               </li>
             ))}
           </ul>
