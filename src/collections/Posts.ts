@@ -13,6 +13,7 @@ import { categoryOptions } from '@/data/options'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { extractLexicalText } from '@/utils/search/extractLexicalText'
 import { createSlugHook } from '@/utils/slug'
+import { resolveDefaultCreatedBy } from '@/utils/posts/resolveDefaultCreatedBy'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -171,8 +172,19 @@ export const Posts: CollectionConfig = {
       required: true,
       admin: {
         position: 'sidebar',
+        description: {
+          de: 'Automatisch gesetzt, wenn als Mitarbeiter angemeldet.',
+          en: 'Auto-set when logged in as an employee.',
+        },
       },
-      defaultValue: 1, // Eva Wagner
+      hooks: {
+        beforeValidate: [
+          async ({ operation, req, siblingData }) => {
+            if (operation !== 'create' || siblingData.createdBy) return undefined
+            return resolveDefaultCreatedBy({ req })
+          },
+        ],
+      },
     },
   ],
   hooks: {
