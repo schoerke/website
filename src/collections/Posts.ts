@@ -1,6 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
-import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import { postTextState } from '@/data/postTextState'
+
+import { BlocksFeature, TextStateFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
@@ -115,6 +117,9 @@ export const Posts: CollectionConfig = {
           ...defaultFeatures,
           BlocksFeature({
             blocks: [VideoEmbed, AudioEmbed],
+          }),
+          TextStateFeature({
+            state: postTextState,
           }),
         ],
       }),

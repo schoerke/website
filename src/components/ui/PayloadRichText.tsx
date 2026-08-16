@@ -10,6 +10,13 @@ import VideoEmbed from '@/components/blocks/VideoEmbed'
 import AudioEmbed from '@/components/blocks/AudioEmbed'
 import type { VideoEmbedBlockFields } from '@/blocks/VideoEmbed'
 import type { AudioEmbedBlockFields } from '@/blocks/AudioEmbed'
+import { resolveTextStateStyle } from '@/data/postTextState'
+
+const NODE_STATE_KEY = '$'
+
+function hyphenToCamel(str: string): string {
+  return str.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase())
+}
 
 interface PayloadRichTextProps {
   content: SerializedEditorState
@@ -54,6 +61,26 @@ const PayloadRichText: React.FC<PayloadRichTextProps> = ({ content, className, l
             return buildInternalHref(doc, locale)
           },
         }),
+        text: (args) => {
+          const { node } = args
+          let el = typeof defaultConverters.text === 'function' ? defaultConverters.text(args) : node.text
+
+          // Apply TextStateFeature inline styles from the "$" key on serialized text nodes
+          const nodeState = (node as Record<string, unknown>)[NODE_STATE_KEY] as Record<string, string> | undefined
+          if (nodeState) {
+            const styles: React.CSSProperties = {}
+            const styleMap = styles as Record<string, string>
+            const resolved = resolveTextStateStyle(nodeState)
+            for (const [prop, value] of Object.entries(resolved)) {
+              styleMap[hyphenToCamel(prop)] = value
+            }
+            if (Object.keys(styles).length > 0) {
+              el = <span style={styles}>{el}</span>
+            }
+          }
+
+          return el
+        },
         blocks: {
           videoEmbed: ({ node }: { node: SerializedLexicalNode & { fields: VideoEmbedBlockFields } }) => {
             const { url, aspectRatio } = node.fields
