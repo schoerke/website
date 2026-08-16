@@ -40,7 +40,9 @@ export function getAudioEmbedData(url: string): AudioEmbedData | null {
     if (isSpotify) {
       // Extract type and ID: /track/ID or /intl-de/album/ID
       // Match both standard (/album/ID) and internationalized (/intl-de/album/ID) paths
-      const match = parsed.pathname.match(/^(?:\/intl-[a-z]{2})?\/(track|album|playlist|artist|show|episode)\/([a-zA-Z0-9]+)/)
+      const match = parsed.pathname.match(
+        /^(?:\/intl-[a-z]{2})?\/(track|album|playlist|artist|show|episode)\/([a-zA-Z0-9]+)/
+      )
       if (!match) return null
 
       const [, contentType, contentId] = match

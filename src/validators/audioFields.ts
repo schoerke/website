@@ -27,7 +27,9 @@ export const validateAudioURL = (value: unknown): true | string => {
     if (isSpotify) {
       // Spotify URLs: /track/ID, /album/ID, /intl-{locale}/album/ID, etc.
       // Supports both standard and internationalized paths
-      const spotifyMatch = url.pathname.match(/^(?:\/intl-[a-z]{2})?\/(track|album|playlist|artist|show|episode)\/[a-zA-Z0-9]+/)
+      const spotifyMatch = url.pathname.match(
+        /^(?:\/intl-[a-z]{2})?\/(track|album|playlist|artist|show|episode)\/[a-zA-Z0-9]+/
+      )
       if (!spotifyMatch) {
         return 'Please enter a valid Spotify URL (track, album, playlist, artist, show, or episode)'
       }

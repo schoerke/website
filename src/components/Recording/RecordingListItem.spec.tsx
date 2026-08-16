@@ -150,7 +150,9 @@ describe('RecordingListItem', () => {
       })
     )
 
-    expect(screen.getByRole('link', { name: 'Listen to Beethoven - Violin Concerto on Apple Music' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Listen to Beethoven - Violin Concerto on Apple Music' })
+    ).toBeInTheDocument()
   })
 
   it('renders no streaming links when none are provided', () => {

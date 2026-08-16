@@ -53,7 +53,13 @@ function extractTextPreview(content: Post['content'], maxLength: number = 180): 
   return fullText.substring(0, maxLength).trim() + '...'
 }
 
-const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, category = 'news', defaultImage = null, showDate = true }) => {
+const NewsFeedList: React.FC<NewsFeedListProps> = ({
+  posts,
+  emptyMessage,
+  category = 'news',
+  defaultImage = null,
+  showDate = true,
+}) => {
   const t = useTranslations(`custom.pages.${category}`)
   const locale = useLocale()
 

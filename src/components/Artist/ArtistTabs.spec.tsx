@@ -83,8 +83,8 @@ vi.mock('./ArtistTabContent', () => ({
           ? `${videos.length} videos`
           : emptyMessage
         : images && images.length > 0
-        ? `${images.length} images`
-        : emptyMessage}
+          ? `${images.length} images`
+          : emptyMessage}
     </div>
   ),
   ProjectsTab: ({ projects, emptyMessage }: { projects: unknown[]; emptyMessage: string }) => (

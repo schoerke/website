@@ -30,7 +30,8 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[75fr_25fr] lg:items-start">
         <ContactPageSidebar />
         {image && (
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg lg:order-first">{/* lg:order-first: sidebar is first in DOM (shows above image on mobile); image moves to left column on desktop */}
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg lg:order-first">
+            {/* lg:order-first: sidebar is first in DOM (shows above image on mobile); image moves to left column on desktop */}
             <Image
               src={image.url || ''}
               alt={image.alt || 'Wiesbaden, Germany'}

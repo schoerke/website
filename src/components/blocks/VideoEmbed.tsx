@@ -29,7 +29,10 @@ const VideoEmbed: React.FC<VideoEmbedProps> = ({ url, aspectRatio = '16:9', loca
 
   return (
     <div className="my-8">
-      <div className="relative w-full overflow-hidden rounded-lg bg-gray-900" style={{ paddingBottom: `${paddingBottom}%` }}>
+      <div
+        className="relative w-full overflow-hidden rounded-lg bg-gray-900"
+        style={{ paddingBottom: `${paddingBottom}%` }}
+      >
         <iframe
           src={embedData.embedUrl}
           title={`${embedData.platform} video player`}

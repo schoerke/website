@@ -6,7 +6,8 @@ const ContactPageSidebar: React.FC = () => {
     <aside className="flex flex-col gap-6 items-start text-left lg:items-end lg:text-right">
       {/* TODO: pull from site settings global once CMS field exists */}
       <h3 className="font-playfair mb-0 text-2xl font-bold">
-        Künstlersekretariat<br className="hidden lg:inline" /> Astrid Schoerke GmbH
+        Künstlersekretariat
+        <br className="hidden lg:inline" /> Astrid Schoerke GmbH
       </h3>
       <address className="not-italic text-gray-600 text-sm leading-relaxed space-y-1">
         <p>Emanuel-Geibel-Str. 10</p>

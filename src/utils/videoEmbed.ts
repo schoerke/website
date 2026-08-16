@@ -71,11 +71,11 @@ export function getVideoEmbedData(url: string, locale?: 'de' | 'en'): VideoEmbed
       if (!match || !match[1]) return null
 
       const videoId = match[1]
-      
+
       // Extract locale from URL if it's a valid locale (de or en)
       const pathParts = parsed.pathname.split('/').filter(Boolean)
       const urlLocale = pathParts[0] === 'de' || pathParts[0] === 'en' ? pathParts[0] : undefined
-      
+
       // Use provided locale override, or extract from URL, or default to 'de'
       const embedLocale = locale || urlLocale || 'de'
 
