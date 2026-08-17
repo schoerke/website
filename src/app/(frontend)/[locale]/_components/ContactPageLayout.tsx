@@ -13,6 +13,9 @@ interface ContactPageLayoutProps {
   employees?: Employee[]
   phoneLabel?: string
   mobileLabel?: string
+  dogImage?: PayloadImage | null
+  dogName?: string
+  dogTitle?: string
 }
 
 const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
@@ -23,6 +26,9 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
   employees,
   phoneLabel = 'Phone',
   mobileLabel = 'Mobile',
+  dogImage,
+  dogName,
+  dogTitle,
 }) => {
   return (
     <div className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
@@ -67,6 +73,22 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
                 priority={index === 0}
               />
             ))}
+            {dogImage && (
+              <TeamMemberCard
+                id={-1}
+                name={dogName || 'Yuki'}
+                title={dogTitle || 'Office Dog'}
+                image={dogImage}
+                email=""
+                phone=""
+                mobile=""
+                order={0}
+                updatedAt=""
+                createdAt=""
+                phoneLabel={phoneLabel}
+                mobileLabel={mobileLabel}
+              />
+            )}
           </div>
         </div>
       )}
