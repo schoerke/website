@@ -155,6 +155,8 @@ const en = {
         title: 'Team',
         phone: 'Phone',
         mobile: 'Mobile',
+        dogName: 'Yuki',
+        dogTitle: 'Office Dog',
       },
       impressum: {
         title: 'Legal Notice',
