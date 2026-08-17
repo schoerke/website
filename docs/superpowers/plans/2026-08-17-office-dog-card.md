@@ -332,3 +332,100 @@ Expected: all tests pass.
 - [ ] **Step 4: Fix anything that surfaced, then re-run Steps 1-3 until green.**
 
 - [ ] **Step 5: Report to user for manual review** — no commit (per repo policy, wait for user approval before committing further work).
+
+---
+
+### Task 5: Grayscale dog image prop (TDD)
+
+**Revision note:** Design decision 2026-08-17 — dog card image must be permanently
+grayscale. `TeamMemberCard` gets an optional `grayscale?: boolean` prop instead of a new
+component. See spec §Revision.
+
+**Files:**
+- Modify: `src/components/Employee/TeamMemberCard.tsx`
+- Test: `src/components/Employee/TeamMemberCard.spec.tsx`
+- Modify: `src/app/(frontend)/[locale]/_components/ContactPageLayout.tsx`
+
+- [ ] **Step 1: Write the failing tests**
+
+Append to `TeamMemberCard.spec.tsx` (before the closing `})`):
+
+```tsx
+  it('applies grayscale class to image when grayscale prop is true', () => {
+    render(<TeamMemberCard {...defaultEmployee} phoneLabel="Phone" mobileLabel="Mobile" grayscale={true} />)
+    const img = screen.getByAltText('Jane Smith')
+    expect(img).toHaveAttribute('class', expect.stringContaining('grayscale'))
+  })
+
+  it('omits grayscale class when grayscale prop is false', () => {
+    render(<TeamMemberCard {...defaultEmployee} phoneLabel="Phone" mobileLabel="Mobile" />)
+    const img = screen.getByAltText('Jane Smith')
+    expect(img).not.toHaveAttribute('class', expect.stringContaining('grayscale'))
+  })
+```
+
+Also in `src/app/(frontend)/[locale]/_components/ContactPageLayout.spec.tsx`, extend the
+"renders dog card when dogImage is provided" test to assert the dog card image carries the
+grayscale class (the dog card is the only one that does):
+
+```tsx
+    expect(screen.getByAltText('Yuki')).toHaveAttribute('class', expect.stringContaining('grayscale'))
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+Run: `pnpm test src/components/Employee/TeamMemberCard.spec.tsx src/app/\(frontend\)/\[locale\]/_components/ContactPageLayout.spec.tsx`
+Expected: the two new `TeamMemberCard` tests FAIL (no `grayscale` prop exists yet, the mock
+`<img>` renders no class). The `ContactPageLayout` assertion FAILS (no grayscale class).
+
+- [ ] **Step 3: Implement**
+
+In `src/components/Employee/TeamMemberCard.tsx`:
+
+1. Add to the props interface (after `priority?: boolean`):
+
+```ts
+  grayscale?: boolean
+```
+
+2. Add to destructuring (after `priority = false,`):
+
+```ts
+  grayscale = false,
+```
+
+3. Change the `Image` className (line 33) from:
+
+```tsx
+          className="h-full w-full object-cover"
+```
+
+to:
+
+```tsx
+          className={`h-full w-full object-cover${grayscale ? ' grayscale' : ''}`}
+```
+
+4. In `src/app/(frontend)/[locale]/_components/ContactPageLayout.tsx`, add `grayscale` to
+   the dog card `<TeamMemberCard>` (after `mobileLabel={mobileLabel}`):
+
+```tsx
+                grayscale
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `pnpm test src/components/Employee/TeamMemberCard.spec.tsx src/app/\(frontend\)/\[locale\]/_components/ContactPageLayout.spec.tsx`
+Expected: PASS.
+
+- [ ] **Step 5: Full verification**
+
+Run: `pnpm typecheck`, `pnpm lint`, `pnpm test`
+Expected: all green (test count grows by 2).
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/components/Employee/TeamMemberCard.tsx src/components/Employee/TeamMemberCard.spec.tsx src/app/\(frontend\)/\[locale\]/_components/ContactPageLayout.tsx src/app/\(frontend\)/\[locale\]/_components/ContactPageLayout.spec.tsx docs/superpowers/specs/2026-08-17-office-dog-card-design.md docs/superpowers/plans/2026-08-17-office-dog-card.md
+git commit -m "feat(team): grayscale office dog card image"
+```

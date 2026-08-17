@@ -97,3 +97,18 @@ rendered — no placeholder, no crash. Team section visibility gate
 - Adding the dog to the `employees` collection (explicitly rejected by client).
 - Touching the `/team` redirect route (stays redirecting to contact pages).
 - Homepage "Meet the Team" CTA (unchanged).
+
+## Revision 2026-08-17: grayscale dog image
+
+Replaces the "Approach: Reuse `TeamMemberCard`" rendering detail. The dog card image is
+rendered permanently grayscale to visually distinguish the office dog from the staff.
+
+- `TeamMemberCard` gains an optional `grayscale?: boolean` prop. When `true`, the
+  `next/image` element gets the Tailwind `grayscale` filter class
+  (`className={`h-full w-full object-cover${grayscale ? ' grayscale' : ''}`}`).
+  Defaults to `false`; existing employee cards unchanged.
+- `ContactPageLayout` passes `grayscale` (true) on the dog card only (plus the existing
+  `dogImage`/`dogName`/`dogTitle` props).
+- New test in `src/components/Employee/TeamMemberCard.spec.tsx`: card renders the
+  grayscale class when `grayscale` is true and omits it when false.
+- Data flow, i18n, missing-image handling, and out-of-scope notes unchanged.
