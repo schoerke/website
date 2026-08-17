@@ -325,4 +325,66 @@ describe('createSlugHook', () => {
       expect(result).toBe('original-slug')
     })
   })
+
+  describe('length cap', () => {
+    const longTitle =
+      'Dominik Wagner im Concertgebouw Amsterdam diese Woche wird Dominik Wagner gemeinsam mit dem Simply ' +
+      'Quartett und Pianist Johannes Piirto im renommierten Concertgebouw in Amsterdam spielen gemeinsam werden ' +
+      'die sechs Musikerinnen Schuberts Forellenquintett präsentieren siebenter Mai zweitausendsechsundzwanzig ' +
+      'Amsterdam'
+
+    it('keeps slugs within the filesystem-safe byte limit', () => {
+      const result = generateSlug(longTitle)
+
+      expect(Buffer.byteLength(result)).toBeLessThanOrEqual(240)
+    })
+
+    it('appends a deterministic hash suffix when truncating', () => {
+      const result = generateSlug(longTitle)
+      const again = generateSlug(longTitle)
+
+      expect(result).toMatch(/^.{1,231}-[a-f0-9]{8}$/)
+      expect(result).toBe(again)
+      expect(result).not.toContain('--')
+      expect(result).not.toBe(generateSlug('Christian Poltéra'))
+    })
+
+    it('keeps truncated slugs unique when titles share a long prefix', () => {
+      const commonPrefix = 'a'.repeat(231)
+      const first = `${commonPrefix} first title with a unique ending`
+      const second = `${commonPrefix} another title with a different ending`
+
+      const slugA = generateSlug(first)
+      const slugB = generateSlug(second)
+
+      expect(slugA).not.toBe(slugB)
+      expect(Buffer.byteLength(slugA)).toBeLessThanOrEqual(240)
+      expect(Buffer.byteLength(slugB)).toBeLessThanOrEqual(240)
+      expect(slugA).toHaveLength(slugB.length)
+    })
+
+    it('leaves short slugs untouched', () => {
+      expect(generateSlug('Christian Poltéra')).toBe('christian-poltera')
+      expect(generateSlug('Neuer Künstler')).toBe('neuer-kunstler')
+    })
+
+    it('keeps a slug exactly at the boundary unchanged', () => {
+      const boundary = 'a'.repeat(240)
+
+      expect(generateSlug(boundary)).toBe(boundary)
+    })
+
+    it('capped slug resolves to the same result through the createSlugHook', () => {
+      const hook = createSlugHook('title')
+      const result = hook({
+        data: { title: { de: longTitle } },
+        operation: 'create',
+        value: undefined,
+        req: { locale: 'de' },
+      } as unknown as FieldHookArgs)
+
+      expect(typeof result).toBe('string')
+      expect(Buffer.byteLength(result as string)).toBeLessThanOrEqual(240)
+    })
+  })
 })
