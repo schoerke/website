@@ -42,12 +42,13 @@ describe('getContactPageData', () => {
     })
   })
 
-  it('fetches team page, employees and image in parallel', async () => {
+  it('fetches team page, employees and images in parallel', async () => {
     await getContactPageData('en')
 
     expect(getPageBySlug).toHaveBeenCalledWith('team', 'en')
     expect(getEmployees).toHaveBeenCalledWith('en')
     expect(getImageByFilename).toHaveBeenCalledWith('wiesbaden.webp')
+    expect(getImageByFilename).toHaveBeenCalledWith('IMG_8115.JPG')
   })
 
   it('does not fetch contact page from CMS', async () => {
