@@ -34,7 +34,12 @@ describe('getContactPageData', () => {
     vi.mocked(getEmployees).mockResolvedValue(
       createMockPaginatedDocs([createMockEmployee(), createMockEmployee({ id: 2, name: 'Jane Smith' })]) as never
     )
-    vi.mocked(getImageByFilename).mockResolvedValue(mockImage as never)
+    vi.mocked(getImageByFilename).mockImplementation(async (filename: string) => {
+      if (filename === 'IMG_8115.JPG') {
+        return { id: 2, url: '/dog.jpg', alt: 'Yuki', updatedAt: '', createdAt: '' } as never
+      }
+      return mockImage as never
+    })
   })
 
   it('fetches team page, employees and image in parallel', async () => {
@@ -66,5 +71,19 @@ describe('getContactPageData', () => {
     vi.mocked(getEmployees).mockResolvedValue(createMockPaginatedDocs([]) as never)
     const result = await getContactPageData('en')
     expect(result.employees).toHaveLength(0)
+  })
+
+  it('fetches the dog image by filename', async () => {
+    await getContactPageData('en')
+
+    expect(getImageByFilename).toHaveBeenCalledWith('IMG_8115.JPG')
+  })
+
+  it('returns dog image, dog name and dog title', async () => {
+    const result = await getContactPageData('en')
+
+    expect(result.dogImage?.url).toBe('/dog.jpg')
+    expect(result.dogName).toBe('dogName')
+    expect(result.dogTitle).toBe('dogTitle')
   })
 })
