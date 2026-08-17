@@ -87,6 +87,7 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
                 createdAt=""
                 phoneLabel={phoneLabel}
                 mobileLabel={mobileLabel}
+                grayscale
               />
             )}
           </div>

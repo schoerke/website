@@ -86,4 +86,16 @@ describe('TeamMemberCard', () => {
     render(<TeamMemberCard {...defaultEmployee} phoneLabel="Phone" mobileLabel="Mobile" priority={true} />)
     expect(screen.getByAltText('Jane Smith')).toBeInTheDocument()
   })
+
+  it('applies grayscale class to image when grayscale prop is true', () => {
+    render(<TeamMemberCard {...defaultEmployee} phoneLabel="Phone" mobileLabel="Mobile" grayscale={true} />)
+    const img = screen.getByAltText('Jane Smith')
+    expect(img).toHaveAttribute('class', expect.stringContaining('grayscale'))
+  })
+
+  it('omits grayscale class when grayscale prop is false', () => {
+    render(<TeamMemberCard {...defaultEmployee} phoneLabel="Phone" mobileLabel="Mobile" />)
+    const img = screen.getByAltText('Jane Smith')
+    expect(img).not.toHaveAttribute('class', expect.stringContaining('grayscale'))
+  })
 })

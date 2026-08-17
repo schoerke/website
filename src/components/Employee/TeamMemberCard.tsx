@@ -6,6 +6,7 @@ interface TeamMemberCardProps extends Employee {
   phoneLabel: string
   mobileLabel: string
   priority?: boolean
+  grayscale?: boolean
 }
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
@@ -18,6 +19,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   phoneLabel,
   mobileLabel,
   priority = false,
+  grayscale = false,
 }) => {
   const img = typeof image === 'object' && image !== null ? (image as PayloadImage) : undefined
   const imageUrl = img?.url || '/placeholder.jpg'
@@ -30,7 +32,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
           alt={name || 'Team Member'}
           width={400}
           height={400}
-          className="h-full w-full object-cover"
+          className={`h-full w-full object-cover${grayscale ? ' grayscale' : ''}`}
           priority={priority}
         />
         <div
