@@ -112,12 +112,17 @@ export interface ParsedIframe {
   title?: string
 }
 
-const IFRAME_ATTR = (name: string) => new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, 'i')
+const IFRAME_TAG = /<iframe\b[^>]*>/i
+
+const IFRAME_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']([^"']*)["']`, 'i')
 
 export function parseIframeEmbed(code: string): ParsedIframe | null {
-  if (!code || !code.toLowerCase().includes('<iframe')) return null
+  if (!code || !/<iframe\b/i.test(code)) return null
 
-  const srcMatch = code.match(IFRAME_ATTR('src'))
+  const tag = code.match(IFRAME_TAG)?.[0] ?? ''
+  if (!tag) return null
+
+  const srcMatch = tag.match(IFRAME_ATTR('src'))
   if (!srcMatch || !srcMatch[1]) return null
 
   const num = (match: RegExpMatchArray | null): number | undefined => {
@@ -127,12 +132,12 @@ export function parseIframeEmbed(code: string): ParsedIframe | null {
 
   const parsed: ParsedIframe = { src: srcMatch[1] }
 
-  const width = num(code.match(IFRAME_ATTR('width')))
-  const height = num(code.match(IFRAME_ATTR('height')))
-  const title = code.match(IFRAME_ATTR('title'))?.[1]
+  const width = num(tag.match(IFRAME_ATTR('width')))
+  const height = num(tag.match(IFRAME_ATTR('height')))
+  const title = tag.match(IFRAME_ATTR('title'))?.[1]
 
-  if (width) parsed.width = width
-  if (height) parsed.height = height
+  if (width !== undefined) parsed.width = width
+  if (height !== undefined) parsed.height = height
   if (title) parsed.title = title
 
   return parsed

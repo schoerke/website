@@ -31,7 +31,31 @@ describe('parseIframeEmbed', () => {
     expect(parseIframeEmbed('')).toBeNull()
   })
 
-  it('ignores event handlers and srcdoc', () => {
+  it('uses the real src, not a data-src attribute', () => {
+    const snippet = `<iframe data-src="https://evil.example.com/x" src="https://www.rts.ch/play/embed?urn=urn:rts:audio:1"></iframe>`
+    expect(parseIframeEmbed(snippet)).toMatchObject({
+      src: 'https://www.rts.ch/play/embed?urn=urn:rts:audio:1',
+    })
+  })
+
+  it('ignores src attributes outside the iframe tag', () => {
+    const snippet = `<img src="https://evil.example.com/y"><iframe src="https://www.rts.ch/play/embed?urn=urn:rts:audio:2"></iframe>`
+    expect(parseIframeEmbed(snippet)).toMatchObject({
+      src: 'https://www.rts.ch/play/embed?urn=urn:rts:audio:2',
+    })
+  })
+
+  it('supports single-quoted and uppercase attributes', () => {
+    expect(parseIframeEmbed(`<iframe SRC='https://www.rts.ch/play/embed?urn=urn:rts:audio:3'></iframe>`)).toMatchObject(
+      { src: 'https://www.rts.ch/play/embed?urn=urn:rts:audio:3' }
+    )
+  })
+
+  it('returns null for a fake iframe tag (iframex)', () => {
+    expect(parseIframeEmbed('<iframex src="https://www.rts.ch/x"></iframex>')).toBeNull()
+  })
+
+  it('extracts only src when no optional attrs present', () => {
     const snippet = `<iframe src="https://www.rts.ch/play/embed?urn=urn:rts:audio:1" onload="alert(1)" srcdoc="<script>alert(2)</script>" style="position:fixed"></iframe>`
     const parsed = parseIframeEmbed(snippet)
     expect(parsed).toEqual({
