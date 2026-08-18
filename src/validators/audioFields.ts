@@ -1,3 +1,4 @@
+import { IFRAME_ATTR, IFRAME_TAG } from '@/utils/audioEmbed'
 import { isEmbedHostAllowed } from '@/utils/embeds'
 
 /**
@@ -83,10 +84,6 @@ export const validateAudioURL = (value: unknown, { siblingData }: AudioURLContex
   }
 }
 
-// Patterns must stay byte-identical with IFRAME_TAG / IFRAME_ATTR in src/utils/audioEmbed.ts
-const EMBED_IFRAME_TAG = /<iframe\b[^>]*>/i
-const EMBED_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']([^"']*)["']`, 'i')
-
 /**
  * Validates raw <iframe> embed codes (e.g. RTS) against the host allowlist.
  *
@@ -107,12 +104,12 @@ export const validateEmbedCode = (value: unknown, { siblingData }: AudioURLConte
     return 'Please enter either an audio URL or an embed code'
   }
 
-  if (typeof value !== 'string' || !EMBED_IFRAME_TAG.test(value)) {
+  if (typeof value !== 'string' || !IFRAME_TAG.test(value)) {
     return 'Please enter a valid embed code'
   }
 
-  const tag = value.match(EMBED_IFRAME_TAG)?.[0] ?? ''
-  const srcMatch = tag.match(EMBED_ATTR('src'))
+  const tag = value.match(IFRAME_TAG)?.[0] ?? ''
+  const srcMatch = tag.match(IFRAME_ATTR('src'))
   if (!srcMatch || !srcMatch[1]) return 'Please enter a valid embed code'
 
   let url: URL

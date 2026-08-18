@@ -1,6 +1,7 @@
 'use client'
 
 import { getAudioEmbedData, getAudioEmbedHeight, parseIframeEmbed } from '@/utils/audioEmbed'
+import { isEmbedHostAllowed } from '@/utils/embeds'
 
 interface AudioEmbedProps {
   url?: string
@@ -24,8 +25,15 @@ const AudioEmbed: React.FC<AudioEmbedProps> = ({ url, embedCode }) => {
       )
     }
 
-    // Only ever render http(s) sources (defense-in-depth; allowlist validation happens at save)
-    if (!/^https?:\/\//i.test(parsed.src)) {
+    let host: string
+    try {
+      host = new URL(parsed.src).hostname
+    } catch {
+      host = ''
+    }
+
+    // Defense-in-depth: only render allowlisted http(s) sources (validation also happens at save)
+    if (!/^https?:\/\//i.test(parsed.src) || !isEmbedHostAllowed(host)) {
       if (process.env.NODE_ENV === 'development') {
         console.error('[AudioEmbed] Unsafe embed src:', parsed.src)
       }

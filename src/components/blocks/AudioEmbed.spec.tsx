@@ -71,6 +71,11 @@ describe('AudioEmbed', () => {
     expect(screen.getByText('Audio embed error')).toBeInTheDocument()
   })
 
+  it('refuses to render a src whose effective host is not allowlisted', () => {
+    render(<AudioEmbed embedCode='<iframe src="https://www.rts.ch@evil.example.com/x"></iframe>' />)
+    expect(screen.getByText('Audio embed error')).toBeInTheDocument()
+  })
+
   it('shows an error box for an invalid embedCode', () => {
     render(<AudioEmbed embedCode="not an iframe" />)
     expect(screen.getByText('Audio embed error')).toBeInTheDocument()
