@@ -3,6 +3,7 @@
 import { Link } from '@/i18n/navigation'
 import type { Artist, Image as PayloadImage } from '@/payload-types'
 import ImageSkeleton from '@/components/ui/ImageSkeleton'
+import { useDisableHoverOnScroll } from '@/hooks/useDisableHoverOnScroll'
 import { useImageLoad } from '@/hooks/useImageLoad'
 import { shuffleArray } from '@/utils/array'
 import { getValidImageUrl, isImageObject } from '@/utils/image'
@@ -15,12 +16,13 @@ interface ArtistMasonryGridProps {
   artists: Artist[]
 }
 
-interface MasonryItemProps {
+interface MasonryGridItemProps {
   artist: Artist
   translatedInstruments: string
+  hoverDisabled: boolean
 }
 
-const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments }) => {
+const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedInstruments, hoverDisabled }) => {
   const { loaded, error, ref, onLoad, onError } = useImageLoad()
   const image = isImageObject(artist.image) ? (artist.image as PayloadImage) : null
   const imageUrl = getValidImageUrl(artist.image)
@@ -29,6 +31,18 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments
   const focalY = image?.focalY ?? 50
 
   const showPlaceholder = !hasRealImage || error
+
+  // While scrolling, drop the hover effects (overlay + image zoom) but keep
+  // the transitions so exiting hover fades out smoothly instead of snapping.
+  const bgClasses = hoverDisabled
+    ? 'absolute inset-0 flex flex-col justify-end bg-black/0 p-4 transition-all duration-300'
+    : 'absolute inset-0 flex flex-col justify-end bg-black/0 p-4 transition-all duration-300 group-hover:bg-black/60'
+  const overlayClasses = hoverDisabled
+    ? 'translate-y-2 opacity-0 transition-all duration-300'
+    : 'translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100'
+  const imageClasses = hoverDisabled
+    ? 'block h-auto w-full object-cover transition-transform duration-500'
+    : 'block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105'
 
   const content = (
     <div className="group relative w-full overflow-hidden">
@@ -50,7 +64,7 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments
             alt={artist.name}
             width={600}
             height={800}
-            className={`block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105 ${loaded ? 'opacity-100' : 'opacity-0 transition-opacity'}`}
+            className={`${imageClasses} ${loaded ? 'opacity-100' : 'opacity-0 transition-opacity'}`}
             style={{ objectPosition: `${focalX}% ${focalY}%` }}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             ref={ref}
@@ -60,11 +74,11 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments
         </>
       )}
       {/* Hover overlay */}
-      <div className="absolute inset-0 flex flex-col justify-end bg-black/0 p-4 transition-all duration-300 group-hover:bg-black/60">
-        <div className="translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <p className="font-playfair text-xl font-bold text-white drop-shadow">{artist.name}</p>
+      <div className={bgClasses}>
+        <div className={overlayClasses}>
+          <p className="font-playfair text-3xl font-bold italic text-white drop-shadow">{artist.name}</p>
           {translatedInstruments && (
-            <p className="text-primary-yellow mt-0.5 text-sm font-bold drop-shadow">{translatedInstruments}</p>
+            <p className="text-primary-yellow mt-0.5 text-sm drop-shadow">{translatedInstruments}</p>
           )}
         </div>
       </div>
@@ -86,6 +100,7 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments
 
 const ArtistMasonryGrid: React.FC<ArtistMasonryGridProps> = ({ artists }) => {
   const t = useTranslations('custom.instruments')
+  const hoverDisabled = useDisableHoverOnScroll()
   const [displayed, setDisplayed] = useState(artists)
   const [ready, setReady] = useState(false)
 
@@ -103,7 +118,14 @@ const ArtistMasonryGrid: React.FC<ArtistMasonryGridProps> = ({ artists }) => {
         const translatedInstruments =
           artist.instrument?.map((inst) => t(inst as Parameters<typeof t>[0])).join(', ') ?? ''
 
-        return <MasonryItem key={String(artist.id)} artist={artist} translatedInstruments={translatedInstruments} />
+        return (
+          <MasonryGridItem
+            key={String(artist.id)}
+            artist={artist}
+            translatedInstruments={translatedInstruments}
+            hoverDisabled={hoverDisabled}
+          />
+        )
       })}
     </div>
   )
