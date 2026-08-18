@@ -21,7 +21,6 @@ describe('useDisableHoverOnScroll', () => {
 
   it.each(['wheel', 'touchmove', 'scroll'] as const)('disables on %s and re-enables once idle', (eventName) => {
     const { result } = renderHook(() => useDisableHoverOnScroll(100))
-    window.dispatchEvent(new Event(eventName))
 
     act(() => {
       window.dispatchEvent(new Event(eventName))
