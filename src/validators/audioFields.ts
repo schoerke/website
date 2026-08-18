@@ -1,3 +1,5 @@
+import { isEmbedHostAllowed } from '@/utils/embeds'
+
 /**
  * Audio Embed Validation
  *
@@ -52,4 +54,36 @@ export const validateAudioURL = (value: unknown): true | string => {
   } catch {
     return 'Please enter a valid URL format'
   }
+}
+
+const EMBED_IFRAME_TAG = /<iframe\b[^>]*>/i
+const EMBED_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']([^"']*)["']`, 'i')
+
+/**
+ * Validates raw <iframe> embed codes (e.g. RTS) against the host allowlist.
+ *
+ * @param value - Raw iframe snippet string
+ * @returns true if valid, error message if invalid
+ */
+export const validateEmbedCode = (value: unknown): true | string => {
+  if (typeof value !== 'string' || !/<iframe\b/i.test(value)) {
+    return 'Please enter a valid embed code'
+  }
+
+  const tag = value.match(EMBED_IFRAME_TAG)?.[0] ?? ''
+  const srcMatch = tag.match(EMBED_ATTR('src'))
+  if (!srcMatch || !srcMatch[1]) return 'Please enter a valid embed code'
+
+  let url: URL
+  try {
+    url = new URL(srcMatch[1])
+  } catch {
+    return 'Please enter a valid embed code'
+  }
+
+  if (url.protocol !== 'https:') return 'Please enter a valid embed code'
+
+  if (!isEmbedHostAllowed(url.hostname)) return 'Embed iframe host is not allowed'
+
+  return true
 }
