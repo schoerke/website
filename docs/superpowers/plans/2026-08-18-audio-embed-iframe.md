@@ -242,6 +242,16 @@ describe('validateEmbedCode', () => {
     expect(validateEmbedCode('<iframe width="392"></iframe>')).toBe('Please enter a valid embed code')
   })
 
+  it('validates the real src, not a data-src attribute', () => {
+    // data-src must not be mistaken for src
+    expect(
+      validateEmbedCode('<iframe data-src="https://www.rts.ch/x" src="https://evil.example.com/x"></iframe>')
+    ).toBe('Embed iframe host is not allowed')
+    expect(
+      validateEmbedCode('<iframe data-src="https://evil.example.com/x" src="https://www.rts.ch/x"></iframe>')
+    ).toBe(true)
+  })
+
   it('rejects non-https src', () => {
     expect(
       validateEmbedCode('<iframe src="http://rts.ch/play/embed?urn=x"></iframe>')
@@ -269,9 +279,12 @@ First add the import at the very top of the file (project rule: imports at top):
 import { isEmbedHostAllowed } from '@/utils/embeds'
 ```
 
-Then append:
+Then append (regex hardened to match Task 2's `parseIframeEmbed` — scoped to the iframe tag, attribute-name boundary):
 
 ```ts
+const EMBED_IFRAME_TAG = /<iframe\b[^>]*>/i
+const EMBED_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']([^"']*)["']`, 'i')
+
 /**
  * Validates raw <iframe> embed codes (e.g. RTS) against the host allowlist.
  *
@@ -279,11 +292,12 @@ Then append:
  * @returns true if valid, error message if invalid
  */
 export const validateEmbedCode = (value: unknown): true | string => {
-  if (typeof value !== 'string' || !value.toLowerCase().includes('<iframe')) {
+  if (typeof value !== 'string' || !/<iframe\b/i.test(value)) {
     return 'Please enter a valid embed code'
   }
 
-  const srcMatch = value.match(/\bsrc\s*=\s*["']([^"']*)["']/i)
+  const tag = value.match(EMBED_IFRAME_TAG)?.[0] ?? ''
+  const srcMatch = tag.match(EMBED_ATTR('src'))
   if (!srcMatch || !srcMatch[1]) return 'Please enter a valid embed code'
 
   let url: URL
