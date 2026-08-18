@@ -3,10 +3,12 @@
 import { getAudioEmbedData, getAudioEmbedHeight } from '@/utils/audioEmbed'
 
 interface AudioEmbedProps {
-  url: string
+  url?: string
 }
 
 const AudioEmbed: React.FC<AudioEmbedProps> = ({ url }) => {
+  if (!url) return null
+
   const embedData = getAudioEmbedData(url)
 
   if (!embedData) {

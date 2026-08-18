@@ -7,16 +7,37 @@ import { isEmbedHostAllowed } from '@/utils/embeds'
  */
 
 /**
+ * Context passed by Payload to field validators
+ */
+interface AudioURLContext {
+  siblingData?: { url?: unknown; embedCode?: unknown }
+}
+
+/**
  * Validates audio URLs for supported streaming platforms
  *
  * Supported platforms:
  * - Spotify: open.spotify.com/track/ID, open.spotify.com/album/ID, open.spotify.com/playlist/ID
  * - Apple Music: music.apple.com/.../album/..., music.apple.com/.../playlist/...
  *
+ * An empty url is allowed when an embed code is set on the sibling field.
+ *
  * @param value - Audio URL to validate
+ * @param context - Payload validation context (siblingData)
  * @returns true if valid, error message if invalid
  */
-export const validateAudioURL = (value: unknown): true | string => {
+export const validateAudioURL = (value: unknown, { siblingData }: AudioURLContext = {}): true | string => {
+  const embedCode = siblingData?.embedCode
+
+  // Empty url is fine when an embed code is set on the sibling field
+  if (value === '' && typeof embedCode === 'string' && embedCode.trim() !== '') {
+    return true
+  }
+
+  if (value === '' || value === undefined || value === null) {
+    return 'Please enter either an audio URL or an embed code'
+  }
+
   if (typeof value !== 'string') return 'Please enter a valid audio URL'
 
   try {
@@ -63,10 +84,23 @@ const EMBED_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']
 /**
  * Validates raw <iframe> embed codes (e.g. RTS) against the host allowlist.
  *
+ * An empty embed code is allowed when a url is set on the sibling field.
+ *
  * @param value - Raw iframe snippet string
+ * @param context - Payload validation context (siblingData)
  * @returns true if valid, error message if invalid
  */
-export const validateEmbedCode = (value: unknown): true | string => {
+export const validateEmbedCode = (value: unknown, { siblingData }: AudioURLContext = {}): true | string => {
+  const siblingUrl = siblingData?.url
+
+  if (
+    (value === '' || value === undefined || value === null) &&
+    typeof siblingUrl === 'string' &&
+    siblingUrl.trim() !== ''
+  ) {
+    return true
+  }
+
   if (typeof value !== 'string' || !EMBED_IFRAME_TAG.test(value)) {
     return 'Please enter a valid embed code'
   }
