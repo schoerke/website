@@ -14,6 +14,12 @@ interface AudioURLContext {
 }
 
 /**
+ * Returns true when a field value is effectively empty (missing or whitespace-only)
+ */
+const isEmptyAudioField = (value: unknown): boolean =>
+  value === undefined || value === null || (typeof value === 'string' && value.trim() === '')
+
+/**
  * Validates audio URLs for supported streaming platforms
  *
  * Supported platforms:
@@ -30,11 +36,11 @@ export const validateAudioURL = (value: unknown, { siblingData }: AudioURLContex
   const embedCode = siblingData?.embedCode
 
   // Empty url is fine when an embed code is set on the sibling field
-  if (value === '' && typeof embedCode === 'string' && embedCode.trim() !== '') {
+  if (isEmptyAudioField(value) && typeof embedCode === 'string' && embedCode.trim() !== '') {
     return true
   }
 
-  if (value === '' || value === undefined || value === null) {
+  if (isEmptyAudioField(value)) {
     return 'Please enter either an audio URL or an embed code'
   }
 
@@ -93,12 +99,12 @@ const EMBED_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']
 export const validateEmbedCode = (value: unknown, { siblingData }: AudioURLContext = {}): true | string => {
   const siblingUrl = siblingData?.url
 
-  if (
-    (value === '' || value === undefined || value === null) &&
-    typeof siblingUrl === 'string' &&
-    siblingUrl.trim() !== ''
-  ) {
+  if (isEmptyAudioField(value) && typeof siblingUrl === 'string' && siblingUrl.trim() !== '') {
     return true
+  }
+
+  if (isEmptyAudioField(value)) {
+    return 'Please enter either an audio URL or an embed code'
   }
 
   if (typeof value !== 'string' || !EMBED_IFRAME_TAG.test(value)) {

@@ -29,6 +29,30 @@ describe('validateAudioURL', () => {
       validateAudioURL('not-a-url', { siblingData: { embedCode: '<iframe src="https://www.rts.ch/x"></iframe>' } })
     ).toBe('Please enter a valid URL format')
   })
+
+  it('accepts an undefined url when sibling embedCode is present', () => {
+    expect(
+      validateAudioURL(undefined, { siblingData: { embedCode: '<iframe src="https://www.rts.ch/x"></iframe>' } })
+    ).toBe(true)
+  })
+
+  it('accepts a null url when sibling embedCode is present', () => {
+    expect(validateAudioURL(null, { siblingData: { embedCode: '<iframe src="https://www.rts.ch/x"></iframe>' } })).toBe(
+      true
+    )
+  })
+
+  it('rejects an undefined url when sibling embedCode is also empty', () => {
+    expect(validateAudioURL(undefined, { siblingData: { embedCode: '' } })).toBe(
+      'Please enter either an audio URL or an embed code'
+    )
+  })
+
+  it('rejects both url and embedCode being set to whitespace', () => {
+    expect(validateAudioURL('   ', { siblingData: { embedCode: '   ' } })).toBe(
+      'Please enter either an audio URL or an embed code'
+    )
+  })
 })
 
 describe('validateEmbedCode', () => {
@@ -95,12 +119,14 @@ describe('validateEmbedCode', () => {
   })
 
   it('rejects an empty embed code when sibling url is also empty', () => {
-    expect(validateEmbedCode('', { siblingData: { url: '' } })).toBe('Please enter a valid embed code')
+    expect(validateEmbedCode('', { siblingData: { url: '' } })).toBe(
+      'Please enter either an audio URL or an embed code'
+    )
   })
 
   it('rejects non-string values', () => {
     expect(validateEmbedCode(123)).toBe('Please enter a valid embed code')
-    expect(validateEmbedCode(null)).toBe('Please enter a valid embed code')
-    expect(validateEmbedCode(undefined)).toBe('Please enter a valid embed code')
+    expect(validateEmbedCode(null)).toBe('Please enter either an audio URL or an embed code')
+    expect(validateEmbedCode(undefined)).toBe('Please enter either an audio URL or an embed code')
   })
 })
