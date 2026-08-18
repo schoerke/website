@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import RecordingListItem from '@/components/Recording/RecordingListItem'
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
-import { createMockRecording } from '@/tests/utils/payloadMocks'
+import { createMockImage, createMockRecording } from '@/tests/utils/payloadMocks'
 
 const messages = {
   custom: {
@@ -188,5 +188,86 @@ describe('RecordingListItem', () => {
     const label = screen.getByText('Listen on Apple Music')
     expect(label).toBeInTheDocument()
     expect(label).toHaveClass('hidden', 'lg:inline')
+  })
+
+  it('renders cover art image when coverArt is a populated Image object', () => {
+    renderItem(
+      createMockRecording({
+        title: 'Beethoven - Violin Concerto',
+        coverArt: createMockImage({ alt: 'Album cover art', url: '/api/images/file/cover.jpg' }),
+      })
+    )
+
+    const img = screen.getByRole('img', { name: 'Album cover art' })
+    expect(img).toBeInTheDocument()
+    expect(img).toHaveAttribute('src', expect.stringContaining('cover.jpg'))
+  })
+
+  it('falls back to recording title as alt text when coverArt has no alt', () => {
+    renderItem(
+      createMockRecording({
+        title: 'Beethoven - Violin Concerto',
+        coverArt: createMockImage({ alt: '', url: '/api/images/file/cover.jpg' }),
+      })
+    )
+
+    expect(screen.getByRole('img', { name: 'Beethoven - Violin Concerto' })).toBeInTheDocument()
+  })
+
+  it('renders a placeholder when coverArt is absent', () => {
+    renderItem(createMockRecording({ coverArt: undefined }))
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('recording-cover-placeholder')).toBeInTheDocument()
+  })
+
+  it('renders a placeholder when coverArt is an unpopulated ID (not an object)', () => {
+    renderItem(createMockRecording({ coverArt: 42 }))
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('recording-cover-placeholder')).toBeInTheDocument()
+  })
+
+  it('renders a placeholder when coverArt is explicitly null', () => {
+    renderItem(createMockRecording({ coverArt: null }))
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('recording-cover-placeholder')).toBeInTheDocument()
+  })
+
+  it('prefers the thumbnail size url over the full image url when both are present', () => {
+    renderItem(
+      createMockRecording({
+        coverArt: createMockImage({
+          url: '/api/images/file/cover-full.jpg',
+          sizes: { thumbnail: { url: '/api/images/file/cover-thumbnail.jpg' } },
+        }),
+      })
+    )
+
+    const img = screen.getByRole('img')
+    expect(img).toHaveAttribute('src', expect.stringContaining('cover-thumbnail.jpg'))
+  })
+
+  it('sets a responsive sizes attribute matching the mobile/desktop thumbnail box sizes', () => {
+    renderItem(createMockRecording({ coverArt: createMockImage({ url: '/api/images/file/cover.jpg' }) }))
+
+    expect(screen.getByRole('img')).toHaveAttribute('sizes', '(min-width: 768px) 48px, 80px')
+  })
+
+  it('renders a larger cover art box on mobile that shrinks down at the md breakpoint', () => {
+    renderItem(createMockRecording({ coverArt: createMockImage({ url: '/api/images/file/cover.jpg' }) }))
+
+    expect(screen.getByRole('img').parentElement).toHaveClass('h-20', 'w-20', 'md:h-12', 'md:w-12')
+  })
+
+  it('falls back to the placeholder when the image fails to load', async () => {
+    renderItem(createMockRecording({ coverArt: createMockImage({ url: '/api/images/file/cover.jpg' }) }))
+
+    const img = screen.getByRole('img')
+    fireEvent.error(img)
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('recording-cover-placeholder')).toBeInTheDocument()
   })
 })
