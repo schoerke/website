@@ -60,8 +60,8 @@ export const AudioEmbed: Block = {
         placeholder:
           '<iframe src="https://www.rts.ch/play/embed?urn=urn:rts:audio:14033462" width="392" height="58" allowfullscreen></iframe>',
         description: {
-          en: 'Paste an <iframe> embed code from a supported provider (e.g. RTS)',
-          de: '<iframe>-Einbettungscode eines unterstützten Anbieters einfügen (z. B. RTS)',
+          en: 'Paste an <iframe> embed code from a supported provider (e.g. RTS). If the embed looks cropped or oversized on the site, edit the width/height values in the pasted code and save again.',
+          de: '<iframe>-Einbettungscode eines unterstützten Anbieters einfügen (z. B. RTS). Falls die Einbettung auf der Website abgeschnitten oder zu groß wirkt, die Werte für width/height im eingefügten Code anpassen und erneut speichern.',
         },
         condition: (_, siblingData) => !siblingData?.url,
         rows: 4,
