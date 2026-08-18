@@ -3,6 +3,7 @@ import HomePageSidebar from '@/components/HomePageSidebar/HomePageSidebar'
 import type { HomePageSlide } from '@/components/HomePageSlider/HomePageSlider'
 import HomePageSlider from '@/components/HomePageSlider/HomePageSlider'
 import SchoerkeLink from '@/components/ui/SchoerkeLink'
+import SectionHeading from '@/components/ui/SectionHeading'
 import { routing } from '@/i18n/routing'
 import { Artist, Image as PayloadImage, Post } from '@/payload-types'
 import { getArtistListData } from '@/services/artist'
@@ -66,7 +67,7 @@ const HomePage = async ({ params }: HomePageProps) => {
       {/* News */}
       {newsSlides.length > 0 && (
         <section className="mb-16">
-          <h2 className="font-playfair mb-8 text-4xl font-bold sm:text-5xl">{t('newsHeading')}</h2>
+          <SectionHeading className="mb-8">{t('newsHeading')}</SectionHeading>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[75fr_25fr]">
             <HomePageSlider slides={newsSlides} interval={9000} />
             <HomePageSidebar locale={locale} />
@@ -77,7 +78,7 @@ const HomePage = async ({ params }: HomePageProps) => {
       {/* Artist Roster */}
       {artists.length > 0 && (
         <section className="mb-16">
-          <h2 className="font-playfair mb-4 text-4xl font-bold sm:text-center sm:text-5xl">{t('artistsHeading')}</h2>
+          <SectionHeading className="mb-4 sm:justify-center">{t('artistsHeading')}</SectionHeading>
           <p className="mb-6 text-lg text-gray-600 sm:text-center">
             {typeof homePageGlobal.artistsIntro === 'string' && homePageGlobal.artistsIntro.trim() !== ''
               ? homePageGlobal.artistsIntro
@@ -100,7 +101,7 @@ const HomePage = async ({ params }: HomePageProps) => {
       <div className="my-8 flex flex-col gap-16 lg:flex-row">
         {/* Meet the Team */}
         <section className="flex flex-1 flex-col items-start sm:items-center lg:items-center">
-          <h2 className="font-playfair mb-4 text-4xl font-bold sm:text-center sm:text-5xl">{t('teamHeading')}</h2>
+          <SectionHeading className="mb-4 sm:justify-center">{t('teamHeading')}</SectionHeading>
           <p className="mb-6 text-lg text-gray-600 sm:text-center">
             {typeof homePageGlobal.teamIntro === 'string' && homePageGlobal.teamIntro.trim() !== ''
               ? homePageGlobal.teamIntro
@@ -114,7 +115,7 @@ const HomePage = async ({ params }: HomePageProps) => {
 
         {/* Contact CTA */}
         <section className="flex flex-1 flex-col items-start sm:items-center lg:items-center">
-          <h2 className="font-playfair mb-4 text-4xl font-bold sm:text-center sm:text-5xl">{t('contactHeading')}</h2>
+          <SectionHeading className="mb-4 sm:justify-center">{t('contactHeading')}</SectionHeading>
           <p className="mb-6 text-lg text-gray-600 sm:text-center">
             {typeof homePageGlobal.contactIntro === 'string' && homePageGlobal.contactIntro.trim() !== ''
               ? homePageGlobal.contactIntro

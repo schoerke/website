@@ -38,8 +38,9 @@ const HomePageSidebar = async ({ locale }: HomePageSidebarProps) => {
         </p>
       </address>
 
-      <nav aria-label="Sidebar navigation" className="mt-4">
-        <ul className="flex flex-col gap-3 text-sm uppercase lg:text-lg">
+      <nav aria-label="Sidebar navigation" className="mt-4 w-full">
+        <hr className="ml-auto mb-4 w-24 border-gray-200" />
+        <ul className="flex flex-col gap-3 text-base font-bold">
           {navLinks.map((link) => (
             <li key={link.href}>
               <SchoerkeLink href={link.href} variant="animated">
