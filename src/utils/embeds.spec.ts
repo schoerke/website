@@ -22,4 +22,9 @@ describe('isEmbedHostAllowed', () => {
   it('rejects empty strings', () => {
     expect(isEmbedHostAllowed('')).toBe(false)
   })
+
+  it('is case-insensitive', () => {
+    expect(isEmbedHostAllowed('RTS.CH')).toBe(true)
+    expect(isEmbedHostAllowed('WWW.RTS.CH')).toBe(true)
+  })
 })
