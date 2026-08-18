@@ -4,26 +4,63 @@ import { Link } from '@/i18n/navigation'
 import type { Image as PayloadImage, Post } from '@/payload-types'
 import { formatDate } from '@/utils/post'
 import { isValidUrl } from '@/utils/image'
+import { UserRound } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
+import { useState } from 'react'
 
 interface NewsFeedListProps {
   posts: Post[]
   emptyMessage: string
   category?: 'news' | 'projects'
-  defaultImage?: string | null
   showDate?: boolean
 }
 
-function getImageUrl(img: PayloadImage | null | undefined, defaultImg: string | null | undefined): string {
-  // Use post's image if available and valid
+/**
+ * Returns the post's real image URL, or null when there isn't a valid one.
+ * Callers should render an icon placeholder when this returns null, rather
+ * than falling back to a raster placeholder image.
+ */
+function getImageUrl(img: PayloadImage | null | undefined): string | null {
   if (img && typeof img === 'object' && isValidUrl(img.url)) return img.url
+  return null
+}
 
-  // Fall back to default image string path
-  if (defaultImg && typeof defaultImg === 'string') return defaultImg
+interface NewsFeedItemImageProps {
+  src: string | null
+  alt: string
+}
 
-  // Final fallback to placeholder
-  return '/placeholder.jpg'
+/**
+ * Renders a post's thumbnail image, or a UserRound icon placeholder when
+ * there's no valid image or the image fails to load.
+ */
+const NewsFeedItemImage: React.FC<NewsFeedItemImageProps> = ({ src, alt }) => {
+  const [imageFailed, setImageFailed] = useState(false)
+  const showPlaceholder = !src || imageFailed
+
+  return (
+    <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded bg-gray-100 sm:h-28 sm:w-28">
+      {showPlaceholder ? (
+        <div
+          data-testid="news-feed-image-placeholder"
+          aria-hidden="true"
+          className="flex h-full w-full items-center justify-center"
+        >
+          <UserRound className="h-8 w-8 text-gray-300 sm:h-10 sm:w-10" />
+        </div>
+      ) : (
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-cover transition-opacity group-hover:opacity-75"
+          sizes="(max-width: 640px) 80px, 112px"
+          onError={() => setImageFailed(true)}
+        />
+      )}
+    </div>
+  )
 }
 
 interface RichTextNode {
@@ -57,7 +94,6 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({
   posts,
   emptyMessage,
   category = 'news',
-  defaultImage = null,
   showDate = true,
 }) => {
   const t = useTranslations(`custom.pages.${category}`)
@@ -83,7 +119,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({
     <div className="divide-y divide-gray-200">
       {posts.map((post) => {
         const img = typeof post.image === 'object' && post.image !== null ? (post.image as PayloadImage) : null
-        const imageUrl = getImageUrl(img, defaultImage)
+        const imageUrl = getImageUrl(img)
         const preview = extractTextPreview(post.content)
         const postPath = getPostPath(post)
 
@@ -92,15 +128,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({
             {/* Content column */}
             <Link href={postPath as Parameters<typeof Link>['0']['href']} className="flex gap-4 sm:gap-6">
               {/* Image - always on the left */}
-              <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden sm:h-28 sm:w-28">
-                <Image
-                  src={imageUrl}
-                  alt={post.title}
-                  fill
-                  className="object-cover transition-opacity group-hover:opacity-75"
-                  sizes="(max-width: 640px) 80px, 112px"
-                />
-              </div>
+              <NewsFeedItemImage src={imageUrl} alt={post.title} />
 
               {/* Text content */}
               <div className="flex min-w-0 flex-1 flex-col justify-center">

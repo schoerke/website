@@ -60,12 +60,10 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
           )}
         </header>
 
-        {/* Featured image */}
-        {imageUrl && (
-          <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg">
-            <PostFeaturedImage src={imageUrl} alt={title} />
-          </div>
-        )}
+        {/* Featured image — placeholder icon rendered when the post has no image */}
+        <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg">
+          <PostFeaturedImage src={imageUrl} alt={title} />
+        </div>
 
         {/* Article content */}
         <div className="prose prose-lg max-w-none">

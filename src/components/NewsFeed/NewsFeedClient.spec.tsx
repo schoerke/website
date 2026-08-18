@@ -25,13 +25,7 @@ vi.mock('@/actions/posts', () => ({
   fetchPosts: vi.fn(),
 }))
 
-// Mock media actions
-vi.mock('@/actions/media', () => ({
-  fetchDefaultAvatar: vi.fn(),
-}))
-
 // Import the mocked function after the mock
-import { fetchDefaultAvatar } from '@/actions/media'
 import { fetchPosts } from '@/actions/posts'
 
 // Mock NewsFeedList component
@@ -60,8 +54,6 @@ const renderWithIntl = (ui: React.ReactElement) => {
 describe('NewsFeedClient', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Mock fetchDefaultAvatar to return null by default
-    vi.mocked(fetchDefaultAvatar).mockResolvedValue(null)
   })
 
   it('should show loading state initially', async () => {
@@ -213,7 +205,7 @@ describe('NewsFeedClient', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('newsfeed-list')).toBeInTheDocument()
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch posts or default image:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch posts:', expect.any(Error))
     })
 
     consoleSpy.mockRestore()
@@ -257,9 +249,7 @@ describe('NewsFeedClient', () => {
     })
 
     await waitFor(() => {
-      // Should call fetchPosts once and fetchDefaultAvatar once
       expect(fetchPosts).toHaveBeenCalledTimes(1)
-      expect(fetchDefaultAvatar).toHaveBeenCalledTimes(1)
     })
 
     await act(async () => {
@@ -272,6 +262,5 @@ describe('NewsFeedClient', () => {
 
     // Should not fetch again
     expect(fetchPosts).toHaveBeenCalledTimes(1)
-    expect(fetchDefaultAvatar).toHaveBeenCalledTimes(1)
   })
 })

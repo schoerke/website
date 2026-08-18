@@ -1,9 +1,8 @@
 'use client'
 
-import { fetchDefaultAvatar } from '@/actions/media'
 import { fetchPosts } from '@/actions/posts'
 import { Skeleton } from '@/components/ui/Skeleton'
-import type { Image as PayloadImage, Post } from '@/payload-types'
+import type { Post } from '@/payload-types'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import NewsFeedList from './NewsFeedList'
@@ -48,7 +47,6 @@ const NewsFeedClientInner: React.FC<NewsFeedClientProps> = ({
   const searchParams = useSearchParams()
   const search = searchParams.get('search') || undefined
   const [posts, setPosts] = useState<Post[]>([])
-  const [defaultImage, setDefaultImage] = useState<PayloadImage | null>(null)
   const [loading, setLoading] = useState(true)
   const [fetched, setFetched] = useState(false)
 
@@ -61,25 +59,21 @@ const NewsFeedClientInner: React.FC<NewsFeedClientProps> = ({
 
     const loadData = async () => {
       try {
-        const [postsData, defaultAvatar] = await Promise.all([
-          fetchPosts({
-            category,
-            artistId,
-            search,
-            limit,
-            locale: locale as 'de' | 'en',
-          }),
-          fetchDefaultAvatar(),
-        ])
+        const postsData = await fetchPosts({
+          category,
+          artistId,
+          search,
+          limit,
+          locale: locale as 'de' | 'en',
+        })
 
         if (!cancelled) {
           setPosts(postsData.docs || [])
-          setDefaultImage(defaultAvatar || null)
           setFetched(true)
         }
       } catch (err) {
         if (!cancelled) {
-          console.error('Failed to fetch posts or default image:', err)
+          console.error('Failed to fetch posts:', err)
           setFetched(true)
         }
       } finally {
@@ -138,7 +132,6 @@ const NewsFeedClientInner: React.FC<NewsFeedClientProps> = ({
         posts={posts}
         emptyMessage={emptyMessage}
         category={translationCategory as 'news' | 'projects'}
-        defaultImage={defaultImage?.url || null}
       />
     </div>
   )

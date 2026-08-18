@@ -3,11 +3,12 @@
 import ImageSkeleton from '@/components/ui/ImageSkeleton'
 import { useImageLoad } from '@/hooks/useImageLoad'
 import { Link } from '@/i18n/navigation'
+import { UserRound } from 'lucide-react'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface HomePageSlide {
-  src: string
+  src: string | null
   alt: string
   title: string
   /** next-intl compatible pathname, e.g. '/news/my-post' */
@@ -121,17 +122,21 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
               pointerEvents: isActive ? 'auto' : 'none',
             }}
           >
-            <Image
-              src={slide.src}
-              alt={slide.alt}
-              fill
-              className="object-cover object-top"
-              sizes="(max-width: 1024px) 100vw, 75vw"
-              priority={idx === 0}
-              ref={idx === 0 ? firstImage.ref : undefined}
-              onLoad={idx === 0 ? firstImage.onLoad : undefined}
-              onError={idx === 0 ? firstImage.onError : undefined}
-            />
+            {slide.src ? (
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 1024px) 100vw, 75vw"
+                priority={idx === 0}
+                ref={idx === 0 ? firstImage.ref : undefined}
+                onLoad={idx === 0 ? firstImage.onLoad : undefined}
+                onError={idx === 0 ? firstImage.onError : undefined}
+              />
+            ) : (
+              <UserRound className="absolute inset-0 m-auto h-16 w-16 text-gray-300" />
+            )}
 
             {/* Title */}
             <div className="absolute bottom-4 left-4 right-4">

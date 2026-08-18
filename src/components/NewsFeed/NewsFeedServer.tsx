@@ -1,5 +1,4 @@
 import type { Post } from '@/payload-types'
-import { getDefaultAvatar } from '@/services/media'
 import { getPaginatedPosts } from '@/services/post'
 import NewsFeedList from './NewsFeedList'
 import NewsFeedPagination from './NewsFeedPagination'
@@ -128,8 +127,6 @@ const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
       publishedOnly: true,
     }))
 
-  const defaultImagePath = getDefaultAvatar()
-
   // Determine which category to use for translations
   const translationCategory = Array.isArray(category) ? category[0] : category || 'news'
 
@@ -166,8 +163,6 @@ const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
         posts={result.docs}
         emptyMessage={emptyMessage}
         category={translationCategory as 'news' | 'projects'}
-        defaultImage={defaultImagePath}
-        showDate={translationCategory !== 'projects'}
       />
 
       {/* Pagination controls (bottom) */}

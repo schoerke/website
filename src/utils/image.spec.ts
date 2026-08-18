@@ -1,5 +1,4 @@
 import type { Image as PayloadImage } from '@/payload-types'
-import { DEFAULT_AVATAR_PATH } from '@/services/media'
 import { describe, expect, it } from 'vitest'
 import { getImageUrl, getValidImageUrl, isImageObject, isValidUrl } from './image'
 
@@ -135,42 +134,51 @@ describe('Image Utilities', () => {
       expect(getValidImageUrl(image)).toBe('https://example.com/original.jpg')
     })
 
-    it('should return DEFAULT_AVATAR_PATH for null', () => {
-      expect(getValidImageUrl(null)).toBe(DEFAULT_AVATAR_PATH)
+    it('should return null for null', () => {
+      expect(getValidImageUrl(null)).toBeNull()
     })
 
-    it('should return DEFAULT_AVATAR_PATH for undefined', () => {
-      expect(getValidImageUrl(undefined)).toBe(DEFAULT_AVATAR_PATH)
+    it('should return null for undefined', () => {
+      expect(getValidImageUrl(undefined)).toBeNull()
     })
 
-    it('should return DEFAULT_AVATAR_PATH for number (ID)', () => {
-      expect(getValidImageUrl(123)).toBe(DEFAULT_AVATAR_PATH)
+    it('should return null for number (ID)', () => {
+      expect(getValidImageUrl(123)).toBeNull()
     })
 
-    it('should return DEFAULT_AVATAR_PATH when no valid URL exists', () => {
+    it('should return null when no valid URL exists', () => {
       const image = {
         sizes: {},
       } as PayloadImage
 
-      expect(getValidImageUrl(image)).toBe(DEFAULT_AVATAR_PATH)
+      expect(getValidImageUrl(image)).toBeNull()
     })
 
-    it('should return DEFAULT_AVATAR_PATH for invalid URLs', () => {
+    it('should return null for invalid URLs', () => {
       const imageWithNull = {
         url: 'null',
         sizes: {},
       } as PayloadImage
 
-      expect(getValidImageUrl(imageWithNull)).toBe(DEFAULT_AVATAR_PATH)
+      expect(getValidImageUrl(imageWithNull)).toBeNull()
     })
 
-    it('should return DEFAULT_AVATAR_PATH for URLs containing "/null"', () => {
+    it('should return null for URLs containing "/null"', () => {
       const imageWithNullPath = {
         url: 'https://example.com/null/image.jpg',
         sizes: {},
       } as PayloadImage
 
-      expect(getValidImageUrl(imageWithNullPath)).toBe(DEFAULT_AVATAR_PATH)
+      expect(getValidImageUrl(imageWithNullPath)).toBeNull()
+    })
+
+    it('should return null for empty string URLs', () => {
+      const imageWithEmptyUrl = {
+        url: '',
+        sizes: {},
+      } as PayloadImage
+
+      expect(getValidImageUrl(imageWithEmptyUrl)).toBeNull()
     })
   })
 })

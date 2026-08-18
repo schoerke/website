@@ -7,7 +7,6 @@ import { routing } from '@/i18n/routing'
 import { Artist, Image as PayloadImage, Post } from '@/payload-types'
 import { getArtistListData } from '@/services/artist'
 import { getHomePage } from '@/services/homePage'
-import { getDefaultAvatar } from '@/services/media'
 import { getPaginatedPosts } from '@/services/post'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 
@@ -18,10 +17,9 @@ type HomePageProps = {
   params: Promise<{ locale: string }>
 }
 
-function getPostImageUrl(post: Post, defaultImage: string | null): string {
+function getPostImageUrl(post: Post): string | null {
   const img = typeof post.image === 'object' && post.image !== null ? (post.image as PayloadImage) : null
-  if (img?.url && img.url !== 'null' && !img.url.includes('/null')) return img.url
-  return defaultImage ?? '/placeholder.jpg'
+  return img?.url && img.url !== 'null' && !img.url.includes('/null') ? img.url : null
 }
 
 function getPostPath(post: Post): string {
@@ -50,12 +48,11 @@ const HomePage = async ({ params }: HomePageProps) => {
   ])
 
   const artists = (artistsResult?.docs as Artist[]) || []
-  const defaultImage = getDefaultAvatar()
 
   const newsSlides: HomePageSlide[] = newsResult.docs.map((post) => {
     const img = typeof post.image === 'object' && post.image !== null ? (post.image as PayloadImage) : null
     return {
-      src: getPostImageUrl(post, defaultImage),
+      src: getPostImageUrl(post),
       alt: post.title,
       title: post.title,
       href: getPostPath(post),

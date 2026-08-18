@@ -1,7 +1,7 @@
 import { createMockImage } from '@/tests/utils/payloadMocks'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { DEFAULT_AVATAR_PATH, LOGO_ICON_PATH, LOGO_PATH, getDefaultAvatar, getLogo, getLogoIcon } from './media'
+import { LOGO_ICON_PATH, LOGO_PATH, getLogo, getLogoIcon } from './media'
 import { getImageByFilename } from './media.server'
 
 // Mock getPayload at the module level
@@ -33,10 +33,6 @@ describe('media service', () => {
     it('should export correct LOGO_ICON_PATH', () => {
       expect(LOGO_ICON_PATH).toBe('/api/images/file/schoerke-icon-logo.svg')
     })
-
-    it('should export correct DEFAULT_AVATAR_PATH', () => {
-      expect(DEFAULT_AVATAR_PATH).toBe('/api/images/file/default-avatar.webp')
-    })
   })
 
   describe('deprecated helper functions', () => {
@@ -48,11 +44,6 @@ describe('media service', () => {
     it('getLogoIcon should return LOGO_ICON_PATH', () => {
       expect(getLogoIcon()).toBe(LOGO_ICON_PATH)
       expect(getLogoIcon()).toBe('/api/images/file/schoerke-icon-logo.svg')
-    })
-
-    it('getDefaultAvatar should return DEFAULT_AVATAR_PATH', () => {
-      expect(getDefaultAvatar()).toBe(DEFAULT_AVATAR_PATH)
-      expect(getDefaultAvatar()).toBe('/api/images/file/default-avatar.webp')
     })
   })
 

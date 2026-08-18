@@ -106,7 +106,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
           {images.map((img, idx) => (
             <div
               className="min-w-0 flex-[0_0_100%] px-2 md:flex-[0_0_66%] md:px-1 lg:flex-[0_0_50%]"
-              key={img.src + idx}
+              key={img.slug ?? img.alt ?? `slide-${idx}`}
             >
               {img.slug ? (
                 <Link

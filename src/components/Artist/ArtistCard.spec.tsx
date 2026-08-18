@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import type { Image as PayloadImage } from '@/payload-types'
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import ArtistCard from './ArtistCard'
 
@@ -143,33 +143,33 @@ describe('ArtistCard', () => {
       expect(img).toHaveAttribute('alt', 'John Doe')
     })
 
-    it('should use default avatar when image is null', () => {
+    it('should render a UserRound icon placeholder when image is null', () => {
       renderWithIntl(<ArtistCard {...defaultProps} image={null} />)
 
-      const img = screen.getByTestId('artist-image')
-      expect(img).toHaveAttribute('src', '/api/images/file/default-avatar.webp')
+      expect(screen.queryByTestId('artist-image')).not.toBeInTheDocument()
+      expect(screen.getByTestId('artist-image-placeholder')).toBeInTheDocument()
     })
 
-    it('should use default avatar when image is undefined', () => {
+    it('should render a UserRound icon placeholder when image is undefined', () => {
       renderWithIntl(<ArtistCard {...defaultProps} image={undefined} />)
 
-      const img = screen.getByTestId('artist-image')
-      expect(img).toHaveAttribute('src', '/api/images/file/default-avatar.webp')
+      expect(screen.queryByTestId('artist-image')).not.toBeInTheDocument()
+      expect(screen.getByTestId('artist-image-placeholder')).toBeInTheDocument()
     })
 
-    it('should use default avatar when image is a number (ID only)', () => {
+    it('should render a UserRound icon placeholder when image is a number (ID only)', () => {
       renderWithIntl(<ArtistCard {...defaultProps} image={123} />)
 
-      const img = screen.getByTestId('artist-image')
-      expect(img).toHaveAttribute('src', '/api/images/file/default-avatar.webp')
+      expect(screen.queryByTestId('artist-image')).not.toBeInTheDocument()
+      expect(screen.getByTestId('artist-image-placeholder')).toBeInTheDocument()
     })
 
-    it('should use default avatar when image URL is invalid', () => {
+    it('should render a UserRound icon placeholder when image URL is invalid', () => {
       const image = createMockImage({ url: 'null', sizes: {} })
       renderWithIntl(<ArtistCard {...defaultProps} image={image} />)
 
-      const img = screen.getByTestId('artist-image')
-      expect(img).toHaveAttribute('src', '/api/images/file/default-avatar.webp')
+      expect(screen.queryByTestId('artist-image')).not.toBeInTheDocument()
+      expect(screen.getByTestId('artist-image-placeholder')).toBeInTheDocument()
     })
 
     it('should use original URL regardless of tablet size availability', () => {
@@ -197,28 +197,17 @@ describe('ArtistCard', () => {
       const imageContainer = screen.getByTestId('artist-image')
       expect(imageContainer).toHaveStyle({ objectPosition: '50% 50%' })
     })
-
-    it('should use default focal point when image is not an object', () => {
-      renderWithIntl(<ArtistCard {...defaultProps} image={null} />)
-
-      const imageContainer = screen.getByTestId('artist-image')
-      expect(imageContainer).toHaveStyle({ objectPosition: '50% 50%' })
-    })
   })
 
   describe('Error handling', () => {
-    it('should handle image loading errors', () => {
+    it('should render a UserRound icon placeholder when the image fails to load', () => {
       renderWithIntl(<ArtistCard {...defaultProps} image={createMockImage()} />)
 
-      const img = screen.getByTestId('artist-image') as HTMLImageElement
-      const errorHandler = vi.fn()
-      img.onerror = errorHandler
+      const img = screen.getByTestId('artist-image')
+      fireEvent.error(img)
 
-      // Simulate image error
-      img.dispatchEvent(new Event('error'))
-
-      // Should fall back to static avatar
-      expect(img.src).toContain('/assets/default-avatar.webp')
+      expect(screen.queryByTestId('artist-image')).not.toBeInTheDocument()
+      expect(screen.getByTestId('artist-image-placeholder')).toBeInTheDocument()
     })
   })
 
@@ -247,7 +236,7 @@ describe('ArtistCard', () => {
 
   describe('Accessibility', () => {
     it('should have proper alt text for image', () => {
-      renderWithIntl(<ArtistCard {...defaultProps} />)
+      renderWithIntl(<ArtistCard {...defaultProps} image={createMockImage()} />)
 
       const img = screen.getByAltText('John Doe')
       expect(img).toBeInTheDocument()

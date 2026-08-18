@@ -6,6 +6,7 @@ import ImageSkeleton from '@/components/ui/ImageSkeleton'
 import { useImageLoad } from '@/hooks/useImageLoad'
 import { shuffleArray } from '@/utils/array'
 import { getValidImageUrl, isImageObject } from '@/utils/image'
+import { UserRound } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
@@ -23,45 +24,52 @@ const MasonryItem: React.FC<MasonryItemProps> = ({ artist, translatedInstruments
   const { loaded, error, ref, onLoad, onError } = useImageLoad()
   const image = isImageObject(artist.image) ? (artist.image as PayloadImage) : null
   const imageUrl = getValidImageUrl(artist.image)
+  const hasRealImage = imageUrl !== null
   const focalX = image?.focalX ?? 50
   const focalY = image?.focalY ?? 50
 
-  const content = imageUrl ? (
+  const showPlaceholder = !hasRealImage || error
+
+  const content = (
     <div className="group relative w-full overflow-hidden">
-      {/* Skeleton shimmer — collapses once image loads */}
-      {!loaded && !error && <ImageSkeleton width={image?.width} height={image?.height} fallbackRatio="3 / 4" />}
-      {/* Error fallback */}
-      {error && (
+      {showPlaceholder ? (
         <div
-          className="flex w-full items-center justify-center bg-gray-100 text-gray-400"
+          data-testid="artist-masonry-image-placeholder"
+          aria-hidden="true"
+          className="flex w-full items-center justify-center bg-gray-100"
           style={{ aspectRatio: '3 / 4' }}
         >
-          <span className="text-sm">Image unavailable</span>
+          <UserRound className="h-16 w-16 text-gray-300" />
         </div>
+      ) : (
+        <>
+          {/* Skeleton shimmer — collapses once image loads */}
+          {!loaded && <ImageSkeleton width={image?.width} height={image?.height} fallbackRatio="3 / 4" />}
+          <Image
+            src={imageUrl}
+            alt={artist.name}
+            width={600}
+            height={800}
+            className={`block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105 ${loaded ? 'opacity-100' : 'opacity-0 transition-opacity'}`}
+            style={{ objectPosition: `${focalX}% ${focalY}%` }}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            ref={ref}
+            onLoad={onLoad}
+            onError={onError}
+          />
+        </>
       )}
-      <Image
-        src={imageUrl}
-        alt={artist.name}
-        width={600}
-        height={800}
-        className={`block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105 ${loaded && !error ? 'opacity-100' : 'opacity-0 transition-opacity'}`}
-        style={{ objectPosition: `${focalX}% ${focalY}%` }}
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        ref={ref}
-        onLoad={onLoad}
-        onError={onError}
-      />
       {/* Hover overlay */}
       <div className="absolute inset-0 flex flex-col justify-end bg-black/0 p-4 transition-all duration-300 group-hover:bg-black/60">
         <div className="translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <p className="font-playfair text-lg font-bold text-white drop-shadow">{artist.name}</p>
-          {translatedInstruments && <p className="mt-0.5 text-sm text-white/80 drop-shadow">{translatedInstruments}</p>}
+          <p className="font-playfair text-xl font-bold text-white drop-shadow">{artist.name}</p>
+          {translatedInstruments && (
+            <p className="text-primary-yellow mt-0.5 text-sm font-bold drop-shadow">{translatedInstruments}</p>
+          )}
         </div>
       </div>
     </div>
-  ) : null
-
-  if (!content) return null
+  )
 
   if (!artist.slug) return <div className="mb-1 break-inside-avoid">{content}</div>
 

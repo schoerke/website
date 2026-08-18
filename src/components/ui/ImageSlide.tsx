@@ -1,9 +1,9 @@
-import { DEFAULT_AVATAR_PATH } from '@/services/media'
+import { UserRound } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 
 export type ImageSlideData = {
-  src: string
+  src: string | null
   alt: string
   bannerText?: string
   slug?: string // Artist slug for i18n routing
@@ -25,32 +25,30 @@ const ImageSlide: React.FC<ImageSlideProps> = ({ image, isActive, loading = 'laz
       ? `${image.focalX}% ${image.focalY}%`
       : 'center'
 
-  // Handle image loading errors by falling back to default avatar (Payload first, then static file)
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    // Try Payload API path first
-    if (e.currentTarget.src !== DEFAULT_AVATAR_PATH) {
-      e.currentTarget.src = DEFAULT_AVATAR_PATH
-    } else {
-      // Fallback to static file if Payload fails
-      e.currentTarget.src = '/assets/default-avatar.webp'
-    }
-  }
-
   return (
     <div
       className={`relative h-72 w-full transition-opacity duration-300 sm:h-96 md:h-96 ${isActive ? 'opacity-100' : 'opacity-60'}`}
       style={{ aspectRatio: '4 / 3' }}
     >
-      <Image
-        src={image.src}
-        alt={image.alt}
-        fill
-        className="rounded-lg object-cover"
-        style={{ objectPosition }}
-        loading={loading}
-        sizes={image.sizesAttr || '(max-width: 768px) 100vw, 50vw'}
-        onError={handleImageError}
-      />
+      {!image.src ? (
+        <div
+          data-testid="image-slide-placeholder"
+          aria-hidden="true"
+          className="flex h-full w-full items-center justify-center rounded-lg bg-gray-100"
+        >
+          <UserRound className="h-24 w-24 text-gray-300 sm:h-32 sm:w-32" />
+        </div>
+      ) : (
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          className="rounded-lg object-cover"
+          style={{ objectPosition }}
+          loading={loading}
+          sizes={image.sizesAttr || '(max-width: 768px) 100vw, 50vw'}
+        />
+      )}
       {image.bannerText && (
         <div
           className="border-l-6 absolute bottom-2 right-2 border-yellow-400 bg-black/60 px-3 py-1 text-base text-white shadow sm:text-lg"

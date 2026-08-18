@@ -9,6 +9,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import { Link } from '@/i18n/navigation'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
+import { Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import React from 'react'
@@ -275,6 +276,38 @@ function extractTextPreview(content: Post['content'], maxLength: number = 180): 
   return fullText.substring(0, maxLength).trim() + '...'
 }
 
+interface ProjectImageProps {
+  src: string | null
+  alt: string
+}
+
+const ProjectImage: React.FC<ProjectImageProps> = ({ src, alt }) => {
+  const [imageFailed, setImageFailed] = React.useState(false)
+
+  if (src === null || imageFailed) {
+    return (
+      <div
+        data-testid="project-image-placeholder"
+        aria-hidden="true"
+        className="flex h-full w-full items-center justify-center"
+      >
+        <ImageIcon className="h-8 w-8 text-gray-300" />
+      </div>
+    )
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className="object-cover transition-opacity group-hover:opacity-75"
+      sizes="(max-width: 640px) 80px, 112px"
+      onError={() => setImageFailed(true)}
+    />
+  )
+}
+
 export const ProjectsTab: React.FC<ProjectsTabProps> = ({ projects, emptyMessage }) => {
   if (!projects || projects.length === 0) {
     return (
@@ -300,14 +333,8 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ projects, emptyMessage
             aria-label={`Project: ${project.title}`}
           >
             {/* Image */}
-            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden sm:h-28 sm:w-28">
-              <Image
-                src={imageUrl}
-                alt={imageAlt}
-                fill
-                className="object-cover transition-opacity group-hover:opacity-75"
-                sizes="(max-width: 640px) 80px, 112px"
-              />
+            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden bg-gray-100 sm:h-28 sm:w-28">
+              <ProjectImage src={imageUrl} alt={imageAlt} />
             </div>
 
             {/* Text content */}

@@ -1,6 +1,5 @@
 // @vitest-environment happy-dom
 import { render, screen } from '@testing-library/react'
-import { act } from 'react'
 import { describe, expect, it } from 'vitest'
 import ImageSlide, { ImageSlideData } from './ImageSlide'
 
@@ -78,23 +77,11 @@ describe('ImageSlide', () => {
   })
 
   describe('Image Error Handling', () => {
-    it('should have onError handler to fallback to default avatar', () => {
-      const { container } = render(<ImageSlide image={mockImage} isActive={true} />)
-      const img = container.querySelector('img') as HTMLImageElement
+    it('should render a UserRound icon placeholder when src is null', () => {
+      render(<ImageSlide image={{ ...mockImage, src: null }} isActive={true} />)
 
-      // Simulate image error wrapped in act
-      const errorEvent = new Event('error', { bubbles: true })
-      Object.defineProperty(img, 'src', {
-        writable: true,
-        value: '/test-image.jpg',
-      })
-
-      act(() => {
-        img.dispatchEvent(errorEvent)
-      })
-
-      // After error, src should be set to default avatar
-      expect(img.src).toContain('default-avatar.webp')
+      expect(screen.queryByRole('img')).not.toBeInTheDocument()
+      expect(screen.getByTestId('image-slide-placeholder')).toBeInTheDocument()
     })
   })
 

@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { createMockMedia, createMockPaginatedDocs, createMockPost } from '@/tests/utils/payloadMocks'
+import { createMockPaginatedDocs, createMockPost } from '@/tests/utils/payloadMocks'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import NewsFeedServer from './NewsFeedServer'
@@ -7,10 +7,6 @@ import NewsFeedServer from './NewsFeedServer'
 // Mock the service layers
 vi.mock('@/services/post', () => ({
   getPaginatedPosts: vi.fn(),
-}))
-
-vi.mock('@/services/media', () => ({
-  getDefaultAvatar: vi.fn(),
 }))
 
 // Mock NewsFeedList component
@@ -41,12 +37,9 @@ vi.mock('./NewsFeedSearch', () => ({
 describe('NewsFeedServer', () => {
   it('should fetch and render posts with default options', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
     const mockPosts = [createMockPost(), createMockPost({ id: 2 })]
-    const mockAvatar = createMockMedia({ filename: 'default-avatar.webp' })
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(createMockPaginatedDocs(mockPosts))
-    vi.mocked(getDefaultAvatar).mockResolvedValue(mockAvatar as never)
 
     const component = await NewsFeedServer({})
 
@@ -66,10 +59,8 @@ describe('NewsFeedServer', () => {
 
   it('should filter by category', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ category: 'news' })
 
@@ -87,10 +78,8 @@ describe('NewsFeedServer', () => {
 
   it('should filter by multiple categories', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ category: ['news', 'projects'] })
 
@@ -108,10 +97,8 @@ describe('NewsFeedServer', () => {
 
   it('should filter by artist ID', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ artistId: '123' })
 
@@ -129,10 +116,8 @@ describe('NewsFeedServer', () => {
 
   it('should respect page and limit options', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ page: 2, limit: 10 })
 
@@ -150,10 +135,8 @@ describe('NewsFeedServer', () => {
 
   it('should respect locale option', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ locale: 'en' })
 
@@ -171,10 +154,8 @@ describe('NewsFeedServer', () => {
 
   it('should pass emptyMessage to NewsFeedList', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ emptyMessage: 'Custom empty message' })
 
@@ -185,10 +166,8 @@ describe('NewsFeedServer', () => {
 
   it('should always fetch only published posts', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(createMockPaginatedDocs([]))
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({})
 
@@ -203,7 +182,6 @@ describe('NewsFeedServer', () => {
 
   it('should show pagination when totalPages > 1 and showPagination is true', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     const mockResult = {
       ...createMockPaginatedDocs([createMockPost()]),
@@ -212,7 +190,6 @@ describe('NewsFeedServer', () => {
     }
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(mockResult)
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ showPagination: true })
 
@@ -224,7 +201,6 @@ describe('NewsFeedServer', () => {
 
   it('should hide pagination when totalPages is 1', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     const mockResult = {
       ...createMockPaginatedDocs([createMockPost()]),
@@ -233,7 +209,6 @@ describe('NewsFeedServer', () => {
     }
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(mockResult)
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ showPagination: true })
 
@@ -245,7 +220,6 @@ describe('NewsFeedServer', () => {
 
   it('should hide pagination when showPagination is false', async () => {
     const { getPaginatedPosts } = await import('@/services/post')
-    const { getDefaultAvatar } = await import('@/services/media')
 
     const mockResult = {
       ...createMockPaginatedDocs([createMockPost()]),
@@ -254,7 +228,6 @@ describe('NewsFeedServer', () => {
     }
 
     vi.mocked(getPaginatedPosts).mockResolvedValue(mockResult)
-    vi.mocked(getDefaultAvatar).mockReturnValue('/api/images/file/default-avatar.webp')
 
     const component = await NewsFeedServer({ showPagination: false })
 

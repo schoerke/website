@@ -1,4 +1,6 @@
-import { Employee, Image as PayloadImage } from '@/payload-types'
+import { Employee } from '@/payload-types'
+import { getValidImageUrl } from '@/utils/image'
+import { UserRound } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 
@@ -21,20 +23,30 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   priority = false,
   grayscale = false,
 }) => {
-  const img = typeof image === 'object' && image !== null ? (image as PayloadImage) : undefined
-  const imageUrl = img?.url || '/placeholder.jpg'
+  const imageUrl = getValidImageUrl(image)
+  const showPlaceholder = !imageUrl
 
   return (
     <div className="group overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">
       <div className="relative h-72 w-full">
-        <Image
-          src={imageUrl}
-          alt={name || 'Team Member'}
-          width={400}
-          height={400}
-          className={`h-full w-full object-cover${grayscale ? ' grayscale' : ''}`}
-          priority={priority}
-        />
+        {showPlaceholder ? (
+          <div
+            data-testid="team-member-image-placeholder"
+            aria-hidden="true"
+            className="flex h-full w-full items-center justify-center bg-gray-100"
+          >
+            <UserRound className="h-24 w-24 text-gray-300" />
+          </div>
+        ) : (
+          <Image
+            src={imageUrl}
+            alt={name || 'Team Member'}
+            width={400}
+            height={400}
+            className={`h-full w-full object-cover${grayscale ? ' grayscale' : ''}`}
+            priority={priority}
+          />
+        )}
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"

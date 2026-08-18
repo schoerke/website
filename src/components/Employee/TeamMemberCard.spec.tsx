@@ -53,16 +53,42 @@ describe('TeamMemberCard', () => {
     expect(img).toHaveAttribute('src', '/jane.jpg')
   })
 
-  it('falls back to placeholder when image is a numeric ID (unpopulated)', () => {
+  it('falls back to a UserRound icon placeholder when image is a numeric ID (unpopulated)', () => {
     render(<TeamMemberCard {...defaultEmployee} image={5} phoneLabel="Phone" mobileLabel="Mobile" />)
-    const img = screen.getByAltText('Jane Smith')
-    expect(img).toHaveAttribute('src', '/placeholder.jpg')
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('team-member-image-placeholder')).toBeInTheDocument()
   })
 
-  it('falls back to placeholder when image is null', () => {
+  it('falls back to a UserRound icon placeholder when image is null', () => {
     render(<TeamMemberCard {...defaultEmployee} image={null} phoneLabel="Phone" mobileLabel="Mobile" />)
-    const img = screen.getByAltText('Jane Smith')
-    expect(img).toHaveAttribute('src', '/placeholder.jpg')
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('team-member-image-placeholder')).toBeInTheDocument()
+  })
+
+  it('falls back to a UserRound icon placeholder when image URL is missing', () => {
+    render(
+      <TeamMemberCard
+        {...defaultEmployee}
+        image={{ id: 10, alt: 'Jane', updatedAt: '', createdAt: '' }}
+        phoneLabel="Phone"
+        mobileLabel="Mobile"
+      />
+    )
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('team-member-image-placeholder')).toBeInTheDocument()
+  })
+
+  it('falls back to a UserRound icon placeholder when image URL is the /null artifact', () => {
+    render(
+      <TeamMemberCard
+        {...defaultEmployee}
+        image={{ id: 10, url: '/api/images/file/null', alt: 'Jane', updatedAt: '', createdAt: '' }}
+        phoneLabel="Phone"
+        mobileLabel="Mobile"
+      />
+    )
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('team-member-image-placeholder')).toBeInTheDocument()
   })
 
   it('does not render email link when email is empty', () => {

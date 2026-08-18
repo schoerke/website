@@ -1,14 +1,17 @@
 // @vitest-environment happy-dom
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
 import { createMockMedia, createMockPost } from '@/tests/utils/payloadMocks'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import NewsFeedList from './NewsFeedList'
 
 // Mock next/image
 vi.mock('next/image', () => ({
   // eslint-disable-next-line @next/next/no-img-element
-  default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
+  default: ({ src, alt, onError }: { src: string; alt: string; onError?: () => void }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} onError={onError} />
+  ),
 }))
 
 // Mock @/i18n/navigation
@@ -53,7 +56,7 @@ describe('NewsFeedList', () => {
     expect(image).toHaveAttribute('src', 'https://example.com/image.jpg')
   })
 
-  it('should render post without image with placeholder', () => {
+  it('should render a UserRound icon placeholder when the post has no image', () => {
     const post = createMockPost({
       title: 'Post without image',
       image: null as never,
@@ -62,9 +65,8 @@ describe('NewsFeedList', () => {
     renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" />)
 
     expect(screen.getByText('Post without image')).toBeInTheDocument()
-    // Component renders a placeholder image when no image is provided
-    const image = screen.getByRole('img', { name: 'Post without image' })
-    expect(image).toHaveAttribute('src', '/placeholder.jpg')
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('news-feed-image-placeholder')).toBeInTheDocument()
   })
 
   it('should render read more link for each post', () => {
@@ -105,22 +107,35 @@ describe('NewsFeedList', () => {
     expect(articles).toHaveLength(3)
   })
 
-  it('should handle image URL from R2 endpoint', () => {
+  it('should render a UserRound icon placeholder when the image has no valid url', () => {
     const mockMedia = createMockMedia({
       url: undefined as never,
       filename: 'test-image.jpg',
     })
     const post = createMockPost({
-      title: 'Post with R2 image',
+      title: 'Post with invalid image url',
       image: mockMedia as never,
     })
 
     renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" />)
 
-    const image = screen.getByRole('img', { name: 'Post with R2 image' })
-    expect(image).toBeInTheDocument()
-    // Check that the src includes the R2 endpoint or filename
-    expect(image.getAttribute('src')).toBeTruthy()
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('news-feed-image-placeholder')).toBeInTheDocument()
+  })
+
+  it('should fall back to the icon placeholder when the image fails to load', () => {
+    const mockMedia = createMockMedia({ url: 'https://example.com/image.jpg' })
+    const post = createMockPost({
+      title: 'Post with broken image',
+      image: mockMedia as never,
+    })
+
+    renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" />)
+
+    fireEvent.error(screen.getByRole('img'))
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(screen.getByTestId('news-feed-image-placeholder')).toBeInTheDocument()
   })
 
   it('should show date for news posts', () => {

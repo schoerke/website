@@ -4,9 +4,10 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import type { Image as PayloadImage } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
 import useEmblaCarousel from 'embla-carousel-react'
+import { Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import type { GalleryImage } from './artistTypes'
 
 interface ImageLightboxProps {
@@ -14,6 +15,38 @@ interface ImageLightboxProps {
   initialIndex: number
   open: boolean
   onClose: () => void
+}
+
+interface LightboxSlideImageProps {
+  src: string | null
+  alt: string
+}
+
+const LightboxSlideImage: React.FC<LightboxSlideImageProps> = ({ src, alt }) => {
+  const [imageFailed, setImageFailed] = useState(false)
+
+  if (src === null || imageFailed) {
+    return (
+      <div
+        data-testid="lightbox-image-placeholder"
+        aria-hidden="true"
+        className="flex h-full w-full items-center justify-center bg-gray-900"
+      >
+        <ImageIcon className="h-16 w-16 text-gray-600" />
+      </div>
+    )
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className="object-contain"
+      sizes="(max-width: 1024px) 100vw, 1024px"
+      onError={() => setImageFailed(true)}
+    />
+  )
 }
 
 const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, open, onClose }) => {
@@ -58,13 +91,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
               return (
                 <div key={item.id || idx} className="relative min-w-0 flex-[0_0_100%]">
                   <div className="relative aspect-[4/3] w-full">
-                    <Image
-                      src={src}
-                      alt={alt}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 1024px) 100vw, 1024px"
-                    />
+                    <LightboxSlideImage src={src} alt={alt} />
                   </div>
                   {caption && <p className="mt-2 text-center text-sm text-gray-300">{caption}</p>}
                 </div>

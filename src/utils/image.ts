@@ -1,5 +1,4 @@
 import type { Image as PayloadImage } from '@/payload-types'
-import { DEFAULT_AVATAR_PATH } from '@/services/media'
 
 /**
  * Type guard to check if an object is a valid PayloadImage.
@@ -65,22 +64,24 @@ export function isValidUrl(url: string | null | undefined): url is string {
 }
 
 /**
- * Gets a valid image URL from a PayloadImage object, with fallback to default avatar.
+ * Gets a valid image URL from a PayloadImage object, or null when no valid URL exists.
  * Combines isImageObject, getImageUrl, isValidUrl, and fallback logic in one function.
  *
  * @param image - PayloadImage object, number (ID), null, or undefined
- * @returns Valid image URL string (never null, falls back to DEFAULT_AVATAR_PATH)
+ * @returns The image URL string, or null if there is no valid URL (missing image,
+ *          unpopulated ID, empty/'null'/containing-'-null-' placeholder values)
  *
  * @example
  * ```ts
  * const imageUrl = getValidImageUrl(artist.image)
- * // Always returns a valid URL, either the artist's image or default avatar
- * <Image src={imageUrl} alt={artist.name} />
+ * if (imageUrl) {
+ *   <Image src={imageUrl} alt={artist.name} />
+ * }
  * ```
  */
-export function getValidImageUrl(image: PayloadImage | number | null | undefined): string {
-  // If image is a number or null/undefined, return default avatar
-  if (!image || typeof image === 'number') return DEFAULT_AVATAR_PATH
+export function getValidImageUrl(image: PayloadImage | number | null | undefined): string | null {
+  // If image is a number or null/undefined, there's no image URL
+  if (!image || typeof image === 'number') return null
 
   // If image is an object, return full-res original URL so Next.js image
   // optimization can generate correct srcset variants via /_next/image
@@ -88,6 +89,6 @@ export function getValidImageUrl(image: PayloadImage | number | null | undefined
     if (isValidUrl(image.url)) return image.url
   }
 
-  // Final fallback
-  return DEFAULT_AVATAR_PATH
+  // No valid URL available
+  return null
 }

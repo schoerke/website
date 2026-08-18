@@ -1,9 +1,9 @@
-import type { Artist, Recording, Repertoire } from '@/payload-types'
+import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 // @vitest-environment happy-dom
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { BiographyTab, ConcertDatesTab, MediaTab, RecordingsTab, RepertoireTab } from './ArtistTabContent'
+import { BiographyTab, ConcertDatesTab, MediaTab, ProjectsTab, RecordingsTab, RepertoireTab } from './ArtistTabContent'
 
 // Mock next-intl navigation (required for Link component in ProjectsTab)
 vi.mock('@/i18n/navigation', () => ({
@@ -494,6 +494,53 @@ describe('ArtistTabContent', () => {
       )
 
       expect(screen.getByTestId('recording-list')).toBeInTheDocument()
+    })
+  })
+
+  describe('ProjectsTab', () => {
+    function createMockProject(overrides?: Partial<Post>): Post {
+      return {
+        id: 1,
+        title: 'Test Project',
+        slug: 'test-project',
+        _status: 'published',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+        ...overrides,
+      } as Post
+    }
+
+    it('renders the real image when the project has one', () => {
+      const project = createMockProject({
+        image: { id: 1, alt: 'Project photo', url: 'https://example.com/project.jpg' } as never,
+      })
+
+      render(<ProjectsTab projects={[project]} emptyMessage="No projects" />)
+
+      const img = screen.getByAltText('Project photo')
+      expect(img).toHaveAttribute('src', expect.stringContaining('project.jpg'))
+    })
+
+    it('renders an Image icon placeholder when the project has no image', () => {
+      const project = createMockProject({ image: null })
+
+      render(<ProjectsTab projects={[project]} emptyMessage="No projects" />)
+
+      expect(screen.queryByRole('img')).not.toBeInTheDocument()
+      expect(screen.getByTestId('project-image-placeholder')).toBeInTheDocument()
+    })
+
+    it('falls back to the Image icon placeholder when the image fails to load', () => {
+      const project = createMockProject({
+        image: { id: 1, alt: 'Project photo', url: 'https://example.com/project.jpg' } as never,
+      })
+
+      render(<ProjectsTab projects={[project]} emptyMessage="No projects" />)
+
+      fireEvent.error(screen.getByAltText('Project photo'))
+
+      expect(screen.queryByRole('img')).not.toBeInTheDocument()
+      expect(screen.getByTestId('project-image-placeholder')).toBeInTheDocument()
     })
   })
 })

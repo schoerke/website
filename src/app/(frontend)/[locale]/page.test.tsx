@@ -5,7 +5,6 @@ import { vi } from 'vitest'
 vi.mock('@/services/homePage', () => ({ getHomePage: vi.fn() }))
 vi.mock('@/services/artist', () => ({ getArtistListData: vi.fn() }))
 vi.mock('@/services/post', () => ({ getPaginatedPosts: vi.fn() }))
-vi.mock('@/services/media', () => ({ getDefaultAvatar: vi.fn().mockReturnValue('/avatar.jpg') }))
 vi.mock('@/components/HomePageSlider/HomePageSlider', () => ({
   default: ({ slides }: { slides: { title: string }[] }) =>
     React.createElement(

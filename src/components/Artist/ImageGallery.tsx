@@ -4,6 +4,7 @@ import ImageSkeleton from '@/components/ui/ImageSkeleton'
 import { useImageLoad } from '@/hooks/useImageLoad'
 import type { Image as PayloadImage } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
+import { Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import ImageLightbox from './ImageLightbox'
@@ -24,9 +25,10 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, idx, onOpen }) => {
   const { loaded, error, ref, onLoad, onError } = useImageLoad()
   const imageObj = typeof item.image === 'object' ? (item.image as PayloadImage) : null
   const src = getValidImageUrl(item.image)
+  const hasRealImage = src !== null
   const alt = imageObj?.alt || `Gallery image ${idx + 1}`
 
-  if (!src) return null
+  const showPlaceholder = !hasRealImage || error
 
   return (
     <button
@@ -35,28 +37,32 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, idx, onOpen }) => {
       aria-label={`Open image: ${alt}`}
     >
       <div className="relative w-full">
-        {/* Skeleton shimmer — collapses once image loads */}
-        {!loaded && !error && <ImageSkeleton width={imageObj?.width} height={imageObj?.height} fallbackRatio="3 / 2" />}
-        {/* Error fallback */}
-        {error && (
+        {showPlaceholder ? (
           <div
-            className="flex w-full items-center justify-center bg-gray-100 text-gray-400"
+            data-testid="gallery-image-placeholder"
+            aria-hidden="true"
+            className="flex w-full items-center justify-center bg-gray-100"
             style={{ aspectRatio: '3 / 2' }}
           >
-            <span className="text-sm">Image unavailable</span>
+            <ImageIcon className="h-12 w-12 text-gray-300" />
           </div>
+        ) : (
+          <>
+            {/* Skeleton shimmer — collapses once image loads */}
+            {!loaded && <ImageSkeleton width={imageObj?.width} height={imageObj?.height} fallbackRatio="3 / 2" />}
+            <Image
+              src={src}
+              alt={alt}
+              width={600}
+              height={400}
+              className={`block h-auto w-full object-cover transition-opacity duration-500 group-hover:opacity-80 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              ref={ref}
+              onLoad={onLoad}
+              onError={onError}
+            />
+          </>
         )}
-        <Image
-          src={src}
-          alt={alt}
-          width={600}
-          height={400}
-          className={`block h-auto w-full object-cover transition-opacity duration-500 group-hover:opacity-80 ${loaded && !error ? 'opacity-100' : 'opacity-0'}`}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          ref={ref}
-          onLoad={onLoad}
-          onError={onError}
-        />
       </div>
     </button>
   )
