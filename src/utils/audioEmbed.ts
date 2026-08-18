@@ -120,6 +120,7 @@ export interface ParsedIframe {
   title?: string
 }
 
+// Patterns must stay byte-identical with EMBED_IFRAME_TAG / EMBED_ATTR in src/validators/audioFields.ts
 const IFRAME_TAG = /<iframe\b[^>]*>/i
 
 const IFRAME_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']([^"']*)["']`, 'i')

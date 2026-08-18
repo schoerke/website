@@ -51,6 +51,21 @@ describe('validateEmbedCode', () => {
     ).toBe('Please enter a valid embed code')
   })
 
+  it('ignores src attributes outside the iframe tag', () => {
+    expect(
+      validateEmbedCode('<img src="https://evil.example.com/x"><iframe src="https://www.rts.ch/x"></iframe>')
+    ).toBe(true)
+  })
+
+  it('rejects javascript and data URLs', () => {
+    expect(validateEmbedCode('<iframe src="javascript:alert(1)"></iframe>')).toBe(
+      'Please enter a valid embed code'
+    )
+    expect(validateEmbedCode('<iframe src="data:text/html,x"></iframe>')).toBe(
+      'Please enter a valid embed code'
+    )
+  })
+
   it('rejects non-string values', () => {
     expect(validateEmbedCode(123)).toBe('Please enter a valid embed code')
     expect(validateEmbedCode(null)).toBe('Please enter a valid embed code')

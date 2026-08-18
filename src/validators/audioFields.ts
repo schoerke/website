@@ -56,6 +56,7 @@ export const validateAudioURL = (value: unknown): true | string => {
   }
 }
 
+// Patterns must stay byte-identical with IFRAME_TAG / IFRAME_ATTR in src/utils/audioEmbed.ts
 const EMBED_IFRAME_TAG = /<iframe\b[^>]*>/i
 const EMBED_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']([^"']*)["']`, 'i')
 
@@ -66,7 +67,7 @@ const EMBED_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']
  * @returns true if valid, error message if invalid
  */
 export const validateEmbedCode = (value: unknown): true | string => {
-  if (typeof value !== 'string' || !/<iframe\b/i.test(value)) {
+  if (typeof value !== 'string' || !EMBED_IFRAME_TAG.test(value)) {
     return 'Please enter a valid embed code'
   }
 
