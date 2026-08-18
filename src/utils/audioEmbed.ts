@@ -105,6 +105,14 @@ export function getAudioEmbedHeight(contentType: AudioEmbedData['contentType']):
   }
 }
 
+/**
+ * Data extracted from an <iframe> embed snippet.
+ *
+ * Only the first iframe tag in the snippet is inspected, and only its
+ * src/width/height/title attributes are read. The host is NOT validated
+ * here — that is the job of the embed code validator (see
+ * `src/validators/audioFields.ts`).
+ */
 export interface ParsedIframe {
   src: string
   width?: number
@@ -116,6 +124,20 @@ const IFRAME_TAG = /<iframe\b[^>]*>/i
 
 const IFRAME_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']([^"']*)["']`, 'i')
 
+/**
+ * Extracts src/width/height/title from the first <iframe> tag in a snippet.
+ *
+ * Only the first iframe tag is inspected, and attribute extraction is scoped
+ * to that tag (attributes on other elements are ignored). Does NOT validate
+ * the host — the allowlist check lives in the embed code validator.
+ *
+ * @param code - Raw embed snippet (may contain surrounding HTML)
+ * @returns Parsed iframe data, or null if no iframe with a src is found
+ *
+ * @example
+ * parseIframeEmbed('<iframe src="https://www.rts.ch/x" width="392"></iframe>')
+ * // => { src: 'https://www.rts.ch/x', width: 392 }
+ */
 export function parseIframeEmbed(code: string): ParsedIframe | null {
   if (!code || !/<iframe\b/i.test(code)) return null
 

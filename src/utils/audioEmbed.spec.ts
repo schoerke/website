@@ -55,6 +55,14 @@ describe('parseIframeEmbed', () => {
     expect(parseIframeEmbed('<iframex src="https://www.rts.ch/x"></iframex>')).toBeNull()
   })
 
+  it('preserves zero width and height', () => {
+    expect(parseIframeEmbed('<iframe src="https://www.rts.ch/x" width="0" height="0"></iframe>')).toEqual({
+      src: 'https://www.rts.ch/x',
+      width: 0,
+      height: 0,
+    })
+  })
+
   it('extracts only src when no optional attrs present', () => {
     const snippet = `<iframe src="https://www.rts.ch/play/embed?urn=urn:rts:audio:1" onload="alert(1)" srcdoc="<script>alert(2)</script>" style="position:fixed"></iframe>`
     const parsed = parseIframeEmbed(snippet)
