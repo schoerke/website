@@ -36,13 +36,23 @@ const RoleFilter: React.FC<RoleFilterProps> = ({ roles, selected, onChange }) =>
       className="mb-6 flex flex-wrap justify-start gap-2"
       aria-label="Filter recordings by role"
     >
-      <ToggleGroupItem key="all" value="all" aria-label={tCommon('all')} className="capitalize">
+      <ToggleGroupItem
+        key="all"
+        value="all"
+        aria-label={tCommon('all')}
+        className="rounded-none border-b-2 border-transparent capitalize data-[state=on]:border-primary-yellow data-[state=on]:bg-transparent"
+      >
         {tCommon('all')}
       </ToggleGroupItem>
       {roles.map((role) => {
         const translationKey = role as Parameters<typeof t>[0]
         return (
-          <ToggleGroupItem key={role} value={role} aria-label={t(translationKey)} className="capitalize">
+          <ToggleGroupItem
+            key={role}
+            value={role}
+            aria-label={t(translationKey)}
+            className="rounded-none border-b-2 border-transparent capitalize data-[state=on]:border-primary-yellow data-[state=on]:bg-transparent"
+          >
             {t(translationKey)}
           </ToggleGroupItem>
         )
