@@ -24,6 +24,19 @@ const AudioEmbed: React.FC<AudioEmbedProps> = ({ url, embedCode }) => {
       )
     }
 
+    // Only ever render http(s) sources (defense-in-depth; allowlist validation happens at save)
+    if (!/^https?:\/\//i.test(parsed.src)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[AudioEmbed] Unsafe embed src:', parsed.src)
+      }
+      return (
+        <div className="my-8 rounded-lg border-2 border-red-500 bg-red-50 p-6">
+          <p className="mb-2 font-semibold text-red-900">Audio embed error</p>
+          <p className="text-sm text-red-800">Unable to generate embed from the provided code.</p>
+        </div>
+      )
+    }
+
     return (
       <div className="my-8">
         <div className="overflow-hidden rounded-lg bg-gray-100">
