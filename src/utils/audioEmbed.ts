@@ -104,3 +104,36 @@ export function getAudioEmbedHeight(contentType: AudioEmbedData['contentType']):
       return 380
   }
 }
+
+export interface ParsedIframe {
+  src: string
+  width?: number
+  height?: number
+  title?: string
+}
+
+const IFRAME_ATTR = (name: string) => new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, 'i')
+
+export function parseIframeEmbed(code: string): ParsedIframe | null {
+  if (!code || !code.toLowerCase().includes('<iframe')) return null
+
+  const srcMatch = code.match(IFRAME_ATTR('src'))
+  if (!srcMatch || !srcMatch[1]) return null
+
+  const num = (match: RegExpMatchArray | null): number | undefined => {
+    const n = Number(match?.[1])
+    return Number.isFinite(n) ? n : undefined
+  }
+
+  const parsed: ParsedIframe = { src: srcMatch[1] }
+
+  const width = num(code.match(IFRAME_ATTR('width')))
+  const height = num(code.match(IFRAME_ATTR('height')))
+  const title = code.match(IFRAME_ATTR('title'))?.[1]
+
+  if (width) parsed.width = width
+  if (height) parsed.height = height
+  if (title) parsed.title = title
+
+  return parsed
+}
