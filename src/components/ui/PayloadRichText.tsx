@@ -87,8 +87,8 @@ const PayloadRichText: React.FC<PayloadRichTextProps> = ({ content, className, l
             return <VideoEmbed url={url} aspectRatio={aspectRatio} locale={locale as 'de' | 'en'} />
           },
           audioEmbed: ({ node }: { node: SerializedLexicalNode & { fields: AudioEmbedBlockFields } }) => {
-            const { url } = node.fields
-            return <AudioEmbed url={url} />
+            const { url, embedCode } = node.fields
+            return <AudioEmbed url={url} embedCode={embedCode} />
           },
         },
       })}
