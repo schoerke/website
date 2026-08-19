@@ -146,33 +146,15 @@ In `src/components/ArtistLinks/ArtistLinksDownloads.spec.tsx`, replace every occ
 `biographyPdf` (fixture objects and the props passed to `<ArtistLinksDownloads downloads=...>`). Use
 `replaceAll` for the string `biographyPDF` → `biographyPdf`.
 
-- [ ] **Step 3: Add a fallback regression test**
+- [ ] **Step 3: SKIPPED — do NOT add a "fallback regression" test here**
 
-Append this test to the describe block (documents the user-approved de-fallback: an en value resolving to a de
-document still renders a single link):
-
-```tsx
-it('renders the biography link from the locale-resolved value (de fallback)', () => {
-  const deDoc: Document = {
-    id: 7,
-    title: 'Biografie DE',
-    filename: 'bio-de.pdf',
-    mimeType: 'application/pdf',
-    filesize: 1024,
-    url: '/media/bio-de.pdf',
-    createdAt: '2024-01-01',
-    updatedAt: '2024-01-01',
-  }
-
-  render(
-    <NextIntlTestProvider messages={testMessages}>
-      <ArtistLinksDownloads downloads={{ biographyPdf: deDoc, galleryZIP: null }} />
-    </NextIntlTestProvider>
-  )
-
-  expect(screen.getByRole('link', { name: /Biography PDF/i })).toHaveAttribute('href', '/media/bio-de.pdf')
-})
-```
+~~Append this test...~~ **Decision (post-review): skip this test.** `ArtistLinksDownloads` is a pure render
+component with **no locale/fallback logic** — it renders whatever `downloads.biographyPdf` it receives. A
+"de-fallback" test here would only duplicate the existing "renders only biography link when biographyPdf
+exists" test (same assertion body, different fixture values) and falsely imply the component performs fallback.
+Fallback actually lives in the service layer (`getArtistBySlug` → `fallbackLocale: 'de'`), which is already
+covered by `src/services/artist.spec.ts`. The existing 10 render tests in
+`ArtistLinksDownloads.spec.tsx` fully cover the component. Do not add a redundant/mislabeled test.
 
 - [ ] **Step 4: Run the download-links tests**
 
@@ -298,30 +280,34 @@ artist biography (a `SELECT biography FROM artists_locales WHERE _locale='de'` �
 ```ts
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-sqlite'
 
+// NOTE (Option A): The migrator is NOT transactional (sqliteAdapter has no transactionOptions — statements
+// autocommit; PRAGMA foreign_keys toggling works because there is no transaction). We deliberately ship a
+// PLAIN "column exists" idempotency guard (below), matching the 20260815_125014_artist_repertoire_ordering
+// idiom, NOT a resumption state machine. This was a conscious decision after code review: a state machine
+// would not survive the DROP->RENAME table gap anyway, and recovery relies on the pre-migration prod snapshot
+// (data/dumps/pre-bio-pdf.db) + re-run. See spec "Non-transactional + residual-risk note".
 async function alreadyApplied(db: MigrateUpArgs['db']): Promise<boolean> {
-  const { rows } = await db.run(sql`SELECT COUNT(*) AS c FROM pragma_table_info('artists_locales') WHERE name = '<TARGET_COL>'`)
+  const { rows } = await db.run(
+    sql`SELECT COUNT(*) AS c FROM pragma_table_info('artists_locales') WHERE name = '<TARGET_COL>'`
+  )
   const first = rows[0] as unknown as { c: number } | undefined
   return (first?.c ?? 0) > 0
 }
 
-export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): Promise<void> {
+export async function up({ db }: MigrateUpArgs): Promise<void> {
   if (await alreadyApplied(db)) return
 
-  const sourceCount = await db.run(
-    sql`SELECT COUNT(*) AS c FROM artists WHERE downloads_biography_p_d_f_id IS NOT NULL`
-  )
+  const sourceCount = await db.run(sql`SELECT COUNT(*) AS c FROM artists WHERE <OLD_COL> IS NOT NULL`)
   const before = (sourceCount.rows[0] as unknown as { c: number }).c
 
-  await db.run(sql`ALTER TABLE artists_locales ADD COLUMN <TARGET_COL> integer`)
+  await db.run(sql`ALTER TABLE artists_locales ADD COLUMN <TARGET_COL> integer REFERENCES documents(id) ON DELETE set null`)
+  await db.run(sql`CREATE INDEX IF NOT EXISTS \`<TARGET_IDX>\` ON \`artists_locales\` (\`<TARGET_COL>\`,\`_locale\`);`)
 
-  await db.run(sql`
-    INSERT INTO artists_locales (_parent_id, _locale, <TARGET_COL>, biography)
-    SELECT a.id, 'de', a.downloads_biography_p_d_f_id, COALESCE(l.biography, '')
-    FROM artists a
-    LEFT JOIN artists_locales l ON l._parent_id = a.id AND l._locale = 'de'
-    WHERE a.downloads_biography_p_d_f_id IS NOT NULL
-    ON CONFLICT (_locale, _parent_id) DO UPDATE SET <TARGET_COL> = excluded.<TARGET_COL>
-  `)
+  await db.run(sql`INSERT INTO artists_locales (_parent_id, _locale, <TARGET_COL>, biography)
+    SELECT a.id, 'de', a.<OLD_COL>, COALESCE(l.biography, '')
+    FROM artists a LEFT JOIN artists_locales l ON l._parent_id = a.id AND l._locale = 'de'
+    WHERE a.<OLD_COL> IS NOT NULL
+    ON CONFLICT (_locale, _parent_id) DO UPDATE SET <TARGET_COL> = excluded.<TARGET_COL>`)
 
   const copied = await db.run(sql`SELECT COUNT(*) AS c FROM artists_locales WHERE _locale='de' AND <TARGET_COL> IS NOT NULL`)
   const after = (copied.rows[0] as unknown as { c: number }).c
@@ -329,28 +315,25 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
     throw new Error(`bio PDF migration count mismatch: ${before} source vs ${after} copied`)
   }
 
-  // Table-recreate the artists table to drop the FK-participating old column.
-  await db.run(sql`CREATE TABLE IF NOT EXISTS __new_artists LIKE artists`)
-  await db.run(sql`
-    INSERT INTO __new_artists (id, name, instrument, image_id, slug, downloads_gallery_z_i_p_id, homepage_u_r_l, external_calendar_u_r_l, facebook_u_r_l, instagram_u_r_l, twitter_u_r_l, youtube_u_r_l, spotify_u_r_l, updated_at, created_at)
-    SELECT id, name, instrument, image_id, slug, downloads_gallery_z_i_p_id, homepage_u_r_l, external_calendar_u_r_l, facebook_u_r_l, instagram_u_r_l, twitter_u_r_l, youtube_u_r_l, spotify_u_r_l, updated_at, created_at
-    FROM artists
-  `)
-  await db.run(sql`DROP TABLE artists`)
-  await db.run(sql`ALTER TABLE __new_artists RENAME TO artists`)
+  // Table-recreate the artists table to drop the FK-participating old column. Use the __new_artists
+  // create->insert->drop->rename idiom (NOT `LIKE`), preserving the FULL column set, indexes, and FKs of
+  // payload-generated-schema.ts (see the real migration).
+  await db.run(sql`CREATE TABLE IF NOT EXISTS \`__new_artists\` (...full column set, indexes, FKs WITHOUT <OLD_COL>...)`)
+  await db.run(sql`INSERT INTO \`__new_artists\` (...) SELECT ... FROM \`artists\`;`)
+  await db.run(sql`DROP TABLE IF EXISTS \`artists\`;`)
+  await db.run(sql`ALTER TABLE \`__new_artists\` RENAME TO \`artists\`;`)
+  await db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS \`artists_name_idx\` ON \`artists\` (\`name\`);`)
+  await db.run(sql`CREATE UNIQUE INDEX IF NOT EXISTS \`artists_slug_idx\` ON \`artists\` (\`slug\`);`)
+  await db.run(sql`CREATE INDEX IF NOT EXISTS \`artists_image_idx\` ON \`artists\` (\`image_id\`);`)
+  await db.run(sql`CREATE INDEX IF NOT EXISTS \`artists_downloads_downloads_gallery_z_i_p_idx\` ON \`artists\` (\`downloads_gallery_z_i_p_id\`);`)
+  await db.run(sql`CREATE INDEX IF NOT EXISTS \`artists_updated_at_idx\` ON \`artists\` (\`updated_at\`);`)
+  await db.run(sql`CREATE INDEX IF NOT EXISTS \`artists_created_at_idx\` ON \`artists\` (\`created_at\`);`)
 }
 
-export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs): Promise<void> {
+export async function down({ db }: MigrateDownArgs): Promise<void> {
   if (!(await alreadyApplied(db))) return
-
-  await db.run(sql`ALTER TABLE artists ADD COLUMN downloads_biography_p_d_f_id integer`)
-  await db.run(sql`
-    UPDATE artists SET downloads_biography_p_d_f_id = (
-      SELECT l.<TARGET_COL> FROM artists_locales l
-      WHERE l._parent_id = artists.id AND l._locale = 'de' AND l.<TARGET_COL> IS NOT NULL
-    )
-  `)
-  await db.run(sql`ALTER TABLE artists_locales DROP COLUMN <TARGET_COL>`)
+  // Mirror up(): recreate artists re-adding <OLD_COL> + its index + FK, copy de locale values back,
+  // verify counts, then recreate artists_locales WITHOUT <TARGET_COL>.
 }
 ```
 

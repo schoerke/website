@@ -149,10 +149,26 @@ migration's safety (they are never modified/deleted/re-pointed).
 ### Migration `up()`
 
 Idempotency guard: key on the **concrete target column** existing in `artists_locales` (via
-`pragma_table_info('artists_locales')`), not on generic existence. If present, no-op.
+`pragma_table_info('artists_locales')`), not on generic existence. If present, no-op. This is the plain
+"column exists" guard (Option A), matching the established `20260815_125014_artist_repertoire_ordering.ts`
+idiom.
 
-The whole `up()` runs inside the migrator's **single transaction** — a throw rolls back everything (no partial
-state). Idempotency guards are belt-and-suspenders, not the sole safety net.
+### Non-transactional + residual-risk note (Option A)
+
+The migration is **NOT transactional** — `sqliteAdapter` has no `transactionOptions`, so statements autocommit
+(`PRAGMA foreign_keys` toggling works precisely because there is no transaction). We deliberately ship a **plain
+"column exists" idempotency guard** (not a resumption state machine). This is a conscious trade: a mid-flight
+failure could leave the migration stuck (localized column present but copy/recreate incomplete, or a `DROP
+artists` without the subsequent `RENAME`). Residual failure-window risk is accepted because:
+
+- The SQL was verified line-by-line against `payload-generated-schema.ts` and validated end-to-end via a **real
+  Payload dry-run** (`payload migrate`) against a copy of the prod snapshot (23 bio PDFs preserved 1:1,
+  gallery kept, de/en fallback correct) before this spec was finalized.
+- A pre-migration prod snapshot (`data/dumps/pre-bio-pdf.db`) is retained; a stuck/failed migration is
+  recoverable from it (re-run or manual fix), not unrecoverable.
+- The success path is what ships to prod; failure windows are exceptional.
+
+The count-verification throws before any destructive step regardless of the guard.
 
 1. **Snapshot totals** for assertion: count artists where `artists.downloads_biography_p_d_f_id IS NOT NULL`.
 2. **Add** the localized column to `artists_locales` (if not present):
@@ -211,17 +227,23 @@ Idempotency guard on the inverted condition.
 
 ## Error Handling
 
-- Migration is idempotent (safe to re-run on every Vercel build, including previews).
-- Verification throws on count/id mismatch before any destructive step; because the migrator wraps `up()` in a
-  single transaction, a throw rolls back fully (no partial state).
-- `PRAGMA foreign_keys=OFF` must NOT be relied on for the column drop — it is a no-op mid-transaction.
+- Migration is idempotent via a plain "localized column exists" guard (Option A — safe to re-run on every
+  Vercel build; a completed migration is a no-op). A mid-flight failure could leave a partial/stuck state, but
+  that is accepted and recoverable from the pre-migration prod snapshot; see "Non-transactional + residual-risk
+  note" above.
+- Verification throws on count/id mismatch before any destructive step.
+- **No transaction rollback** (SQLite adapter has no `transactionOptions`) — correctness relies on the
+  count-verification + the pre-migration prod snapshot for recovery, not on atomic rollback.
+- `PRAGMA foreign_keys=OFF` toggling is permitted here (no active transaction, matching the reference
+  migration), but the table-recreate preserves FK integrity structurally regardless of the pragma.
 
 ## Testing
 
 - Update `ArtistLinksDownloads.spec.tsx` fixtures: `biographyPdf` instead of `biographyPDF`; assert the link
-  renders from the locale-resolved value.
-- Add a test driven through the real service (not just mocked fixtures): an English artist with only a `de`
-  PDF → link renders pointing at the German document (fallback). An artist with no PDF at all → no link.
+  renders from the locale-resolved value. (No component-level fallback test is added — the component has no
+  locale/fallback logic; fallback resolution lives in the service and is covered by `src/services/artist.spec.ts`.)
+- Verify fallback via the service (already covered): an English artist with only a `de` PDF resolves
+  `biographyPdf` to the German document; an artist with no PDF at all → no link.
 - Run `pnpm lint`, `pnpm build` (verify migration idempotency via the build:ci path), `pnpm test`.
 
 ## Out of Scope
