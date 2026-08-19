@@ -36,7 +36,7 @@ describe('ArtistLinksDownloads', () => {
   it('returns null when both download fields are null', () => {
     const { container } = render(
       <NextIntlTestProvider messages={testMessages}>
-        <ArtistLinksDownloads downloads={{ biographyPDF: null, galleryZIP: null }} />
+        <ArtistLinksDownloads downloads={{ biographyPdf: null, galleryZIP: null }} />
       </NextIntlTestProvider>
     )
 
@@ -56,14 +56,14 @@ describe('ArtistLinksDownloads', () => {
   it('returns null when both downloads are numbers (unresolved relationships)', () => {
     const { container } = render(
       <NextIntlTestProvider messages={testMessages}>
-        <ArtistLinksDownloads downloads={{ biographyPDF: 123, galleryZIP: 456 }} />
+        <ArtistLinksDownloads downloads={{ biographyPdf: 123, galleryZIP: 456 }} />
       </NextIntlTestProvider>
     )
 
     expect(container.firstChild).toBeNull()
   })
 
-  it('renders only biography link when only biographyPDF exists', () => {
+  it('renders only biography link when only biographyPdf exists', () => {
     const biographyDoc: Document = {
       id: 1,
       title: 'Biography PDF',
@@ -77,7 +77,7 @@ describe('ArtistLinksDownloads', () => {
 
     render(
       <NextIntlTestProvider messages={testMessages}>
-        <ArtistLinksDownloads downloads={{ biographyPDF: biographyDoc, galleryZIP: null }} />
+        <ArtistLinksDownloads downloads={{ biographyPdf: biographyDoc, galleryZIP: null }} />
       </NextIntlTestProvider>
     )
 
@@ -104,7 +104,7 @@ describe('ArtistLinksDownloads', () => {
 
     render(
       <NextIntlTestProvider messages={testMessages}>
-        <ArtistLinksDownloads downloads={{ biographyPDF: null, galleryZIP: galleryDoc }} />
+        <ArtistLinksDownloads downloads={{ biographyPdf: null, galleryZIP: galleryDoc }} />
       </NextIntlTestProvider>
     )
 
@@ -142,7 +142,7 @@ describe('ArtistLinksDownloads', () => {
 
     render(
       <NextIntlTestProvider messages={testMessages}>
-        <ArtistLinksDownloads downloads={{ biographyPDF: biographyDoc, galleryZIP: galleryDoc }} />
+        <ArtistLinksDownloads downloads={{ biographyPdf: biographyDoc, galleryZIP: galleryDoc }} />
       </NextIntlTestProvider>
     )
 
@@ -176,7 +176,7 @@ describe('ArtistLinksDownloads', () => {
 
     render(
       <NextIntlTestProvider messages={testMessages}>
-        <ArtistLinksDownloads downloads={{ biographyPDF: biographyDoc, galleryZIP: galleryDoc }} />
+        <ArtistLinksDownloads downloads={{ biographyPdf: biographyDoc, galleryZIP: galleryDoc }} />
       </NextIntlTestProvider>
     )
 
@@ -212,7 +212,7 @@ describe('ArtistLinksDownloads', () => {
 
     render(
       <NextIntlTestProvider messages={testMessages}>
-        <ArtistLinksDownloads downloads={{ biographyPDF: biographyDoc, galleryZIP: galleryDoc }} />
+        <ArtistLinksDownloads downloads={{ biographyPdf: biographyDoc, galleryZIP: galleryDoc }} />
       </NextIntlTestProvider>
     )
 
@@ -236,7 +236,7 @@ describe('ArtistLinksDownloads', () => {
 
     const { container } = render(
       <NextIntlTestProvider messages={testMessages}>
-        <ArtistLinksDownloads downloads={{ biographyPDF: docWithoutURL, galleryZIP: null }} />
+        <ArtistLinksDownloads downloads={{ biographyPdf: docWithoutURL, galleryZIP: null }} />
       </NextIntlTestProvider>
     )
 

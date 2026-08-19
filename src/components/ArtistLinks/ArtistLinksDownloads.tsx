@@ -5,7 +5,7 @@ import React from 'react'
 
 interface ArtistLinksDownloadsProps {
   downloads?: {
-    biographyPDF?: Document | number | null
+    biographyPdf?: Document | number | null
     galleryZIP?: Document | number | null
   }
 }
@@ -24,7 +24,7 @@ const ArtistLinksDownloads: React.FC<ArtistLinksDownloadsProps> = ({ downloads }
     return null
   }
 
-  const biographyURL = getDocumentURL(downloads.biographyPDF)
+  const biographyURL = getDocumentURL(downloads.biographyPdf)
   const galleryURL = getDocumentURL(downloads.galleryZIP)
 
   // Return null if no download URLs exist
