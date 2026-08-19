@@ -12,7 +12,7 @@ interface ArtistLinksProps {
   youtubeURL?: string | null
   spotifyURL?: string | null
   downloads?: {
-    biographyPDF?: Document | number | null
+    biographyPdf?: Document | number | null
     galleryZIP?: Document | number | null
   }
   className?: string
@@ -33,7 +33,7 @@ const ArtistLinks: React.FC<ArtistLinksProps> = ({
   const hasSocialLinks = Boolean(
     homepageURL || externalCalendarURL || facebookURL || instagramURL || twitterURL || youtubeURL || spotifyURL
   )
-  const hasDownloads = Boolean(downloads?.biographyPDF || downloads?.galleryZIP)
+  const hasDownloads = Boolean(downloads?.biographyPdf || downloads?.galleryZIP)
 
   // Return null if no content
   if (!hasSocialLinks && !hasDownloads) {
