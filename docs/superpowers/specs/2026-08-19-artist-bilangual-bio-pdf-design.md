@@ -13,7 +13,9 @@ gallery ZIP download unchanged.
 1. Artists can upload an English bio PDF and a German bio PDF.
 2. The public artist page shows the bio PDF matching the visitor's locale: German site → German PDF, English
    site → English PDF.
-3. No fallback: if a locale has no PDF, that locale shows no bio-PDF link.
+3. **Fallback to German.** If a locale has no PDF, fall back to `de` (site config `defaultLocale: 'de'`,
+   `fallback: false`, but the service explicitly passes `fallbackLocale: 'de'`). If no locale has a PDF, show
+   no bio-PDF link. (User decision: keep the existing `fallbackLocale: 'de'` behavior — see "Fallback" below.)
 4. Gallery ZIP download is unchanged (single, non-localized).
 5. **No data loss in the migration.** Existing `biographyPDF` values must be preserved.
 
@@ -24,19 +26,38 @@ gallery ZIP download unchanged.
 Use a single localized upload field `downloads.biographyPdf`, `localized: true`. Rationale:
 
 - The bio PDF is content varying by language. Payload's localization model is the semantically correct fit.
-- Site config already `locales: ['de','en']`, `defaultLocale: 'de'`, `fallback: false`. With `fallback: false`,
-  a locale with no value returns `null` — this satisfies the "no fallback" requirement for free.
 - Matches how `biography` (richText) and `quote` already work in the same Biography tab: one field, edited
   per-locale via the admin locale switcher.
 - No manual `if (locale)` branching in the frontend; `getArtistBySlug(slug, locale)` already returns
-  locale-resolved data, so `downloads.biographyPdf` is already the correct locale's PDF.
+  locale-resolved data, so `downloads.biographyPdf` is already the correct locale's PDF (subject to fallback
+  below).
+
+### Fallback (resolved product decision — REVISED from earlier draft)
+
+The spec originally claimed `fallback: false` gives "no fallback" for free. **That is incorrect.** While the
+config sets `fallback: false`, the artist service `src/services/artist.ts` passes `fallbackLocale: 'de'` on
+every `payload.find`/`findByID` call (GetArtistBySlug, GetArtistListData). In Payload's `afterRead`, a
+localized field with no value in the requested locale hoists the `fallbackLocale` value (including `upload`
+fields). Therefore:
+
+- English page, no English PDF → `downloads.biographyPdf` resolves to the **German** PDF id (not `null`).
+- English page, no PDF at all (no de OR en) → `null` (no link).
+
+**Decision (user-approved): keep the existing `fallbackLocale: 'de'`.** This is Option B — the German PDF acts
+as the fallback for English visitors. No change to `getArtistBySlug`. The single-link UI therefore needs no
+de/en-disambiguated labels (only one link ever renders).
+
+**Consequences to note:**
+- Gallery ZIP unchanged (non-localized, always shows).
+- Because the en fallback shows the de PDF, there is **no en-site link regression** for the existing data
+  (the old single PDF becomes the de PDF and is still reachable on both locales via fallback).
 
 ### Naming
 
 Rename field `biographyPDF` → `biographyPdf`. Note: Payload's snake_case differs (`biographyPDF` →
 `..._biography_p_d_f_id` vs `biographyPdf` → `..._biography_pdf_id`), but because this becomes a **localized**
 field living in `artists_locales`, the migration **moves** data (not renames in place), so exact column names
-are read, not assumed — see Migration.
+are read from the regenerated schema, not assumed — see Migration.
 
 ## Artifacts Changed
 
@@ -46,6 +67,9 @@ are read, not assumed — see Migration.
 
 - `biographyPDF` → `biographyPdf`, add `localized: true`, keep `type: 'upload'`, `relationTo: 'documents'`.
 - `galleryZIP` unchanged (remains non-localized).
+
+Note: the `Artists` collection has **no versions/draft block** → there are no `_artists_v` /
+`_artists_v_locales` tables to migrate. Versions are out of scope (confirmed in `payload-generated-schema.ts`).
 
 ### Generated files (keep in sync per `docs/patterns/payload.md`)
 
@@ -57,10 +81,8 @@ are read, not assumed — see Migration.
 
 `src/components/ArtistLinks/ArtistLinksDownloads.tsx`:
 
-- Currently reads `downloads.biographyPDF` and renders a single "Biography PDF" link.
-- After change: reads `downloads.biographyPdf`. Value is already locale-resolved; no manual locale branch.
-- Field name update in the typed `downloads` interface and the `getDocumentURL` call.
-- Link label unchanged (i18n `downloads.biography`).
+- Reads `downloads.biographyPdf` (was `biographyPDF`). Value is already locale-resolved by the service
+  (including fallback); no manual locale branch. Single link label unchanged (i18n `downloads.biography`).
 
 `src/components/ArtistLinks/index.tsx`:
 
@@ -68,22 +90,31 @@ are read, not assumed — see Migration.
 
 `src/app/(frontend)/[locale]/artists/[slug]/page.tsx`:
 
-- Destructures `downloads` and passes through; frontend field name flows from payload-types. No logic change
-  expected beyond type propagation.
+- Passes `downloads` through; field name flows from `payload-types`. No logic change beyond type propagation.
 
-`src/payload-types.ts` consumers / test fixtures:
+Test fixtures / payload-types consumers:
 
-- `src/components/ArtistLinks/ArtistLinksDownloads.spec.tsx` — update fixtures and props from `biographyPDF` →
+- `src/components/ArtistLinks/ArtistLinksDownloads.spec.tsx` — fixtures and props `biographyPDF` →
   `biographyPdf`.
-- `src/components/ArtistLinks/index.spec.tsx` (if present) and `artist` page tests — update fixture keys.
 - `src/components/Artist/ArtistGrid.spec.tsx` — `downloads: undefined` fixture unaffected.
-- `src/i18n/{en,de}.ts` — no change needed (label `downloads.biography` reused).
+- `src/i18n/{en,de}.ts` — no change (label `downloads.biography` reused).
 
-### Service layer
+### Services
 
-`src/services/artist.ts` — `getArtistBySlug` uses Payload Local API with `depth`; `downloads` group returns
-locale-resolved `biographyPdf`. Verify `depth` populates the upload relationship (should not change — same
-`depth` as today). No logic change expected.
+`src/services/artist.ts` — no logic change. `getArtistBySlug` already returns `downloads` with `depth`
+(relationship populated) and `fallbackLocale: 'de'`; the renamed field flows through types. **Verify** `depth`
+still populates the upload relationship for `biographyPdf` (same `depth` as today).
+
+### Out-of-scope / historical references to `biographyPDF` (do NOT update)
+
+These reference the removed field name but are one-time/historical tooling, out of scope for this change:
+
+- `scripts/wordpress/migrateArtists.ts`, `scripts/wordpress/utils/extractMediaUrls.ts`,
+  `scripts/wordpress/data/media-urls.json` (one-time WP import).
+- `scripts/db/json/artists.json` (fixture dump).
+
+If the WP import is ever re-run against the new schema it would target a removed field — flag in the plan to
+prevent a future surprise, but do not migrate these here.
 
 ## Migration (zero data loss)
 
@@ -93,78 +124,109 @@ locale-resolved `biographyPdf`. Verify `depth` populates the upload relationship
 (`artists.downloads_biography_p_d_f_id`, FK to `documents`).
 
 Making it **localized** moves its storage into the `artists_locales` table as a per-locale column
-(`_locale`, `_parent_id`), per Payload's SQLite storage model. Existing values live on the parent `artists`
-table column and must be copied to the `de` locale rows in `artists_locales` before the old column is dropped.
+(`_locale`, `_parent_id`). Existing values are copied from `artists` into the `de` locale rows before the old
+column is dropped. Per Payload docs, converting an existing field to localized changes its data structure and
+can lose data unless handled — the migration below handles it.
 
-Per Payload docs, converting an existing field to localized changes its data structure and can lose data unless
-handled — this is exactly why the migration is authored carefully below.
+**Storage location of the actual PDF files:** PDFs/ZIPs live in **Cloudflare R2** (Documents collection uses
+`s3Storage`; DB stores only document metadata + R2 object key). The migration moves **references (ids)**
+between DB tables and never touches R2 objects, so the file chain (artist → document id → R2 key) is preserved
+intact. A DB backup is sufficient to verify reference integrity; backing up R2 objects is not required for this
+migration's safety (they are never modified/deleted/re-pointed).
 
 ### Steps to build the migration
 
-1. **Make the schema change** in `Artists.ts` (field rename + `localized: true`).
-2. **Run `pnpm payload migrate:create add-bilingual-bio-pdf`** against **dev** to generate a starter migration.
-   Do NOT apply it.
-3. **Inspect** the generated `up()`/`down()`. Determine the exact target column Payload expects for the
-   localized field in `artists_locales` (e.g. `downloads_biography_pdf_id` vs `downloads_biography_p_d_f_id`).
-   Also confirm the generated migration does NOT silently drop data.
-4. **Rewrite the migration** as a hand-authored idempotent migration (mirroring
-   `20260815_125014_artist_repertoire_ordering.ts`), with explicit guards and verification.
+1. Make the schema change in `Artists.ts` (field rename + `localized: true`).
+2. Run `pnpm payload migrate:create add-bilingual-bio-pdf` against **dev** to generate a starter migration. Do
+   NOT apply it.
+3. Run `pnpm payload generate:db-schema` and **diff** the `artists_locales` definition to capture the exact
+   target column name, index name, and FK name Payload expects for the localized field (e.g.
+   `downloads_biography_pdf_id` vs `..._p_d_f_id`). Use these **exact names** in the hand migration.
+4. **Rewrite** the generated migration as a hand-authored idempotent migration (mirroring
+   `20260815_125014_artist_repertoire_ordering.ts`) with explicit guards and verification. Do NOT leave the
+   auto-generated migration in place to also run.
 
 ### Migration `up()`
 
-Idempotency guard: if the localized column already exists in `artists_locales`, no-op (use
-`pragma_table_info('artists_locales')`).
+Idempotency guard: key on the **concrete target column** existing in `artists_locales` (via
+`pragma_table_info('artists_locales')`), not on generic existence. If present, no-op.
+
+The whole `up()` runs inside the migrator's **single transaction** — a throw rolls back everything (no partial
+state). Idempotency guards are belt-and-suspenders, not the sole safety net.
 
 1. **Snapshot totals** for assertion: count artists where `artists.downloads_biography_p_d_f_id IS NOT NULL`.
-2. **Add** the localized column to `artists_locales`:
-   `ALTER TABLE artists_locales ADD COLUMN <target_col> integer` (if not present).
-3. **Copy** each artist's existing value into its `de` locale row:
-   - For artists that already have an `artists_locales` row with `_locale='de'`, `UPDATE` that row's
-     `<target_col>` from `artists.downloads_biography_p_d_f_id`.
-   - For artists with no `_locale='de'` row, `INSERT` a row `(_parent_id, _locale='de', <target_col>)`.
-   - Only copy rows where the source value is `NOT NULL`.
+2. **Add** the localized column to `artists_locales` (if not present):
+   `ALTER TABLE artists_locales ADD COLUMN <target_col> integer`.
+3. **Copy** each artist's existing value into its `de` locale row using an **atomic upsert** (do not hand-roll
+   UPDATE/INSERT — `artists_locales.biography` is `NOT NULL`, so an INSERT branch must also supply `biography`;
+   the unique `(_locale, _parent_id)` constraint makes `ON CONFLICT` correct):
+   ```sql
+   INSERT INTO artists_locales (_parent_id, _locale, <target_col>, biography)
+   SELECT id, 'de', downloads_biography_p_d_f_id, <coalesced biography>
+   FROM artists
+   WHERE downloads_biography_p_d_f_id IS NOT NULL
+   ON CONFLICT (_locale, _parent_id) DO UPDATE SET <target_col> = excluded.<target_col>;
+   ```
+   Do NOT bind `artists.id` into `artists_locales.id` — leave `id` to SQLite rowid auto-assign (the locales
+   `id` is its own `integer PRIMARY KEY`).
 4. **Verify**: assert copied count equals snapshot count from step 1. On mismatch, throw — abort before any
    destructive step.
-5. **Drop** the old parent column: `ALTER TABLE artists DROP COLUMN downloads_biography_p_d_f_id`.
-6. Recreate the FK from `artists_locales.<target_col>` → `documents(id)` if Payload's schema requires it
-   (verify against `payload-generated-schema.ts`).
+5. **Drop** the old column **by table-recreate**, NOT `DROP COLUMN`. SQLite forbids `ALTER TABLE ... DROP
+   COLUMN` when the column participates in a foreign key (`error: unknown column in foreign key definition`),
+   and `PRAGMA foreign_keys=OFF` is a no-op inside the migrator transaction. Mirror the reference migration:
+   create `__new_artists`, `INSERT ... SELECT` preserving every other column (`image`, `slug`,
+   `downloads_gallery_z_i_p_id`, all URL columns, `updated_at`, `created_at`), drop old table, rename. Preserve
+   all indexes (`artists_image_idx`, `artists_downloads_downloads_gallery_z_i_p_idx`, name/slug unique
+   indexes) and the remaining FKs (`image_id_images_id_fk`, `downloads_gallery_z_i_p_id_documents_id_fk`)
+   minus the removed bio PDF FK.
+6. Recreate the FK from `artists_locales.<target_col>` → `documents(id)` if `payload-generated-schema.ts`
+   requires it (use the exact generated FK name).
 
 ### Migration `down()`
 
 Idempotency guard on the inverted condition.
 
-1. **Add** `artists.downloads_biography_p_d_f_id` column back (if absent).
-2. **Copy** `de` locale values back: for each `artists_locales` row with `_locale='de'` and
-   `<target_col> NOT NULL`, set `artists.downloads_biography_p_d_f_id`.
-3. **Verify** count, then **drop** the localized column from `artists_locales`.
+1. Add `artists.downloads_biography_p_d_f_id` column back (via table-recreate if needed).
+2. For each `artists_locales` row with `_locale='de'` and `<target_col> NOT NULL`, set
+   `artists.downloads_biography_p_d_f_id`.
+3. Verify count, then drop the localized column from `artists_locales`.
+4. **Recreate the dropped index** `artists_downloads_downloads_biography_p_d_f_idx` and **FK**
+   `..._documents_id_fk` so the rolled-back schema matches `payload-generated-schema.ts` (prevents drift
+   errors on the next dev schema-push / migration drift-check).
+5. **Accepted rollback data-loss note:** if an artist gained a separate English PDF after migration, `down()`
+   copies only `de` back into the single parent column; the `en` id is dropped (inherent single-column
+   rollback). State this as accepted so it is not a surprise during an incident.
 
 ### Zero-data-loss verification procedure
 
 1. **Export a prod snapshot**: `turso db export ksschoerke-production --output-file data/dumps/pre-bio-pdf.db`
    (approval required per `opencode.json`).
-2. **Dry-run the migration on the snapshot** locally with `sqlite3` or a scratch script: apply `up()`, then
-   assert every artist's original `biographyPDF` document id appears for the `de` locale in
-   `artists_locales`, and that no rows went missing.
-3. Confirm the migrated counts match the pre-migration snapshot counts exactly.
-4. Only after the dry-run passes and is user-approved, run `pnpm migrate` to apply to prod
-   (requires explicit approval per AGENTS.md).
+2. **Dry-run the migration on the snapshot** locally (via `sqlite3` on the exported `.db`): apply the schema
+   change + `up()`, then assert every artist's original `biographyPDF` document id appears for the `de` locale
+   in `artists_locales`, and that no rows went missing.
+3. Confirm migrated counts match the pre-migration snapshot counts exactly (including matching every document
+   id 1:1 — not just count equality).
+4. Only after the dry-run passes and is user-approved, run `pnpm migrate` to apply to prod (requires explicit
+   approval per AGENTS.md).
 
 ## Error Handling
 
 - Migration is idempotent (safe to re-run on every Vercel build, including previews).
-- Verification steps throw on count mismatch before any destructive column drop, so a bad migration fails
-  closed rather than losing data.
+- Verification throws on count/id mismatch before any destructive step; because the migrator wraps `up()` in a
+  single transaction, a throw rolls back fully (no partial state).
+- `PRAGMA foreign_keys=OFF` must NOT be relied on for the column drop — it is a no-op mid-transaction.
 
 ## Testing
 
 - Update `ArtistLinksDownloads.spec.tsx` fixtures: `biographyPdf` instead of `biographyPDF`; assert the link
   renders from the locale-resolved value.
-- Update serialized artist fixtures / page tests for the renamed field.
-- Verify `biographyPdf` returns `null` when a locale has no value (no-fallback).
-- Run `pnpm lint`, `pnpm build` (verify migration idempotency via build:ci path), `pnpm test`.
+- Add a test driven through the real service (not just mocked fixtures): an English artist with only a `de`
+  PDF → link renders pointing at the German document (fallback). An artist with no PDF at all → no link.
+- Run `pnpm lint`, `pnpm build` (verify migration idempotency via the build:ci path), `pnpm test`.
 
 ## Out of Scope
 
-- Changing gallery ZIP behavior.
-- Adding localization to other download fields.
-- Frontend locale-switching UI (the locale is already the page locale; data resolves via Payload locale).
+- Changing gallery ZIP behavior or localizing other download fields.
+- Frontend locale-switching UI (data resolves via the service + fallback).
+- Updating historical WP-import scripts / fixture dumps that reference `biographyPDF` (documented above).
+- Backing up R2 objects (not required; migration never touches files).
