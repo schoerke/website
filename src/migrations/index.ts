@@ -1,5 +1,6 @@
 import * as migration_20260815_125014_artist_repertoire_ordering from './20260815_125014_artist_repertoire_ordering'
 import * as migration_20260816_212049_ensure_employee_email_unique from './20260816_212049_ensure_employee_email_unique'
+import * as migration_20260819_202221_localize_artist_biography_pdf from './20260819_202221_localize_artist_biography_pdf'
 
 export const migrations = [
   {
@@ -11,5 +12,10 @@ export const migrations = [
     up: migration_20260816_212049_ensure_employee_email_unique.up,
     down: migration_20260816_212049_ensure_employee_email_unique.down,
     name: '20260816_212049_ensure_employee_email_unique',
+  },
+  {
+    up: migration_20260819_202221_localize_artist_biography_pdf.up,
+    down: migration_20260819_202221_localize_artist_biography_pdf.down,
+    name: '20260819_202221_localize_artist_biography_pdf',
   },
 ]
