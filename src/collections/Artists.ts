@@ -230,8 +230,9 @@ export const Artists: CollectionConfig = {
               type: 'group',
               fields: [
                 {
-                  name: 'biographyPDF',
+                  name: 'biographyPdf',
                   type: 'upload',
+                  localized: true,
                   label: {
                     en: 'Biography PDF Download',
                     de: 'Biographie PDF Download',
