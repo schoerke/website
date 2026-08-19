@@ -197,7 +197,7 @@ export interface Artist {
    */
   projects?: (number | Post)[] | null;
   downloads?: {
-    biographyPDF?: (number | null) | Document;
+    biographyPdf?: (number | null) | Document;
     galleryZIP?: (number | null) | Document;
   };
   videoLinks?:
@@ -669,7 +669,7 @@ export interface ArtistsSelect<T extends boolean = true> {
   downloads?:
     | T
     | {
-        biographyPDF?: T;
+        biographyPdf?: T;
         galleryZIP?: T;
       };
   videoLinks?:
