@@ -716,5 +716,26 @@ describe('Lexical parsing utilities', () => {
       }
       expect(hasVisibleTextContent(content)).toBe(false)
     })
+
+    it('returns true for string JSON with visible text', () => {
+      const content = JSON.stringify({
+        root: { children: [{ type: 'paragraph', children: [{ type: 'text', text: 'Hello' }] }] },
+      })
+      expect(hasVisibleTextContent(content)).toBe(true)
+    })
+
+    it('returns false for string JSON with an empty root', () => {
+      const content = JSON.stringify({ root: { children: [] } })
+      expect(hasVisibleTextContent(content)).toBe(false)
+    })
+
+    it('returns false for a string that parses to a non-object (primitive)', () => {
+      const content = JSON.stringify('just text')
+      expect(hasVisibleTextContent(content)).toBe(false)
+    })
+
+    it('returns false for an unparseable string', () => {
+      expect(hasVisibleTextContent('{ not valid json')).toBe(false)
+    })
   })
 })

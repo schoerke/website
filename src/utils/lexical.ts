@@ -155,14 +155,15 @@ export function extractLexicalText(lexicalData: string | object): string {
  * const has = hasVisibleTextContent(recording.description) // true/false
  */
 export function hasVisibleTextContent(content: string | object | null | undefined): boolean {
+  let data: object | null = content as object | null
   if (typeof content === 'string') {
     try {
-      content = JSON.parse(content)
+      data = JSON.parse(content)
     } catch {
-      return true // Unparseable string at least signals non-empty stored data
+      return false // Unparseable string — fail toward hidden rather than opening a broken modal
     }
   }
-  if (typeof content !== 'object' || content === null) return false
+  if (typeof data !== 'object' || data === null) return false
 
   const hasVisibleText = (node: unknown): boolean => {
     if (typeof node !== 'object' || node === null) return false
@@ -175,7 +176,7 @@ export function hasVisibleTextContent(content: string | object | null | undefine
     return false
   }
 
-  return hasVisibleText(content)
+  return hasVisibleText(data)
 }
 
 /**
