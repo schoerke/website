@@ -93,7 +93,10 @@ FK**, array tables dropped, `payload_migrations` empty. A later build's `migrate
 4. Verify: compare every table's `COUNT(*)` and index set snapshot vs restored.
 
 **The full verified procedures (backup, dump, restore, clone prod→dev, schema parity) live in
-`docs/turso-operations.md` — use that file, not ad-hoc attempts.**
+`docs/turso-operations.md` — use that file, not ad-hoc attempts.** When wiping a DB for a clone/restore
+(`docs/turso-operations.md` §3c), the per-table `DROP` loop can **silently skip tables** (FK ordering) — verify
+`0 tables remain` (`sqlite_master` count) BEFORE importing the restore, or the wipe is incomplete and the clone is
+contaminated.
 
 **Lesson:** never `turso db import` expecting an overwrite. Take a fresh export of the current (even broken) state
 first as a second safety net.
@@ -150,6 +153,19 @@ Clicking ✕ on a relationship chip removes it **client-side immediately**; no A
 4. Pre-flight against a local copy of a prod snapshot before relying on it (see 4.2 for how).
 5. Commit. Deploy applies it to prod via `build:ci`.
 
+**Verified end-to-end dry-run (authoritative zero-loss proof):** run the REAL `payload migrate` against a scratch
+copy of a prod snapshot, then read the data back via the **Payload Local API**. Only this proves data survives
+1:1 — never re-verify with a raw-SQL re-implementation of the migration (it can't prove what Payload actually does).
+
+```bash
+turso db export ksschoerke-production --output-file data/dumps/scratch.db
+# against the scratch copy, NOT prod:
+DATABASE_URI=file:data/dumps/scratch.db NODE_ENV=production pnpm payload migrate
+# then read back via Local API: NODE_ENV=production DATABASE_URI=file:data/dumps/scratch.db pnpm tsx <read script>
+```
+
+`NODE_ENV=production` + `file:` URI keeps it off prod entirely (no `pushDevSchema`, no `dev|-1`).
+
 ### Migration snapshot/baseline
 
 - `src/migrations/*.json` files are schema snapshots used for diffing. The original
@@ -163,6 +179,11 @@ Clicking ✕ on a relationship chip removes it **client-side immediately**; no A
 
 Because `build:ci` runs migrations on every build (previews included), a migration can be re-run against an
 already-migrated DB. It MUST be a safe no-op if already applied.
+
+**The Payload/SQLite migrator is NOT transactional.** `sqliteAdapter` exposes no `transactionOptions` —
+every statement autocommits, there is no rollback. So a partial failure leaves a half-migrated DB. Guard every
+`up()`/`down()` with BOTH: an idempotent `alreadyApplied()` check (above) AND a **verify-but-fail-closed** step —
+e.g. `SELECT COUNT(*)` and bail/abort before a destructive step if the count isn't what you expect.
 
 **Pattern used (copy from `20260815_125014_artist_repertoire_ordering.ts`):**
 
@@ -185,6 +206,10 @@ Use `DROP TABLE IF EXISTS`, `CREATE TABLE IF NOT EXISTS`, `CREATE INDEX IF NOT E
 expects `ON DELETE CASCADE`. If the migration must add a column with a CASCADE FK, you cannot use `ALTER` — you
 must **recreate the table** (create `__new_artists_rels`, `INSERT ... SELECT`, drop, rename) as this migration
 does. Always verify the resulting `PRAGMA foreign_key_list` includes the CASCADE FK.
+
+**SQLite forbids `DROP COLUMN` on an FK-participating column** — the same way the FK issue above forces
+table-recreate, a column removal that's part of an FK must be done via full table-recreate
+(`__new_...`, `INSERT ... SELECT`, drop, rename) too. Schema-push / dev-path ALTER can't remove it.
 
 **Dev push vs migration mismatch:** dev uses `pushDevSchema` (no FK via ALTER path); the migration file creates
 the FK properly. So dev DB and prod DB can legitimately differ in FK presence. Verify against
@@ -273,6 +298,10 @@ project's deployments or env vars (`vercel env ls` returns empty; `vercel ls` sh
 7. **Take a fresh backup before ANY prod write**, and keep it until verified.
 8. **Confirm the database before operating** — `ksschoerke-development` vs `ksschoerke-production` are one
    character different; verify with `turso db shell <name> "SELECT 1"` or the URI host.
+9. **Don't assume dev data-loss is acceptable** — dev schema push drops values silently. Verify with the user and
+   snapshot before any dev schema change that could matter.
+10. **Don't over-engineer migrations** (state machines, complex guards). A simple idempotent `alreadyApplied()` +
+    fail-closed count check + snapshot recovery is enough. Prefer the lean guard.
 
 ---
 
@@ -424,6 +453,12 @@ pnpm payload migrate
 | Payload migration file (SQL) → schema push | ✅         | Migration runs atomically before schema push sees the table     |
 | Schema push first → script writes data     | ✅         | Table already exists, script writes to live table               |
 
+**Localized conversion is a CROSS-TABLE data move, not a rename.** Making a field localized moves its values out of
+the parent collection table into a `{collection}_locales` table. Dev **schema push never copies data** — dev loses
+existing values on any schema change. Prod migrations are the only data-moving path, so a
+non-localized→localized conversion MUST be a hand-written migration (`INSERT`/`UPDATE` into `_locales`), not a
+field rename. Remember: migrations run on prod only via `build:ci`; dev gets schema push and drops values.
+
 ---
 
 ## 13. Library-Specific Knowledge
@@ -466,7 +501,9 @@ WordPress appends `-e[timestamp]` to edited filenames (e.g.
 
 Vercel Blob free tier: 10 GB/month bandwidth. Large files (ZIPs 40-60 MB) exhaust it fast. Prefer Cloudflare R2
 (unlimited egress) for large downloads; keep small images/PDFs in Vercel Blob. Audit with
-`tmp/analyzeBlobUsage.ts`. See `docs/todo.md` for the migration plan.
+`tmp/analyzeBlobUsage.ts`. See `docs/todo.md` for the migration plan. **Files live in R2; the DB stores only the doc
+id.** So a migration that moves only references (e.g. id re-pointing) never touches the actual files — no file/R2
+backup needed for such reference-only migrations; a DB snapshot suffices.
 
 ---
 
