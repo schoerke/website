@@ -32,7 +32,7 @@ const RecordingDetailsDialog: React.FC<RecordingDetailsDialogProps> = ({ recordi
   )
 
   const roles = recording.roles ?? []
-  const roleLabels = roles.map((role) => tRoles(role as Parameters<typeof tRoles>[0]))
+  const roleLabels = roles.map((role) => tRoles(role))
 
   const joinItems = (items: string[]): React.ReactNode[] =>
     items.map((item, i) => (
