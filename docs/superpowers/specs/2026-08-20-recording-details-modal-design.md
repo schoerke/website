@@ -2,11 +2,11 @@
 
 ## Summary
 
-Add a brand-consistent details modal to the artist recordings tab. Currently a recording row
-(`RecordingListItem`) shows only cover thumb, title, "label • catalog • year" subtitle, and streaming
-icons. Two fields on the `Recording` model are never surfaced anywhere: the rich-text **description**
-and the **roles** (soloist / conductor / etc.). This feature exposes them via a shadcn Dialog opened from
-a per-row **"Details"** link.
+Add a brand-consistent details modal to the artist recordings tab. The recording row (`RecordingListItem`)
+shows cover thumb, title, a "label • year" subtitle, and streaming icons. Two fields on the `Recording` model
+are never surfaced anywhere: the rich-text **description** and the **roles** (soloist / conductor / etc.).
+This feature exposes them via a shadcn Dialog opened from an inline **"More details"** link appended to the
+row's "label • year" subtitle.
 
 ## Scope
 
@@ -45,21 +45,29 @@ No new data fetching. The recording object already contains everything the modal
 
 ## Trigger Behavior
 
-- **Condition:** the "Details" trigger renders **only** when the recording has *visible* description
+- **Subtitle format:** the row subtitle becomes **`label • year`** (label and year only — catalog number is
+  not shown on the row; it appears only inside the modal). An inline **"More details"** trigger link is
+  appended to that subtitle, so the full line renders `label • year • More details`.
+- **Condition:** the "More details" trigger renders **only** when the recording has *visible* description
   content. Because `description` is a Payload richText field, an empty block stores a **truthy object**
   (`{ root: { ..., children: [] } }`) with no visible text. Gating on object truthiness would render a
-  "Details" link that opens an empty modal for empty-description recordings — worse than today's row.
-  **Fix:** a short helper walks `description.root.children` and returns true only if at least one node has
-  non-whitespace `text`. This same helper drives both the trigger condition and the modal body. If no
-  visible description, the row renders exactly as today.
+  "More details" link that opens an empty modal for empty-description recordings — worse than just showing
+  `label • year`. **Fix:** a short helper (`hasVisibleTextContent`) walks `description.root.children` and
+  returns true only if at least one node has non-whitespace `text`. This same helper drives both the
+  trigger condition and the modal body. Without a visible description, the subtitle is just `label • year`.
+  Rendering matrix:
+  - description + label/year → `Label • 2020 • More details`
+  - description only → `More details`
+  - no description + label/year → `Label • 2020` (no link)
+  - neither → no subtitle (`<p>` omitted)
 - **Localization:** `description` is `localized: true` and recordings are fetched per-locale, so a recording
-  may show a Details link in DE but not EN (or vice versa). This asymmetry is correct behavior per locale —
+  may show "More details" in DE but not EN (or vice versa). This asymmetry is correct behavior per locale —
   not a bug. Compute the trigger from the current locale's populated `description`.
-- **Style:** a compact button (no `href` → use `<button>`, not `<a>`) on the right of the row (matching
-  existing interaction language instead of a heavy button). Follows the site's text-link pattern —
-  raisin-black text, yellow underline on hover, silver muted when idle. Place inline with / near the
-  existing streaming links so the row stays visually balanced.
-- All existing row content (cover, title, subtitle, streaming) is unchanged.
+- **Style:** the "More details" trigger is a `<button>` (no `href` → not an `<a>`), styled as an inline
+  muted link blending with the metadata line (`text-sm text-gray-500`) that darkens and gets a yellow
+  underline on hover — consistent with the site's text-link pattern. It lives inline within the subtitle
+  `<p>`, separated by ` • `.
+- Streaming links (right side of the row) are unchanged.
 
 ## Modal Contents (`RecordingDetailsDialog`)
 
@@ -105,26 +113,25 @@ descriptions.
 
 Add keys to `src/i18n/de.ts` and `src/i18n/en.ts` under `custom.pages.artist.discography`:
 
-- `details` — EN: "Details" / DE: "Details". Used as the row trigger label.
+- `details` — EN: "More details" / DE: "Mehr Details". Used as the inline row trigger link label.
 - `roles` overline label — EN: "Roles" / DE: "Mitwirkung". Shown above the joined role list only when
   `roles.length > 0`. (Role *values* reuse the existing `custom.recordingRoles` namespace — no new role keys.)
 - Streaming labels already exist: `listenOnSpotify`, `listenOnAppleMusic`, `opensInNewTab`. No change.
 
 ## Rich-Text Content Helper
 
-Add a small `hasVisibleContent(description)` helper (shared by the trigger condition and the modal body) that
+Add a small `hasVisibleTextContent(description)` helper (shared by the trigger condition and the modal body) that
 returns true only when `description?.root?.children` contains at least one node with non-whitespace `text`.
-Prefix the helper with `function`, give it a return-type annotation, and place it at module scope per
-`react-components.md`. It may live in the dialog file or a tiny shared util; keep it in `RecordingDetailsDialog`
-unless `RecordingListItem` needs it independently (it does — for the trigger), so prefer a shared location such
-as `src/utils/richtext.ts` guarded as a client-safe util, or export it from the dialog module.
+Prefix the helper with `function`, give it a return-type annotation, and place it in `src/utils/lexical.ts`
+alongside the other lexical helpers (it is used independently by both `RecordingDetailsDialog` and
+`RecordingListItem`).
 
 ## Testing
 
 - New `RecordingDetailsDialog.spec.tsx`: renders all fields (title, roles via `custom.recordingRoles`, metadata,
   description text, streaming links); renders placeholder when no cover art; accessibility (visible title node
   present); hides roles label when `roles` is empty; renders an empty-state body (no description content) when
-  `hasVisibleContent` returns false.
+  `hasVisibleTextContent` returns false.
 - Update `RecordingListItem.spec.tsx`: existing tests unaffected; add cases asserting (a) the "Details" trigger
   renders when the description has visible text, and (b) the trigger is absent when description is `null`,
   empty-object, or whitespace-only.
