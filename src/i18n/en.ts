@@ -93,6 +93,8 @@ const en = {
         },
         loading: 'Loading...',
         discography: {
+          details: 'Details',
+          roles: 'Roles',
           listenOnSpotify: 'Listen on Spotify',
           listenOnAppleMusic: 'Listen on Apple Music',
           listenOnSpotifyFor: 'Listen to {title} on Spotify',
