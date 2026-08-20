@@ -144,6 +144,41 @@ export function extractLexicalText(lexicalData: string | object): string {
 }
 
 /**
+ * Returns true when the Lexical editor state contains at least one text node with
+ * non-whitespace text. Used to distinguish "has content" from a Payload richText
+ * field whose empty root block is a truthy object with no visible text.
+ *
+ * @param content - The Lexical editor state, or null/undefined
+ * @returns True if there is any visible text, false otherwise
+ *
+ * @example
+ * const has = hasVisibleTextContent(recording.description) // true/false
+ */
+export function hasVisibleTextContent(content: string | object | null | undefined): boolean {
+  if (typeof content === 'string') {
+    try {
+      content = JSON.parse(content)
+    } catch {
+      return true // Unparseable string at least signals non-empty stored data
+    }
+  }
+  if (typeof content !== 'object' || content === null) return false
+
+  const hasVisibleText = (node: unknown): boolean => {
+    if (typeof node !== 'object' || node === null) return false
+    const n = node as Record<string, unknown>
+
+    if (typeof n.text === 'string' && n.text.trim().length > 0) return true
+    if (Array.isArray(n.children)) return n.children.some(hasVisibleText)
+    if (n.root && typeof n.root === 'object') return hasVisibleText(n.root)
+
+    return false
+  }
+
+  return hasVisibleText(content)
+}
+
+/**
  * Extract only image URLs from Lexical JSON data (no text).
  * Useful when you only need the images.
  *

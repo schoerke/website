@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { extractLexicalImages, extractLexicalText, lexicalToHtml, parseLexicalContent } from './lexical'
+import {
+  extractLexicalImages,
+  extractLexicalText,
+  hasVisibleTextContent,
+  lexicalToHtml,
+  parseLexicalContent,
+} from './lexical'
 
 describe('Lexical parsing utilities', () => {
   describe('parseLexicalContent', () => {
@@ -614,6 +620,101 @@ describe('Lexical parsing utilities', () => {
 
       const html = lexicalToHtml(lexical)
       expect(html).toContain('src="http://localhost:3000/api/images/test.jpg"')
+    })
+  })
+
+  describe('hasVisibleTextContent', () => {
+    it('returns true when a paragraph has visible text', () => {
+      const content = {
+        root: {
+          type: 'root',
+          children: [{ type: 'paragraph', children: [{ type: 'text', text: 'Hello world' }] }],
+          direction: null,
+          format: '',
+          indent: 0,
+          version: 1,
+        },
+      }
+      expect(hasVisibleTextContent(content)).toBe(true)
+    })
+
+    it('returns false for null', () => {
+      expect(hasVisibleTextContent(null)).toBe(false)
+    })
+
+    it('returns false for undefined', () => {
+      expect(hasVisibleTextContent(undefined)).toBe(false)
+    })
+
+    it('returns false for an object with an empty children array', () => {
+      const content = {
+        root: { type: 'root', children: [], direction: null, format: '', indent: 0, version: 1 },
+      }
+      expect(hasVisibleTextContent(content)).toBe(false)
+    })
+
+    it('returns false when nodes contain only whitespace text', () => {
+      const content = {
+        root: {
+          type: 'root',
+          children: [{ type: 'paragraph', children: [{ type: 'text', text: '   \n ' }] }],
+          direction: null,
+          format: '',
+          indent: 0,
+          version: 1,
+        },
+      }
+      expect(hasVisibleTextContent(content)).toBe(false)
+    })
+
+    it('returns true for deeply nested text', () => {
+      const content = {
+        root: {
+          type: 'root',
+          children: [
+            {
+              type: 'paragraph',
+              children: [{ type: 'link', children: [{ type: 'text', text: 'Nested text' }] }],
+            },
+          ],
+          direction: null,
+          format: '',
+          indent: 0,
+          version: 1,
+        },
+      }
+      expect(hasVisibleTextContent(content)).toBe(true)
+    })
+
+    it('returns true even when an image node is present alongside text', () => {
+      const content = {
+        root: {
+          type: 'root',
+          children: [
+            { type: 'upload', value: { url: '/api/images/file/x.jpg' } },
+            { type: 'paragraph', children: [{ type: 'text', text: 'Caption' }] },
+          ],
+          direction: null,
+          format: '',
+          indent: 0,
+          version: 1,
+        },
+      }
+      expect(hasVisibleTextContent(content)).toBe(true)
+    })
+
+    it('returns false when only an image node exists with no text', () => {
+      const content = {
+        root: {
+          type: 'root',
+          children: [{ type: 'upload', value: { url: '/api/images/file/x.jpg' } }],
+          direction: null,
+          format: '',
+          indent: 0,
+          version: 1,
+        },
+      }
+      expect(hasVisibleTextContent(content)).toBe(false)
     })
   })
 })
