@@ -211,7 +211,7 @@ export interface Artist {
       }[]
     | null;
   /**
-   * Press photos displayed in the gallery on the artist detail page.
+   * Press photos displayed in the gallery on the artist detail page. Maximum 20 images.
    */
   galleryImages?:
     | {

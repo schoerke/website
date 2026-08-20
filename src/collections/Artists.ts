@@ -178,7 +178,7 @@ export const Artists: CollectionConfig = {
               filterOptions: ({ id }) =>
                 ({
                   and: [{ artists: { contains: id } }],
-                }) as const,
+                } as const),
             },
           ],
         },
@@ -215,7 +215,7 @@ export const Artists: CollectionConfig = {
               filterOptions: ({ id }) =>
                 ({
                   and: [{ categories: { contains: 'projects' } }, { artists: { contains: id } }],
-                }) as const,
+                } as const),
             },
           ],
         },
@@ -300,6 +300,7 @@ export const Artists: CollectionConfig = {
                 de: 'Galeriebilder',
               },
               type: 'array',
+              maxRows: 20,
               labels: {
                 singular: { en: 'Image', de: 'Bild' },
                 plural: { en: 'Images', de: 'Bilder' },
@@ -307,9 +308,18 @@ export const Artists: CollectionConfig = {
               admin: {
                 initCollapsed: true,
                 description: {
-                  en: 'Press photos displayed in the gallery on the artist detail page.',
-                  de: 'Pressefotos, die in der Galerie auf der Künstlerdetailseite angezeigt werden.',
+                  en: 'Press photos displayed in the gallery on the artist detail page. Maximum 20 images.',
+                  de: 'Pressefotos, die in der Galerie auf der Künstlerdetailseite angezeigt werden. Maximal 20 Bilder.',
                 },
+                components: {
+                  RowLabel: './collections/components/GalleryImageRowLabel',
+                },
+              },
+              validate: (value: unknown) => {
+                if (Array.isArray(value) && value.length > 20) {
+                  return 'Maximum 20 gallery images allowed per artist. Please remove some before adding more.'
+                }
+                return true
               },
               fields: [
                 {
