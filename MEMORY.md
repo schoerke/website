@@ -232,6 +232,14 @@ the FK properly. So dev DB and prod DB can legitimately differ in FK presence. V
   `NODE_ENV=production` is what prevents `pushDevSchema` (and thus the `dev|-1` marker) on connect.
 - Inline env vars override `.env` (verified: `@next/env` only fills unset vars).
 
+### Scripts depending on gitignored local data files
+
+If a backfill script's only data source is a gitignored file (e.g. `data/dumps/*.tsv` — deliberately NOT
+committed to avoid checking in content data), **guard on file existence and fail with exact regeneration
+steps**, not a bare `ENOENT`. State both cases: (1) source DB hasn't migrated yet → regenerate from a fresh
+export, with the exact command; (2) source DB already migrated (column dropped) → the live data is gone,
+must restore from a pre-migration snapshot instead. See `scripts/db/backfillVideoLabels.ts` for the pattern.
+
 ### Revalidation hooks vs scripts
 
 Artist `afterChange` runs `revalidateArtistOnChange`, which calls `revalidatePath` — **this throws outside a
