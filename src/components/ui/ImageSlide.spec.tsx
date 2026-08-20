@@ -114,19 +114,26 @@ describe('ImageSlide', () => {
   })
 
   describe('Banner Styling', () => {
-    it('should position banner in bottom-right corner', () => {
+    it('should position banner overlay across the slide', () => {
       render(<ImageSlide image={mockImage} isActive={true} />)
-      const banner = screen.getByText('Test Banner')
-      expect(banner).toHaveClass('absolute')
-      expect(banner).toHaveClass('bottom-2')
-      expect(banner).toHaveClass('right-2')
+      const overlay = screen.getByTestId('image-slide-banner')
+      expect(overlay).toHaveClass('absolute')
+      expect(overlay).toHaveClass('inset-0')
+      expect(overlay).toHaveClass('items-end')
     })
 
-    it('should have correct banner background and border', () => {
+    it('should have gradient scrim overlay like artist cards', () => {
       render(<ImageSlide image={mockImage} isActive={true} />)
-      const banner = screen.getByText('Test Banner')
-      expect(banner).toHaveClass('bg-black/60')
-      expect(banner).toHaveClass('border-yellow-400')
+      const overlay = screen.getByTestId('image-slide-banner')
+      expect(overlay).toHaveClass('bg-gradient-to-t')
+      expect(overlay).toHaveClass('from-black/70')
+    })
+
+    it('should style banner text like artist card names', () => {
+      render(<ImageSlide image={mockImage} isActive={true} />)
+      const text = screen.getByText('Test Banner')
+      expect(text).toHaveClass('font-playfair')
+      expect(text).toHaveClass('italic')
     })
   })
 

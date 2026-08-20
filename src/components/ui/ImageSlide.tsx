@@ -6,6 +6,7 @@ export type ImageSlideData = {
   src: string | null
   alt: string
   bannerText?: string
+  instruments?: string
   slug?: string // Artist slug for i18n routing
   sizesAttr?: string
   focalX?: number | null
@@ -50,11 +51,13 @@ const ImageSlide: React.FC<ImageSlideProps> = ({ image, isActive, loading = 'laz
         />
       )}
       {image.bannerText && (
-        <div
-          className="border-l-6 absolute bottom-2 right-2 border-yellow-400 bg-black/60 px-3 py-1 text-base text-white shadow sm:text-lg"
-          style={{ borderColor: '#FFD600' }}
-        >
-          {image.bannerText}
+        <div data-testid="image-slide-banner" className="absolute inset-0 flex items-end rounded-lg bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4">
+          <div>
+            <p className="font-playfair text-2xl font-bold italic text-white drop-shadow">{image.bannerText}</p>
+            {image.instruments && (
+              <p className="text-primary-yellow mt-0.5 text-sm drop-shadow">{image.instruments}</p>
+            )}
+          </div>
         </div>
       )}
     </div>

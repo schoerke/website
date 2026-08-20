@@ -112,7 +112,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
                 <Link
                   href={{ pathname: '/artists/[slug]', params: { slug: img.slug } }}
                   tabIndex={-1}
-                  aria-label={img.bannerText || img.alt}
+                  aria-label={
+                    img.bannerText ? (img.instruments ? `${img.bannerText}, ${img.instruments}` : img.bannerText) : img.alt
+                  }
                 >
                   <ImageSlide
                     image={img}

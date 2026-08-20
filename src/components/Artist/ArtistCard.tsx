@@ -9,11 +9,11 @@ import Image from 'next/image'
 import { useState } from 'react'
 
 interface ArtistCardProps {
-  id: string
   name: string
   instrument?: string[]
   image?: number | null | PayloadImage
   slug?: string
+  hoverDisabled?: boolean
 }
 
 interface ArtistCardImageProps {
@@ -61,36 +61,37 @@ const ArtistCardImage: React.FC<ArtistCardImageProps> = ({ image, name }) => {
   )
 }
 
-const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug }) => {
+const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug, hoverDisabled = false }) => {
   const t = useTranslations('custom.instruments')
 
   // Translate instruments
   const translatedInstruments = instrument?.map((inst) => t(inst as Parameters<typeof t>[0])).join(', ') ?? ''
 
+  const scrimClasses = hoverDisabled
+    ? 'absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4 transition-colors duration-300'
+    : 'absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4 transition-colors duration-300 group-hover:from-black/85 group-hover:via-black/40'
+  const cardClasses = hoverDisabled
+    ? 'group relative block aspect-square w-full overflow-hidden rounded bg-gray-100 shadow-md transition-transform'
+    : 'group relative block aspect-square w-full overflow-hidden rounded bg-gray-100 shadow-md transition-transform hover:scale-[1.02]'
+
+  const overlay = (
+    <div className={scrimClasses}>
+      <p className="font-playfair text-2xl font-bold italic text-white drop-shadow">{name}</p>
+      {translatedInstruments && (
+        <p className="text-primary-yellow mt-0.5 text-sm drop-shadow">{translatedInstruments}</p>
+      )}
+    </div>
+  )
+
   return slug ? (
-    <Link
-      href={{ pathname: '/artists/[slug]', params: { slug } }}
-      className="group block overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]"
-    >
-      <div className="relative h-72 w-full overflow-hidden bg-gray-100" style={{ aspectRatio: '4 / 3' }}>
-        <ArtistCardImage image={image} name={name} />
-        <div className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"></div>
-      </div>
-      <div className="p-6">
-        <h3 className="font-playfair mb-1 text-xl font-bold">{name}</h3>
-        <p className="text-sm text-gray-700">{translatedInstruments}</p>
-      </div>
+    <Link href={{ pathname: '/artists/[slug]', params: { slug } }} className={cardClasses}>
+      <ArtistCardImage image={image} name={name} />
+      {overlay}
     </Link>
   ) : (
-    <div className="group overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">
-      <div className="relative h-72 w-full overflow-hidden bg-gray-100" style={{ aspectRatio: '4 / 3' }}>
-        <ArtistCardImage image={image} name={name} />
-        <div className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"></div>
-      </div>
-      <div className="p-6">
-        <h3 className="font-playfair mb-1 text-xl font-bold">{name}</h3>
-        <p className="text-sm text-gray-700">{translatedInstruments}</p>
-      </div>
+    <div className={cardClasses}>
+      <ArtistCardImage image={image} name={name} />
+      {overlay}
     </div>
   )
 }

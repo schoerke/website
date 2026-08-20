@@ -8,7 +8,7 @@ import ArtistGrid from './ArtistGrid'
 
 // Mock child components
 vi.mock('@/components/Artist/ArtistCard', () => ({
-  default: ({ name, id }: { name: string; id: string }) => <div data-testid={`artist-card-${id}`}>{name}</div>,
+  default: ({ name }: { name: string }) => <div data-testid={`artist-card-${name}`}>{name}</div>,
 }))
 
 interface SliderImage {
@@ -118,8 +118,8 @@ describe('ArtistGrid', () => {
         </NextIntlTestProvider>
       )
 
-      expect(screen.getByTestId('artist-card-1')).toHaveTextContent('Artist One')
-      expect(screen.getByTestId('artist-card-2')).toHaveTextContent('Artist Two')
+      expect(screen.getByTestId('artist-card-Artist One')).toHaveTextContent('Artist One')
+      expect(screen.getByTestId('artist-card-Artist Two')).toHaveTextContent('Artist Two')
     })
 
     it('renders empty state when no artists provided', () => {
@@ -152,9 +152,9 @@ describe('ArtistGrid', () => {
       await user.click(screen.getByTestId('filter-piano'))
 
       // Only pianist should be visible
-      expect(screen.queryByTestId('artist-card-1')).not.toBeInTheDocument()
-      expect(screen.getByTestId('artist-card-2')).toHaveTextContent('Pianist')
-      expect(screen.queryByTestId('artist-card-3')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('artist-card-Violinist')).not.toBeInTheDocument()
+      expect(screen.getByTestId('artist-card-Pianist')).toHaveTextContent('Pianist')
+      expect(screen.queryByTestId('artist-card-Cellist')).not.toBeInTheDocument()
     })
 
     it('shows artists with ANY of the selected instruments', async () => {
@@ -175,9 +175,9 @@ describe('ArtistGrid', () => {
       await user.click(screen.getByTestId('filter-violin'))
 
       // Violinist and Multi should show
-      expect(screen.getByTestId('artist-card-1')).toBeInTheDocument()
-      expect(screen.queryByTestId('artist-card-2')).not.toBeInTheDocument()
-      expect(screen.getByTestId('artist-card-3')).toBeInTheDocument()
+      expect(screen.getByTestId('artist-card-Violinist')).toBeInTheDocument()
+      expect(screen.queryByTestId('artist-card-Pianist')).not.toBeInTheDocument()
+      expect(screen.getByTestId('artist-card-Multi')).toBeInTheDocument()
     })
 
     it('shows empty state when filter has no matches', async () => {
@@ -193,7 +193,7 @@ describe('ArtistGrid', () => {
       await user.click(screen.getByTestId('filter-piano'))
 
       expect(screen.getByText(/no artists found/i)).toBeInTheDocument()
-      expect(screen.queryByTestId('artist-card-1')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('artist-card-Violinist')).not.toBeInTheDocument()
     })
   })
 

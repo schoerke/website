@@ -82,7 +82,6 @@ const createMockImage = (overrides?: Partial<PayloadImage>): PayloadImage => ({
 
 describe('ArtistCard', () => {
   const defaultProps = {
-    id: '1',
     name: 'John Doe',
     instrument: ['Piano', 'Violin'],
     slug: 'john-doe',
@@ -103,15 +102,15 @@ describe('ArtistCard', () => {
     it('should render without instruments', () => {
       renderWithIntl(<ArtistCard {...defaultProps} instrument={undefined} />)
       expect(screen.getByText('John Doe')).toBeInTheDocument()
-      // Should have empty instruments text
+      // No instruments -> no instrument paragraph rendered
       const instrumentText = screen.getByText('John Doe').parentElement?.querySelector('.text-sm')
-      expect(instrumentText?.textContent).toBe('')
+      expect(instrumentText).not.toBeInTheDocument()
     })
 
     it('should render with empty instruments array', () => {
       renderWithIntl(<ArtistCard {...defaultProps} instrument={[]} />)
       const instrumentText = screen.getByText('John Doe').parentElement?.querySelector('.text-sm')
-      expect(instrumentText?.textContent).toBe('')
+      expect(instrumentText).not.toBeInTheDocument()
     })
   })
 
@@ -226,11 +225,32 @@ describe('ArtistCard', () => {
       expect(card).toHaveClass('hover:scale-[1.02]')
     })
 
-    it('should have aspect ratio 4:3', () => {
+    it('should have square card sizing', () => {
       const { container } = renderWithIntl(<ArtistCard {...defaultProps} />)
 
-      const imageContainer = container.querySelector('.relative.h-72')
-      expect(imageContainer).toHaveStyle({ aspectRatio: '4 / 3' })
+      const card = container.querySelector('.group')
+      expect(card).toHaveClass('aspect-square')
+    })
+
+    it('should darken scrim on hover by default', () => {
+      const { container } = renderWithIntl(<ArtistCard {...defaultProps} />)
+
+      const scrim = container.querySelector('.bg-gradient-to-t')
+      expect(scrim).toHaveClass('group-hover:from-black/85')
+    })
+
+    it('should omit hover scale when hoverDisabled', () => {
+      const { container } = renderWithIntl(<ArtistCard {...defaultProps} hoverDisabled />)
+
+      const card = container.querySelector('.group')
+      expect(card).not.toHaveClass('hover:scale-[1.02]')
+    })
+
+    it('should omit scrim hover-darkening when hoverDisabled', () => {
+      const { container } = renderWithIntl(<ArtistCard {...defaultProps} hoverDisabled />)
+
+      const scrim = container.querySelector('.bg-gradient-to-t')
+      expect(scrim).not.toHaveClass('group-hover:from-black/85')
     })
   })
 
@@ -242,11 +262,11 @@ describe('ArtistCard', () => {
       expect(img).toBeInTheDocument()
     })
 
-    it('should render semantic heading', () => {
+    it('should render artist name text', () => {
       renderWithIntl(<ArtistCard {...defaultProps} />)
 
-      const heading = screen.getByRole('heading', { level: 3 })
-      expect(heading).toHaveTextContent('John Doe')
+      const name = screen.getByText('John Doe')
+      expect(name).toHaveTextContent('John Doe')
     })
   })
 })

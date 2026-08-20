@@ -4,6 +4,7 @@ import ArtistCard from '@/components/Artist/ArtistCard'
 import { INSTRUMENT_PRIORITY } from '@/components/Artist/artistConstants'
 import InstrumentFilter from '@/components/Artist/InstrumentFilter'
 import ImageSlider from '@/components/ui/ImageSlider'
+import { useDisableHoverOnScroll } from '@/hooks/useDisableHoverOnScroll'
 import type { Artist } from '@/payload-types'
 import { shuffleArray } from '@/utils/array'
 import { isImageObject, isValidUrl } from '@/utils/image'
@@ -60,6 +61,8 @@ function sortArtists(artists: Artist[]): Artist[] {
 const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
   const [selectedInstruments, setSelectedInstruments] = useState<string[]>([])
   const t = useTranslations('custom.pages.artists')
+  const tInstruments = useTranslations('custom.instruments')
+  const hoverDisabled = useDisableHoverOnScroll()
 
   // Shuffle artists once on mount for stable slider order
   const [shuffledArtists] = useState(() => shuffleArray([...artists]))
@@ -96,10 +99,14 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
         const imageUrl = image.url
         if (!isValidUrl(imageUrl)) return null
 
+        const translatedInstruments =
+          artist.instrument?.map((inst) => tInstruments(inst as Parameters<typeof tInstruments>[0])).join(', ') ?? ''
+
         return {
           src: imageUrl,
           alt: artist.name,
           bannerText: artist.name,
+          instruments: translatedInstruments || undefined,
           slug: artist.slug || undefined,
           sizesAttr: '(max-width: 768px) 100vw, 50vw',
           focalX: image?.focalX ?? null,
@@ -107,7 +114,7 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
         }
       })
       .filter((item): item is NonNullable<typeof item> => item !== null)
-  }, [showSlider, sliderArtists])
+  }, [showSlider, sliderArtists, tInstruments])
 
   return (
     <>
@@ -118,16 +125,16 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
         ) : (
           <div
             key={selectedInstruments.join(',')}
-            className="animate-in fade-in mt-8 grid grid-cols-1 gap-6 duration-500 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            className="animate-in fade-in mt-8 grid grid-cols-1 gap-2 duration-500 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           >
             {sortedArtists.map((artist) => (
               <ArtistCard
                 key={String(artist.id)}
-                id={String(artist.id)}
                 name={artist.name}
                 image={artist.image}
                 instrument={artist.instrument ?? []}
                 slug={artist.slug}
+                hoverDisabled={hoverDisabled}
               />
             ))}
           </div>
