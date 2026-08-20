@@ -36,7 +36,7 @@ const RecordingDetailsDialog: React.FC<RecordingDetailsDialogProps> = ({ recordi
 
   const joinItems = (items: string[]): React.ReactNode[] =>
     items.map((item, i) => (
-      <React.Fragment key={item}>
+      <React.Fragment key={`${item}-${i}`}>
         {i > 0 && ' • '}
         <span>{item}</span>
       </React.Fragment>
