@@ -13,7 +13,7 @@ const messages = {
     pages: {
       artist: {
         discography: {
-          details: 'Details',
+          details: 'Show details',
           listenOnSpotify: 'Listen on Spotify',
           listenOnAppleMusic: 'Listen on Apple Music',
           opensInNewTab: 'opens in new tab',
@@ -51,69 +51,6 @@ describe('RecordingListItem', () => {
     renderItem(createMockRecording({ title: 'Beethoven - Violin Concerto' }))
 
     expect(screen.getByText('Beethoven - Violin Concerto')).toBeInTheDocument()
-  })
-
-  it('renders subtitle with label, catalog number, and year separated by bullets', () => {
-    renderItem(
-      createMockRecording({
-        recordingLabel: 'Deutsche Grammophon',
-        catalogNumber: 'DG 123456',
-        recordingYear: 2020,
-      })
-    )
-
-    expect(screen.getByText('Deutsche Grammophon • DG 123456 • 2020')).toBeInTheDocument()
-  })
-
-  it('omits missing subtitle fields with no dangling separator', () => {
-    renderItem(
-      createMockRecording({
-        recordingLabel: 'Deutsche Grammophon',
-        catalogNumber: null,
-        recordingYear: null,
-      })
-    )
-
-    expect(screen.getByText('Deutsche Grammophon')).toBeInTheDocument()
-    expect(screen.queryByText(/•/)).not.toBeInTheDocument()
-  })
-
-  it('renders only catalog number when label and year are absent', () => {
-    renderItem(
-      createMockRecording({
-        recordingLabel: null,
-        catalogNumber: 'DG 123456',
-        recordingYear: null,
-      })
-    )
-
-    expect(screen.getByText('DG 123456')).toBeInTheDocument()
-    expect(screen.queryByText(/•/)).not.toBeInTheDocument()
-  })
-
-  it('renders only year when label and catalog are absent', () => {
-    renderItem(
-      createMockRecording({
-        recordingLabel: null,
-        catalogNumber: null,
-        recordingYear: 2020,
-      })
-    )
-
-    expect(screen.getByText('2020')).toBeInTheDocument()
-    expect(screen.queryByText(/•/)).not.toBeInTheDocument()
-  })
-
-  it('renders no subtitle when all subtitle fields are absent', () => {
-    renderItem(
-      createMockRecording({
-        recordingLabel: null,
-        catalogNumber: null,
-        recordingYear: null,
-      })
-    )
-
-    expect(screen.queryByText(/•/)).not.toBeInTheDocument()
   })
 
   it('renders Spotify link when spotifyURL is provided', () => {
@@ -288,12 +225,12 @@ describe('RecordingListItem', () => {
 
   it('renders the Details button when the description has visible text', () => {
     renderItem(createMockRecording({ description: descriptionWithText('Program notes here') }))
-    expect(screen.getByRole('button', { name: 'Details' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Show details' })).toBeInTheDocument()
   })
 
   it('does not render the Details button when description is null', () => {
     renderItem(createMockRecording({ description: null }))
-    expect(screen.queryByRole('button', { name: 'Details' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Show details' })).not.toBeInTheDocument()
   })
 
   it('does not render the Details button when description is empty', () => {
@@ -302,11 +239,11 @@ describe('RecordingListItem', () => {
         description: { root: { type: 'root', children: [], direction: null, format: '', indent: 0, version: 1 } },
       })
     )
-    expect(screen.queryByRole('button', { name: 'Details' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Show details' })).not.toBeInTheDocument()
   })
 
   it('does not render the Details button when description is whitespace-only', () => {
     renderItem(createMockRecording({ description: descriptionWithText('   ') }))
-    expect(screen.queryByRole('button', { name: 'Details' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Show details' })).not.toBeInTheDocument()
   })
 })

@@ -24,11 +24,6 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
   const t = useTranslations('custom.pages.artist.discography')
   const [imageFailed, setImageFailed] = useState(false)
 
-  const label = recording.recordingLabel
-  const catalogNumber = recording.catalogNumber
-  const year = recording.recordingYear?.toString()
-  const subtitle = [label, catalogNumber, year].filter(Boolean).join(' • ')
-
   const coverArt =
     typeof recording.coverArt === 'object' && recording.coverArt !== null ? (recording.coverArt as PayloadImage) : null
   const coverArtUrl = coverArt?.sizes?.thumbnail?.url || coverArt?.url
@@ -60,10 +55,9 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
         </div>
 
         <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
-          {/* Title + subtitle */}
+          {/* Title */}
           <div>
             <h3 className="font-playfair mb-1 text-lg font-bold">{recording.title}</h3>
-            {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
           </div>
 
           {/* Actions: details trigger + streaming links */}
