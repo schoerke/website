@@ -32,7 +32,7 @@ const messages = {
     pages: {
       artist: {
         discography: {
-          details: 'Details',
+          details: 'Show details',
           roles: 'Roles',
           listenOnSpotify: 'Listen on Spotify',
           listenOnAppleMusic: 'Listen on Apple Music',
@@ -73,7 +73,7 @@ function openDialog(recording: ReturnType<typeof createMockRecording>) {
       />
     </NextIntlTestProvider>
   )
-  const trigger = screen.getByRole('button', { name: 'Details' })
+  const trigger = screen.getByRole('button', { name: 'Show details' })
   fireEvent.click(trigger)
   return utils
 }
