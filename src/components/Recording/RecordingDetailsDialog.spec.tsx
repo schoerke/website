@@ -3,6 +3,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
+import type { Recording } from '@/payload-types'
 import RecordingDetailsDialog from '@/components/Recording/RecordingDetailsDialog'
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
 import { createMockImage, createMockRecording } from '@/tests/utils/payloadMocks'
@@ -48,11 +49,11 @@ const messages = {
   },
 }
 
-function descriptionWithText(text: string) {
+function descriptionWithText(text: string): NonNullable<Recording['description']> {
   return {
     root: {
       type: 'root',
-      children: [{ type: 'text', text }],
+      children: [{ type: 'text', text, version: 1 }],
       direction: null,
       format: '',
       indent: 0,

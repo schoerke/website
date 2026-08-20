@@ -28,7 +28,7 @@ const RecordingDetailsDialog: React.FC<RecordingDetailsDialogProps> = ({ recordi
 
   const hasDescription = hasVisibleTextContent(recording.description ?? null)
   const metadata = [recording.recordingLabel, recording.catalogNumber, recording.recordingYear?.toString()].filter(
-    Boolean
+    (m): m is string => Boolean(m)
   )
 
   const roles = recording.roles ?? []
@@ -94,14 +94,13 @@ const RecordingDetailsDialog: React.FC<RecordingDetailsDialogProps> = ({ recordi
 
               {metadata.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-gray-500">Meta</p>
                   <p className="mt-1 text-sm text-gray-600">{joinItems(metadata)}</p>
                 </div>
               )}
             </div>
           </div>
 
-          {hasDescription && (
+          {hasDescription && recording.description && (
             <div className="prose max-w-prose divide-y divide-gray-200">
               <PayloadRichText content={recording.description} />
             </div>
