@@ -279,6 +279,7 @@ export const Artists: CollectionConfig = {
                   label: 'Label',
                   type: 'text',
                   required: true,
+                  localized: true,
                 },
                 {
                   name: 'url',
