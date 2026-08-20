@@ -96,7 +96,7 @@ const de = {
         },
         loading: 'Laden...',
         discography: {
-          details: 'Details anzeigen',
+          details: 'Mehr Details',
           roles: 'Mitwirkung',
           listenOnSpotify: 'Auf Spotify anhören',
           listenOnAppleMusic: 'Auf Apple Music anhören',

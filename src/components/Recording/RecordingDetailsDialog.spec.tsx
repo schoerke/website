@@ -32,7 +32,7 @@ const messages = {
     pages: {
       artist: {
         discography: {
-          details: 'Show details',
+          details: 'More details',
           roles: 'Roles',
           listenOnSpotify: 'Listen on Spotify',
           listenOnAppleMusic: 'Listen on Apple Music',
@@ -62,15 +62,18 @@ function descriptionWithText(text: string): NonNullable<Recording['description']
   }
 }
 
-// The trigger always renders and the open dialog's lazy-mounted modal content is available
-// ONLY after clicking the trigger. This helper opens the dialog so modal content can be asserted.
+// The trigger only renders when the recording has visible description text. To assert modal content in
+// every case, give the recording visible description text so the trigger renders, then open the dialog
+// so the lazy-mounted modal content is available.
 function openDialog(recording: ReturnType<typeof createMockRecording>) {
   const utils = render(
     <NextIntlTestProvider messages={messages}>
-      <RecordingDetailsDialog recording={recording} />
+      <RecordingDetailsDialog
+        recording={{ ...recording, description: recording.description ?? descriptionWithText('Program notes') }}
+      />
     </NextIntlTestProvider>
   )
-  const trigger = screen.getByRole('button', { name: 'Show details' })
+  const trigger = screen.getByRole('button', { name: 'More details' })
   fireEvent.click(trigger)
   return utils
 }

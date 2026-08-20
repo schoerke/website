@@ -8,6 +8,7 @@ import Image from 'next/image'
 import React, { useState } from 'react'
 
 import RecordingDetailsDialog from '@/components/Recording/RecordingDetailsDialog'
+import { hasVisibleTextContent } from '@/utils/lexical'
 
 interface RecordingListItemProps {
   recording: Recording
@@ -15,8 +16,9 @@ interface RecordingListItemProps {
 
 /**
  * A single recording entry rendered as a <li> element.
- * Displays cover art (or a placeholder), title with a "Show details" trigger in the subtitle
- * position (which opens the recording details modal), and streaming links.
+ * Displays cover art (or a placeholder), title, a "label • year" subtitle with an inline
+ * "More details" link (only when the recording has visible description text) that opens the
+ * recording details modal, and streaming links.
  *
  * Must be used inside a list container such as RecordingList (<ul>).
  */
@@ -27,6 +29,11 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
   const coverArt =
     typeof recording.coverArt === 'object' && recording.coverArt !== null ? (recording.coverArt as PayloadImage) : null
   const coverArtUrl = coverArt?.sizes?.thumbnail?.url || coverArt?.url
+
+  const metaItems = [recording.recordingLabel, recording.recordingYear?.toString()].filter((m): m is string =>
+    Boolean(m)
+  )
+  const showMore = hasVisibleTextContent(recording.description ?? null)
 
   return (
     <li className="border-b border-gray-200 py-3 last:border-b-0">
@@ -55,10 +62,16 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
         </div>
 
         <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
-          {/* Title + "Show details" trigger (subtitle position) */}
+          {/* Title + "label • year" subtitle with inline "More details" link */}
           <div>
             <h3 className="font-playfair mb-1 text-lg font-bold">{recording.title}</h3>
-            <RecordingDetailsDialog recording={recording} />
+            {(metaItems.length > 0 || showMore) && (
+              <p className="text-sm text-gray-500">
+                {metaItems.join(' • ')}
+                {showMore && metaItems.length > 0 && ' • '}
+                {showMore && <RecordingDetailsDialog recording={recording} />}
+              </p>
+            )}
           </div>
 
           {/* Streaming links — left-aligned on small, right-aligned on md+ */}

@@ -93,7 +93,7 @@ const en = {
         },
         loading: 'Loading...',
         discography: {
-          details: 'Show details',
+          details: 'More details',
           roles: 'Roles',
           listenOnSpotify: 'Listen on Spotify',
           listenOnAppleMusic: 'Listen on Apple Music',

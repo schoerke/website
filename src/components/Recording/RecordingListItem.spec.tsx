@@ -13,7 +13,7 @@ const messages = {
     pages: {
       artist: {
         discography: {
-          details: 'Show details',
+          details: 'More details',
           listenOnSpotify: 'Listen on Spotify',
           listenOnAppleMusic: 'Listen on Apple Music',
           opensInNewTab: 'opens in new tab',
@@ -223,27 +223,31 @@ describe('RecordingListItem', () => {
     expect(screen.getByTestId('recording-cover-placeholder')).toBeInTheDocument()
   })
 
-  it('renders the Show details button when the description has visible text', () => {
-    renderItem(createMockRecording({ description: descriptionWithText('Program notes here') }))
-    expect(screen.getByRole('button', { name: 'Show details' })).toBeInTheDocument()
-  })
-
-  it('renders the Show details button even when description is null', () => {
-    renderItem(createMockRecording({ description: null }))
-    expect(screen.getByRole('button', { name: 'Show details' })).toBeInTheDocument()
-  })
-
-  it('renders the Show details button even when description is empty', () => {
+  it('renders metadata and More details link when description exists', () => {
     renderItem(
       createMockRecording({
-        description: { root: { type: 'root', children: [], direction: null, format: '', indent: 0, version: 1 } },
+        recordingLabel: 'Deutsche Grammophon',
+        recordingYear: 2020,
+        description: descriptionWithText('Some info'),
       })
     )
-    expect(screen.getByRole('button', { name: 'Show details' })).toBeInTheDocument()
+    expect(screen.getByText(/Deutsche Grammophon • 2020 •/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'More details' })).toBeInTheDocument()
   })
 
-  it('renders the Show details button even when description is whitespace-only', () => {
-    renderItem(createMockRecording({ description: descriptionWithText('   ') }))
-    expect(screen.getByRole('button', { name: 'Show details' })).toBeInTheDocument()
+  it('shows only the More details link when no metadata but description exists', () => {
+    renderItem(createMockRecording({ description: descriptionWithText('Some info') }))
+    expect(screen.getByRole('button', { name: 'More details' })).toBeInTheDocument()
+  })
+
+  it('shows metadata without More details link when no description', () => {
+    renderItem(createMockRecording({ recordingLabel: 'DG', recordingYear: 2020, description: null }))
+    expect(screen.getByText('DG • 2020')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'More details' })).not.toBeInTheDocument()
+  })
+
+  it('renders no subtitle when no metadata and no description', () => {
+    renderItem(createMockRecording({ recordingLabel: null, recordingYear: null, description: null }))
+    expect(screen.queryByRole('button', { name: 'More details' })).not.toBeInTheDocument()
   })
 })
