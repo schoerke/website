@@ -223,27 +223,27 @@ describe('RecordingListItem', () => {
     expect(screen.getByTestId('recording-cover-placeholder')).toBeInTheDocument()
   })
 
-  it('renders the Details button when the description has visible text', () => {
+  it('renders the Show details button when the description has visible text', () => {
     renderItem(createMockRecording({ description: descriptionWithText('Program notes here') }))
     expect(screen.getByRole('button', { name: 'Show details' })).toBeInTheDocument()
   })
 
-  it('does not render the Details button when description is null', () => {
+  it('renders the Show details button even when description is null', () => {
     renderItem(createMockRecording({ description: null }))
-    expect(screen.queryByRole('button', { name: 'Show details' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Show details' })).toBeInTheDocument()
   })
 
-  it('does not render the Details button when description is empty', () => {
+  it('renders the Show details button even when description is empty', () => {
     renderItem(
       createMockRecording({
         description: { root: { type: 'root', children: [], direction: null, format: '', indent: 0, version: 1 } },
       })
     )
-    expect(screen.queryByRole('button', { name: 'Show details' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Show details' })).toBeInTheDocument()
   })
 
-  it('does not render the Details button when description is whitespace-only', () => {
+  it('renders the Show details button even when description is whitespace-only', () => {
     renderItem(createMockRecording({ description: descriptionWithText('   ') }))
-    expect(screen.queryByRole('button', { name: 'Show details' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Show details' })).toBeInTheDocument()
   })
 })

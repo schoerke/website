@@ -44,16 +44,14 @@ const RecordingDetailsDialog: React.FC<RecordingDetailsDialogProps> = ({ recordi
 
   return (
     <>
-      {hasDescription && (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-haspopup="dialog"
-          className="inline-flex items-center text-sm text-gray-500 underline decoration-transparent underline-offset-4 transition duration-150 ease-in-out hover:text-gray-900 hover:decoration-primary-yellow focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:ring-offset-2"
-        >
-          {t('details')}
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        className="inline-flex items-center text-sm text-gray-500 underline decoration-transparent underline-offset-4 transition duration-150 ease-in-out hover:text-gray-900 hover:decoration-primary-yellow focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:ring-offset-2"
+      >
+        {t('details')}
+      </button>
 
       <Dialog open={open} onOpenChange={(isOpen) => !isOpen && setOpen(false)}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">

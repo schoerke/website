@@ -62,15 +62,12 @@ function descriptionWithText(text: string): NonNullable<Recording['description']
   }
 }
 
-// The trigger (and hence the open dialog) is only rendered when the recording has visible description text.
-// To assert modal content in every case, give the recording visible description text so the trigger renders,
-// then open the dialog so the lazy-mounted modal content is available.
+// The trigger always renders and the open dialog's lazy-mounted modal content is available
+// ONLY after clicking the trigger. This helper opens the dialog so modal content can be asserted.
 function openDialog(recording: ReturnType<typeof createMockRecording>) {
   const utils = render(
     <NextIntlTestProvider messages={messages}>
-      <RecordingDetailsDialog
-        recording={{ ...recording, description: recording.description ?? descriptionWithText('Program notes') }}
-      />
+      <RecordingDetailsDialog recording={recording} />
     </NextIntlTestProvider>
   )
   const trigger = screen.getByRole('button', { name: 'Show details' })

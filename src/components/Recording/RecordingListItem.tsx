@@ -15,8 +15,8 @@ interface RecordingListItemProps {
 
 /**
  * A single recording entry rendered as a <li> element.
- * Displays cover art (or a placeholder), title, optional subtitle (label, catalog number, year),
- * and streaming links.
+ * Displays cover art (or a placeholder), title with a "Show details" trigger in the subtitle
+ * position (which opens the recording details modal), and streaming links.
  *
  * Must be used inside a list container such as RecordingList (<ul>).
  */
@@ -55,45 +55,43 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
         </div>
 
         <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
-          {/* Title */}
+          {/* Title + "Show details" trigger (subtitle position) */}
           <div>
             <h3 className="font-playfair mb-1 text-lg font-bold">{recording.title}</h3>
+            <RecordingDetailsDialog recording={recording} />
           </div>
 
-          {/* Actions: details trigger + streaming links */}
-          <div className="flex flex-wrap items-center gap-4">
-            <RecordingDetailsDialog recording={recording} />
-            {(recording.spotifyURL || recording.appleMusicURL) && (
-              <div className="flex gap-4">
-                {recording.spotifyURL && (
-                  <a
-                    href={recording.spotifyURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={t('listenOnSpotifyFor', { title: recording.title })}
-                    className="inline-flex items-center gap-2 text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
-                  >
-                    <span className="hidden text-sm lg:inline">{t('listenOnSpotify')}</span>
-                    <SiSpotify width={20} height={20} aria-hidden="true" />
-                    <span className="sr-only"> ({t('opensInNewTab')})</span>
-                  </a>
-                )}
-                {recording.appleMusicURL && (
-                  <a
-                    href={recording.appleMusicURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={t('listenOnAppleMusicFor', { title: recording.title })}
-                    className="inline-flex items-center gap-2 text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
-                  >
-                    <span className="hidden text-sm lg:inline">{t('listenOnAppleMusic')}</span>
-                    <SiApplemusic width={20} height={20} aria-hidden="true" />
-                    <span className="sr-only"> ({t('opensInNewTab')})</span>
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
+          {/* Streaming links — left-aligned on small, right-aligned on md+ */}
+          {(recording.spotifyURL || recording.appleMusicURL) && (
+            <div className="flex gap-4">
+              {recording.spotifyURL && (
+                <a
+                  href={recording.spotifyURL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t('listenOnSpotifyFor', { title: recording.title })}
+                  className="inline-flex items-center gap-2 text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
+                >
+                  <span className="hidden text-sm lg:inline">{t('listenOnSpotify')}</span>
+                  <SiSpotify width={20} height={20} aria-hidden="true" />
+                  <span className="sr-only"> ({t('opensInNewTab')})</span>
+                </a>
+              )}
+              {recording.appleMusicURL && (
+                <a
+                  href={recording.appleMusicURL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t('listenOnAppleMusicFor', { title: recording.title })}
+                  className="inline-flex items-center gap-2 text-gray-500 transition duration-150 ease-in-out hover:text-gray-900"
+                >
+                  <span className="hidden text-sm lg:inline">{t('listenOnAppleMusic')}</span>
+                  <SiApplemusic width={20} height={20} aria-hidden="true" />
+                  <span className="sr-only"> ({t('opensInNewTab')})</span>
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </li>
