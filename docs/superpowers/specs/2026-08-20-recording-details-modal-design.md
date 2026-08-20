@@ -45,12 +45,20 @@ No new data fetching. The recording object already contains everything the modal
 
 ## Trigger Behavior
 
-- **Condition:** the "Details" trigger renders **only** when `recording.description` is truthy (present).
-  Rationale: the description is the primary hidden content the modal adds value with; roles/metadata alone
-  don't justify an overlay. If no description, the row renders exactly as today.
-- **Style:** a compact text link on the right of the row (matching existing interaction language instead of a
-  heavy button). Follows the site's text-link pattern — raisin-black text, yellow underline on hover, silver
-  muted when idle. Place inline with / near the existing streaming links so the row stays visually balanced.
+- **Condition:** the "Details" trigger renders **only** when the recording has *visible* description
+  content. Because `description` is a Payload richText field, an empty block stores a **truthy object**
+  (`{ root: { ..., children: [] } }`) with no visible text. Gating on object truthiness would render a
+  "Details" link that opens an empty modal for empty-description recordings — worse than today's row.
+  **Fix:** a short helper walks `description.root.children` and returns true only if at least one node has
+  non-whitespace `text`. This same helper drives both the trigger condition and the modal body. If no
+  visible description, the row renders exactly as today.
+- **Localization:** `description` is `localized: true` and recordings are fetched per-locale, so a recording
+  may show a Details link in DE but not EN (or vice versa). This asymmetry is correct behavior per locale —
+  not a bug. Compute the trigger from the current locale's populated `description`.
+- **Style:** a compact button (no `href` → use `<button>`, not `<a>`) on the right of the row (matching
+  existing interaction language instead of a heavy button). Follows the site's text-link pattern —
+  raisin-black text, yellow underline on hover, silver muted when idle. Place inline with / near the
+  existing streaming links so the row stays visually balanced.
 - All existing row content (cover, title, subtitle, streaming) is unchanged.
 
 ## Modal Contents (`RecordingDetailsDialog`)
@@ -62,13 +70,22 @@ descriptions.
 - **Dialog title (a11y):** `DialogTitle` populated with the recording title. Users see a Playfair H3;
   Radix requires a title node for correct dialog semantics.
 - **Cover art:** large `Next/Image` (or placeholder fallback mirroring the row's shared placeholder logic).
-- **Roles:** Inter overline-style small text (uppercase, letter-spacing, silver) — e.g. "Soloist • Conductor".
+- **Roles:** an Inter overline-style label (uppercase, letter-spacing, silver) above the joined role list.
+  Role **values** are rendered via the existing `useTranslations('custom.recordingRoles')` namespace (the same
+  lookup the collection uses to label its select options) — do NOT duplicate role strings under
+  `discography`. The overline label is shown only when `roles.length > 0` (roles can be `[]` even though
+  required); otherwise the label + list are omitted.
 - **Metadata:** year / label / catalog as Inter small silver text.
 - **Description:** rendered via `PayloadRichText` (same component as `BiographyTab`) so rich text renders
-  correctly.
+  correctly. Cap prose at ~65ch (`max-w-prose` per DESIGN.md) for readability in a wide modal.
 - **Streaming links:** Spotify + Apple Music text links reusing the existing "Listen on Spotify / Apple Music"
   translated labels and open-in-new-tab pattern.
 - **Close:** default shadcn X button (already styled).
+- **Open/close state:** follow `ImageLightbox` — track local `open` state; in `onOpenChange` only close
+  (`(isOpen) => !isOpen && setOpen(false)`), never re-open from the handler.
+- **Layout:** the shadcn `DialogContent` default is `max-w-lg`; a "large cover art" layout may need a wider
+  override via `className` (e.g. `sm:max-w-2xl`). Apply `max-h` + internal scroll on the body for long
+  descriptions.
 
 ## Brand Adherence
 
@@ -88,21 +105,41 @@ descriptions.
 
 Add keys to `src/i18n/de.ts` and `src/i18n/en.ts` under `custom.pages.artist.discography`:
 
-- `details` — EN: "Details" / DE: "Details"
-- `roles` — EN: "Roles" / DE: "Mitwirkung". Rendered as an overline label above the joined role list when
-  the recording has roles; the label is omitted when roles are absent.
+- `details` — EN: "Details" / DE: "Details". Used as the row trigger label.
+- `roles` overline label — EN: "Roles" / DE: "Mitwirkung". Shown above the joined role list only when
+  `roles.length > 0`. (Role *values* reuse the existing `custom.recordingRoles` namespace — no new role keys.)
 - Streaming labels already exist: `listenOnSpotify`, `listenOnAppleMusic`, `opensInNewTab`. No change.
+
+## Rich-Text Content Helper
+
+Add a small `hasVisibleContent(description)` helper (shared by the trigger condition and the modal body) that
+returns true only when `description?.root?.children` contains at least one node with non-whitespace `text`.
+Prefix the helper with `function`, give it a return-type annotation, and place it at module scope per
+`react-components.md`. It may live in the dialog file or a tiny shared util; keep it in `RecordingDetailsDialog`
+unless `RecordingListItem` needs it independently (it does — for the trigger), so prefer a shared location such
+as `src/utils/richtext.ts` guarded as a client-safe util, or export it from the dialog module.
 
 ## Testing
 
-- New `RecordingDetailsDialog.spec.tsx`: renders all fields (title, roles, metadata, description text,
-  streaming links); renders placeholder when no cover art; accessibility (visible title node present).
-- Update `RecordingListItem.spec.tsx`: existing tests unaffected; add cases asserting the "Details" trigger
-  renders when a description is present and is absent when description is missing.
-- Follow the mock/structure style of `ImageLightbox.spec.tsx` / `RecordingCard.spec.tsx`.
+- New `RecordingDetailsDialog.spec.tsx`: renders all fields (title, roles via `custom.recordingRoles`, metadata,
+  description text, streaming links); renders placeholder when no cover art; accessibility (visible title node
+  present); hides roles label when `roles` is empty; renders an empty-state body (no description content) when
+  `hasVisibleContent` returns false.
+- Update `RecordingListItem.spec.tsx`: existing tests unaffected; add cases asserting (a) the "Details" trigger
+  renders when the description has visible text, and (b) the trigger is absent when description is `null`,
+  empty-object, or whitespace-only.
+- Follow the mock/structure style of `ImageLightbox.spec.tsx` / `RecordingCard.spec.tsx` (mock the
+  `custom.recordingRoles` translation via the standard `next-intl` test wrapper used across the suite).
 
 ## Out of Scope / Non-Goals
 
 - No changes to `RecordingCard`, `RecordingGrid`, or any non-artist-tab surface.
 - No API/data changes; no new libraries.
 - No link from modal to individual recording pages (none exist).
+- **Known product gap (accepted):** a recording with `roles` but no visible `description` gets no Details
+  trigger, so its roles remain unexposed. This is a deliberate decision (description is the justification for
+  the modal); revisit only if roles-only detail display is requested later.
+- **Cover art sizes nuance:** the modal cover uses full-res `getValidImageUrl(image.url)` (prefer full-res in
+  a large modal). If a record has only a `sizes` entry and no top-level `url`, the modal falls back to the
+  placeholder while the row may still show a thumbnail — accepted divergence; reuse `sizes` fallback if it
+  proves common.
