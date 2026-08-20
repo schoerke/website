@@ -3,6 +3,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
+import type { Recording } from '@/payload-types'
 import RecordingListItem from '@/components/Recording/RecordingListItem'
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
 import { createMockImage, createMockRecording } from '@/tests/utils/payloadMocks'
@@ -12,6 +13,7 @@ const messages = {
     pages: {
       artist: {
         discography: {
+          details: 'Details',
           listenOnSpotify: 'Listen on Spotify',
           listenOnAppleMusic: 'Listen on Apple Music',
           opensInNewTab: 'opens in new tab',
@@ -21,6 +23,19 @@ const messages = {
       },
     },
   },
+}
+
+function descriptionWithText(text: string): NonNullable<Recording['description']> {
+  return {
+    root: {
+      type: 'root',
+      children: [{ type: 'text', text, version: 1 }],
+      direction: null,
+      format: '',
+      indent: 0,
+      version: 1,
+    },
+  }
 }
 
 function renderItem(recording: ReturnType<typeof createMockRecording>) {
@@ -269,5 +284,29 @@ describe('RecordingListItem', () => {
 
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
     expect(screen.getByTestId('recording-cover-placeholder')).toBeInTheDocument()
+  })
+
+  it('renders the Details button when the description has visible text', () => {
+    renderItem(createMockRecording({ description: descriptionWithText('Program notes here') }))
+    expect(screen.getByRole('button', { name: 'Details' })).toBeInTheDocument()
+  })
+
+  it('does not render the Details button when description is null', () => {
+    renderItem(createMockRecording({ description: null }))
+    expect(screen.queryByRole('button', { name: 'Details' })).not.toBeInTheDocument()
+  })
+
+  it('does not render the Details button when description is empty', () => {
+    renderItem(
+      createMockRecording({
+        description: { root: { type: 'root', children: [], direction: null, format: '', indent: 0, version: 1 } },
+      })
+    )
+    expect(screen.queryByRole('button', { name: 'Details' })).not.toBeInTheDocument()
+  })
+
+  it('does not render the Details button when description is whitespace-only', () => {
+    renderItem(createMockRecording({ description: descriptionWithText('   ') }))
+    expect(screen.queryByRole('button', { name: 'Details' })).not.toBeInTheDocument()
   })
 })
