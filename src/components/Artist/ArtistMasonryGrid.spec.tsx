@@ -46,7 +46,8 @@ function createMockArtist(overrides?: Partial<Artist>): Artist {
   } as Artist
 }
 
-const renderGrid = (artists: Artist[]) => render(<NextIntlTestProvider>{<ArtistMasonryGrid artists={artists} />}</NextIntlTestProvider>)
+const renderGrid = (artists: Artist[]) =>
+  render(<NextIntlTestProvider>{<ArtistMasonryGrid artists={artists} />}</NextIntlTestProvider>)
 
 describe('ArtistMasonryGrid', () => {
   beforeEach(() => {
