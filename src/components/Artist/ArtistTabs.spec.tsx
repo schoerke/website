@@ -6,6 +6,25 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ArtistTabs from './ArtistTabs'
 
+// Radix Select relies on pointer-capture / scrollIntoView APIs that
+// happy-dom doesn't implement — stub them so the mobile dropdown can open
+// in tests.
+beforeEach(() => {
+  Element.prototype.hasPointerCapture = Element.prototype.hasPointerCapture || (() => false)
+  Element.prototype.setPointerCapture = Element.prototype.setPointerCapture || (() => {})
+  Element.prototype.releasePointerCapture = Element.prototype.releasePointerCapture || (() => {})
+  Element.prototype.scrollIntoView = Element.prototype.scrollIntoView || (() => {})
+})
+
+/**
+ * Opens the mobile tab dropdown by clicking its trigger button (the button
+ * whose accessible name matches the currently active tab label).
+ */
+async function openMobileTabSelect(user: ReturnType<typeof userEvent.setup>, activeLabel: string) {
+  const trigger = screen.getByRole('combobox', { name: activeLabel })
+  await user.click(trigger)
+}
+
 // Mock server actions
 vi.mock('@/actions/recordings', () => ({
   fetchRecordingsByArtist: vi.fn(),
@@ -198,12 +217,46 @@ describe('ArtistTabs', async () => {
       const artist = createMockArtist()
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
-      expect(screen.getAllByText('Biography')).toHaveLength(2) // Desktop + Mobile
-      expect(screen.getAllByText('Repertoire')).toHaveLength(2)
-      expect(screen.getAllByText('Discography')).toHaveLength(2)
-      expect(screen.getAllByText('Media')).toHaveLength(2)
-      expect(screen.getAllByText('News')).toHaveLength(2)
-      expect(screen.getAllByText('Projects')).toHaveLength(2)
+      // Desktop always renders every tab as a button. The mobile dropdown
+      // only shows the active tab's label in its closed trigger — other
+      // labels aren't in the DOM until the dropdown is opened.
+      expect(screen.getAllByText('Biography')).toHaveLength(2) // Desktop button + mobile trigger
+      expect(screen.getAllByText('Repertoire')).toHaveLength(1)
+      expect(screen.getAllByText('Discography')).toHaveLength(1)
+      expect(screen.getAllByText('Media')).toHaveLength(1)
+      expect(screen.getAllByText('News')).toHaveLength(1)
+      expect(screen.getAllByText('Projects')).toHaveLength(1)
+    })
+
+    it('should reveal every tab option when the mobile dropdown is opened', async () => {
+      const user = userEvent.setup()
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      await openMobileTabSelect(user, 'Biography')
+
+      await waitFor(() => {
+        expect(screen.getByRole('option', { name: 'Repertoire' })).toBeInTheDocument()
+      })
+      expect(screen.getByRole('option', { name: 'Discography' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Media' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'News' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Projects' })).toBeInTheDocument()
+    })
+
+    it('should switch tabs when an option is selected from the mobile dropdown', async () => {
+      const user = userEvent.setup()
+      const artist = createMockArtist({ repertoire: [createMockRepertoire()] })
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      await openMobileTabSelect(user, 'Biography')
+      await user.click(await screen.findByRole('option', { name: 'Repertoire' }))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('repertoire-tab')).toBeInTheDocument()
+      })
+      // Trigger should now reflect the newly selected tab
+      expect(screen.getByRole('combobox', { name: 'Repertoire' })).toBeInTheDocument()
     })
   })
 
@@ -758,14 +811,14 @@ describe('ArtistTabs', async () => {
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={false} hasProjects={true} />)
 
       expect(screen.queryAllByText('News')).toHaveLength(0)
-      expect(screen.getAllByText('Projects')).toHaveLength(2)
+      expect(screen.getAllByText('Projects')).toHaveLength(1) // Desktop only — not the active mobile trigger
     })
 
     it('should show News tab when hasNews is true', () => {
       const artist = createMockArtist()
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
-      expect(screen.getAllByText('News')).toHaveLength(2)
+      expect(screen.getAllByText('News')).toHaveLength(1)
     })
 
     it('should hide Projects tab when hasProjects is false', () => {
@@ -773,14 +826,14 @@ describe('ArtistTabs', async () => {
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={false} />)
 
       expect(screen.queryAllByText('Projects')).toHaveLength(0)
-      expect(screen.getAllByText('News')).toHaveLength(2)
+      expect(screen.getAllByText('News')).toHaveLength(1)
     })
 
     it('should show Projects tab when hasProjects is true', () => {
       const artist = createMockArtist()
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
-      expect(screen.getAllByText('Projects')).toHaveLength(2)
+      expect(screen.getAllByText('Projects')).toHaveLength(1)
     })
 
     it('should hide both News and Projects tabs when both are false', () => {

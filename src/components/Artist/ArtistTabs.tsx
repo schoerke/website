@@ -4,12 +4,74 @@ import { fetchRecordingsByArtist } from '@/actions/recordings'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
+import * as SelectPrimitive from '@radix-ui/react-select'
+import { ChevronDown } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useRef, useState } from 'react'
 import NewsFeedClient from '../NewsFeed/NewsFeedClient'
 import { BiographyTab, MediaTab, ProjectsTab, RecordingsTab, RepertoireTab } from './ArtistTabContent'
 
 type TabId = 'biography' | 'repertoire' | 'discography' | 'media' | 'news' | 'projects'
+
+interface MobileTabSelectProps {
+  tabs: TabId[]
+  activeTab: TabId
+  onChange: (tab: TabId) => void
+  getLabel: (tab: TabId) => string
+  tabPanelId: string
+}
+
+/**
+ * Mobile-only tab switcher styled as a dropdown rather than the desktop's
+ * wrapped underline tabs, so the tab list never overflows or wraps on
+ * narrow screens. The active option is highlighted with the site's yellow
+ * accent + a small dot marker, matching the approved design mockup.
+ *
+ * Deliberately built from raw @radix-ui/react-select primitives instead of
+ * the shared src/components/ui/Select.tsx wrapper: that wrapper's SelectItem
+ * hard-codes a checkmark indicator and scroll buttons neither needed nor
+ * wanted here (this uses a dot marker instead), and this is the only
+ * consumer of this exact visual treatment.
+ */
+const MobileTabSelect: React.FC<MobileTabSelectProps> = ({ tabs, activeTab, onChange, getLabel, tabPanelId }) => {
+  return (
+    <SelectPrimitive.Root value={activeTab} onValueChange={(value) => onChange(value as TabId)}>
+      <SelectPrimitive.Trigger
+        aria-label={getLabel(activeTab)}
+        aria-controls={tabPanelId}
+        className="border-input flex h-12 w-full max-w-xs items-center justify-between rounded-md border bg-white px-4 text-base font-bold text-gray-900"
+      >
+        <SelectPrimitive.Value />
+        <SelectPrimitive.Icon asChild>
+          <ChevronDown className="h-4 w-4 shrink-0" aria-hidden="true" />
+        </SelectPrimitive.Icon>
+      </SelectPrimitive.Trigger>
+      <SelectPrimitive.Portal>
+        <SelectPrimitive.Content
+          position="popper"
+          sideOffset={10}
+          className="z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border bg-white shadow-lg"
+        >
+          <SelectPrimitive.Viewport>
+            {tabs.map((tab) => (
+              <SelectPrimitive.Item
+                key={tab}
+                value={tab}
+                className="flex h-12 cursor-pointer select-none items-center border-b border-gray-100 px-4 text-base font-bold text-gray-900 last:border-b-0 focus:outline-none data-[state=checked]:bg-primary-yellow/10"
+              >
+                <span
+                  aria-hidden="true"
+                  className={`bg-primary-yellow mr-2 h-1.5 w-1.5 shrink-0 rounded-full ${tab === activeTab ? 'opacity-100' : 'opacity-0'}`}
+                />
+                <SelectPrimitive.ItemText>{getLabel(tab)}</SelectPrimitive.ItemText>
+              </SelectPrimitive.Item>
+            ))}
+          </SelectPrimitive.Viewport>
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Portal>
+    </SelectPrimitive.Root>
+  )
+}
 
 interface ArtistTabsProps {
   artist: Artist
@@ -186,22 +248,28 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
   // Compute loading states: show loading if tab is active but data not yet fetched
   const shouldShowRecordingsLoading = activeTab === 'discography' && !recordingsFetched
 
+  const tabPanelId = 'artist-tab-panel'
+
   return (
     <div className="w-full">
-      {/* Desktop: Horizontal Tab List (ToggleGroup) */}
-      <div className="mb-8 hidden lg:block">
+      {/* Desktop/Tablet: Horizontal Tab List (ToggleGroup) */}
+      <div className="mb-8 hidden border-b border-gray-200 sm:block">
         <ToggleGroup
           type="single"
+          role="tablist"
           value={activeTab}
           onValueChange={(value) => value && handleTabChange(value as TabId)}
-          className="inline-flex justify-start gap-0"
+          className="-mb-px inline-flex justify-start gap-6"
         >
           {tabs.map((tab) => (
             <ToggleGroupItem
               key={tab}
               value={tab}
-              aria-label={t(`tabs.${tab}`)}
-              className="data-[state=on]:border-primary-yellow justify-start rounded-none border-b-4 border-transparent bg-white px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-100 data-[state=on]:text-gray-900"
+              role="tab"
+              id={`artist-tab-${tab}`}
+              aria-selected={activeTab === tab}
+              aria-controls={tabPanelId}
+              className="data-[state=on]:border-primary-yellow h-auto min-w-0 justify-start rounded-none border-b-2 border-transparent bg-transparent px-0 py-3 text-base font-semibold text-gray-400 transition-colors hover:bg-transparent hover:text-gray-900 data-[state=on]:bg-transparent data-[state=on]:text-gray-900"
             >
               {t(`tabs.${tab}`)}
             </ToggleGroupItem>
@@ -209,29 +277,26 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
         </ToggleGroup>
       </div>
 
-      {/* Mobile/Tablet: Wrapped Horizontal Tabs */}
-      <div className="mb-8 lg:hidden">
-        <ToggleGroup
-          type="single"
-          value={activeTab}
-          onValueChange={(value) => value && handleTabChange(value as TabId)}
-          className="flex flex-wrap justify-start gap-y-4"
-        >
-          {tabs.map((tab) => (
-            <ToggleGroupItem
-              key={tab}
-              value={tab}
-              aria-label={t(`tabs.${tab}`)}
-              className="data-[state=on]:border-primary-yellow justify-start rounded-none border-b-4 border-transparent bg-white px-5 py-2.5 text-lg font-medium uppercase text-gray-700 transition-colors hover:bg-gray-100 data-[state=on]:text-gray-900"
-            >
-              {t(`tabs.${tab}`)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+      {/* Mobile: Dropdown (never overflows or wraps) */}
+      <div className="mb-8 sm:hidden">
+        <MobileTabSelect
+          tabs={tabs}
+          activeTab={activeTab}
+          onChange={handleTabChange}
+          getLabel={(tab) => t(`tabs.${tab}`)}
+          tabPanelId={tabPanelId}
+        />
       </div>
 
       {/* Tab Content */}
-      <div key={activeTab} className="animate-in fade-in duration-300">
+      <div
+        key={activeTab}
+        id={tabPanelId}
+        role="tabpanel"
+        aria-label={t(`tabs.${activeTab}`)}
+        tabIndex={0}
+        className="animate-in fade-in duration-300"
+      >
         {activeTab === 'biography' && <BiographyTab content={artist.biography} quote={artist.quote} />}
         {activeTab === 'repertoire' && (
           <RepertoireTab repertoires={repertoires} loading={false} emptyMessage={t('empty.repertoire')} />
