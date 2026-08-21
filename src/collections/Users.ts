@@ -17,14 +17,14 @@ export const Users: CollectionConfig = {
     read: authenticated,
     update: ({ req: { user }, id }) => {
       // Admins can update anyone, users can update themselves
-      if (user?.role && user.role === 'admin') {
+      if (user && 'role' in user && user.role === 'admin') {
         return true
       }
       return user?.id === id
     },
     delete: ({ req: { user } }) => {
       // Only admins can delete users
-      return user?.role === 'admin'
+      return !!user && 'role' in user && user.role === 'admin'
     },
   },
   fields: [
@@ -37,7 +37,7 @@ export const Users: CollectionConfig = {
       name: 'role',
       access: {
         update: ({ req: { user } }) => {
-          if (user?.role && user.role === 'admin') {
+          if (user && 'role' in user && user.role === 'admin') {
             return true
           }
           return false

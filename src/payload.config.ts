@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url'
 // Adapters & Plugins
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { resendAdapter } from '@payloadcms/email-resend'
+import { mcpPlugin } from '@payloadcms/plugin-mcp'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
@@ -94,6 +95,35 @@ export default buildConfig({
     fallback: false,
   },
   plugins: [
+    // MCP Plugin for managing collections and globals in the admin panel
+    ...(process.env.NODE_ENV !== 'production'
+      ? [
+          mcpPlugin({
+            collections: {
+              artists: { enabled: { find: true } },
+              employees: { enabled: { find: true } },
+              pages: { enabled: { find: true } },
+              posts: { enabled: { find: true } },
+              recordings: { enabled: { find: true } },
+              repertoire: { enabled: { find: true } },
+              images: { enabled: { find: true } },
+              documents: { enabled: { find: true } },
+            },
+            globals: {
+              'home-page': { enabled: { find: true } },
+            },
+            overrideApiKeyCollection: (collection) => ({
+              ...collection,
+              admin: {
+                ...collection.admin,
+                group: 'System',
+                description: 'System-managed. Content creators: nothing to do here — maintained automatically.',
+              },
+            }),
+          }),
+        ]
+      : []),
+
     // Search
     searchPlugin({
       collections: ['artists', 'employees', 'pages', 'repertoire'],
@@ -189,7 +219,7 @@ export default buildConfig({
   sharp,
   upload: {
     limits: {
-      fileSize: 60_000_000, // 60 MB to support lare zip files for documents
+      fileSize: 60_000_000, // 60 MB to support large zip files or documents
     },
   },
   typescript: {

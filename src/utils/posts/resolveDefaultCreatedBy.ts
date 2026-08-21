@@ -10,10 +10,11 @@ interface ResolveDefaultCreatedByArgs {
  * logged-in user is an employee, otherwise undefined (no auto-selection).
  */
 export const resolveDefaultCreatedBy = async ({ req }: ResolveDefaultCreatedByArgs): Promise<number | undefined> => {
-  if (!req?.user?.email) return undefined
+  const user = req.user
+  if (!user || !('email' in user)) return undefined
   const { docs } = await req.payload.find({
     collection: 'employees',
-    where: { email: { equals: req.user.email } },
+    where: { email: { equals: user.email } },
     limit: 1,
   })
   return docs[0]?.id
