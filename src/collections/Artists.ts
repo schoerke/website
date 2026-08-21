@@ -287,7 +287,7 @@ export const Artists: CollectionConfig = {
                   type: 'text',
                   required: true,
                   admin: {
-                    placeholder: 'https://www.youtube.com/watch?v=... or https://www.arte.tv/de/videos/...',
+                    placeholder: 'arte.tv/de/videos/...',
                     description: 'Supports YouTube and arte.tv URLs',
                   },
                   validate: validateVideoURL,
