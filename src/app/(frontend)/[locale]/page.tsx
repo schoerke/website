@@ -98,7 +98,7 @@ const HomePage = async ({ params }: HomePageProps) => {
       )}
 
       {/* Meet the Team + Contact CTA — stacked, 2-col at lg */}
-      <div className="my-8 flex flex-col gap-16 lg:flex-row">
+      <div className="flex flex-col gap-16 lg:flex-row">
         {/* Meet the Team */}
         <section className="flex flex-1 flex-col items-start sm:items-center lg:items-center">
           <SectionHeading className="mb-4 sm:justify-center">{t('teamHeading')}</SectionHeading>
