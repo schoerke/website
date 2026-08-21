@@ -7,7 +7,7 @@ interface TeamMemberCardProps extends Employee {
   grayscale?: boolean
 }
 
-const buttonClasses = 'flex h-10 w-10 items-center justify-center rounded-full bg-primary-yellow/80'
+const buttonClasses = 'flex h-10 w-10 items-center justify-center rounded-full bg-primary-black/80'
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   name,
@@ -23,7 +23,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
     <div className="space-y-2">
       {email && (
         <p>
-          <a href={`mailto:${email}`} className="flex items-center gap-2 hover:underline">
+          <a href={`mailto:${email}`} className="flex items-center gap-2 hover:underline focus-visible:underline">
             <Mail aria-hidden="true" className="text-primary-yellow h-4 w-4 shrink-0" />
             <span className="break-all">{email}</span>
           </a>
@@ -31,7 +31,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
       )}
       {phone && (
         <p>
-          <a href={`tel:${phone}`} className="flex items-center gap-2 hover:underline">
+          <a href={`tel:${phone}`} className="flex items-center gap-2 hover:underline focus-visible:underline">
             <Phone aria-hidden="true" className="text-primary-yellow h-4 w-4 shrink-0" />
             <span>{phone}</span>
           </a>
@@ -39,7 +39,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
       )}
       {mobile && (
         <p>
-          <a href={`tel:${mobile}`} className="flex items-center gap-2 hover:underline">
+          <a href={`tel:${mobile}`} className="flex items-center gap-2 hover:underline focus-visible:underline">
             <Smartphone aria-hidden="true" className="text-primary-yellow h-4 w-4 shrink-0" />
             <span>{mobile}</span>
           </a>
@@ -52,17 +52,17 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
     <>
       {email && (
         <a href={`mailto:${email}`} aria-label={email} className={buttonClasses}>
-          <Mail aria-hidden="true" className="text-primary-black h-5 w-5" />
+          <Mail aria-hidden="true" className="text-primary-yellow h-5 w-5" />
         </a>
       )}
       {phone && (
         <a href={`tel:${phone}`} aria-label={phone} className={buttonClasses}>
-          <Phone aria-hidden="true" className="text-primary-black h-5 w-5" />
+          <Phone aria-hidden="true" className="text-primary-yellow h-5 w-5" />
         </a>
       )}
       {mobile && (
         <a href={`tel:${mobile}`} aria-label={mobile} className={buttonClasses}>
-          <Smartphone aria-hidden="true" className="text-primary-black h-5 w-5" />
+          <Smartphone aria-hidden="true" className="text-primary-yellow h-5 w-5" />
         </a>
       )}
     </>
@@ -75,6 +75,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
       image={image}
       priority={priority}
       grayscale={grayscale}
+      hasHoverContent={Boolean(email || phone || mobile)}
       mobileContent={mobileButtons}
     >
       {desktopContact}

@@ -24,16 +24,44 @@ const defaultEmployee = createMockEmployee({
 
 const renderCard = (overrides: Record<string, unknown> = {}) => {
   const utils = render(<TeamMemberCard {...defaultEmployee} {...(overrides as Partial<typeof defaultEmployee>)} />)
-  const overlay = screen.getByTestId('employee-card-overlay-content')
+  const overlay = screen.queryByTestId('employee-card-overlay-content')
   const mobileButtons = screen.getByTestId('employee-card-mobile-buttons')
   return { ...utils, overlay, mobileButtons }
 }
 
 describe('TeamMemberCard', () => {
-  it('renders name and title in the resting overlay', () => {
+  it('renders name and title in the resting scrim only; overlay carries contact alone', () => {
     renderCard()
-    expect(screen.getByText('Jane Smith')).toBeInTheDocument()
-    expect(screen.getByText('Senior Manager')).toBeInTheDocument()
+    const scrim = screen.getByTestId('employee-card-name')
+    expect(within(scrim).getByText('Jane Smith')).toBeInTheDocument()
+    expect(within(scrim).getByText('Senior Manager')).toBeInTheDocument()
+    const overlay = screen.getByTestId('employee-card-overlay-content')
+    expect(within(overlay).queryByText('Jane Smith')).not.toBeInTheDocument()
+    expect(within(overlay).queryByText('Senior Manager')).not.toBeInTheDocument()
+  })
+
+  it('fades the bottom gradient out on desktop hover when contact exists', () => {
+    renderCard()
+    const gradient = screen.getByTestId('employee-card-gradient')
+    expect(gradient).toHaveClass('bg-gradient-to-t', 'transition-opacity', 'duration-300', 'sm:group-hover:opacity-0')
+  })
+
+  it('keeps the bottom gradient static when no contact exists', () => {
+    renderCard({ email: '', phone: '', mobile: '' })
+    expect(screen.getByTestId('employee-card-gradient')).not.toHaveClass('sm:group-hover:opacity-0')
+  })
+
+  it('keeps the resting scrim name/title on top and never fades it on hover', () => {
+    renderCard()
+    const nameWrapper = screen.getByTestId('employee-card-name')
+    expect(nameWrapper.parentElement).toHaveClass('pointer-events-none', 'z-10')
+    expect(nameWrapper).not.toHaveClass('group-hover:opacity-0')
+  })
+
+  it('renders no overlay when no contact exists', () => {
+    renderCard({ email: '', phone: '', mobile: '' })
+    expect(screen.getByTestId('employee-card-name')).toBeInTheDocument()
+    expect(screen.queryByTestId('employee-card-overlay-content')).not.toBeInTheDocument()
   })
 
   it('keeps the desktop contact list hidden until hover', () => {
@@ -42,9 +70,10 @@ describe('TeamMemberCard', () => {
       'hidden',
       'sm:block',
       'absolute',
-      'bottom-0',
-      'translate-y-full',
-      'sm:group-hover:translate-y-0'
+      'inset-0',
+      'opacity-0',
+      'sm:group-hover:opacity-100',
+      'sm:group-hover:pointer-events-auto'
     )
   })
 
@@ -83,8 +112,8 @@ describe('TeamMemberCard', () => {
     for (const link of links) {
       expect(link).toHaveAttribute('class', expect.stringContaining('rounded-full'))
       expect(link).toHaveAttribute('class', expect.stringContaining('h-10'))
-      expect(link).toHaveAttribute('class', expect.stringContaining('bg-primary-yellow/80'))
-      expect(link.querySelector('svg')).toHaveAttribute('class', expect.stringContaining('text-primary-black'))
+      expect(link).toHaveAttribute('class', expect.stringContaining('bg-primary-black/80'))
+      expect(link.querySelector('svg')).toHaveAttribute('class', expect.stringContaining('text-primary-yellow'))
     }
   })
 

@@ -13,6 +13,8 @@ interface EmployeeCardShellProps {
   image?: PayloadImage | number | null
   priority?: boolean
   grayscale?: boolean
+  // Renders the full-card hover overlay only when children carry content.
+  hasHoverContent?: boolean
   mobileContent?: ReactNode
   children: ReactNode
 }
@@ -23,6 +25,7 @@ const EmployeeCardShell: React.FC<EmployeeCardShellProps> = ({
   image,
   priority = false,
   grayscale = false,
+  hasHoverContent = false,
   mobileContent,
   children,
 }) => {
@@ -33,19 +36,24 @@ const EmployeeCardShell: React.FC<EmployeeCardShellProps> = ({
   const focalX = img?.focalX ?? 50
   const focalY = img?.focalY ?? 50
 
-  // Desktop contact details use the original bottom drawer. It is separate
-  // from the name/title scrim, so resting text never shifts when hidden.
-  const drawerClasses = hoverDisabled
-    ? 'hidden sm:block pointer-events-none absolute inset-x-0 bottom-0 bg-black/70 p-4 text-white transition-transform duration-300 translate-y-full'
-    : 'hidden sm:block pointer-events-none absolute inset-x-0 bottom-0 bg-black/70 p-4 text-white transition-transform duration-300 translate-y-full sm:group-hover:translate-y-0 sm:group-hover:pointer-events-auto sm:group-focus-within:translate-y-0 sm:group-focus-within:pointer-events-auto'
+  // Desktop hover: full-cover translucent overlay fades in over the photo and
+  // carries the card's children (contact links, Woof!) at the top. The resting
+  // scrim renders on top (later sibling) so the bottom name/title stays crisp.
+  const overlayClasses = hoverDisabled
+    ? 'hidden sm:block pointer-events-none absolute inset-0 bg-black/75 text-white opacity-0 transition-opacity duration-300'
+    : 'hidden sm:block pointer-events-none absolute inset-0 bg-black/75 text-white opacity-0 transition-opacity duration-300 sm:group-hover:opacity-100 sm:group-hover:pointer-events-auto sm:group-focus-within:opacity-100 sm:group-focus-within:pointer-events-auto'
 
-  const scrimClasses = hoverDisabled
-    ? 'pointer-events-none absolute inset-x-0 bottom-0 flex flex-row items-end justify-between gap-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pb-3 pt-14 text-white transition-colors duration-300 sm:block sm:gap-0'
-    : 'pointer-events-none absolute inset-x-0 bottom-0 flex flex-row items-end justify-between gap-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pb-3 pt-14 text-white transition-colors duration-300 sm:block sm:gap-0 group-hover:from-black/90 group-hover:via-black/60'
+  // Bottom gradient scrim sits above the overlay for resting legibility. Its
+  // gradient layer fades out on desktop hover so only the crisp name/title text
+  // remains over the dimmed photo.
+  const gradientClasses =
+    hasHoverContent && !hoverDisabled
+      ? 'pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-300 sm:group-hover:opacity-0 sm:group-focus-within:opacity-0'
+      : 'pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 via-black/40 to-transparent'
 
-  const cardClasses = hoverDisabled
-    ? 'group relative block w-full overflow-hidden rounded bg-gray-100 shadow-md transition-transform'
-    : 'group relative block w-full overflow-hidden rounded bg-gray-100 shadow-md transition-transform hover:scale-[1.02]'
+  const scrimClasses = 'pointer-events-none z-10 absolute inset-x-0 bottom-0 flex flex-row items-end justify-between gap-4 px-4 pb-3 text-white sm:block sm:gap-0'
+
+  const cardClasses = 'group relative block w-full overflow-hidden rounded bg-gray-100 shadow-md'
 
   return (
     <div className={cardClasses}>
@@ -69,8 +77,14 @@ const EmployeeCardShell: React.FC<EmployeeCardShellProps> = ({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
           />
         )}
+        {hasHoverContent && (
+          <div data-testid="employee-card-overlay-content" className={overlayClasses}>
+            <div className="flex flex-col gap-6 p-6">{children}</div>
+          </div>
+        )}
+        <div data-testid="employee-card-gradient" aria-hidden="true" className={gradientClasses} />
         <div className={scrimClasses}>
-          <div className="min-w-0">
+          <div data-testid="employee-card-name" className="min-w-0">
             <p className="font-playfair text-2xl font-bold italic text-white drop-shadow">{name}</p>
             {title && <p className="text-primary-yellow mt-0.5 text-sm drop-shadow">{title}</p>}
           </div>
@@ -82,9 +96,6 @@ const EmployeeCardShell: React.FC<EmployeeCardShellProps> = ({
               {mobileContent}
             </div>
           )}
-        </div>
-        <div data-testid="employee-card-overlay-content" className={drawerClasses}>
-          {children}
         </div>
       </div>
     </div>

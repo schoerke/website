@@ -11,10 +11,10 @@ interface DogCardProps {
 
 const DogCard: React.FC<DogCardProps> = ({ image, name = 'Yuki', title = 'Office Dog', woofLabel = 'Woof!' }) => {
   return (
-    <EmployeeCardShell name={name} title={title} image={image} grayscale>
+    <EmployeeCardShell name={name} title={title} image={image} grayscale hasHoverContent>
       <div className="flex items-center gap-2">
-        <span>{woofLabel}</span>
         <Bone aria-hidden="true" className="text-primary-yellow h-4 w-4 shrink-0" />
+        <span>{woofLabel}</span>
       </div>
     </EmployeeCardShell>
   )
