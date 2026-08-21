@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import { extractYouTubeVideoId } from '@/utils/videoEmbed'
+
 interface VideoLink {
   label: string
   url: string
@@ -14,23 +16,13 @@ interface VideoAccordionProps {
 }
 
 /**
- * Extract YouTube video ID from various URL formats:
- * - https://www.youtube.com/watch?v=VIDEO_ID
- * - https://youtu.be/VIDEO_ID
- * - https://www.youtube.com/embed/VIDEO_ID
+ * Extract YouTube video ID from a URL or a bare 11-character ID.
+ * URL formats handled by the shared extractYouTubeVideoId util.
  */
 function extractYouTubeId(url: string): string | null {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-    /^([a-zA-Z0-9_-]{11})$/, // Direct video ID
-  ]
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern)
-    if (match && match[1]) return match[1]
-  }
-
-  return null
+  const id = extractYouTubeVideoId(url)
+  if (id) return id
+  return /^[a-zA-Z0-9_-]{11}$/.test(url) ? url : null
 }
 
 /**

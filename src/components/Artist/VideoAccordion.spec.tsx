@@ -194,6 +194,54 @@ describe('VideoAccordion', () => {
       expect(iframe.src).toContain('9bZkp7q19f0')
     })
 
+    it('should extract video ID from YouTube live URL with share params', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Test', url: 'https://www.youtube.com/live/S3ozsKGx864?si=rXYcx6VPNwbLIxx3' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
+      expect(iframe.src).toContain('S3ozsKGx864')
+    })
+
+    it('should extract video ID from YouTube shorts URL', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Test', url: 'https://www.youtube.com/shorts/9bZkp7q19f0' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
+      expect(iframe.src).toContain('9bZkp7q19f0')
+    })
+
+    it('should extract video ID from YouTube live URL with trailing slash', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Test', url: 'https://www.youtube.com/live/S3ozsKGx864/' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
+      expect(iframe.src).toContain('S3ozsKGx864')
+    })
+
+    it('should skip live URL with extra path segments', () => {
+      const videos = [
+        { label: 'Valid', url: 'https://www.youtube.com/live/S3ozsKGx864' },
+        { label: 'Invalid', url: 'https://www.youtube.com/live/S3ozsKGx864/stats' },
+      ]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      expect(screen.getByText('Valid')).toBeInTheDocument()
+      expect(screen.queryByText('Invalid')).not.toBeInTheDocument()
+      expect(console.warn).toHaveBeenCalledWith('Unsupported video URL: https://www.youtube.com/live/S3ozsKGx864/stats')
+    })
+
     it('should handle direct video ID', async () => {
       const user = userEvent.setup()
       const videos = [{ label: 'Test', url: 'dQw4w9WgXcQ' }]

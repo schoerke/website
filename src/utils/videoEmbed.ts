@@ -12,6 +12,63 @@ export interface VideoEmbedData {
 }
 
 /**
+ * YouTube hostnames whose videos can be embedded
+ */
+export const YOUTUBE_HOSTS = ['www.youtube.com', 'youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be']
+
+/**
+ * Extracts a YouTube video ID from a URL, or null if unsupported.
+ *
+ * Single source of truth for YouTube ID extraction across validateVideoURL,
+ * getVideoEmbedData, and VideoAccordion.
+ *
+ * Supported formats:
+ * - https://www.youtube.com/watch?v=VIDEO_ID
+ * - https://youtu.be/VIDEO_ID
+ * - https://www.youtube.com/live/VIDEO_ID
+ * - https://www.youtube.com/embed/VIDEO_ID
+ * - https://www.youtube.com/shorts/VIDEO_ID
+ *
+ * On youtube.com hosts the `?v=` query param takes precedence over path
+ * formats, but a present yet invalid `?v=` rejects the URL rather than
+ * falling through to the path. Extra params like `si`, `t`, and fragments
+ * are ignored (only the ID is used).
+ *
+ * @param url - Full video URL
+ * @returns 11-character YouTube video ID, or null
+ *
+ * @example
+ * extractYouTubeVideoId('https://www.youtube.com/live/S3ozsKGx864?si=rXYcx6VPNwbLIxx3')
+ * // => 'S3ozsKGx864'
+ */
+export function extractYouTubeVideoId(url: string): string | null {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    return null
+  }
+
+  if (!YOUTUBE_HOSTS.includes(parsed.hostname)) return null
+
+  // youtu.be/VIDEO_ID
+  if (parsed.hostname === 'youtu.be') {
+    const id = parsed.pathname.slice(1).split('/')[0]
+    return /^[\w-]{11}$/.test(id) ? id : null
+  }
+
+  // youtube.com/watch?v=VIDEO_ID — a present `v` param wins, but invalid rejects
+  const viaQuery = parsed.searchParams.get('v')
+  if (viaQuery !== null) {
+    return /^[\w-]{11}$/.test(viaQuery) ? viaQuery : null
+  }
+
+  // youtube.com/live/VIDEO_ID, /embed/VIDEO_ID, /shorts/VIDEO_ID
+  const match = parsed.pathname.match(/^\/(?:live|embed|shorts)\/([\w-]{11})\/?$/)
+  return match ? match[1] : null
+}
+
+/**
  * Extracts video ID and generates privacy-enhanced embed URL from a video URL
  *
  * @param url - Full video URL (YouTube or arte.tv)
@@ -36,29 +93,13 @@ export function getVideoEmbedData(url: string, locale?: 'de' | 'en'): VideoEmbed
     const parsed = new URL(url)
 
     // YouTube
-    const isYouTube =
-      parsed.hostname.includes('youtube.com') ||
-      parsed.hostname.includes('youtu.be') ||
-      parsed.hostname.includes('m.youtube.com')
-
-    if (isYouTube) {
-      let videoId: string | null = null
-
-      if (parsed.hostname.includes('youtu.be')) {
-        // Format: youtu.be/VIDEO_ID
-        videoId = parsed.pathname.slice(1).split('/')[0]
-      } else {
-        // Format: youtube.com/watch?v=VIDEO_ID
-        videoId = parsed.searchParams.get('v')
-      }
-
-      if (!videoId) return null
-
+    const youtubeId = extractYouTubeVideoId(url)
+    if (youtubeId) {
       return {
         platform: 'youtube',
-        videoId,
+        videoId: youtubeId,
         // Use youtube-nocookie.com for privacy-enhanced mode (no cookies until user plays video)
-        embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
+        embedUrl: `https://www.youtube-nocookie.com/embed/${youtubeId}`,
       }
     }
 
