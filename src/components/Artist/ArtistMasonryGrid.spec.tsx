@@ -112,7 +112,7 @@ describe('ArtistMasonryGrid', () => {
     expect(screen.getByTestId('artist-masonry-image-placeholder')).toBeInTheDocument()
   })
 
-  it('fades the hover overlay and image zoom out when scrolling starts', () => {
+  it('fades the hover overlay out when scrolling starts', () => {
     const artist = createMockArtist({ image: createMockImage({ url: 'https://example.com/jane.jpg' }) as never })
     renderGrid([artist])
 
@@ -121,17 +121,18 @@ describe('ArtistMasonryGrid', () => {
     const img = screen.getByAltText('Jane Artist') as HTMLElement
 
     expect(overlay).toHaveClass('group-hover:translate-y-0', 'group-hover:opacity-100')
-    expect(img).toHaveClass('group-hover:scale-105')
+    expect(img).toHaveClass('object-cover')
+    expect(img).not.toHaveClass('group-hover:scale-105')
 
     act(() => {
       fireEvent(window, new Event('wheel'))
     })
 
-    // Overlay and image keep their transitions for a smooth fade-out but
-    // lose the hover-triggered classes
+    // Overlay keeps its transition for a smooth fade-out but loses the
+    // hover-triggered classes
     expect(overlay).toHaveClass('translate-y-2', 'opacity-0', 'transition-all', 'duration-300')
     expect(overlay).not.toHaveClass('group-hover:translate-y-0', 'group-hover:opacity-100')
-    expect(img).toHaveClass('transition-transform', 'duration-500')
+    expect(img).toHaveClass('object-cover')
     expect(img).not.toHaveClass('group-hover:scale-105')
   })
 
@@ -141,7 +142,6 @@ describe('ArtistMasonryGrid', () => {
 
     const nameHeading = screen.getByText('Jane Artist')
     const overlay = nameHeading.parentElement as HTMLElement
-    const img = screen.getByAltText('Jane Artist') as HTMLElement
 
     act(() => {
       fireEvent(window, new Event('wheel'))
@@ -153,6 +153,5 @@ describe('ArtistMasonryGrid', () => {
     })
 
     expect(overlay).toHaveClass('group-hover:translate-y-0', 'group-hover:opacity-100')
-    expect(img).toHaveClass('group-hover:scale-105')
   })
 })

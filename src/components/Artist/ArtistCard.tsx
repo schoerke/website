@@ -70,9 +70,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug, 
   const scrimClasses = hoverDisabled
     ? 'absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4 transition-colors duration-300'
     : 'absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4 transition-colors duration-300 group-hover:from-black/85 group-hover:via-black/40'
-  const cardClasses = hoverDisabled
-    ? 'group relative block aspect-square w-full overflow-hidden rounded bg-gray-100 shadow-md transition-transform'
-    : 'group relative block aspect-square w-full overflow-hidden rounded bg-gray-100 shadow-md transition-transform hover:scale-[1.02]'
+  const cardClasses = 'group relative block aspect-square w-full overflow-hidden rounded bg-gray-100 shadow-md'
 
   const overlay = (
     <div className={scrimClasses}>

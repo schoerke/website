@@ -12,7 +12,7 @@ const RecordingCard = async ({ recording }: RecordingCardProps) => {
   const year = recording.recordingYear?.toString()
 
   return (
-    <div className="group overflow-hidden rounded-lg bg-white p-6 shadow-md transition-transform hover:scale-[1.02]">
+    <div className="overflow-hidden rounded-lg bg-white p-6 shadow-md">
       <div className="flex items-start justify-between gap-4">
         {/* Title + metadata */}
         <div className="min-w-0 flex-1">

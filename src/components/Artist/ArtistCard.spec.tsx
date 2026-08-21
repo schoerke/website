@@ -211,20 +211,6 @@ describe('ArtistCard', () => {
   })
 
   describe('CSS classes and styling', () => {
-    it('should apply hover scale on link variant', () => {
-      renderWithIntl(<ArtistCard {...defaultProps} />)
-
-      const link = screen.getByRole('link')
-      expect(link).toHaveClass('hover:scale-[1.02]')
-    })
-
-    it('should apply hover scale on non-link variant', () => {
-      const { container } = renderWithIntl(<ArtistCard {...defaultProps} slug={undefined} />)
-
-      const card = container.querySelector('.group')
-      expect(card).toHaveClass('hover:scale-[1.02]')
-    })
-
     it('should have square card sizing', () => {
       const { container } = renderWithIntl(<ArtistCard {...defaultProps} />)
 
@@ -237,13 +223,6 @@ describe('ArtistCard', () => {
 
       const scrim = container.querySelector('.bg-gradient-to-t')
       expect(scrim).toHaveClass('group-hover:from-black/85')
-    })
-
-    it('should omit hover scale when hoverDisabled', () => {
-      const { container } = renderWithIntl(<ArtistCard {...defaultProps} hoverDisabled />)
-
-      const card = container.querySelector('.group')
-      expect(card).not.toHaveClass('hover:scale-[1.02]')
     })
 
     it('should omit scrim hover-darkening when hoverDisabled', () => {

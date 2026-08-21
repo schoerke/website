@@ -33,17 +33,15 @@ const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedIns
 
   const showPlaceholder = !hasRealImage || error
 
-  // While scrolling, drop the hover effects (overlay + image zoom) but keep
-  // the transitions so exiting hover fades out smoothly instead of snapping.
+  // While scrolling, drop the hover overlay but keep its transition so exiting
+  // hover fades out smoothly instead of snapping.
   const bgClasses = hoverDisabled
     ? 'absolute inset-0 flex flex-col justify-end bg-black/0 p-4 transition-all duration-300'
     : 'absolute inset-0 flex flex-col justify-end bg-black/0 p-4 transition-all duration-300 group-hover:bg-black/60'
   const overlayClasses = hoverDisabled
     ? 'translate-y-2 opacity-0 transition-all duration-300'
     : 'translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100'
-  const imageClasses = hoverDisabled
-    ? 'block h-auto w-full object-cover transition-transform duration-500'
-    : 'block h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105'
+  const imageClasses = 'block h-auto w-full object-cover'
 
   const content = (
     <div className="group relative w-full overflow-hidden">
