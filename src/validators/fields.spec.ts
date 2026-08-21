@@ -34,6 +34,31 @@ describe('validateVideoURL', () => {
     it('should accept http protocol', () => {
       expect(validateVideoURL('http://youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
     })
+
+    it('should accept youtube.com live URLs', () => {
+      expect(validateVideoURL('https://www.youtube.com/live/S3ozsKGx864')).toBe(true)
+      expect(validateVideoURL('https://www.youtube.com/live/S3ozsKGx864?si=rXYcx6VPNwbLIxx3')).toBe(true)
+    })
+
+    it('should accept youtube.com embed and shorts URLs', () => {
+      expect(validateVideoURL('https://www.youtube.com/embed/dQw4w9WgXcQ')).toBe(true)
+      expect(validateVideoURL('https://www.youtube.com/shorts/dQw4w9WgXcQ')).toBe(true)
+    })
+
+    it('should reject live URLs without a video ID', () => {
+      expect(validateVideoURL('https://www.youtube.com/live/')).not.toBe(true)
+      expect(validateVideoURL('https://www.youtube.com/live/short')).not.toBe(true)
+    })
+
+    it('should return the specific message for a youtube URL with an invalid ID', () => {
+      expect(validateVideoURL('https://www.youtube.com/live/abc')).toBe(
+        'Please enter a valid YouTube URL with a valid video ID'
+      )
+    })
+
+    it('should reject music.youtube.com URL without a video ID', () => {
+      expect(validateVideoURL('https://music.youtube.com/watch')).not.toBe(true)
+    })
   })
 
   describe('arte.tv URLs', () => {

@@ -17,7 +17,7 @@ export interface VideoEmbedBlockFields {
  * Uses existing validateVideoURL validator for URL validation.
  *
  * Supported platforms:
- * - YouTube: youtube.com/watch?v=ID, youtu.be/ID
+ * - YouTube: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/live|embed|shorts/ID
  * - arte.tv: arte.tv/{locale}/videos/{ID}/...
  */
 export const VideoEmbed: Block = {
@@ -42,7 +42,7 @@ export const VideoEmbed: Block = {
         de: 'Video-URL',
       },
       admin: {
-        placeholder: 'https://www.youtube.com/watch?v=... or https://www.arte.tv/de/videos/...',
+        placeholder: 'arte.tv/de/videos/...',
         description: {
           en: 'Supports YouTube and arte.tv URLs',
           de: 'Unterstützt YouTube- und arte.tv-URLs',

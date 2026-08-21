@@ -9,6 +9,22 @@
         "Authorization": "Bearer {file:/Users/scott/.config/opencode/secrets/payload-mcp.key}"
       },
       "enabled": true
+    },
+    "open-design": {
+      "type": "local",
+      "command": [
+        "/Applications/Open Design.app/Contents/Frameworks/Open Design Helper.app/Contents/MacOS/Open Design Helper",
+        "/Applications/Open Design.app/Contents/Resources/app/prebundled/daemon/daemon-cli.mjs",
+        "mcp"
+      ],
+      "environment": {
+        "OD_DATA_DIR": "/Users/scott/Library/Application Support/Open Design/namespaces/release-stable/data",
+        "OD_SIDECAR_IPC_PATH": "/tmp/open-design/ipc/release-stable/daemon.sock",
+        "OD_MCP_BOOTSTRAP_COMMAND": "/usr/bin/open",
+        "OD_MCP_BOOTSTRAP_ARGS": "[\"-g\",\"-j\",\"/Applications/Open Design.app\",\"--args\",\"--headless\"]",
+        "ELECTRON_RUN_AS_NODE": "1"
+      },
+      "enabled": true
     }
   },
   "permission": {

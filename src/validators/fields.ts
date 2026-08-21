@@ -1,3 +1,5 @@
+import { YOUTUBE_HOSTS, extractYouTubeVideoId } from '@/utils/videoEmbed'
+
 /**
  * Field validators for Payload CMS collections
  * Provides reusable validation functions with proper sanitization
@@ -5,7 +7,7 @@
 
 /**
  * Validates video URLs for supported platforms: YouTube and arte.tv
- * YouTube: youtube.com/watch?v=ID, youtu.be/ID
+ * YouTube: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/live|embed|shorts/ID
  * arte.tv: arte.tv/{locale}/videos/{ID}/...
  */
 export const validateVideoURL = (value: unknown): true | string => {
@@ -15,28 +17,12 @@ export const validateVideoURL = (value: unknown): true | string => {
     const url = new URL(value)
 
     // YouTube
-    const isYouTubeDomain =
-      url.hostname === 'www.youtube.com' ||
-      url.hostname === 'youtube.com' ||
-      url.hostname === 'youtu.be' ||
-      url.hostname === 'm.youtube.com'
-
-    if (isYouTubeDomain) {
-      let videoId: string | null = null
-
-      if (url.hostname.includes('youtu.be')) {
-        // Format: youtu.be/VIDEO_ID
-        videoId = url.pathname.slice(1).split('/')[0]
-      } else {
-        // Format: youtube.com/watch?v=VIDEO_ID
-        videoId = url.searchParams.get('v')
-      }
-
-      if (!videoId || !/^[\w-]{11}$/.test(videoId)) {
-        return 'Please enter a valid YouTube URL with a valid video ID'
-      }
-
+    if (extractYouTubeVideoId(value)) {
       return true
+    }
+
+    if (YOUTUBE_HOSTS.includes(url.hostname)) {
+      return 'Please enter a valid YouTube URL with a valid video ID'
     }
 
     // arte.tv: pathname must be /{locale}/videos/{ID}/...
