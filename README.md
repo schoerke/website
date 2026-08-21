@@ -95,16 +95,15 @@ codebase is structured for clarity, ease of contribution, and long-term sustaina
 ├── .editorconfig
 ├── .gitignore
 ├── .markdownlint.json
-├── .prettierignore
+├── .oxfmtrc.json
 ├── AGENTS.md              # Agent and code quality guidelines
 ├── Dockerfile
 ├── docker-compose.yml
-├── eslint.config.mjs
 ├── next.config.mjs
 ├── package.json
 ├── pnpm-lock.yaml
 ├── postcss.config.js
-├── prettier.config.mjs
+├── oxfmt.config.json
 ├── README.md              # (You are here)
 ├── tailwind.config.js
 └── tsconfig.json
@@ -161,12 +160,12 @@ pnpm build
 
 ## Build, Lint, and Format Commands
 
-| Task   | Command       | Description                     |
-| ------ | ------------- | ------------------------------- |
-| Build  | `pnpm build`  | Build the application           |
-| Lint   | `pnpm lint`   | Run ESLint on the codebase      |
-| Format | `pnpm format` | Format code using Prettier      |
-| Test   | _Not present_ | No automated test scripts/files |
+| Task      | Command          | Description                    |
+| --------- | ---------------- | ------------------------------ |
+| Build     | `pnpm build`     | Build the application          |
+| Lint      | `pnpm lint`      | Run oxlint on the codebase     |
+| Format    | `pnpm format`    | Format code using oxfmt        |
+| Typecheck | `pnpm typecheck` | Type-check with `tsc --noEmit` |
 
 ---
 
@@ -175,17 +174,16 @@ pnpm build
 - **Indentation:** 2 spaces (see `.editorconfig`)
 - **Line endings:** LF, UTF-8, trim trailing whitespace, insert final newline
 - **Formatting:**
-  - Use Prettier (`pnpm format`)
-  - Single quotes, no semicolons, trailing commas, print width 120
-  - Organize imports (prettier-plugin-organize-imports)
-  - Tailwind CSS plugin enabled
-- **Imports:** Use ES module syntax; imports are auto-organized
+  - Use oxfmt (`pnpm format`; config in `.oxfmtrc.json` / `oxfmt.config.json`)
+  - Single quotes, no semicolons, tab width 2, trailing commas (es5), print width 120
+  - Import sorting and Tailwind class sorting (oxc)
+- **Imports:** Use ES module syntax; imports are auto-organized by oxfmt
 - **Types:** Use TypeScript for all new code
 - **Naming:**
   - camelCase for variables/functions
   - PascalCase for types/components
 - **Error Handling:** Prefer explicit error handling; avoid silent failures
-- **Linting:** Follows Next.js, Prettier, and TypeScript ESLint rules
+- **Linting:** Runs oxlint (`pnpm lint`, config `oxlint.config.ts`)
 - **Ignore:** build, dist, node_modules, temp, .git, .yarn, .tmp
 
 **Contribution Process:**
@@ -237,7 +235,7 @@ _This project is proprietary. Please contact the maintainers for licensing infor
 - [Payload CMS](https://payloadcms.com/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
-- [Prettier](https://prettier.io/)
+- [oxc / oxfmt](https://oxc.rs/)
 - [ESLint](https://eslint.org/)
 
 ---

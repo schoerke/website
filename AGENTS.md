@@ -207,7 +207,8 @@ grep -E "CLOUDFLARE|R2|S3_" .env
 
 - **Build:** `pnpm build`
 - **Lint:** `pnpm lint`
-- **Format:** `pnpm format`
+- **Format:** `pnpm format` (runs `oxfmt --write .`)
+- **Format check:** `pnpm exec oxfmt --check <paths>` before committing
 - **Test:** `pnpm test` (run tests), `pnpm test:watch` (watch mode), `pnpm test:ui` (test UI), `pnpm test:coverage`
   (coverage report)
 
@@ -216,16 +217,14 @@ grep -E "CLOUDFLARE|R2|S3_" .env
 - **Indentation:** 2 spaces (see .editorconfig)
 - **Line endings:** LF, UTF-8, trim trailing whitespace, insert final newline
 - **Formatting:**
-  - Use Prettier (`pnpm format`):
+  - Use oxfmt (`.oxfmtrc.json`, not Prettier — do NOT run `prettier`):
     - Single quotes
     - No semicolons
-    - Trailing commas
-    - Print width: 120
-    - Organize imports (prettier-plugin-organize-imports)
-    - Tailwind CSS plugin enabled
+    - Tab width 2
+    - Trailing commas (es5)
 - **Imports:**
   - **ALWAYS place imports at the very top of the file** (before JSDoc comments, before any code)
-  - Use ES module syntax; imports are auto-organized by Prettier
+  - Use ES module syntax; imports are auto-organized by oxfmt
   - Group order: external dependencies, then internal imports (@ aliases)
 - **Types:** Use TypeScript for all new code
   - **NEVER use `any` type** - it defeats the purpose of TypeScript's type safety
@@ -240,7 +239,7 @@ grep -E "CLOUDFLARE|R2|S3_" .env
 - **React Components:** See dedicated "React Component Pattern" section below for detailed guidelines.
 - **Naming:** Use descriptive, camelCase for variables/functions, PascalCase for types/components
 - **Error Handling:** Prefer explicit error handling; avoid silent failures
-- **Linting:** Follows Next.js, Prettier, and TypeScript ESLint rules
+- **Linting:** Runs `oxlint` (`pnpm lint`, config `oxlint.config.ts`)
 - **Ignore:** build, dist, node_modules, temp, .git, .yarn, .tmp
 
 ## React Component Pattern
@@ -288,7 +287,7 @@ pattern: `docs/patterns/data-fetching.md` (loaded automatically via `opencode.js
   - Environment variable requirements
   - Cross-references to related scripts using `@see` tags
 - **Follow naming conventions**: `verbNoun.ts` (e.g., `seedArtists.ts`, `dumpCollection.ts`)
-- **Include package.json scripts** for commonly used scripts (e.g., `pnpm seed:all`)
+- **Include package.json scripts** for commonly used scripts (e.g., `pnpm dump artists`)
 
 ### CRITICAL: Always Load Environment Variables
 
