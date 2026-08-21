@@ -79,25 +79,25 @@ describe('TeamMemberCard', () => {
 
   it('renders email as mailto link in the desktop list', () => {
     const { overlay } = renderCard()
-    const link = within(overlay).getByRole('link', { name: 'jane@example.com' })
+    const link = within(overlay!).getByRole('link', { name: 'jane@example.com' })
     expect(link).toHaveAttribute('href', 'mailto:jane@example.com')
   })
 
   it('renders phone as tel link in the desktop list', () => {
     const { overlay } = renderCard()
-    const link = within(overlay).getByRole('link', { name: '+49 611 111111' })
+    const link = within(overlay!).getByRole('link', { name: '+49 611 111111' })
     expect(link).toHaveAttribute('href', 'tel:+49 611 111111')
   })
 
   it('renders mobile as tel link in the desktop list', () => {
     const { overlay } = renderCard()
-    const link = within(overlay).getByRole('link', { name: '+49 171 222222' })
+    const link = within(overlay!).getByRole('link', { name: '+49 171 222222' })
     expect(link).toHaveAttribute('href', 'tel:+49 171 222222')
   })
 
   it('renders Mail, Phone and Smartphone brand-yellow icons on the desktop links', () => {
     const { overlay } = renderCard()
-    const icons = overlay.querySelectorAll('svg')
+    const icons = overlay!.querySelectorAll('svg')
     expect(icons.length).toBe(3)
     for (const icon of icons) {
       expect(icon).toHaveAttribute('class', expect.stringContaining('text-primary-yellow'))
@@ -160,17 +160,17 @@ describe('TeamMemberCard', () => {
 
   it('does not render email link when email is empty', () => {
     const { overlay } = renderCard({ email: '' })
-    expect(within(overlay).queryByRole('link', { name: 'jane@example.com' })).not.toBeInTheDocument()
+    expect(within(overlay!).queryByRole('link', { name: 'jane@example.com' })).not.toBeInTheDocument()
   })
 
   it('does not render phone when phone is empty', () => {
     const { overlay } = renderCard({ phone: '' })
-    expect(within(overlay).queryByRole('link', { name: '+49 611 111111' })).not.toBeInTheDocument()
+    expect(within(overlay!).queryByRole('link', { name: '+49 611 111111' })).not.toBeInTheDocument()
   })
 
   it('does not render mobile when mobile is empty', () => {
     const { overlay } = renderCard({ mobile: '' })
-    expect(within(overlay).queryByRole('link', { name: '+49 171 222222' })).not.toBeInTheDocument()
+    expect(within(overlay!).queryByRole('link', { name: '+49 171 222222' })).not.toBeInTheDocument()
   })
 
   it('first card uses priority image loading', () => {
