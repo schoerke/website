@@ -29,6 +29,7 @@ const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedIns
   const hasRealImage = imageUrl !== null
   const focalX = image?.focalX ?? 50
   const focalY = image?.focalY ?? 50
+  const aspectRatio = image?.width && image?.height ? `${image.width} / ${image.height}` : '3 / 4'
 
   const showPlaceholder = !hasRealImage || error
 
@@ -57,15 +58,22 @@ const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedIns
         </div>
       ) : (
         <>
-          {/* Skeleton shimmer — collapses once image loads */}
-          {!loaded && <ImageSkeleton width={image?.width} height={image?.height} fallbackRatio="3 / 4" />}
+          {/* Skeleton shimmer — out of flow so only the image box sizes the item */}
+          {!loaded && (
+            <ImageSkeleton
+              width={image?.width}
+              height={image?.height}
+              fallbackRatio="3 / 4"
+              className="absolute inset-0"
+            />
+          )}
           <Image
             src={imageUrl}
             alt={artist.name}
             width={600}
             height={800}
             className={`${imageClasses} ${loaded ? 'opacity-100' : 'opacity-0 transition-opacity'}`}
-            style={{ objectPosition: `${focalX}% ${focalY}%` }}
+            style={{ aspectRatio, objectPosition: `${focalX}% ${focalY}%` }}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             ref={ref}
             onLoad={onLoad}

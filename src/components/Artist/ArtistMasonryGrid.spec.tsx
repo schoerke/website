@@ -12,17 +12,19 @@ vi.mock('next/image', () => ({
     src,
     alt,
     className,
+    style,
     onLoad,
     onError,
   }: {
     src: string
     alt: string
     className?: string
+    style?: React.CSSProperties
     onLoad?: () => void
     onError?: () => void
   }) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} className={className} onLoad={onLoad} onError={onError} />
+    <img src={src} alt={alt} className={className} style={style} onLoad={onLoad} onError={onError} />
   ),
 }))
 
@@ -61,6 +63,34 @@ describe('ArtistMasonryGrid', () => {
 
     const img = screen.getByAltText('Jane Artist')
     expect(img).toHaveAttribute('src', 'https://example.com/jane.jpg')
+  })
+
+  it('reserves the image box with the Payload aspect ratio before the image loads', () => {
+    const artist = createMockArtist({
+      image: createMockImage({ url: 'https://example.com/jane.jpg', width: 900, height: 1200 }) as never,
+    })
+    renderGrid([artist])
+
+    const img = screen.getByAltText('Jane Artist') as HTMLElement
+    expect(img).toHaveStyle({ aspectRatio: '900 / 1200' })
+  })
+
+  it('falls back to a 3:4 aspect ratio when image dimensions are unknown', () => {
+    const artist = createMockArtist({
+      image: { url: 'https://example.com/jane.jpg' } as unknown as never,
+    })
+    renderGrid([artist])
+
+    const img = screen.getByAltText('Jane Artist') as HTMLElement
+    expect(img).toHaveStyle({ aspectRatio: '3 / 4' })
+  })
+
+  it('keeps the skeleton out of the flow so it does not double the item height', () => {
+    const artist = createMockArtist({ image: createMockImage({ url: 'https://example.com/jane.jpg' }) as never })
+    renderGrid([artist])
+
+    const skeleton = document.getElementsByClassName('animate-pulse')[0] as Element
+    expect(skeleton).toHaveClass('absolute', 'inset-0')
   })
 
   it('renders a UserRound icon placeholder when the artist has no image', () => {
