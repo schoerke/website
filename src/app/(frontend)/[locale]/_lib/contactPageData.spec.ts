@@ -64,8 +64,7 @@ describe('getContactPageData', () => {
     expect(result.teamPage?.title).toBe('Team')
     expect(result.employees).toHaveLength(2)
     expect(result.wiesbadenImage?.url).toBe('/wiesbaden.webp')
-    expect(result.phoneLabel).toBe('phone')
-    expect(result.mobileLabel).toBe('mobile')
+    expect(result.dogWoof).toBe('dogWoof')
   })
 
   it('returns empty employees array when none exist', async () => {
@@ -80,11 +79,12 @@ describe('getContactPageData', () => {
     expect(getImageByFilename).toHaveBeenCalledWith('IMG_8115.JPG')
   })
 
-  it('returns dog image, dog name and dog title', async () => {
+  it('returns dog image, dog name, dog title and dog woof', async () => {
     const result = await getContactPageData('en')
 
     expect(result.dogImage?.url).toBe('/dog.jpg')
     expect(result.dogName).toBe('dogName')
     expect(result.dogTitle).toBe('dogTitle')
+    expect(result.dogWoof).toBe('dogWoof')
   })
 })

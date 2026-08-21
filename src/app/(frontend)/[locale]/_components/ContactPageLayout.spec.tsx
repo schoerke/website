@@ -15,8 +15,6 @@ vi.mock('next/image', () => ({
 const baseProps = {
   title: 'Contact',
   locale: 'en' as const,
-  phoneLabel: 'Phone',
-  mobileLabel: 'Mobile',
   employees: [createMockEmployee({ id: 1, name: 'Jane Smith', title: 'Senior Manager' })],
 }
 

@@ -158,10 +158,9 @@ const de = {
       },
       team: {
         title: 'Team',
-        phone: 'Telefon',
-        mobile: 'Mobil',
         dogName: 'Yuki',
         dogTitle: 'Bürohund',
+        dogWoof: 'Wuff!',
       },
       impressum: {
         title: 'Impressum',

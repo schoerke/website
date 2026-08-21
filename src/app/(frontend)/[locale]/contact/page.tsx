@@ -11,11 +11,10 @@ const ContactPage = async ({ params }: { params: Promise<{ locale: string }> }) 
 
   setRequestLocale(locale)
 
-  const [t, { teamPage, employees, wiesbadenImage, dogImage, dogName, dogTitle, phoneLabel, mobileLabel }] =
-    await Promise.all([
-      getTranslations({ locale, namespace: 'custom.pages.contact' }),
-      getContactPageData(locale as 'de' | 'en'),
-    ])
+  const [t, { teamPage, employees, wiesbadenImage, dogImage, dogName, dogTitle, dogWoof }] = await Promise.all([
+    getTranslations({ locale, namespace: 'custom.pages.contact' }),
+    getContactPageData(locale as 'de' | 'en'),
+  ])
 
   return (
     <ContactPageLayout
@@ -27,8 +26,7 @@ const ContactPage = async ({ params }: { params: Promise<{ locale: string }> }) 
       dogImage={dogImage}
       dogName={dogName}
       dogTitle={dogTitle}
-      phoneLabel={phoneLabel}
-      mobileLabel={mobileLabel}
+      dogWoof={dogWoof}
     />
   )
 }

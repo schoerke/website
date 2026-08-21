@@ -155,10 +155,9 @@ const en = {
       },
       team: {
         title: 'Team',
-        phone: 'Phone',
-        mobile: 'Mobile',
         dogName: 'Yuki',
         dogTitle: 'Office Dog',
+        dogWoof: 'Woof!',
       },
       impressum: {
         title: 'Legal Notice',

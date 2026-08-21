@@ -20,7 +20,6 @@ export async function getContactPageData(locale: 'de' | 'en') {
     dogImage,
     dogName: t('dogName'),
     dogTitle: t('dogTitle'),
-    phoneLabel: t('phone'),
-    mobileLabel: t('mobile'),
+    dogWoof: t('dogWoof'),
   }
 }

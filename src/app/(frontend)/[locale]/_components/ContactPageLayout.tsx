@@ -1,8 +1,9 @@
+import DogCard from '@/components/Employee/DogCard'
 import TeamMemberCard from '@/components/Employee/TeamMemberCard'
 import ContactPageSidebar from '@/components/ContactPageSidebar/ContactPageSidebar'
 import PayloadRichText from '@/components/ui/PayloadRichText'
+import ImageWithSkeleton from '@/components/ui/ImageWithSkeleton'
 import type { Employee, Page, Image as PayloadImage } from '@/payload-types'
-import Image from 'next/image'
 import React from 'react'
 
 interface ContactPageLayoutProps {
@@ -11,11 +12,10 @@ interface ContactPageLayoutProps {
   image?: PayloadImage | null
   teamPage?: Page | null
   employees?: Employee[]
-  phoneLabel?: string
-  mobileLabel?: string
   dogImage?: PayloadImage | null
   dogName?: string
   dogTitle?: string
+  dogWoof?: string
 }
 
 const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
@@ -24,11 +24,10 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
   image,
   teamPage,
   employees,
-  phoneLabel = 'Phone',
-  mobileLabel = 'Mobile',
   dogImage,
   dogName,
   dogTitle,
+  dogWoof = 'Woof!',
 }) => {
   return (
     <div className="mx-auto flex max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:p-8">
@@ -36,17 +35,13 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[75fr_25fr] lg:items-start">
         <ContactPageSidebar />
         {image && (
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg lg:order-first">
-            {/* lg:order-first: sidebar is first in DOM (shows above image on mobile); image moves to left column on desktop */}
-            <Image
-              src={image.url || ''}
-              alt={image.alt || 'Wiesbaden, Germany'}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 75vw"
-              priority
-            />
-          </div>
+          <ImageWithSkeleton
+            src={image.url || ''}
+            alt={image.alt || 'Wiesbaden, Germany'}
+            className="rounded-lg lg:order-first"
+            sizes="(max-width: 1024px) 100vw, 75vw"
+            priority
+          />
         )}
       </div>
 
@@ -63,32 +58,12 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
               </div>
             </div>
           )}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {employees.map((employee, index) => (
-              <TeamMemberCard
-                key={employee.id}
-                {...employee}
-                phoneLabel={phoneLabel}
-                mobileLabel={mobileLabel}
-                priority={index === 0}
-              />
+              <TeamMemberCard key={employee.id} {...employee} priority={index === 0} />
             ))}
             {dogImage && (
-              <TeamMemberCard
-                id={-1}
-                name={dogName || 'Yuki'}
-                title={dogTitle || 'Office Dog'}
-                image={dogImage}
-                email=""
-                phone=""
-                mobile=""
-                order={0}
-                updatedAt=""
-                createdAt=""
-                phoneLabel={phoneLabel}
-                mobileLabel={mobileLabel}
-                grayscale
-              />
+              <DogCard image={dogImage} name={dogName || 'Yuki'} title={dogTitle || 'Office Dog'} woofLabel={dogWoof} />
             )}
           </div>
         </div>
