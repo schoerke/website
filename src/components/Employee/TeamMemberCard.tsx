@@ -1,15 +1,13 @@
 import { Employee } from '@/payload-types'
-import { getValidImageUrl } from '@/utils/image'
-import { UserRound } from 'lucide-react'
-import Image from 'next/image'
-import React from 'react'
+import { Mail, Phone, Smartphone } from 'lucide-react'
+import EmployeeCardShell from './EmployeeCardShell'
 
 interface TeamMemberCardProps extends Employee {
-  phoneLabel: string
-  mobileLabel: string
   priority?: boolean
   grayscale?: boolean
 }
+
+const buttonClasses = 'flex h-10 w-10 items-center justify-center rounded-full bg-primary-yellow/80'
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   name,
@@ -18,66 +16,69 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   email,
   phone,
   mobile,
-  phoneLabel,
-  mobileLabel,
   priority = false,
   grayscale = false,
 }) => {
-  const imageUrl = getValidImageUrl(image)
-  const showPlaceholder = !imageUrl
+  const desktopContact = (
+    <div className="space-y-2">
+      {email && (
+        <p>
+          <a href={`mailto:${email}`} className="flex items-center gap-2 hover:underline">
+            <Mail aria-hidden="true" className="text-primary-yellow h-4 w-4 shrink-0" />
+            <span className="break-all">{email}</span>
+          </a>
+        </p>
+      )}
+      {phone && (
+        <p>
+          <a href={`tel:${phone}`} className="flex items-center gap-2 hover:underline">
+            <Phone aria-hidden="true" className="text-primary-yellow h-4 w-4 shrink-0" />
+            <span>{phone}</span>
+          </a>
+        </p>
+      )}
+      {mobile && (
+        <p>
+          <a href={`tel:${mobile}`} className="flex items-center gap-2 hover:underline">
+            <Smartphone aria-hidden="true" className="text-primary-yellow h-4 w-4 shrink-0" />
+            <span>{mobile}</span>
+          </a>
+        </p>
+      )}
+    </div>
+  )
+
+  const mobileButtons = (
+    <>
+      {email && (
+        <a href={`mailto:${email}`} aria-label={email} className={buttonClasses}>
+          <Mail aria-hidden="true" className="text-primary-black h-5 w-5" />
+        </a>
+      )}
+      {phone && (
+        <a href={`tel:${phone}`} aria-label={phone} className={buttonClasses}>
+          <Phone aria-hidden="true" className="text-primary-black h-5 w-5" />
+        </a>
+      )}
+      {mobile && (
+        <a href={`tel:${mobile}`} aria-label={mobile} className={buttonClasses}>
+          <Smartphone aria-hidden="true" className="text-primary-black h-5 w-5" />
+        </a>
+      )}
+    </>
+  )
 
   return (
-    <div className="group overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:scale-[1.02]">
-      <div className="relative h-72 w-full">
-        {showPlaceholder ? (
-          <div
-            data-testid="team-member-image-placeholder"
-            aria-hidden="true"
-            className="flex h-full w-full items-center justify-center bg-gray-100"
-          >
-            <UserRound className="h-24 w-24 text-gray-300" />
-          </div>
-        ) : (
-          <Image
-            src={imageUrl}
-            alt={name || 'Team Member'}
-            width={400}
-            height={400}
-            className={`h-full w-full object-cover${grayscale ? ' grayscale' : ''}`}
-            priority={priority}
-          />
-        )}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-white/10 transition-opacity duration-300 group-hover:opacity-0"
-        ></div>
-      </div>
-      <div className="p-6">
-        <h3 className="font-playfair mb-2 text-3xl font-bold">{name}</h3>
-        <p className="font-playfair mb-3 text-xl">{title}</p>
-        {email && (
-          <p className="mb-2 text-sm">
-            <a href={`mailto:${email}`} className="hover:underline">
-              {email}
-            </a>
-          </p>
-        )}
-        {phone && (
-          <p className="text-xs">
-            <a href={`tel:${phone}`} className="hover:underline">
-              {phoneLabel}: {phone}
-            </a>
-          </p>
-        )}
-        {mobile && (
-          <p className="text-xs">
-            <a href={`tel:${mobile}`} className="hover:underline">
-              {mobileLabel}: {mobile}
-            </a>
-          </p>
-        )}
-      </div>
-    </div>
+    <EmployeeCardShell
+      name={name || ''}
+      title={title || ''}
+      image={image}
+      priority={priority}
+      grayscale={grayscale}
+      mobileContent={mobileButtons}
+    >
+      {desktopContact}
+    </EmployeeCardShell>
   )
 }
 
