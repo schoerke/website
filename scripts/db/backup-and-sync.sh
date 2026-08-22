@@ -76,3 +76,58 @@ export_prod() {
 
   echo "$out"
 }
+
+upload_backup() {
+  local db_file="$1"
+  local gz_file="${db_file}.gz"
+  gzip -c "$db_file" > "$gz_file"
+
+  local key="backups/$(basename "$gz_file")"
+  log "Uploading $gz_file -> s3://$BACKUP_R2_BUCKET/$key"
+
+  if [ "$DRY_RUN" = true ]; then
+    log "[dry-run] would upload to $key"
+    echo "$key"
+    return
+  fi
+
+  AWS_ACCESS_KEY_ID="$BACKUP_R2_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$BACKUP_R2_SECRET" \
+    aws s3 cp "$gz_file" "s3://$BACKUP_R2_BUCKET/$key" --endpoint-url "$BACKUP_R2_ENDPOINT"
+
+  # Confirm it actually landed before treating the backup as complete.
+  if ! AWS_ACCESS_KEY_ID="$BACKUP_R2_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$BACKUP_R2_SECRET" \
+    aws s3api head-object --bucket "$BACKUP_R2_BUCKET" --key "$key" --endpoint-url "$BACKUP_R2_ENDPOINT" >/dev/null 2>&1; then
+    echo "❌ Upload verification failed: $key not found in bucket after cp. Aborting before retention cleanup." >&2
+    exit 1
+  fi
+  log "Upload verified: $key"
+  echo "$key"
+}
+
+cleanup_old_backups() {
+  local just_uploaded_key="$1"
+  log "Pruning backups older than ${RETENTION_DAYS} days (keeping $just_uploaded_key)"
+
+  local cutoff_epoch
+  cutoff_epoch="$(date -u -d "-${RETENTION_DAYS} days" +%s 2>/dev/null || date -u -v-"${RETENTION_DAYS}"d +%s)"
+
+  AWS_ACCESS_KEY_ID="$BACKUP_R2_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$BACKUP_R2_SECRET" \
+    aws s3api list-objects-v2 --bucket "$BACKUP_R2_BUCKET" --prefix "backups/" --endpoint-url "$BACKUP_R2_ENDPOINT" \
+    --query 'Contents[].{Key:Key,Modified:LastModified}' --output json > "$WORKDIR/objects.json"
+
+  python3 - "$WORKDIR/objects.json" "$cutoff_epoch" "$just_uploaded_key" "$DRY_RUN" <<'PYEOF'
+import json, sys, datetime
+
+objects_file, cutoff_epoch, keep_key, dry_run = sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4] == "true"
+with open(objects_file) as f:
+    objects = json.load(f) or []
+
+for obj in objects:
+    key = obj["Key"]
+    if key == keep_key:
+        continue
+    modified = datetime.datetime.fromisoformat(obj["Modified"].replace("Z", "+00:00"))
+    if modified.timestamp() < cutoff_epoch:
+        print(f"{'[dry-run] would delete' if dry_run else 'deleting'} {key} (modified {modified.isoformat()})")
+PYEOF
+}
