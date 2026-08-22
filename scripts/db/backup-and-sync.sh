@@ -136,3 +136,55 @@ for obj in objects:
         print(f"{'[dry-run] would delete' if dry_run else 'deleting'} {key} (modified {modified.isoformat()})")
 PYEOF
 }
+
+backup_dev_before_wipe() {
+  local out="$WORKDIR/ksschoerke-development-prewipe-${TIMESTAMP}.db"
+  log "Snapshotting $DEV_DB before wipe (rollback point) -> $out"
+  turso db export "$DEV_DB" --output-file "$out" --token "$TURSO_DEV_TOKEN"
+  echo "$out"
+}
+
+list_dev_tables_to_wipe() {
+  turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" \
+    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';" \
+    | tail -n +2 | sed '/^$/d' || true
+}
+
+wipe_dev_except_mcp() {
+  local tables
+  tables="$(list_dev_tables_to_wipe)"
+  if [ -z "$tables" ]; then
+    log "No tables to wipe (dev already empty apart from payload_mcp* tables)"
+    return
+  fi
+
+  local wipe_sql="$WORKDIR/wipe.sql"
+  {
+    echo "PRAGMA foreign_keys=OFF;"
+    while IFS= read -r t; do
+      echo "DROP TABLE IF EXISTS \"$t\";"
+    done <<< "$tables"
+    echo "PRAGMA foreign_keys=ON;"
+  } > "$wipe_sql"
+
+  if [ "$DRY_RUN" = true ]; then
+    log "[dry-run] would wipe $(echo "$tables" | wc -l | tr -d ' ') tables:"
+    echo "$tables"
+    return
+  fi
+
+  log "Wiping $(echo "$tables" | wc -l | tr -d ' ') tables from $DEV_DB in one session (single connection, so PRAGMA foreign_keys persists for the whole batch)"
+  turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" < "$wipe_sql"
+
+  # Post-wipe assertion (ADR Finding 1): FK-ordering can silently skip a DROP.
+  # Refuse to proceed to the load step unless the wipe is verifiably complete.
+  local remaining
+  remaining="$(turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" \
+    "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';" \
+    | tail -n +2 | tr -d '[:space:]')"
+  if [ "$remaining" != "0" ]; then
+    echo "❌ Wipe verification failed: $remaining non-excluded tables still remain in $DEV_DB after the wipe loop. Aborting BEFORE loading the prod dump — dev is left in its wiped-but-not-loaded state. Restore from the pre-wipe snapshot (see backup_dev_before_wipe output) if dev needs to be usable again before this is fixed." >&2
+    exit 1
+  fi
+  log "Wipe verified: 0 non-excluded tables remain"
+}
