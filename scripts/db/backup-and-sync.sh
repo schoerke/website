@@ -11,11 +11,20 @@
 #   scripts/db/backup-and-sync.sh --apply             # do it for real (backup + dev sync)
 #   scripts/db/backup-and-sync.sh --apply --skip-dev-sync   # backup only
 #
-# Required env vars: TURSO_PROD_TOKEN, TURSO_DEV_TOKEN, BACKUP_R2_BUCKET,
+# Required env vars: TURSO_PLATFORM_TOKEN, BACKUP_R2_BUCKET,
 #   BACKUP_R2_ACCESS_KEY, BACKUP_R2_SECRET, BACKUP_R2_ENDPOINT
 # Optional env vars: RETENTION_DAYS (default 30)
 # Dependencies: turso CLI, aws CLI, sqlite3, gzip, python3 (all preinstalled on
 #   GitHub Actions ubuntu-latest except turso/aws, which the workflow installs explicitly)
+#
+# Turso auth: TURSO_PLATFORM_TOKEN is a platform API token (mint via
+# `turso auth api-tokens mint <name> --org <org> --group <group> --read-only`), NOT a
+# per-database SDK token — `turso db tokens create <db>` tokens only work for SDK/HTTP
+# client connections, never for CLI commands like `db shell`/`db export`, which always
+# authenticate as a whole account/group (confirmed empirically: `--token` is not a valid
+# flag on these commands). This script authenticates the CLI into an isolated config dir
+# (--config-path) scoped to $WORKDIR, so it never touches or overwrites your real local
+# `turso auth login` session.
 #
 # See docs/adr/2025-11-23-database-backup-strategy.md §1 for the full design.
 
@@ -27,6 +36,7 @@ RETENTION_DAYS="${RETENTION_DAYS:-30}"
 TIMESTAMP="$(date -u +%Y%m%d-%H%M%S)"
 WORKDIR="$(mktemp -d)"
 trap 'rm -rf "$WORKDIR"' EXIT
+TURSO_CONFIG_DIR="$WORKDIR/turso-config"
 
 DRY_RUN=true
 SKIP_DEV_SYNC=false
@@ -43,7 +53,7 @@ log() { echo "[$(date -u +%H:%M:%S)] $*" >&2; }
 
 require_env() {
   local missing=()
-  for var in TURSO_PROD_TOKEN TURSO_DEV_TOKEN BACKUP_R2_BUCKET BACKUP_R2_ACCESS_KEY BACKUP_R2_SECRET BACKUP_R2_ENDPOINT; do
+  for var in TURSO_PLATFORM_TOKEN BACKUP_R2_BUCKET BACKUP_R2_ACCESS_KEY BACKUP_R2_SECRET BACKUP_R2_ENDPOINT; do
     if [ -z "${!var:-}" ]; then
       missing+=("$var")
     fi
@@ -54,13 +64,22 @@ require_env() {
   fi
 }
 
+setup_turso_auth() {
+  mkdir -p "$TURSO_CONFIG_DIR"
+  if ! turso config set token "$TURSO_PLATFORM_TOKEN" --config-path "$TURSO_CONFIG_DIR" >/dev/null; then
+    echo "❌ Failed to configure Turso CLI auth (turso config set token exited non-zero). Check TURSO_PLATFORM_TOKEN is valid and not expired/revoked." >&2
+    exit 1
+  fi
+}
+
 require_env
+setup_turso_auth
 log "mode=$([ "$DRY_RUN" = true ] && echo DRY-RUN || echo APPLY) skip_dev_sync=$SKIP_DEV_SYNC workdir=$WORKDIR"
 
 export_prod() {
   local out="$WORKDIR/ksschoerke-production-${TIMESTAMP}.db"
   log "Exporting $PROD_DB -> $out"
-  turso db export "$PROD_DB" --output-file "$out" --token "$TURSO_PROD_TOKEN"
+  turso db export "$PROD_DB" --output-file "$out" --config-path "$TURSO_CONFIG_DIR" > /dev/null
 
   local size
   size="$(stat -f%z "$out" 2>/dev/null || stat -c%s "$out")"
@@ -140,18 +159,21 @@ PYEOF
 backup_dev_before_wipe() {
   local out="$WORKDIR/ksschoerke-development-prewipe-${TIMESTAMP}.db"
   log "Snapshotting $DEV_DB before wipe (rollback point) -> $out"
-  turso db export "$DEV_DB" --output-file "$out" --token "$TURSO_DEV_TOKEN"
+  turso db export "$DEV_DB" --output-file "$out" --config-path "$TURSO_CONFIG_DIR" > /dev/null
   echo "$out"
 }
 
 list_dev_tables_to_wipe() {
   local out
-  if ! out="$(turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" \
+  if ! out="$(turso db shell "$DEV_DB" --config-path "$TURSO_CONFIG_DIR" \
       "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';")"; then
     echo "❌ Failed to query $DEV_DB table list (turso db shell exited non-zero). Aborting." >&2
     exit 1
   fi
-  echo "$out" | tail -n +2 | sed '/^$/d'
+  # turso db shell right-pads column values with trailing spaces (fixed-width table
+  # formatting) — strip leading/trailing whitespace per line, not just blank lines,
+  # or every table name fails the identifier-validation regex downstream.
+  echo "$out" | tail -n +2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed '/^$/d'
 }
 
 # NOTE: main() logs backup_dev_before_wipe's returned snapshot path via `log`, but that
@@ -187,7 +209,7 @@ wipe_dev_except_mcp() {
   fi
 
   log "Wiping $(echo "$tables" | wc -l | tr -d ' ') tables from $DEV_DB in one session (single connection, so PRAGMA foreign_keys persists for the whole batch)"
-  if ! turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" < "$wipe_sql"; then
+  if ! turso db shell "$DEV_DB" --config-path "$TURSO_CONFIG_DIR" < "$wipe_sql"; then
     echo "❌ Wipe SQL execution failed against $DEV_DB (possibly network/auth error, possibly partway through the batch). dev may be left half-wiped. The pre-wipe snapshot this run created is NOT durable (deleted with the job's workspace on exit) — recover instead via Turso's point-in-time recovery: 'turso db create ksschoerke-development-restored --from-db ksschoerke-development --timestamp <ISO-8601 time before this run>' (free tier covers the last 24h; see docs/adr/2025-11-23-database-backup-strategy.md §2), then repoint or rename as needed." >&2
     exit 1
   fi
@@ -195,7 +217,7 @@ wipe_dev_except_mcp() {
   # Post-wipe assertion (ADR Finding 1): FK-ordering can silently skip a DROP.
   # Refuse to proceed to the load step unless the wipe is verifiably complete.
   local remaining
-  if ! remaining="$(turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" \
+  if ! remaining="$(turso db shell "$DEV_DB" --config-path "$TURSO_CONFIG_DIR" \
     "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';" \
     | tail -n +2 | tr -d '[:space:]')"; then
     echo "❌ Failed to query $DEV_DB post-wipe table count (turso db shell exited non-zero). dev may be left half-wiped. The pre-wipe snapshot this run created is NOT durable (deleted with the job's workspace on exit) — recover via Turso's point-in-time recovery (free tier covers the last 24h; see docs/adr/2025-11-23-database-backup-strategy.md §2)." >&2
@@ -211,7 +233,7 @@ wipe_dev_except_mcp() {
 dump_prod_sql() {
   local out="$WORKDIR/prod-${TIMESTAMP}.sql"
   log "Dumping $PROD_DB to portable SQL -> $out"
-  if ! turso db shell "$PROD_DB" --token "$TURSO_PROD_TOKEN" .dump > "$out"; then
+  if ! turso db shell "$PROD_DB" --config-path "$TURSO_CONFIG_DIR" .dump > "$out"; then
     echo "❌ Failed to dump $PROD_DB to SQL. Aborting." >&2
     exit 1
   fi
@@ -234,7 +256,7 @@ load_dev_from_sql() {
     return
   fi
   log "Loading $sql_file into $DEV_DB"
-  if ! turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" < "$sql_file"; then
+  if ! turso db shell "$DEV_DB" --config-path "$TURSO_CONFIG_DIR" < "$sql_file"; then
     echo "❌ Failed to load $sql_file into $DEV_DB. dev may be left partially loaded (wiped, then load failed mid-way). The pre-wipe snapshot this run created is NOT durable (deleted with the job's workspace on exit) — recover via Turso's point-in-time recovery (free tier covers the last 24h; see docs/adr/2025-11-23-database-backup-strategy.md §2) before further use." >&2
     exit 1
   fi
@@ -252,12 +274,14 @@ verify_all_tables() {
     return
   fi
   local prod_tables
-  if ! prod_tables="$(turso db shell "$PROD_DB" --token "$TURSO_PROD_TOKEN" \
+  if ! prod_tables="$(turso db shell "$PROD_DB" --config-path "$TURSO_CONFIG_DIR" \
       "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';")"; then
     echo "❌ Failed to query $PROD_DB table list for verification. Aborting." >&2
     exit 1
   fi
-  prod_tables="$(echo "$prod_tables" | tail -n +2 | sed '/^$/d')"
+  # Same trailing-whitespace fix as list_dev_tables_to_wipe — turso db shell pads
+  # column values to a fixed width.
+  prod_tables="$(echo "$prod_tables" | tail -n +2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed '/^$/d')"
 
   while IFS= read -r t; do
     [ -z "$t" ] && continue
@@ -266,11 +290,11 @@ verify_all_tables() {
       exit 1
     fi
     local prod_count dev_count
-    if ! prod_count="$(turso db shell "$PROD_DB" --token "$TURSO_PROD_TOKEN" "SELECT COUNT(*) FROM \"$t\";" | tail -n +2 | tr -d '[:space:]')"; then
+    if ! prod_count="$(turso db shell "$PROD_DB" --config-path "$TURSO_CONFIG_DIR" "SELECT COUNT(*) FROM \"$t\";" | tail -n +2 | tr -d '[:space:]')"; then
       echo "❌ Failed to count rows in $PROD_DB.\"$t\" during verification. Aborting." >&2
       exit 1
     fi
-    if ! dev_count="$(turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" "SELECT COUNT(*) FROM \"$t\";" | tail -n +2 | tr -d '[:space:]')"; then
+    if ! dev_count="$(turso db shell "$DEV_DB" --config-path "$TURSO_CONFIG_DIR" "SELECT COUNT(*) FROM \"$t\";" | tail -n +2 | tr -d '[:space:]')"; then
       echo "❌ Failed to count rows in $DEV_DB.\"$t\" during verification. Aborting." >&2
       exit 1
     fi
