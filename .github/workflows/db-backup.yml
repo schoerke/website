@@ -18,7 +18,8 @@ jobs:
   backup:
     name: Backup prod + sync dev
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25 # verify_all_tables makes ~2 turso CLI round-trips per table (~40 tables);
+    # bumped from 15 to give margin for CLI-startup/auth latency variance.
     steps:
       - name: Checkout
         uses: actions/checkout@v4

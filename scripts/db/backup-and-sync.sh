@@ -39,7 +39,7 @@ for arg in "$@"; do
   esac
 done
 
-log() { echo "[$(date -u +%H:%M:%S)] $*"; }
+log() { echo "[$(date -u +%H:%M:%S)] $*" >&2; }
 
 require_env() {
   local missing=()
@@ -195,9 +195,12 @@ wipe_dev_except_mcp() {
   # Post-wipe assertion (ADR Finding 1): FK-ordering can silently skip a DROP.
   # Refuse to proceed to the load step unless the wipe is verifiably complete.
   local remaining
-  remaining="$(turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" \
+  if ! remaining="$(turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" \
     "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';" \
-    | tail -n +2 | tr -d '[:space:]')"
+    | tail -n +2 | tr -d '[:space:]')"; then
+    echo "❌ Failed to query $DEV_DB post-wipe table count (turso db shell exited non-zero). dev may be left half-wiped. The pre-wipe snapshot this run created is NOT durable (deleted with the job's workspace on exit) — recover via Turso's point-in-time recovery (free tier covers the last 24h; see docs/adr/2025-11-23-database-backup-strategy.md §2)." >&2
+    exit 1
+  fi
   if [ "$remaining" != "0" ]; then
     echo "❌ Wipe verification failed: $remaining non-excluded tables still remain in $DEV_DB after the wipe loop. Aborting BEFORE loading the prod dump — dev is left in its wiped-but-not-loaded state. The pre-wipe snapshot this run created is NOT durable (deleted with the job's workspace on exit) — recover via Turso's point-in-time recovery (free tier covers the last 24h; see docs/adr/2025-11-23-database-backup-strategy.md §2) if dev needs to be usable again before this is fixed." >&2
     exit 1
