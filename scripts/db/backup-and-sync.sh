@@ -113,7 +113,7 @@ upload_backup() {
   fi
 
   AWS_ACCESS_KEY_ID="$BACKUP_R2_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$BACKUP_R2_SECRET" \
-    aws s3 cp "$gz_file" "s3://$BACKUP_R2_BUCKET/$key" --endpoint-url "$BACKUP_R2_ENDPOINT"
+    aws s3 cp "$gz_file" "s3://$BACKUP_R2_BUCKET/$key" --endpoint-url "$BACKUP_R2_ENDPOINT" --quiet
 
   # Confirm it actually landed before treating the backup as complete.
   if ! AWS_ACCESS_KEY_ID="$BACKUP_R2_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$BACKUP_R2_SECRET" \
