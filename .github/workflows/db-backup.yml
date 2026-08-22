@@ -38,8 +38,7 @@ jobs:
 
       - name: Run backup + dev sync
         env:
-          TURSO_PROD_TOKEN: ${{ secrets.TURSO_PROD_TOKEN }}
-          TURSO_DEV_TOKEN: ${{ secrets.TURSO_DEV_TOKEN }}
+          TURSO_PLATFORM_TOKEN: ${{ secrets.TURSO_PLATFORM_TOKEN }}
           BACKUP_R2_BUCKET: ${{ secrets.BACKUP_R2_BUCKET }}
           BACKUP_R2_ACCESS_KEY: ${{ secrets.BACKUP_R2_ACCESS_KEY }}
           BACKUP_R2_SECRET: ${{ secrets.BACKUP_R2_SECRET }}

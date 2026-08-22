@@ -117,9 +117,31 @@ workflow YAML if any of the above is unclear.
   exports. Not applicable to backup automation; its `payload_mcp_api_keys` table is the one dev-only table
   that must be preserved across dev syncs.
 
-**Required secrets** (all set as GitHub repo secrets, 2026-08-22): `TURSO_PROD_TOKEN` and `TURSO_DEV_TOKEN`
-— **two per-database tokens, not one shared/org-wide token** (resolved: least-privilege over convenience —
-a leaked or rotated token affects only one database, not both). R2 target: a **new, scoped** credential
+**Required secrets** (all set as GitHub repo secrets; corrected 2026-08-22 after live testing revealed the
+original "two per-database tokens" plan doesn't work — see below): `TURSO_PLATFORM_TOKEN` — **a single
+platform API token, not per-database tokens.**
+
+**Why not per-database tokens (discovered via live testing, not documentation):** `turso db tokens create
+<db>` mints an SDK/HTTP client token (for `createClient({url, authToken})` in application code) — it is
+**not accepted by any Turso CLI command**. `turso db shell`/`turso db export` have no `--token` flag at
+all; confirmed empirically (`Error: unknown flag: --token`). The CLI only ever authenticates as a whole
+**platform account**, via `turso config set token <jwt>`, using a token minted with `turso auth
+api-tokens mint <name> --org <org> --group <group> --scope read --scope db:mint-token` (`read` to see/list
+the database, `db:mint-token` to let the CLI self-mint the ephemeral SQL-engine session token it actually
+queries with — both scopes required together, confirmed by testing each in isolation and hitting a
+`forbidden` error each time). Since `ksschoerke-production` and `ksschoerke-development` share the same
+Turso group (`eu-west`), even group-scoped platform tokens cannot separate prod-only from dev-only CLI
+access — there is no finer-grained CLI auth model available. This invalidates the original least-privilege
+design; accepted as an unavoidable platform constraint, not a design shortcut.
+
+**Blast-radius mitigation without per-DB isolation:** the platform token is revocable independently
+(`turso auth api-tokens revoke <name>`) and scoped to only the `eu-west` group (not the whole account/all
+orgs). The script authenticates into an **isolated config directory** (`turso config set token ...
+--config-path $WORKDIR/turso-config`), scoped to the script's own temp workspace — this never touches or
+overwrites a real developer's local `turso auth login` session, which was confirmed both by design and by
+testing (`turso auth whoami` on the testing machine remained unaffected across dozens of script runs).
+
+R2 target: a **new, scoped** credential
 (`BACKUP_R2_BUCKET`/`BACKUP_R2_ACCESS_KEY`/`BACKUP_R2_SECRET`/`BACKUP_R2_ENDPOINT`) limited to bucket
 `schoerke-website-backup` (Cloudflare R2 tokens scope to a bucket, not a prefix — a dedicated bucket was
 created instead of trying to scope to `backups/` within the shared Documents-collection bucket). Granted
@@ -129,11 +151,12 @@ does not reuse `CLOUDFLARE_S3_ACCESS_KEY`/`CLOUDFLARE_SECRET` from the Documents
 
 **Cadence:** Nightly (automated)
 
-**Storage estimate:**
+**Storage estimate** (updated 2026-08-22 with real measurements — original Nov 2025 estimate was based on a
+much smaller early-stage database):
 
-- Current dump size: ~3.1 MB uncompressed, ~0.3 MB gzipped
-- 30 days × ~0.3 MB = ~9 MB total — well within R2's free tier (10 GB)
-- Even at 10× database growth: ~90 MB, still negligible
+- Current dump size: ~26.6 MB uncompressed, ~3.8 MB gzipped (confirmed via real `--apply` run)
+- 30 days × ~3.8 MB = ~114 MB total — still well within R2's free tier (10 GB)
+- Even at 10× database growth: ~1.1 GB, still comfortably within free tier
 
 **Storage location:** Cloudflare R2, dedicated bucket `schoerke-website-backup` (separate from the
 Documents collection's bucket/credential — see "Required secrets" above)
@@ -301,7 +324,13 @@ pnpm dev
 
 ## Future Considerations
 
-- **Implement nightly GitHub Action** (designed 2026-08-22 — see §1 above; pending secrets + workflow)
+- ~~Implement nightly GitHub Action~~ — **implemented and validated 2026-08-22.** Full local end-to-end
+  test (real `--apply` run, not dry-run) against real `ksschoerke-production`/`ksschoerke-development`:
+  export → sanity checks → R2 upload → `head-object` verify → dev pre-wipe snapshot → wipe (48 tables,
+  `payload_mcp_api_keys` correctly preserved) → post-wipe assertion → prod SQL dump → load into dev → all
+  46 comparable tables verified matching row counts prod vs. dev. Pending: enable the `schedule` trigger by
+  merging to `main` (GitHub only allows `workflow_dispatch`/`schedule` on workflows present on the default
+  branch).
 - If repo size becomes an issue, migrate dumps to Git LFS or external storage
 - Consider adding more collections to dump script as data model grows
 - Evaluate Turso's backup features as they evolve (versioning, longer retention, etc.)
