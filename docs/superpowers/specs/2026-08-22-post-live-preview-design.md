@@ -46,6 +46,7 @@ Admin edit view (post)
             ├─ draftMode().enable()
             └─ redirect(path)
                  └─ /de/preview/foo (dynamic, async server component)
+                      ├─ draftMode().isEnabled required              → 404 if not
                       ├─ getPostBySlug(slug, locale, { draft: true })
                       └─ renders <PostPreviewClient initialData={post}>
                            └─ useLivePreview({ initialData, serverURL, depth: 1 })
@@ -77,8 +78,16 @@ duplication.
   validated for posts.
 
 **`src/app/(frontend)/[locale]/preview/[slug]/page.tsx`** (new, async server
-component)
+component, dynamic)
 
+- `export const dynamic = 'force-dynamic'` — prevents build-time prerendering of
+  draft HTML.
+- **Draft gate:** `const { isEnabled } = await draftMode()`; if not enabled →
+  `notFound()`. This is the only thing preventing a direct GET of
+  `/de/preview/<slug>` from rendering draft content to unauthenticated visitors.
+  `payload.find` with `draft: true` (Local API without `req`) bypasses access
+  control via `overrideAccess`, so route reachability is the sole gate —
+  `draftMode()` check must happen before any fetch.
 - `validateLocale(rawLocale)`, `setRequestLocale(locale)`.
 - `getPostBySlug(slug, locale, { draft: true })`; `notFound()` if missing.
 - Resolves `getTranslations` for the post detail labels (`custom.pages.news`).
@@ -158,8 +167,10 @@ are unchanged — the static pages keep their `_status: 'published'` filter.
 
 ### Dependency
 
-- `@payloadcms/live-preview` — provides the `useLivePreview` client hook.
-  Requires explicit user approval to install.
+- `@payloadcms/live-preview-react` (v3.88.0, matching the other `@payloadcms/*`
+  packages) — provides the `useLivePreview` client hook. Note: the base
+  `@payloadcms/live-preview` package is the framework-agnostic SDK (no hooks);
+  the React hook ships from `-react`. Requires explicit user approval to install.
 
 ### Error handling
 
@@ -186,6 +197,10 @@ are unchanged — the static pages keep their `_status: 'published'` filter.
 - The `/api/preview` route gates on `PREVIEW_SECRET` + authenticated Payload
   session. The secret is checked server-side; the iframe still requires the
   admin's session cookie (same-origin) to read draft data.
+- The `/preview/[locale]/[slug]` route requires `draftMode().isEnabled` before
+  any draft fetch. Because Local API runs with `overrideAccess`, a direct GET of
+  the preview URL must not render drafts without the draft-mode cookie. Added
+  `force-dynamic` so no draft HTML is prerendered at build.
 
 ## Testing
 
@@ -205,6 +220,9 @@ are unchanged — the static pages keep their `_status: 'published'` filter.
    - builds `/api/preview` URL with `path`, slug, locale, secret
    - no slug → `undefined`
    - missing locale → fallback `'de'`
+5. **Preview page draft gate** (`src/app/(frontend)/[locale]/preview/[slug]/page.test.ts`):
+   - `draftMode().isEnabled === false` → `notFound()` (no draft fetch)
+   - `draftMode().isEnabled === true` → fetches with `draft: true`
 
 ## Migration / Data impact
 
@@ -224,6 +242,7 @@ None. No schema changes, no data migration, no database writes.
 
 - None blocking. Final approvals pending: `PREVIEW_SECRET` creation and
   `@payloadcms/live-preview` install.
-- Minor: preview iframe shows the post content component only (no site header /
-  nav chrome), since the preview route bypasses the public layout ornaments around
-  it. Accepted for now.
+- Full shell preview: the `/preview/[locale]/[slug]` route lives under
+  `[locale]/layout.tsx` (Header, SearchProvider, Footer), so the draft preview
+  renders the complete public page chrome — visually identical to a live post.
+  No layout duplication required.
