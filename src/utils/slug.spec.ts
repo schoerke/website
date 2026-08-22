@@ -208,14 +208,62 @@ describe('createSlugHook', () => {
   })
 
   describe('update operation', () => {
-    it('should not generate slug on update if value exists', () => {
+    it('should regenerate slug on draft when title changed', () => {
       const hook = createSlugHook('title')
       const result = hook({
         data: { title: 'New Title' },
         operation: 'update',
-        value: 'existing-slug',
+        value: 'old-title',
+        originalDoc: { title: 'Old Title', slug: 'old-title', _status: 'draft' },
       } as Partial<FieldHookArgs> as FieldHookArgs)
-      expect(result).toBe('existing-slug')
+      expect(result).toBe('new-title')
+    })
+
+    it('should regenerate slug from the full title on a draft, not a stale partial value', () => {
+      // Regression: autosave captured an early partial title ("v") and froze the slug.
+      const hook = createSlugHook('title')
+      const result = hook({
+        data: { title: 'Das Trio Gaspard zurück in Ernen' },
+        operation: 'update',
+        value: 'v',
+        originalDoc: { title: 'v', slug: 'v', _status: 'draft' },
+      } as Partial<FieldHookArgs> as FieldHookArgs)
+      expect(result).toBe('das-trio-gaspard-zuruck-in-ernen')
+    })
+
+    it('should keep slug stable on update when title did not change', () => {
+      const hook = createSlugHook('title')
+      const result = hook({
+        data: { title: 'Same Title', content: 'edited body' },
+        operation: 'update',
+        value: 'same-title',
+        originalDoc: { title: 'Same Title', slug: 'same-title', _status: 'draft' },
+      } as Partial<FieldHookArgs> as FieldHookArgs)
+      expect(result).toBe('same-title')
+    })
+
+    it('should keep slug stable on a published post when title changes', () => {
+      // Published posts should not be renamed — protects existing URLs.
+      const hook = createSlugHook('title')
+      const result = hook({
+        data: { title: 'New Title' },
+        operation: 'update',
+        value: 'old-title',
+        originalDoc: { title: 'Old Title', slug: 'old-title', _status: 'published' },
+      } as Partial<FieldHookArgs> as FieldHookArgs)
+      expect(result).toBe('old-title')
+    })
+
+    it('should keep slug stable on a doc without drafts when title changes', () => {
+      // Collections without drafts (no _status) never regenerate on update.
+      const hook = createSlugHook('title')
+      const result = hook({
+        data: { title: 'New Title' },
+        operation: 'update',
+        value: 'old-title',
+        originalDoc: { title: 'Old Title', slug: 'old-title' },
+      } as Partial<FieldHookArgs> as FieldHookArgs)
+      expect(result).toBe('old-title')
     })
 
     it('should generate slug on update if value is empty', () => {
@@ -315,14 +363,15 @@ describe('createSlugHook', () => {
       expect(result).toBe('neuer-kunstler')
     })
 
-    it('should preserve existing slug on update', () => {
+    it('should regenerate slug from updated title when editing a draft', () => {
       const hook = createSlugHook('title')
       const result = hook({
         data: { title: 'Updated Title' },
         operation: 'update',
         value: 'original-slug',
+        originalDoc: { title: 'Original Title', slug: 'original-slug', _status: 'draft' },
       } as Partial<FieldHookArgs> as FieldHookArgs)
-      expect(result).toBe('original-slug')
+      expect(result).toBe('updated-title')
     })
   })
 

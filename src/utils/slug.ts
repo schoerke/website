@@ -78,25 +78,47 @@ export function generateSlug(text: string): string {
  *   }
  * }
  */
+/**
+ * Extracts the source string for the active locale from a field value
+ * (plain string or localized object keyed by locale code).
+ */
+function extractSourceValue(
+  data: Record<string, unknown> | undefined,
+  sourceField: string,
+  locale: string | undefined
+): string | undefined {
+  const sourceValue = data?.[sourceField]
+
+  if (!sourceValue) return undefined
+
+  if (typeof sourceValue === 'object' && locale) {
+    const localizedValue = (sourceValue as Record<string, unknown>)[locale]
+    return typeof localizedValue === 'string' ? localizedValue : undefined
+  }
+
+  return typeof sourceValue === 'string' ? sourceValue : undefined
+}
+
 export function createSlugHook(sourceField: string): FieldHook {
-  return ({ data, value, req }) => {
-    // Only generate slug if no value is provided; respect explicitly passed slugs
-    if (!value) {
-      const sourceValue = data?.[sourceField]
+  return ({ data, value, operation, originalDoc, req }) => {
+    // Respect an explicitly passed slug on create (e.g. imports/migrations).
+    if (operation === 'create' && value) return value
 
-      if (sourceValue) {
-        // Handle localized fields
-        if (typeof sourceValue === 'object' && req?.locale) {
-          const localizedValue = (sourceValue as Record<string, unknown>)[req.locale]
-          if (typeof localizedValue === 'string') {
-            return generateSlug(localizedValue)
-          }
-        }
+    const sourceValue = extractSourceValue(data as Record<string, unknown> | undefined, sourceField, req?.locale)
 
-        // Handle simple string fields
-        if (typeof sourceValue === 'string') {
-          return generateSlug(sourceValue)
-        }
+    if (sourceValue) {
+      const sourceBefore = extractSourceValue(
+        originalDoc as Record<string, unknown> | undefined,
+        sourceField,
+        req?.locale
+      )
+      const isUnpublishedDraft = originalDoc?._status === 'draft'
+
+      // Regenerate when: create, update with empty slug (nothing to protect),
+      // or update of an unpublished draft whose source changed. Published docs
+      // with an existing slug stay stable so URLs don't break.
+      if (operation === 'create' || !value || (isUnpublishedDraft && sourceBefore !== sourceValue)) {
+        return generateSlug(sourceValue)
       }
     }
 
