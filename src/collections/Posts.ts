@@ -202,7 +202,9 @@ export const Posts: CollectionConfig = {
     afterDelete: [revalidateHomePageOnPostDelete, revalidatePostOnDelete],
   },
   versions: {
-    drafts: {},
+    drafts: {
+      autosave: false,
+    },
     maxPerDoc: 5,
   },
 }
