@@ -20,9 +20,12 @@ console.error = (...args: unknown[]) => {
 }
 
 // Next.js Image "fill" warnings also come through console.warn via warnOnce
+// Suppress expected "Preview auth failed" warnings — intentionally triggered by
+// route.test.ts to verify the anonymous-fallback log path
 const originalConsoleWarn = console.warn
 console.warn = (...args: unknown[]) => {
   if (typeof args[0] === 'string' && args[0].includes('has "fill"')) return
+  if (typeof args[0] === 'string' && args[0].includes('Preview auth failed')) return
   originalConsoleWarn(...args)
 }
 
