@@ -60,25 +60,23 @@ see "Review findings incorporated" below): implemented as a single GitHub Action
 - **Sanity-check the export before trusting it:** assert file size above a floor (e.g. >100 KB) and run
   `sqlite3 <file> "PRAGMA integrity_check"` before proceeding. A 0-byte or truncated export must fail the
   job loudly, not silently propagate.
-- Compresses with gzip, uploads to existing Cloudflare R2 bucket under `backups/` using a **scoped R2
-  credential** limited to `PUT`/`DELETE` on the `backups/` prefix only (not the Documents collection's
-  full-bucket credential) — confirm after upload with `aws s3api head-object` before treating the backup
-  as complete.
+- Compresses with gzip, uploads to a dedicated Cloudflare R2 bucket under `backups/` using a **scoped R2
+  credential** (Object Read & Write on that bucket only, not the Documents collection's credential) —
+  confirm after upload with `aws s3api head-object` before treating the backup as complete.
 - Retention cleanup runs **only if the backup step succeeded** (`if: success()`), and always retains at
   least the single most recent successful backup regardless of age — deletes R2 objects under `backups/`
   older than 30 days otherwise.
-- **Dev sync uses a build-fresh-then-swap pattern, not an in-place wipe:** restore the prod dump into a
-  fresh/staging Turso database (or a throwaway clone), verify it fully, and only then repoint
-  `ksschoerke-development`'s connection details (or rename databases) to the verified copy. This avoids
-  the failure mode where a mid-run crash (network blip, runner preemption) leaves the actively-used dev
-  database wiped-but-not-reloaded, which the in-place §3c pattern (designed for a supervised human running
-  it manually) does not protect against unattended.
-- If an in-place wipe is used instead (simpler, but only if the swap pattern proves impractical): the wipe
-  loop MUST assert `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`
-  equals 1 (only `payload_mcp_api_keys` remaining) **before** running the load step, aborting the job
-  otherwise — per the incident lesson in `MEMORY.md` §4.2 that FK-ordering can silently skip DROPs.
-  Additionally verify empirically whether `PRAGMA foreign_keys=OFF/ON` persists across separate
-  `turso db shell` invocations (each may be a new connection) before relying on it for the drop loop.
+- **Dev sync uses in-place wipe with hardened safeguards, not build-fresh-then-swap** (implementation
+  decision, 2026-08-22): a true swap would require repointing `ksschoerke-development`'s connection details
+  for every local developer's `.env` — there's no Vercel-hosted consumer of dev to repoint programmatically,
+  and Turso's free tier doesn't cleanly support a throwaway-DB-plus-DNS/rename workflow without extra
+  tokens. Disproportionate for a nightly job on a 3MB sandbox database. Implemented instead: pre-wipe
+  rollback snapshot + single-session wipe (PRAGMA OFF + all DROPs + PRAGMA ON as one `turso db shell`
+  invocation, avoiding any cross-connection PRAGMA-persistence question entirely — the empirical test this
+  ADR originally called for is moot given this design) + mandatory post-wipe assertion before any load.
+- The wipe loop asserts `SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'
+  AND name NOT LIKE 'payload_mcp%'` equals `0` **before** running the load step, aborting the job otherwise
+  — per the incident lesson in `MEMORY.md` §4.2 that FK-ordering can silently skip DROPs.
 - **Verification must cover every restored table, not a sample:** loop over all tables in `sqlite_master`
   (excluding `payload_mcp_api_keys`) comparing `COUNT(*)` prod vs. the restored copy; fail the job loudly
   on any mismatch. Do not hardcode a single-table check (e.g. `artists` only, as the manual docs
@@ -119,12 +117,15 @@ workflow YAML if any of the above is unclear.
   exports. Not applicable to backup automation; its `payload_mcp_api_keys` table is the one dev-only table
   that must be preserved across dev syncs.
 
-**Required new secrets:** `TURSO_API_TOKEN` — **scope unconfirmed**: must verify whether a single token can
-access both `ksschoerke-production` and `ksschoerke-development`, or whether this requires an org/group
-token (wider blast radius) vs. two per-database tokens. Confirm and document the choice before writing the
-workflow. R2 target: a **new, scoped** credential limited to the `backups/` prefix (`PUT`/`DELETE` only) —
-do not reuse `CLOUDFLARE_S3_ACCESS_KEY`/`CLOUDFLARE_SECRET` from the Documents collection verbatim, to
-avoid handing the backup workflow (and any public-repo Actions risk surface) full-bucket write access.
+**Required secrets** (all set as GitHub repo secrets, 2026-08-22): `TURSO_PROD_TOKEN` and `TURSO_DEV_TOKEN`
+— **two per-database tokens, not one shared/org-wide token** (resolved: least-privilege over convenience —
+a leaked or rotated token affects only one database, not both). R2 target: a **new, scoped** credential
+(`BACKUP_R2_BUCKET`/`BACKUP_R2_ACCESS_KEY`/`BACKUP_R2_SECRET`/`BACKUP_R2_ENDPOINT`) limited to bucket
+`schoerke-website-backup` (Cloudflare R2 tokens scope to a bucket, not a prefix — a dedicated bucket was
+created instead of trying to scope to `backups/` within the shared Documents-collection bucket). Granted
+permission is Cloudflare's "Object Read & Write" tier (read+write+list — Cloudflare doesn't offer a
+PUT/DELETE-only granular tier; the script's `list-objects-v2`/`head-object` calls need list+read anyway) —
+does not reuse `CLOUDFLARE_S3_ACCESS_KEY`/`CLOUDFLARE_SECRET` from the Documents collection.
 
 **Cadence:** Nightly (automated)
 
@@ -134,7 +135,8 @@ avoid handing the backup workflow (and any public-repo Actions risk surface) ful
 - 30 days × ~0.3 MB = ~9 MB total — well within R2's free tier (10 GB)
 - Even at 10× database growth: ~90 MB, still negligible
 
-**Storage location:** Cloudflare R2 (already used for documents — same credentials)
+**Storage location:** Cloudflare R2, dedicated bucket `schoerke-website-backup` (separate from the
+Documents collection's bucket/credential — see "Required secrets" above)
 
 **Retention:** 30 days — chosen deliberately, not just because storage is cheap. See §2: on Turso's free
 tier, PITR only covers the last 24 hours, so this is the primary recovery window past that point, not a
