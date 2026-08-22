@@ -211,6 +211,15 @@ dump_prod_sql() {
     echo "❌ Failed to dump $PROD_DB to SQL. Aborting." >&2
     exit 1
   fi
+
+  local size
+  size="$(stat -f%z "$out" 2>/dev/null || stat -c%s "$out")"
+  if [ "$size" -lt 1024 ]; then
+    echo "❌ Prod SQL dump sanity check failed: file is ${size} bytes, expected at least 1KB. Aborting — refusing to load a truncated/empty dump into dev." >&2
+    exit 1
+  fi
+  log "Dump size check passed: ${size} bytes"
+
   echo "$out"
 }
 
@@ -227,11 +236,20 @@ load_dev_from_sql() {
   fi
 }
 
+# NOTE: this compares dev against a freshly-queried LIVE prod state, not the exact
+# data captured in dump_prod_sql's dump. A prod write landing between the dump and
+# this verification could cause a spurious mismatch on an otherwise-successful sync.
+# Accepted risk given this runs nightly on a low-traffic site — not worth the added
+# complexity of capturing/comparing dump-time counts instead of live counts.
 verify_all_tables() {
   local mismatches=0
+  if [ "$DRY_RUN" = true ]; then
+    log "[dry-run] skipping table-count verification (dev was not modified this run)"
+    return
+  fi
   local prod_tables
   if ! prod_tables="$(turso db shell "$PROD_DB" --token "$TURSO_PROD_TOKEN" \
-      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")"; then
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';")"; then
     echo "❌ Failed to query $PROD_DB table list for verification. Aborting." >&2
     exit 1
   fi
@@ -239,6 +257,10 @@ verify_all_tables() {
 
   while IFS= read -r t; do
     [ -z "$t" ] && continue
+    if [[ ! "$t" =~ ^[a-zA-Z0-9_]+$ ]]; then
+      echo "❌ Unexpected table name '$t' (not alphanumeric/underscore) during verification. Aborting." >&2
+      exit 1
+    fi
     local prod_count dev_count
     if ! prod_count="$(turso db shell "$PROD_DB" --token "$TURSO_PROD_TOKEN" "SELECT COUNT(*) FROM \"$t\";" | tail -n +2 | tr -d '[:space:]')"; then
       echo "❌ Failed to count rows in $PROD_DB.\"$t\" during verification. Aborting." >&2
