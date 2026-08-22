@@ -203,3 +203,62 @@ wipe_dev_except_mcp() {
   fi
   log "Wipe verified: 0 non-excluded tables remain"
 }
+
+dump_prod_sql() {
+  local out="$WORKDIR/prod-${TIMESTAMP}.sql"
+  log "Dumping $PROD_DB to portable SQL -> $out"
+  if ! turso db shell "$PROD_DB" --token "$TURSO_PROD_TOKEN" .dump > "$out"; then
+    echo "❌ Failed to dump $PROD_DB to SQL. Aborting." >&2
+    exit 1
+  fi
+  echo "$out"
+}
+
+load_dev_from_sql() {
+  local sql_file="$1"
+  if [ "$DRY_RUN" = true ]; then
+    log "[dry-run] would load $sql_file into $DEV_DB"
+    return
+  fi
+  log "Loading $sql_file into $DEV_DB"
+  if ! turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" < "$sql_file"; then
+    echo "❌ Failed to load $sql_file into $DEV_DB. dev may be left partially loaded (wiped, then load failed mid-way). Restore from the pre-wipe snapshot (backup_dev_before_wipe output) before further use." >&2
+    exit 1
+  fi
+}
+
+verify_all_tables() {
+  local mismatches=0
+  local prod_tables
+  if ! prod_tables="$(turso db shell "$PROD_DB" --token "$TURSO_PROD_TOKEN" \
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")"; then
+    echo "❌ Failed to query $PROD_DB table list for verification. Aborting." >&2
+    exit 1
+  fi
+  prod_tables="$(echo "$prod_tables" | tail -n +2 | sed '/^$/d')"
+
+  while IFS= read -r t; do
+    [ -z "$t" ] && continue
+    local prod_count dev_count
+    if ! prod_count="$(turso db shell "$PROD_DB" --token "$TURSO_PROD_TOKEN" "SELECT COUNT(*) FROM \"$t\";" | tail -n +2 | tr -d '[:space:]')"; then
+      echo "❌ Failed to count rows in $PROD_DB.\"$t\" during verification. Aborting." >&2
+      exit 1
+    fi
+    if ! dev_count="$(turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" "SELECT COUNT(*) FROM \"$t\";" | tail -n +2 | tr -d '[:space:]')"; then
+      echo "❌ Failed to count rows in $DEV_DB.\"$t\" during verification. Aborting." >&2
+      exit 1
+    fi
+    if [ "$prod_count" != "$dev_count" ]; then
+      echo "  MISMATCH: $t — prod=$prod_count dev=$dev_count"
+      mismatches=$((mismatches + 1))
+    else
+      log "  ok: $t ($prod_count rows)"
+    fi
+  done <<< "$prod_tables"
+
+  if [ "$mismatches" -gt 0 ]; then
+    echo "❌ Verification failed: $mismatches table(s) mismatched between prod and dev after sync." >&2
+    exit 1
+  fi
+  log "Verification passed: all prod tables match dev row counts"
+}
