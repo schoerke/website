@@ -24,6 +24,7 @@ const makeReq = (params = '') => ({ url: `https://example.com/api/preview?${para
 describe('GET /api/preview', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    delete process.env.PREVIEW_SECRET
   })
 
   it('returns 403 when previewSecret is missing', async () => {
@@ -53,6 +54,23 @@ describe('GET /api/preview', () => {
     process.env.PREVIEW_SECRET = 'secret-123'
     const res = await GET(makeReq('path=%2F%5Cevil.com&previewSecret=secret-123'))
     expect(res.status).toBe(400)
+  })
+
+  it('returns 400 for a path that is not relative', async () => {
+    process.env.PREVIEW_SECRET = 'secret-123'
+    const res = await GET(makeReq('path=evil.com&previewSecret=secret-123'))
+    expect(res.status).toBe(400)
+  })
+
+  it('calls disable and returns 403 when auth throws', async () => {
+    process.env.PREVIEW_SECRET = 'secret-123'
+    const { getPayload } = await import('payload')
+    vi.mocked(getPayload).mockResolvedValue({ auth: vi.fn().mockRejectedValue(new Error('db down')) } as never)
+
+    const res = await GET(makeReq('path=%2Fde%2Fpreview%2Ffoo&previewSecret=secret-123'))
+
+    expect(res.status).toBe(403)
+    expect(disable).toHaveBeenCalled()
   })
 
   it('calls disable and returns 403 when session is unauthenticated', async () => {

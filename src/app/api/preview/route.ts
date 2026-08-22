@@ -51,7 +51,8 @@ export async function GET(req: Request): Promise<Response> {
       req: req as unknown as PayloadRequest,
       headers: req.headers,
     })
-  } catch {
+  } catch (err) {
+    console.warn('Preview auth failed, treating as anonymous:', err)
     user = null
   }
 
