@@ -1,6 +1,6 @@
 # Post Live Preview Design
 
-Status: Approved
+Status: Approved (revised after code review)
 Date: 2026-08-22
 
 ## Problem
@@ -42,11 +42,11 @@ Admin edit view (post)
        └─ /api/preview route (GET)
             ├─ verify previewSecret === PREVIEW_SECRET            → 403 on mismatch
             ├─ verify session via payload.auth()                  → 403 on no user
-            ├─ validate path is relative (starts with "/")        → 400 otherwise
-            ├─ draftMode().enable()
+            ├─ validate path relative & no // or \ bypass          → 400 otherwise
+            ├─ (await draftMode()).enable()
             └─ redirect(path)
-                 └─ /de/preview/foo (dynamic, async server component)
-                      ├─ draftMode().isEnabled required              → 404 if not
+                 └─ /de/preview/foo (dynamic, force-dynamic, async server component)
+                      ├─ (await draftMode()).isEnabled required      → 404 if not
                       ├─ getPostBySlug(slug, locale, { draft: true })
                       └─ renders <PostPreviewClient initialData={post}>
                            └─ useLivePreview({ initialData, serverURL, depth: 1 })
@@ -72,16 +72,22 @@ duplication.
 
 - Params: `path`, `previewSecret`, `collection`.
 - Returns `403` for: wrong `previewSecret`, unauthenticated session.
-- Returns `400` for: missing `path` or non-relative `path`.
-- On success: `draftMode().enable()`, `redirect(path)`.
+- Returns `400` for: missing `path`.
+- **Open-redirect guard:** reject relative-path bypasses — `path.startsWith('/')`
+  must hold AND `path.startsWith('//')` must NOT hold AND `path` must not contain
+  `\` (browsers normalize `/\` → `//` → protocol-relative). Alternatively check
+  `new URL(path, baseUrl).origin === baseUrl.origin`. Returns `400` otherwise.
+- On success: `await draftMode()`, `.enable()`, `redirect(path)`.
 - `collection` param reserved for future multi-collection use; not strictly
   validated for posts.
 
 **`src/app/(frontend)/[locale]/preview/[slug]/page.tsx`** (new, async server
 component, dynamic)
 
-- `export const dynamic = 'force-dynamic'` — prevents build-time prerendering of
-  draft HTML.
+- `export const dynamic = 'force-dynamic'` — explicitly opts the route out of
+  any static/PPR attempts. Redundant today (dynamic `[slug]` segment +
+  `draftMode()` call already imply dynamic) but protective against future changes
+  and matches repo precedent (`[locale]/news/page.tsx:10`).
 - **Draft gate:** `const { isEnabled } = await draftMode()`; if not enabled →
   `notFound()`. This is the only thing preventing a direct GET of
   `/de/preview/<slug>` from rendering draft content to unauthenticated visitors.
@@ -96,12 +102,16 @@ component, dynamic)
 **`src/components/Post/PostPreviewClient.tsx`** (new, `'use client'`)
 
 - Props: the full `Post` (`initialData`), `locale`, plus the translated labels
-  currently passed to `PostDetailContent`.
+  currently passed to `PostDetailContent` and a `backHref`.
 - `useLivePreview<Post>({ initialData, serverURL: NEXT_PUBLIC_SERVER_URL, depth: 1 })`.
 - Derives same props as the static pages: `title`, `content`, `createdAt`,
   `imageUrl = getValidImageUrl(data.image)`, `relatedArtists = getRelatedArtists(data.artists)`.
-- Renders `<PostDetailContent …/>`. Projects-specific flags (`showDate={false}`
-  etc.) are not needed — the preview route is category-agnostic and shows the date.
+- `backHref` is required by `PostDetailContent` (line 17). The preview route is
+  category-agnostic, so the server page derives it from `data.categories`:
+  `projects` → `/projects`, otherwise `/news`. `backLabel`/`backButtonLabel`
+  (`custom.pages.news` namespace) stay `/news`-oriented — acceptable, the
+  "back" target is a minor cosmetic. `showDate` stays default (true) for all
+  previews, including projects drafts; documented as intended.
 
 ### Collection config changes
 
@@ -175,7 +185,8 @@ are unchanged — the static pages keep their `_status: 'published'` filter.
 ### Error handling
 
 - `/api/preview`: `403` no/incorrect secret, `403` unauthenticated, `400` missing /
-  non-relative path.
+  non-relative path. On the unauthenticated `403` path, call `draft.disable()`
+  first (clears a possibly-stale `__prerender_bypass` cookie before rejecting).
 - Unknown slug in preview route → `notFound()` (404), rendered inside the iframe.
 - `/api/preview` failures appear in the iframe, not the admin UI.
 - `useLivePreview` failure modes: the hook silently keeps `initialData` if no
@@ -207,8 +218,10 @@ are unchanged — the static pages keep their `_status: 'published'` filter.
 1. **`/api/preview` route handler** (`src/app/api/preview/route.test.ts`):
    - wrong `previewSecret` → 403
    - missing `path` → 400
-   - relative-path guard: `//evil.com` → 400
+   - relative-path guard: `//evil.com` → 400; `/\evil.com` → 400
+   - unauthenticated → `draft.disable()` called + 403
    - authenticated + valid secret → redirect + draft cookie set
+   - mock `next/headers` (`draftMode` → `{ enable, disable }`) and `payload.auth`
 2. **`getPostBySlug`** (`src/services/post.test.ts` or existing pattern):
    - default → filters `_status: 'published'`
    - `{ draft: true }` → passes `draft: true`, no `_status` filter
@@ -241,7 +254,7 @@ None. No schema changes, no data migration, no database writes.
 ## Open questions / risks
 
 - None blocking. Final approvals pending: `PREVIEW_SECRET` creation and
-  `@payloadcms/live-preview` install.
+  `@payloadcms/live-preview-react` install.
 - Full shell preview: the `/preview/[locale]/[slug]` route lives under
   `[locale]/layout.tsx` (Header, SearchProvider, Footer), so the draft preview
   renders the complete public page chrome — visually identical to a live post.
