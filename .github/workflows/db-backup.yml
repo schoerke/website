@@ -1,0 +1,47 @@
+name: Nightly DB Backup + Dev Sync
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # 02:00 UTC nightly. GH Actions schedule can slip 10-40min under load — acceptable for this job.
+  workflow_dispatch:
+    inputs:
+      skip_dev_sync:
+        description: 'Backup only, skip dev sync'
+        type: boolean
+        default: false
+
+jobs:
+  backup:
+    name: Backup prod + sync dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Turso CLI
+        run: curl -sSfL https://get.tur.so/install.sh | bash
+
+      - name: Add Turso CLI to PATH
+        run: echo "$HOME/.turso" >> "$GITHUB_PATH"
+
+      - name: Install aws CLI
+        run: |
+          curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+          unzip -q awscliv2.zip
+          sudo ./aws/install --update
+
+      - name: Run backup + dev sync
+        env:
+          TURSO_PROD_TOKEN: ${{ secrets.TURSO_PROD_TOKEN }}
+          TURSO_DEV_TOKEN: ${{ secrets.TURSO_DEV_TOKEN }}
+          BACKUP_R2_BUCKET: ${{ secrets.BACKUP_R2_BUCKET }}
+          BACKUP_R2_ACCESS_KEY: ${{ secrets.BACKUP_R2_ACCESS_KEY }}
+          BACKUP_R2_SECRET: ${{ secrets.BACKUP_R2_SECRET }}
+          BACKUP_R2_ENDPOINT: ${{ secrets.BACKUP_R2_ENDPOINT }}
+        run: |
+          ARGS="--apply"
+          if [ "${{ github.event.inputs.skip_dev_sync }}" = "true" ]; then
+            ARGS="$ARGS --skip-dev-sync"
+          fi
+          bash scripts/db/backup-and-sync.sh $ARGS

@@ -284,3 +284,41 @@ verify_all_tables() {
   fi
   log "Verification passed: all prod tables match dev row counts"
 }
+
+main() {
+  local snapshot key
+  snapshot="$(export_prod)"
+  key="$(upload_backup "$snapshot")"
+
+  local cleanup_output
+  cleanup_output="$(cleanup_old_backups "$key")"
+  echo "$cleanup_output"
+  if [ "$DRY_RUN" = false ]; then
+    echo "$cleanup_output" | grep '^deleting ' | while IFS= read -r line; do
+      old_key="$(echo "$line" | awk '{print $2}')"
+      log "Deleting expired backup: $old_key"
+      AWS_ACCESS_KEY_ID="$BACKUP_R2_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$BACKUP_R2_SECRET" \
+        aws s3 rm "s3://$BACKUP_R2_BUCKET/$old_key" --endpoint-url "$BACKUP_R2_ENDPOINT"
+    done
+  fi
+
+  if [ "$SKIP_DEV_SYNC" = true ]; then
+    log "Skipping dev sync (--skip-dev-sync)"
+    return
+  fi
+
+  local prewipe_snapshot
+  prewipe_snapshot="$(backup_dev_before_wipe)"
+  log "Pre-wipe dev rollback point: $prewipe_snapshot"
+
+  wipe_dev_except_mcp
+
+  local prod_sql
+  prod_sql="$(dump_prod_sql)"
+  load_dev_from_sql "$prod_sql"
+  verify_all_tables
+
+  log "Backup + dev sync complete."
+}
+
+main "$@"
