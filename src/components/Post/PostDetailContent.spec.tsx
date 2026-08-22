@@ -75,4 +75,17 @@ describe('PostDetailContent', () => {
 
     expect(screen.getByRole('heading', { name: 'My Project Title' })).toBeInTheDocument()
   })
+
+  it('should link related artist to the biography tab on the artist page', () => {
+    render(
+      <PostDetailContent
+        {...baseProps}
+        relatedArtists={[{ id: 1, name: 'Jane Artist', slug: 'jane-artist' } as Artist]}
+      />
+    )
+
+    const link = screen.getByRole('link', { name: 'Jane Artist' })
+
+    expect(link).toHaveAttribute('href', '/artists/jane-artist#biography')
+  })
 })

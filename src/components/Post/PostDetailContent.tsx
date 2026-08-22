@@ -88,7 +88,7 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
             <ul className="flex flex-wrap justify-end gap-3">
               {relatedArtists.map((artist) => (
                 <li key={artist.id}>
-                  <SchoerkeLink href={`/artists/${artist.slug}`} variant="with-icon" className="text-sm">
+                  <SchoerkeLink href={`/artists/${artist.slug}#biography`} variant="with-icon" className="text-sm">
                     {artist.name}
                   </SchoerkeLink>
                 </li>
