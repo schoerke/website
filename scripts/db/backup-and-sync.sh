@@ -14,6 +14,8 @@
 # Required env vars: TURSO_PROD_TOKEN, TURSO_DEV_TOKEN, BACKUP_R2_BUCKET,
 #   BACKUP_R2_ACCESS_KEY, BACKUP_R2_SECRET, BACKUP_R2_ENDPOINT
 # Optional env vars: RETENTION_DAYS (default 30)
+# Dependencies: turso CLI, aws CLI, sqlite3, gzip, python3 (all preinstalled on
+#   GitHub Actions ubuntu-latest except turso/aws, which the workflow installs explicitly)
 #
 # See docs/adr/2025-11-23-database-backup-strategy.md §1 for the full design.
 
@@ -115,6 +117,9 @@ cleanup_old_backups() {
     aws s3api list-objects-v2 --bucket "$BACKUP_R2_BUCKET" --prefix "backups/" --endpoint-url "$BACKUP_R2_ENDPOINT" \
     --query 'Contents[].{Key:Key,Modified:LastModified}' --output json > "$WORKDIR/objects.json"
 
+  # NOTE: intentionally list-only. This function only reports what WOULD be deleted;
+  # actual deletion is wired into main() (Task 5) after dry-run/apply gating and backup-
+  # success ordering are centralized there. Do not add `aws s3 rm` here.
   python3 - "$WORKDIR/objects.json" "$cutoff_epoch" "$just_uploaded_key" "$DRY_RUN" <<'PYEOF'
 import json, sys, datetime
 
