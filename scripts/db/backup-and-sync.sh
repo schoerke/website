@@ -154,10 +154,11 @@ list_dev_tables_to_wipe() {
   echo "$out" | tail -n +2 | sed '/^$/d'
 }
 
-# NOTE for Task 5 (main/orchestration): if you call backup_dev_before_wipe before this
-# function, explicitly `log` its returned snapshot path (e.g. `snapshot=$(backup_dev_before_wipe); log "Pre-wipe snapshot: $snapshot"`).
-# The error messages below reference "the pre-wipe snapshot" but that path is only
-# ever returned via echo — it won't appear in any log unless the caller logs it explicitly.
+# NOTE: main() logs backup_dev_before_wipe's returned snapshot path via `log`, but that
+# snapshot is NOT durable — it lives in $WORKDIR, deleted by the EXIT trap the instant
+# the script exits (and a GH Actions runner's disk is destroyed on job end regardless).
+# The error messages below correctly point at Turso's point-in-time recovery as the
+# actual durable recovery path, not at this ephemeral snapshot file.
 wipe_dev_except_mcp() {
   local tables
   tables="$(list_dev_tables_to_wipe)"
@@ -187,7 +188,7 @@ wipe_dev_except_mcp() {
 
   log "Wiping $(echo "$tables" | wc -l | tr -d ' ') tables from $DEV_DB in one session (single connection, so PRAGMA foreign_keys persists for the whole batch)"
   if ! turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" < "$wipe_sql"; then
-    echo "❌ Wipe SQL execution failed against $DEV_DB (possibly network/auth error, possibly partway through the batch). dev may be left half-wiped. Restore from the pre-wipe snapshot (backup_dev_before_wipe output) before further use." >&2
+    echo "❌ Wipe SQL execution failed against $DEV_DB (possibly network/auth error, possibly partway through the batch). dev may be left half-wiped. The pre-wipe snapshot this run created is NOT durable (deleted with the job's workspace on exit) — recover instead via Turso's point-in-time recovery: 'turso db create ksschoerke-development-restored --from-db ksschoerke-development --timestamp <ISO-8601 time before this run>' (free tier covers the last 24h; see docs/adr/2025-11-23-database-backup-strategy.md §2), then repoint or rename as needed." >&2
     exit 1
   fi
 
@@ -198,7 +199,7 @@ wipe_dev_except_mcp() {
     "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';" \
     | tail -n +2 | tr -d '[:space:]')"
   if [ "$remaining" != "0" ]; then
-    echo "❌ Wipe verification failed: $remaining non-excluded tables still remain in $DEV_DB after the wipe loop. Aborting BEFORE loading the prod dump — dev is left in its wiped-but-not-loaded state. Restore from the pre-wipe snapshot (see backup_dev_before_wipe output) if dev needs to be usable again before this is fixed." >&2
+    echo "❌ Wipe verification failed: $remaining non-excluded tables still remain in $DEV_DB after the wipe loop. Aborting BEFORE loading the prod dump — dev is left in its wiped-but-not-loaded state. The pre-wipe snapshot this run created is NOT durable (deleted with the job's workspace on exit) — recover via Turso's point-in-time recovery (free tier covers the last 24h; see docs/adr/2025-11-23-database-backup-strategy.md §2) if dev needs to be usable again before this is fixed." >&2
     exit 1
   fi
   log "Wipe verified: 0 non-excluded tables remain"
@@ -231,7 +232,7 @@ load_dev_from_sql() {
   fi
   log "Loading $sql_file into $DEV_DB"
   if ! turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" < "$sql_file"; then
-    echo "❌ Failed to load $sql_file into $DEV_DB. dev may be left partially loaded (wiped, then load failed mid-way). Restore from the pre-wipe snapshot (backup_dev_before_wipe output) before further use." >&2
+    echo "❌ Failed to load $sql_file into $DEV_DB. dev may be left partially loaded (wiped, then load failed mid-way). The pre-wipe snapshot this run created is NOT durable (deleted with the job's workspace on exit) — recover via Turso's point-in-time recovery (free tier covers the last 24h; see docs/adr/2025-11-23-database-backup-strategy.md §2) before further use." >&2
     exit 1
   fi
 }
@@ -294,12 +295,12 @@ main() {
   cleanup_output="$(cleanup_old_backups "$key")"
   echo "$cleanup_output"
   if [ "$DRY_RUN" = false ]; then
-    echo "$cleanup_output" | grep '^deleting ' | while IFS= read -r line; do
+    while IFS= read -r line; do
       old_key="$(echo "$line" | awk '{print $2}')"
       log "Deleting expired backup: $old_key"
       AWS_ACCESS_KEY_ID="$BACKUP_R2_ACCESS_KEY" AWS_SECRET_ACCESS_KEY="$BACKUP_R2_SECRET" \
         aws s3 rm "s3://$BACKUP_R2_BUCKET/$old_key" --endpoint-url "$BACKUP_R2_ENDPOINT"
-    done
+    done < <(echo "$cleanup_output" | grep '^deleting ' || true)
   fi
 
   if [ "$SKIP_DEV_SYNC" = true ]; then
