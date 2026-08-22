@@ -32,6 +32,13 @@ export const VideoEmbed: Block = {
       de: 'Video-Einbettungen',
     },
   },
+  admin: {
+    // Payload's default block-name input in the lexical editor header has
+    // an upstream focus-stealing bug: typing into it can drop the cursor
+    // into the surrounding post content. blockName isn't used anywhere in
+    // this app, so it's disabled here rather than exposing a broken input.
+    disableBlockName: true,
+  },
   fields: [
     {
       name: 'url',
