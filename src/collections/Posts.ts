@@ -204,6 +204,7 @@ export const Posts: CollectionConfig = {
   versions: {
     drafts: {
       autosave: false,
+      validate: true,
     },
     maxPerDoc: 5,
   },
