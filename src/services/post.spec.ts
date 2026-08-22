@@ -649,6 +649,39 @@ describe('Post Service', () => {
       expect(result?.image).toHaveProperty('url')
       expect(result?.image).toHaveProperty('alt')
     })
+
+    it('should pass draft: true and no _status filter when draft option is set', async () => {
+      const mockPost = createMockPost({ slug: 'draft-post' })
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        ...createMockPaginatedDocs([mockPost]),
+        limit: 1,
+      })
+
+      await getPostBySlug('draft-post', 'de', { draft: true })
+
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'posts',
+        where: {
+          slug: { equals: 'draft-post' },
+        },
+        limit: 1,
+        locale: 'de',
+        depth: 1,
+        draft: true,
+      })
+    })
+
+    it('should return a draft post when draft option is set', async () => {
+      const draftPost = createMockPost({ slug: 'draft-post', _status: 'draft' })
+      vi.mocked(mockPayload.find).mockResolvedValue({
+        ...createMockPaginatedDocs([draftPost]),
+        limit: 1,
+      })
+
+      const result = await getPostBySlug('draft-post', 'de', { draft: true })
+
+      expect(result).toEqual(draftPost)
+    })
   })
 
   describe('getNewsPostCountByArtist', () => {

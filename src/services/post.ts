@@ -390,6 +390,8 @@ export const getPaginatedPosts = async (options: {
  *
  * @param slug - The post's URL slug
  * @param locale - Locale code ('de' or 'en'). Defaults to 'de'
+ * @param options - Optional settings
+ * @param options.draft - When true, fetch the latest version including drafts (for Live Preview). Defaults to false
  * @returns A promise resolving to the post, or null if not found
  *
  * @example
@@ -398,7 +400,7 @@ export const getPaginatedPosts = async (options: {
  *   console.log(post.title)
  * }
  */
-export const getPostBySlug = async (slug: string, locale: LocaleCode = 'de') => {
+export const getPostBySlug = async (slug: string, locale: LocaleCode = 'de', options: { draft?: boolean } = {}) => {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'posts',
@@ -408,6 +410,7 @@ export const getPostBySlug = async (slug: string, locale: LocaleCode = 'de') => 
     limit: 1,
     locale,
     depth: 1, // Populate relationships (image, artists, createdBy)
+    ...(options.draft ? { draft: true } : {}),
   })
 
   return result.docs.length > 0 ? result.docs[0] : null
