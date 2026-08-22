@@ -47,10 +47,11 @@ export async function GET(req: Request): Promise<Response> {
 
   let user
   try {
-    user = await payload.auth({
+    const result = await payload.auth({
       req: req as unknown as PayloadRequest,
       headers: req.headers,
     })
+    user = result?.user ?? null
   } catch (err) {
     console.warn('Preview auth failed, treating as anonymous:', err)
     user = null

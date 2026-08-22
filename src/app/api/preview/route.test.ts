@@ -76,7 +76,22 @@ describe('GET /api/preview', () => {
   it('calls disable and returns 403 when session is unauthenticated', async () => {
     process.env.PREVIEW_SECRET = 'secret-123'
     const { getPayload } = await import('payload')
-    vi.mocked(getPayload).mockResolvedValue({ auth: vi.fn().mockResolvedValue(null) } as never)
+    vi.mocked(getPayload).mockResolvedValue({
+      auth: vi.fn().mockResolvedValue({ user: null, permissions: {} }),
+    } as never)
+
+    const res = await GET(makeReq('path=%2Fde%2Fpreview%2Ffoo&previewSecret=secret-123'))
+
+    expect(res.status).toBe(403)
+    expect(disable).toHaveBeenCalled()
+  })
+
+  it('rejects anonymous AuthResult (fix regression)', async () => {
+    process.env.PREVIEW_SECRET = 'secret-123'
+    const { getPayload } = await import('payload')
+    vi.mocked(getPayload).mockResolvedValue({
+      auth: vi.fn().mockResolvedValue({ user: null, permissions: {} }),
+    } as never)
 
     const res = await GET(makeReq('path=%2Fde%2Fpreview%2Ffoo&previewSecret=secret-123'))
 
@@ -87,7 +102,9 @@ describe('GET /api/preview', () => {
   it('enables draft mode and redirects when authenticated', async () => {
     process.env.PREVIEW_SECRET = 'secret-123'
     const { getPayload } = await import('payload')
-    vi.mocked(getPayload).mockResolvedValue({ auth: vi.fn().mockResolvedValue({ id: 1 }) } as never)
+    vi.mocked(getPayload).mockResolvedValue({
+      auth: vi.fn().mockResolvedValue({ user: { id: 1 }, permissions: {} }),
+    } as never)
 
     const { redirect } = await import('next/navigation')
 
