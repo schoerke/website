@@ -145,11 +145,19 @@ backup_dev_before_wipe() {
 }
 
 list_dev_tables_to_wipe() {
-  turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" \
-    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';" \
-    | tail -n +2 | sed '/^$/d' || true
+  local out
+  if ! out="$(turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" \
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'payload_mcp%';")"; then
+    echo "❌ Failed to query $DEV_DB table list (turso db shell exited non-zero). Aborting." >&2
+    exit 1
+  fi
+  echo "$out" | tail -n +2 | sed '/^$/d'
 }
 
+# NOTE for Task 5 (main/orchestration): if you call backup_dev_before_wipe before this
+# function, explicitly `log` its returned snapshot path (e.g. `snapshot=$(backup_dev_before_wipe); log "Pre-wipe snapshot: $snapshot"`).
+# The error messages below reference "the pre-wipe snapshot" but that path is only
+# ever returned via echo — it won't appear in any log unless the caller logs it explicitly.
 wipe_dev_except_mcp() {
   local tables
   tables="$(list_dev_tables_to_wipe)"
@@ -162,6 +170,10 @@ wipe_dev_except_mcp() {
   {
     echo "PRAGMA foreign_keys=OFF;"
     while IFS= read -r t; do
+      if [[ ! "$t" =~ ^[a-zA-Z0-9_]+$ ]]; then
+        echo "❌ Unexpected table name '$t' (not alphanumeric/underscore). Refusing to build wipe SQL." >&2
+        exit 1
+      fi
       echo "DROP TABLE IF EXISTS \"$t\";"
     done <<< "$tables"
     echo "PRAGMA foreign_keys=ON;"
@@ -174,7 +186,10 @@ wipe_dev_except_mcp() {
   fi
 
   log "Wiping $(echo "$tables" | wc -l | tr -d ' ') tables from $DEV_DB in one session (single connection, so PRAGMA foreign_keys persists for the whole batch)"
-  turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" < "$wipe_sql"
+  if ! turso db shell "$DEV_DB" --token "$TURSO_DEV_TOKEN" < "$wipe_sql"; then
+    echo "❌ Wipe SQL execution failed against $DEV_DB (possibly network/auth error, possibly partway through the batch). dev may be left half-wiped. Restore from the pre-wipe snapshot (backup_dev_before_wipe output) before further use." >&2
+    exit 1
+  fi
 
   # Post-wipe assertion (ADR Finding 1): FK-ordering can silently skip a DROP.
   # Refuse to proceed to the load step unless the wipe is verifiably complete.
