@@ -107,15 +107,17 @@ export function createSlugHook(sourceField: string): FieldHook {
     const sourceValue = extractSourceValue(data as Record<string, unknown> | undefined, sourceField, req?.locale)
 
     if (sourceValue) {
-      // Regenerate whenever the source field is present and either this is a
-      // create, or (on update) the source actually changed. Preserves slugs
-      // for content-only edits so URLs stay stable.
       const sourceBefore = extractSourceValue(
         originalDoc as Record<string, unknown> | undefined,
         sourceField,
         req?.locale
       )
-      if (operation === 'create' || !originalDoc || sourceBefore !== sourceValue) {
+      const isUnpublishedDraft = originalDoc?._status === 'draft'
+
+      // Regenerate when: create, update with empty slug (nothing to protect),
+      // or update of an unpublished draft whose source changed. Published docs
+      // with an existing slug stay stable so URLs don't break.
+      if (operation === 'create' || !value || (isUnpublishedDraft && sourceBefore !== sourceValue)) {
         return generateSlug(sourceValue)
       }
     }
