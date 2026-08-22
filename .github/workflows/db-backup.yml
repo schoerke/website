@@ -5,6 +5,10 @@ on:
     - cron: '0 2 * * *' # 02:00 UTC nightly. GH Actions schedule can slip 10-40min under load — acceptable for this job.
   workflow_dispatch:
     inputs:
+      dry_run:
+        description: 'Dry run (no writes to prod/dev/R2) — defaults to true for manual runs'
+        type: boolean
+        default: true
       skip_dev_sync:
         description: 'Backup only, skip dev sync'
         type: boolean
@@ -40,7 +44,16 @@ jobs:
           BACKUP_R2_SECRET: ${{ secrets.BACKUP_R2_SECRET }}
           BACKUP_R2_ENDPOINT: ${{ secrets.BACKUP_R2_ENDPOINT }}
         run: |
-          ARGS="--apply"
+          # The nightly `schedule` trigger always applies for real, regardless of any
+          # dry_run input — that input only exists for workflow_dispatch and has no
+          # meaning on a schedule-triggered run (github.event.inputs is empty there).
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            ARGS="--apply"
+          elif [ "${{ github.event.inputs.dry_run }}" = "false" ]; then
+            ARGS="--apply"
+          else
+            ARGS="--dry-run"
+          fi
           if [ "${{ github.event.inputs.skip_dev_sync }}" = "true" ]; then
             ARGS="$ARGS --skip-dev-sync"
           fi
