@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { generatePostPreviewPath } from './url'
 
-const baseReq = { locale: 'en' } as never
+const baseReq = { locale: 'en' }
 
 describe('generatePostPreviewPath', () => {
   const OLD_ENV = process.env
@@ -28,13 +28,27 @@ describe('generatePostPreviewPath', () => {
   })
 
   it('uses de when req.locale is missing', () => {
-    const url = generatePostPreviewPath({ data: { slug: 'foo' }, req: {} as never, collection: 'posts' })
+    const url = generatePostPreviewPath({ data: { slug: 'foo' }, req: {}, collection: 'posts' })
 
     expect(url).toContain('path=%2Fde%2Fpreview%2Ffoo')
   })
 
   it('returns undefined when data has no slug', () => {
-    const url = generatePostPreviewPath({ data: {} as never, req: baseReq, collection: 'posts' })
+    const url = generatePostPreviewPath({ data: {}, req: baseReq, collection: 'posts' })
+
+    expect(url).toBeUndefined()
+  })
+
+  it('returns undefined when PREVIEW_SECRET is missing', () => {
+    delete process.env.PREVIEW_SECRET
+    const url = generatePostPreviewPath({ data: { slug: 'foo' }, req: baseReq, collection: 'posts' })
+
+    expect(url).toBeUndefined()
+  })
+
+  it('returns undefined when NEXT_PUBLIC_SERVER_URL is missing', () => {
+    delete process.env.NEXT_PUBLIC_SERVER_URL
+    const url = generatePostPreviewPath({ data: { slug: 'foo' }, req: baseReq, collection: 'posts' })
 
     expect(url).toBeUndefined()
   })
