@@ -9,6 +9,12 @@ interface AudioEmbedProps {
 }
 
 const AudioEmbed: React.FC<AudioEmbedProps> = ({ url, embedCode }) => {
+  // Block was just inserted and neither field has been filled in yet - this
+  // is expected (e.g. while editing in the live preview) and isn't an error.
+  if (!url && !embedCode) {
+    return null
+  }
+
   if (embedCode) {
     const parsed = parseIframeEmbed(embedCode)
 

@@ -9,6 +9,12 @@ interface VideoEmbedProps {
 }
 
 const VideoEmbed: React.FC<VideoEmbedProps> = ({ url, aspectRatio = '16:9', locale }) => {
+  // Block was just inserted and the URL hasn't been filled in yet - this is
+  // expected (e.g. while editing in the live preview) and isn't an error.
+  if (!url) {
+    return null
+  }
+
   const embedData = getVideoEmbedData(url, locale)
 
   if (!embedData) {

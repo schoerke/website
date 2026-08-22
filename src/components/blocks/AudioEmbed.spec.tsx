@@ -86,8 +86,8 @@ describe('AudioEmbed', () => {
     expect(screen.getByText('Audio embed error')).toBeInTheDocument()
   })
 
-  it('shows an error box when neither url nor embedCode is provided', () => {
-    render(<AudioEmbed />)
-    expect(screen.getByText('Audio embed error')).toBeInTheDocument()
+  it('renders nothing when neither url nor embedCode is provided', () => {
+    const { container } = render(<AudioEmbed />)
+    expect(container).toBeEmptyDOMElement()
   })
 })
