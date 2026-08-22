@@ -15,6 +15,7 @@ import { categoryOptions } from '@/data/options'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { extractLexicalText } from '@/utils/search/extractLexicalText'
 import { createSlugHook } from '@/utils/slug'
+import { generatePostPreviewPath } from '@/utils/preview/url'
 import { resolveDefaultCreatedBy } from '@/utils/posts/resolveDefaultCreatedBy'
 
 export const Posts: CollectionConfig = {
@@ -29,6 +30,10 @@ export const Posts: CollectionConfig = {
   admin: {
     group: 'Content Management',
     useAsTitle: 'title',
+    livePreview: {
+      url: ({ data, req }) => generatePostPreviewPath({ data, req, collection: 'posts' }) ?? null,
+    },
+    preview: (data, { req }) => generatePostPreviewPath({ data, req, collection: 'posts' }) ?? null,
   },
   fields: [
     {
