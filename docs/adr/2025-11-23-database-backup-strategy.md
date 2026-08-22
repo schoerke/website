@@ -328,9 +328,25 @@ pnpm dev
   test (real `--apply` run, not dry-run) against real `ksschoerke-production`/`ksschoerke-development`:
   export → sanity checks → R2 upload → `head-object` verify → dev pre-wipe snapshot → wipe (48 tables,
   `payload_mcp_api_keys` correctly preserved) → post-wipe assertion → prod SQL dump → load into dev → all
-  46 comparable tables verified matching row counts prod vs. dev. Pending: enable the `schedule` trigger by
-  merging to `main` (GitHub only allows `workflow_dispatch`/`schedule` on workflows present on the default
-  branch).
+  46 comparable tables verified matching row counts prod vs. dev. Merged to `main`; nightly `schedule`
+  trigger active. Also validated with a real `workflow_dispatch` run through actual GitHub Actions
+  infrastructure (not just locally) — both a dry-run and a full `--apply` with dev sync completed cleanly.
+- **Incident (2026-08-22, caught before any real nightly run):** the 30-day retention deletion path had
+  never actually executed in any prior test (all tests used the default 30-day window, and nothing was
+  old enough to prune). A deliberate `RETENTION_DAYS=0` test — run specifically to force the deletion
+  branch to execute for the first time — deleted **every object in the R2 bucket, including the backup
+  uploaded in that same run**. Root cause: `aws s3 cp` prints its own `"upload: <local> to <remote>"`
+  confirmation to stdout; since `upload_backup()`'s return value is captured via `$(...)`, that message
+  corrupted the captured key into a two-line string that never matched cleanly against
+  `cleanup_old_backups`' `if key == keep_key` protection — silently defeating the "never delete the backup
+  just uploaded" safety guarantee this ADR mandated. Fixed by adding `--quiet` to the `aws s3 cp` call;
+  re-verified with the same `RETENTION_DAYS=0` test that the just-uploaded backup now survives. This was
+  the third instance of the same bug class in this codebase (informational stdout chatter from a CLI tool
+  contaminating a `$(...)`-captured function return value) — the other two were `log()` writing to stdout
+  instead of stderr, and `turso db export`'s own success message. **Lesson: any function whose return
+  value is captured via command substitution must have every command inside it audited for stdout
+  chatter, not just its own explicit `echo` statements.** All known instances in this script are now fixed
+  and the fix was verified against real R2 infrastructure, not just re-reviewed.
 - If repo size becomes an issue, migrate dumps to Git LFS or external storage
 - Consider adding more collections to dump script as data model grows
 - Evaluate Turso's backup features as they evolve (versioning, longer retention, etc.)
