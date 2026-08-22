@@ -1,29 +1,20 @@
 // @vitest-environment happy-dom
 import type { Post } from '@/payload-types'
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import PostPreviewClient from './PostPreviewClient'
 
-let lastProps: Record<string, unknown> | null = null
+let liveData: Partial<Post>
 
 vi.mock('@payloadcms/live-preview-react', () => ({
-  useLivePreview: () => ({
-    data: {
-      title: 'Draft Title',
-      content: {},
-      slug: 'draft',
-      image: { url: '/draft-image.jpg' },
-      artists: [
-        { id: 1, slug: 'artist-one', name: 'Artist One' },
-        { id: 2, slug: 'artist-two', name: 'Artist Two' },
-      ],
-    },
-  }),
+  useLivePreview: () => ({ data: liveData }),
 }))
+
+const mockPostDetailContent = vi.fn()
 
 vi.mock('@/components/Post/PostDetailContent', () => ({
   default: (props: Record<string, unknown>) => {
-    lastProps = props
+    mockPostDetailContent(props)
     return (
       <div data-testid="post-detail">
         {String(props.title)}
@@ -33,6 +24,18 @@ vi.mock('@/components/Post/PostDetailContent', () => ({
     )
   },
 }))
+
+const baseLiveData: Partial<Post> = {
+  title: 'Draft Title',
+  content: {} as Post['content'],
+  slug: 'draft',
+  createdAt: '2026-01-01T00:00:00.000Z',
+  image: { url: '/draft-image.jpg' } as Post['image'],
+  artists: [
+    { id: 1, slug: 'artist-one', name: 'Artist One' },
+    { id: 2, slug: 'artist-two', name: 'Artist Two' },
+  ] as Post['artists'],
+}
 
 const basePost = {
   id: 1,
@@ -58,6 +61,11 @@ const baseProps = {
 }
 
 describe('PostPreviewClient', () => {
+  beforeEach(() => {
+    liveData = { ...baseLiveData }
+    mockPostDetailContent.mockClear()
+  })
+
   it('renders PostDetailContent', () => {
     render(<PostPreviewClient {...baseProps} />)
     expect(screen.getByTestId('post-detail')).toBeInTheDocument()
@@ -74,12 +82,28 @@ describe('PostPreviewClient', () => {
     expect(screen.getByTestId('post-detail')).toHaveTextContent('has-artists')
   })
 
-  it('passes translated imageUrl and relatedArtists props to PostDetailContent', () => {
+  it('passes every translated prop to PostDetailContent', () => {
     render(<PostPreviewClient {...baseProps} />)
-    expect(lastProps).not.toBeNull()
-    const translated = lastProps as { imageUrl: string | null; relatedArtists: unknown[] }
-    expect(translated.imageUrl).toBe('/draft-image.jpg')
-    expect(Array.isArray(translated.relatedArtists)).toBe(true)
-    expect(translated.relatedArtists.length).toBe(2)
+    expect(mockPostDetailContent).toHaveBeenCalledTimes(1)
+    const props = mockPostDetailContent.mock.calls[0][0] as Record<string, unknown>
+
+    expect(props.title).toBe('Draft Title')
+    expect(props.locale).toBe('en')
+    expect(props.backHref).toBe('/news')
+    expect(props.backLabel).toBe('All News')
+    expect(props.backButtonLabel).toBe('Go back')
+    expect(props.relatedArtistLabel).toBe('Related Artist')
+    expect(props.relatedArtistsLabel).toBe('Related Artists')
+    expect(props.createdAt).toBe('2026-01-01T00:00:00.000Z')
+    expect(props.content).toEqual({})
+    expect(props.imageUrl).toBe('/draft-image.jpg')
+    expect(props.relatedArtists).toHaveLength(2)
+  })
+
+  it('drops unpopulated ID-only relations', () => {
+    liveData = { ...baseLiveData, artists: [1, 2], image: 5 }
+    render(<PostPreviewClient {...baseProps} />)
+    expect(screen.getByTestId('post-detail')).not.toHaveTextContent('has-artists')
+    expect(screen.getByTestId('post-detail')).not.toHaveTextContent('has-image')
   })
 })
