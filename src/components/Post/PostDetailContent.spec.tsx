@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import type { Post } from '@/payload-types'
+import type { Artist, Post } from '@/payload-types'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import PostDetailContent from './PostDetailContent'
