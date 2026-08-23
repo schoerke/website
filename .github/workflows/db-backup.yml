@@ -1,4 +1,4 @@
-name: Nightly DB Backup + Dev Sync
+name: Nightly DB Backup
 
 on:
   schedule:
@@ -6,17 +6,17 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Dry run (no writes to prod/dev/R2) — defaults to true for manual runs'
+        description: 'Dry run (no writes to prod/R2) — defaults to true for manual runs'
         type: boolean
         default: true
-      skip_dev_sync:
-        description: 'Backup only, skip dev sync'
+      sync_dev:
+        description: 'Also refresh ksschoerke-development from the prod backup (destructive to dev, opt-in)'
         type: boolean
         default: false
 
 jobs:
   backup:
-    name: Backup prod + sync dev
+    name: Backup prod (dev sync opt-in)
     runs-on: ubuntu-latest
     timeout-minutes: 25 # verify_all_tables makes ~2 turso CLI round-trips per table (~40 tables);
     # bumped from 15 to give margin for CLI-startup/auth latency variance.
@@ -36,7 +36,7 @@ jobs:
           unzip -q awscliv2.zip
           sudo ./aws/install --update
 
-      - name: Run backup + dev sync
+      - name: Run backup (+ optional dev sync)
         env:
           TURSO_PLATFORM_TOKEN: ${{ secrets.TURSO_PLATFORM_TOKEN }}
           BACKUP_R2_BUCKET: ${{ secrets.BACKUP_R2_BUCKET }}
@@ -44,17 +44,21 @@ jobs:
           BACKUP_R2_SECRET: ${{ secrets.BACKUP_R2_SECRET }}
           BACKUP_R2_ENDPOINT: ${{ secrets.BACKUP_R2_ENDPOINT }}
         run: |
-          # The nightly `schedule` trigger always applies for real, regardless of any
-          # dry_run input — that input only exists for workflow_dispatch and has no
+          # Backup-only is the default for every trigger. Dev sync is opt-in and
+          # destructive (wipes dev, reloads from prod) - only a manual dispatch with
+          # sync_dev=true triggers it. The nightly schedule NEVER syncs dev.
+          #
+          # The `schedule` trigger always applies for real, regardless of any
+          # dry_run input - that input only exists for workflow_dispatch and has no
           # meaning on a schedule-triggered run (github.event.inputs is empty there).
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            ARGS="--apply"
+            ARGS="--apply --skip-dev-sync"
           elif [ "${{ github.event.inputs.dry_run }}" = "false" ]; then
-            ARGS="--apply"
+            ARGS="--apply --skip-dev-sync"
           else
-            ARGS="--dry-run"
+            ARGS="--dry-run --skip-dev-sync"
           fi
-          if [ "${{ github.event.inputs.skip_dev_sync }}" = "true" ]; then
-            ARGS="$ARGS --skip-dev-sync"
+          if [ "${{ github.event.inputs.sync_dev }}" = "true" ]; then
+            ARGS="--apply"
           fi
           bash scripts/db/backup-and-sync.sh $ARGS

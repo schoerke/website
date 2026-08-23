@@ -1,15 +1,17 @@
 #!/bin/bash
 # scripts/db/backup-and-sync.sh
 #
-# Nightly production backup + development sync.
+# Production backup (nightly) + development sync (on demand).
 # Exports ksschoerke-production to a binary SQLite snapshot, uploads it (gzipped) to
 # Cloudflare R2, prunes backups older than RETENTION_DAYS (always keeping the most
-# recent success), then refreshes ksschoerke-development from the same snapshot.
+# recent success). Dev sync (wipe ksschoerke-development, reload from prod) is an
+# explicit opt-in for on-demand manual use only — the nightly GitHub Actions job
+# always runs backup-only.
 #
 # Usage:
-#   scripts/db/backup-and-sync.sh --dry-run          # report what would happen, no writes
-#   scripts/db/backup-and-sync.sh --apply             # do it for real (backup + dev sync)
-#   scripts/db/backup-and-sync.sh --apply --skip-dev-sync   # backup only
+#   scripts/db/backup-and-sync.sh --dry-run                # report what would happen, no writes
+#   scripts/db/backup-and-sync.sh --apply --skip-dev-sync  # backup only (nightly default)
+#   scripts/db/backup-and-sync.sh --apply                  # backup + full dev sync (on demand)
 #
 # Required env vars: TURSO_PLATFORM_TOKEN, BACKUP_R2_BUCKET,
 #   BACKUP_R2_ACCESS_KEY, BACKUP_R2_SECRET, BACKUP_R2_ENDPOINT

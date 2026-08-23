@@ -17,7 +17,7 @@ We need a reliable backup strategy for our Turso database that balances:
 
 - **Databases:**
   - `ksschoerke-production` (`libsql://ksschoerke-production-zeitchef.aws-eu-west-1.turso.io`) — live client database
-  - `ksschoerke-development` (`libsql://ksschoerke-development-zeitchef.aws-eu-west-1.turso.io`) — development database, kept in sync with production via nightly backup
+  - `ksschoerke-development` (`libsql://ksschoerke-development-zeitchef.aws-eu-west-1.turso.io`) — development database, refreshed from production on demand
 - **Collections:** Artists, Employees, Images, Documents, Posts, Recordings, Search
 
 ### Backup Methods Considered
@@ -43,9 +43,9 @@ We need a reliable backup strategy for our Turso database that balances:
 
 We will use a **hybrid backup strategy** combining multiple approaches for different purposes:
 
-### 1. Nightly Production Backup + Development Sync
+### 1. Nightly Production Backup + On-Demand Development Sync
 
-**Purpose:** Back up production data to Cloudflare R2 and keep development database in sync
+**Purpose:** Back up production data to Cloudflare R2; refresh development database on demand only
 
 Design (2026-08-22, Approach A; supersedes the earlier draft; hardened 2026-08-22 after code-review pass —
 see "Review findings incorporated" below): implemented as a single GitHub Actions workflow
@@ -66,11 +66,25 @@ see "Review findings incorporated" below): implemented as a single GitHub Action
 - Retention cleanup runs **only if the backup step succeeded** (`if: success()`), and always retains at
   least the single most recent successful backup regardless of age — deletes R2 objects under `backups/`
   older than 30 days otherwise.
+- **Backup-only is the nightly default; dev sync is on-demand opt-in** (decision 2026-08-22, supersedes
+  the original "nightly dev sync" plan): the nightly `schedule` trigger runs the backup with
+  `--skip-dev-sync` unconditionally; dev sync requires a manual `workflow_dispatch` with the `sync_dev`
+  input set, or a direct local run of `bash scripts/db/backup-and-sync.sh --apply`. Rationale: (a) avoids
+  the cross-account credential complexity of the planned prod→client-org / dev→personal-org split — an
+  unattended nightly sync across two Turso orgs would need a dual-session script with two tokens;
+  (b) reduces rows-read quota pressure (the sync clones + verifies every table, a meaningful read cost
+  per run, and it was running nightly against a dev sandbox nobody was actively using); (c) the destructive
+  dev wipe (48 tables) becomes a deliberate, watched action instead of an unattended 2AM operation —
+  the entire "wiped-but-not-loaded at 3am" failure mode the swap-vs-inplace decision was hardening against
+  is far less risky when a human is present. Dev staleness is acceptable: sync on demand right before a
+  dev session starts. The dev-sync functions (pre-wipe snapshot, dynamic `payload_mcp%`-safe wipe,
+  post-wipe assertion, all-table verification) remain in the script, fully tested — they just stop being
+  the nightly default.
 - **Dev sync uses in-place wipe with hardened safeguards, not build-fresh-then-swap** (implementation
   decision, 2026-08-22): a true swap would require repointing `ksschoerke-development`'s connection details
   for every local developer's `.env` — there's no Vercel-hosted consumer of dev to repoint programmatically,
   and Turso's free tier doesn't cleanly support a throwaway-DB-plus-DNS/rename workflow without extra
-  tokens. Disproportionate for a nightly job on a 3MB sandbox database. Implemented instead: pre-wipe
+  tokens. Disproportionate for an on-demand sync of a 3MB sandbox database. Implemented instead: pre-wipe
   rollback snapshot + single-session wipe (PRAGMA OFF + all DROPs + PRAGMA ON as one `turso db shell`
   invocation, avoiding any cross-connection PRAGMA-persistence question entirely — the empirical test this
   ADR originally called for is moot given this design) + mandatory post-wipe assertion before any load.
@@ -329,8 +343,9 @@ pnpm dev
   export → sanity checks → R2 upload → `head-object` verify → dev pre-wipe snapshot → wipe (48 tables,
   `payload_mcp_api_keys` correctly preserved) → post-wipe assertion → prod SQL dump → load into dev → all
   46 comparable tables verified matching row counts prod vs. dev. Merged to `main`; nightly `schedule`
-  trigger active. Also validated with a real `workflow_dispatch` run through actual GitHub Actions
-  infrastructure (not just locally) — both a dry-run and a full `--apply` with dev sync completed cleanly.
+  trigger active (backup-only since 2026-08-22 — dev sync moved to on-demand opt-in). Also validated with
+  a real `workflow_dispatch` run through actual GitHub Actions infrastructure (not just locally) — both a
+  dry-run and a full `--apply` with dev sync completed cleanly.
 - **Incident (2026-08-22, caught before any real nightly run):** the 30-day retention deletion path had
   never actually executed in any prior test (all tests used the default 30-day window, and nothing was
   old enough to prune). A deliberate `RETENTION_DAYS=0` test — run specifically to force the deletion
