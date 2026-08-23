@@ -40,9 +40,11 @@
       "*payload run *": "ask",
       "*tsx scripts/db/*": "ask",
       "*tsx scripts/*.ts": "ask",
-      "git push *": "ask",
+      "*bash scripts/db/*": "ask",
+      "git push*": "deny",
       "git push --force*": "deny",
-      "git commit *": "ask",
+      "git push --force-with-lease*": "deny",
+      "git commit*": "ask",
       "git merge *": "ask",
       "git rm *": "ask"
     },
