@@ -198,10 +198,17 @@ grep -E "CLOUDFLARE|R2|S3_" .env
 ## Git Commit Policy
 
 - **NEVER commit code without explicit user confirmation.**
+- **NEVER run `git push` — especially to `main` — without explicit user confirmation.** Pushing is
+  a production-affecting action gated like a deployment: prepare the change, let the user review and
+  test, and let the user decide when it is pushed. "Tests passed" or "pre-push hooks are green" is NOT
+  consent to push. The same applies to `git commit`: stage nothing, commit nothing, without the user's
+  explicit word.
 - **ALWAYS wait for user testing and approval before running `git commit`.**
 - After making changes, inform the user what was changed and wait for them to test and approve.
 - Only commit when the user explicitly asks you to commit or confirms the changes work correctly.
 - If you accidentally commit without approval, immediately offer to roll back with `git reset --soft HEAD~1`.
+- If you accidentally push without approval, do NOT force-push or rewrite history; tell the user
+  immediately and offer `git revert` as the corrective option.
 
 ## Build, Lint, and Format Commands
 
