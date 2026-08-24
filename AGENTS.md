@@ -65,8 +65,9 @@ layer gates those even though they may be read-only. Prefer Local API reads over
 
 ### Available Tooling (check BEFORE writing new scripts)
 
-> **⚠️ READ `MEMORY.md` FIRST** — it documents operational lessons, environment facts, the 2026-08-15 prod
-> incident, and hard-won workflows. It is mandatory reading before any database, migration, or deployment work.
+> **⚠️ READ `MEMORY.md` (the index) FIRST** — it points to the operational lessons, environment facts, the 2026-08-15 prod
+> incident, and hard-won workflows. Full learnings live in `docs/memory/`. It is mandatory reading before any database,
+> migration, or deployment work.
 
 This project runs on Turso (SQLite), deployed to Vercel. The following tools are already available — prefer them
 over writing ad-hoc scripts:
@@ -94,8 +95,8 @@ restore, clone prod→dev, and schema-parity procedures, see `docs/turso-operati
 
 ## Operational Knowledge (see MEMORY.md)
 
-**MEMORY.md** is the authoritative record of operational lessons, environment facts, incident history, and
-hard-won workflows. It is mandatory reading before any database, migration, or deployment work.
+**MEMORY.md** is the INDEX of operational lessons, environment facts, and incident history; the authoritative
+record lives in `docs/memory/`. It is mandatory reading before any database, migration, or deployment work.
 
 **Payload CMS operational patterns** (migrations, hooks, relationships, admin behaviors, search):
 `docs/patterns/payload.md` (loaded automatically via `opencode.json`).
@@ -104,7 +105,7 @@ hard-won workflows. It is mandatory reading before any database, migration, or d
 
 **CRITICAL: NEVER use raw SQL or `@libsql/client` to copy or write data to production.** Always use Payload's
 Local API — bypassing it skips hooks, never populates versions tables, and breaks the admin list view.
-Full explanation, code patterns, and the 2026-04-27 posts incident: `MEMORY.md` §11.
+Full explanation, code patterns, and the 2026-04-27 posts incident: docs/memory/data-operations.md.
 
 **CRITICAL: for reading content data (artists, repertoires, posts, etc.), prefer what Payload's Local API returns**
 (a small `tsx` read script, `pnpm dump <collection>`, or an existing service/action). **Turso CLI is appropriate for
@@ -117,19 +118,19 @@ per `opencode.json`.
 **CRITICAL: Read this before renaming any array/block/relationship field in a Payload collection.** Each
 array field has its own SQLite table; a naive rename + schema push DROPS the old table and loses data. The
 correct approach is a Payload migration file (not a pre-migration script). Full walkthrough + the 2026-04-18
-video-loss incident: `MEMORY.md` §12.
+video-loss incident: docs/memory/migrations.md.
 
 ### Library-Specific Knowledge
 
-- Payload search plugin + localization: `MEMORY.md` §13.1
-- WordPress migration data integrity: `MEMORY.md` §13.2
-- WordPress migration file uploads: `MEMORY.md` §13.3
-- WordPress filename timestamp postfixes: `MEMORY.md` §13.4
-- Vercel Blob storage/bandwidth: `MEMORY.md` §13.5
+- Payload search plugin + localization: docs/memory/libraries.md
+- WordPress migration data integrity: docs/memory/libraries.md
+- WordPress migration file uploads: docs/memory/libraries.md
+- WordPress filename timestamp postfixes: docs/memory/libraries.md
+- Vercel Blob storage/bandwidth: docs/memory/libraries.md
 
 ### Historical Incidents (pre-2026-08)
 
-Full incident log: `MEMORY.md` §14. Includes: unauthorized token generation (2025-11-30), employee migration
+Full incident log: docs/memory/incidents/. Includes: unauthorized token generation (2025-11-30), employee migration
 FK failures (2025-11-30), unverified remote DB modifications (2025-11-24), posts versions table emptied
 (2026-04-27), video data lost on array rename (2026-04-18).
 

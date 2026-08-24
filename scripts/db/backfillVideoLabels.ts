@@ -8,7 +8,7 @@
  *
  * Each row MUST include its real `id` (not a synthetic key) — omitting it causes Payload to
  * treat the row as new on every update, silently discarding the other locale's write and
- * generating a fresh row id (see MEMORY.md §12 / this migration's incident history).
+ * generating a fresh row id (see docs/memory/migrations.md).
  *
  * Run this immediately after the `localize_video_link_label` migration is applied — the
  * migration drops the non-localized `label` column, so until this script runs, video link
@@ -61,7 +61,7 @@ if (!fs.existsSync(TSV)) {
 }
 
 // Guard: connecting to production without NODE_ENV=production triggers pushDevSchema, which
-// re-adds the `dev|-1` migration marker and can corrupt the migration history (MEMORY.md §4.3).
+// re-adds the `dev|-1` migration marker and can corrupt the migration history (see docs/memory/migrations.md).
 const isProd = (process.env.DATABASE_URI || '').includes('ksschoerke-production')
 if (isProd && process.env.NODE_ENV !== 'production') {
   console.error(

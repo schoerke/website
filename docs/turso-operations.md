@@ -157,10 +157,10 @@ sqlite3 data/dumps/NAME.db "SELECT COUNT(*) FROM artists;"   # inspect a local s
 3. **Take a fresh export BEFORE any prod write**, and keep it until the restore is verified.
 4. **Verify after restore** — compare every table `COUNT(*)` and the index list against the source.
 5. **prod scripts require `NODE_ENV=production`** (prevents `pushDevSchema` re-adding the `dev|-1` migration
-   marker). See `MEMORY.md` §4.3.
+   marker). See docs/memory/migrations.md.
 6. **`dev|-1` in `payload_migrations` breaks CI migrations** (interactive prompt silently cancels). Delete it if
    present: `echo "DELETE FROM payload_migrations WHERE name='dev';" | turso db shell ksschoerke-production`
 
 ---
 
-See `MEMORY.md` §4.2 for the full incident narrative and why these steps exist.
+See docs/memory/incidents/2026-08-15-prod-half-migrated.md for the full incident narrative and why these steps exist.

@@ -1,6 +1,6 @@
 # Payload CMS Operational Patterns
 
-Payload-specific knowledge that bit us (and patterns that work). Complements `MEMORY.md` (incidents/procedures)
+Payload-specific knowledge that bit us (and patterns that work). Complements docs/memory/ (incidents/procedures)
 and `docs/turso-operations.md` (DB ops). Loaded every session via `opencode.json`.
 
 ---
@@ -109,7 +109,7 @@ value.length > max`.
 
 **NEVER raw SQL / `@libsql/client` to copy or write data to prod.** Local API runs hooks, populates versions
 tables (`_posts_v` etc.), updates search. Raw copies skip all of it → admin list breaks (2026-04-27 incident).
-Full detail: `MEMORY.md` §11.
+Full detail: docs/memory/data-operations.md.
 
 For **reading content data**, prefer the Local API (`pnpm dump <collection>`, `tsx` read script, service/action).
 Turso stays right for DB/SQL-specific work (schema inspection, migration verification, counts, backups, env
