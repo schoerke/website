@@ -34,10 +34,11 @@ describe('generateSlug', () => {
   })
 
   describe('diacritics removal', () => {
-    it('should remove German umlauts', () => {
-      expect(generateSlug('Künstler')).toBe('kunstler')
-      expect(generateSlug('Über')).toBe('uber')
-      expect(generateSlug('Schön')).toBe('schon')
+    it('should transliterate German umlauts', () => {
+      expect(generateSlug('Künstler')).toBe('kuenstler')
+      expect(generateSlug('Über')).toBe('ueber')
+      expect(generateSlug('Schön')).toBe('schoen')
+      expect(generateSlug('Straße')).toBe('strasse')
     })
 
     it('should remove French accents', () => {
@@ -53,7 +54,7 @@ describe('generateSlug', () => {
     })
 
     it('should handle mixed diacritics', () => {
-      expect(generateSlug('Künstler Konzert über Música')).toBe('kunstler-konzert-uber-musica')
+      expect(generateSlug('Künstler Konzert über Música')).toBe('kuenstler-konzert-ueber-musica')
     })
   })
 
@@ -116,12 +117,12 @@ describe('generateSlug', () => {
     })
 
     it('should handle concert titles', () => {
-      expect(generateSlug('Konzert für Klavier und Orchester')).toBe('konzert-fur-klavier-und-orchester')
+      expect(generateSlug('Konzert für Klavier und Orchester')).toBe('konzert-fuer-klavier-und-orchester')
       expect(generateSlug('Symphony No. 5 in C Minor')).toBe('symphony-no-5-in-c-minor')
     })
 
     it('should handle post titles', () => {
-      expect(generateSlug('Neuer Künstler im Team!')).toBe('neuer-kunstler-im-team')
+      expect(generateSlug('Neuer Künstler im Team!')).toBe('neuer-kuenstler-im-team')
       expect(generateSlug('Tournée 2024 – Alle Termine')).toBe('tournee-2024-alle-termine')
     })
   })
@@ -228,7 +229,7 @@ describe('createSlugHook', () => {
         value: 'v',
         originalDoc: { title: 'v', slug: 'v', _status: 'draft' },
       } as Partial<FieldHookArgs> as FieldHookArgs)
-      expect(result).toBe('das-trio-gaspard-zuruck-in-ernen')
+      expect(result).toBe('das-trio-gaspard-zurueck-in-ernen')
     })
 
     it('should keep slug stable on update when title did not change', () => {
@@ -360,7 +361,7 @@ describe('createSlugHook', () => {
         value: undefined,
         req: { locale: 'de' },
       } as unknown as FieldHookArgs)
-      expect(result).toBe('neuer-kunstler')
+      expect(result).toBe('neuer-kuenstler')
     })
 
     it('should regenerate slug from updated title when editing a draft', () => {
@@ -414,7 +415,7 @@ describe('createSlugHook', () => {
 
     it('leaves short slugs untouched', () => {
       expect(generateSlug('Christian Poltéra')).toBe('christian-poltera')
-      expect(generateSlug('Neuer Künstler')).toBe('neuer-kunstler')
+      expect(generateSlug('Neuer Künstler')).toBe('neuer-kuenstler')
     })
 
     it('keeps a slug exactly at the boundary unchanged', () => {

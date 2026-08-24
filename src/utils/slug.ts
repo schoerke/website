@@ -47,13 +47,17 @@ function truncateSlug(slug: string): string {
  *
  * @example
  * generateSlug("Hello World") // "hello-world"
- * generateSlug("Künstler Konzert 2024") // "kunstler-konzert-2024"
- * generateSlug("Post über Música") // "post-uber-musica"
+ * generateSlug("Künstler Konzert 2024") // "kuenstler-konzert-2024"
+ * generateSlug("Post über Música") // "post-ueber-musica"
  */
 export function generateSlug(text: string): string {
   return truncateSlug(
     text
       .toLowerCase()
+      .replace(/ä/g, 'ae') // German umlauts transliterate (not stripped)
+      .replace(/ö/g, 'oe')
+      .replace(/ü/g, 'ue')
+      .replace(/ß/g, 'ss')
       .normalize('NFD') // Normalize unicode characters
       .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
       .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
