@@ -6,7 +6,7 @@
       "type": "remote",
       "url": "http://localhost:3000/api/mcp",
       "headers": {
-        "Authorization": "Bearer {file:/Users/scott/.config/opencode/secrets/payload-mcp.key}"
+        "Authorization": "Bearer {env:PAYLOAD_MCP_KEY}"
       },
       "enabled": true
     },
@@ -46,12 +46,31 @@
       "git push --force-with-lease*": "deny",
       "git commit*": "ask",
       "git merge *": "ask",
-      "git rm *": "ask"
+      "git rm *": "ask",
+      "cat ~/.zsh*": "deny",
+      "tail ~/.zsh*": "deny",
+      "cat ~/.bash*": "deny",
+      "tail ~/.bash*": "deny",
+      "*cat*~/.config/opencode/secrets/*": "deny",
+      "*tail*~/.config/opencode/secrets/*": "deny"
     },
     "edit": {
       "*": "allow",
       ".env": "deny",
-      ".env.*": "deny"
+      ".env.*": "deny",
+      "~/.zsh*": "deny",
+      "~/.bash*": "deny",
+      "~/.config/opencode/secrets/**": "deny"
+    },
+    "read": {
+      "*": "allow",
+      "~/.zsh*": "deny",
+      "~/.bash*": "deny",
+      "~/.config/opencode/secrets/**": "deny"
+    },
+    "external_directory": {
+      "*": "allow",
+      "~/.config/opencode/secrets/**": "deny"
     }
   }
 }

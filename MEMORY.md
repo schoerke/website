@@ -30,6 +30,20 @@ live.** There is no local SQLite in normal use.
 `.env` always holds BOTH pairs; dev is active (uncommented), prod is commented. **Do not swap `.env` to run
 operations — use Turso CLI or inline env vars instead** (see §5).
 
+**Since 2026-08-23 there is ALSO a local SQLite dev DB.** `.env.local` overrides `DATABASE_URI` to
+`file:./dev.db` for the dev server (`pnpm dev`) and the Payload MCP endpoint. So there are effectively TWO dev
+databases:
+
+| Context | Reads | URI |
+| ------- | ----- | --- |
+| Dev server / admin / MCP | **local** `dev.db` | `.env.local` |
+| `tsx` scripts (`dotenv/config`) | **remote** `ksschoerke-development` | `.env` |
+
+**Traps:** MCP/admin show local data; `tsx` scripts show remote data. A `sqlite3 dev.db` read is local. To make a
+`tsx` script hit LOCAL, set env inline in the command (`DATABASE_URI="file:./dev.db" DATABASE_AUTH_TOKEN="local"`)
+— a runtime `loadEnv({ path: '.env.local', override: true })` is TOO LATE because ES module imports (incl.
+`@/payload.config`) are hoisted and bake `.env` first.
+
 **Reliable prod access without `.env` swap:**
 
 ```bash
@@ -288,6 +302,30 @@ project's deployments or env vars (`vercel env ls` returns empty; `vercel ls` sh
   `{relationTo, value}`. The `{relationTo, value}` form is for polymorphic relationships only.
 - **`getArtistBySlug` does manual project + repertoire population** (second/third queries) to preserve
   relationship-array order — Payload does not preserve `id in [...]` query order.
+- **Drafts collections: `payload.update` writes a VERSION, not the live row.** Admin reads versions, frontend
+  reads live. Live rows can be wiped while versions survive → content present in admin, invisible on frontend
+  (2026-08-24, post 215 Poltéra/Juho). To write/promote to live via Local API, pass `_status: 'published'` (and
+  the slug) in the update.
+- **Published slug edits via Local API need the explicit slug passed; the `createSlugHook` preserves a submitted
+  `value` on update** but regenerates only on create/empty/draft-title-change. With drafts, a plain update without
+  `_status` won't touch the live slug.
+- **`unique: true` slug collisions block publish with a generic "The following field is invalid: slug" error.**
+  Publish validates the slug against the WHOLE collection. If another post squats the needed slug, publish fails
+  silently-ish. Fix: reassign/free the squatter slug first, then publish the rightful post.
+- **Titles are NOT unique** (only slug is). Slug auto-generation from a title never cross-checks other docs, and
+  an explicit slug passed on create bypasses the hook — so slug ≠ title is possible, and cross-doc slug collisions
+  can silently build up.
+- **Payload MCP endpoint (`/api/mcp`):** uses Streamable HTTP, POST-only (GET → 405). opencode remote MCP clients
+  that send GET get "SSE error: Non-200 status code (405)". Do NOT set `oauth: false` on this server (it broke
+  auth detection); the working opencode config is the Bearer header from `{env:...}` with no `oauth` field.
+- **`generateSlug` transliterates German umlauts** (ä→ae, ö→oe, ü→ue, ß→ss) BEFORE stripping other diacritics
+  (é/à/ñ still strip). So `Münchener` → `muenchener`, `zurück` → `zurueck`. Changed 2026-08-24; old slugs may
+  still use stripped forms (`munchener`) — regenerating from title applies the new rule.
+- **Stale slugs from old titles:** published slugs are frozen by the hook, so a slug can permanently mismatch its
+  current title (e.g. 144 `pour-passer-la-melancholie` from a pre-rename title, 98 `les-nations`, 162
+  `klavierlecture`). To fix: pass the explicit slug in a Local API update with `_status: published`.
+- **Missing-locale audit:** a post can have one complete locale and none of the other. Check both `posts_locales`
+  rows per post (title+slug+content). As of 2026-08-24 prod: 184/213 missing EN, 247 missing DE (content-team).
 
 ---
 
@@ -310,6 +348,9 @@ project's deployments or env vars (`vercel env ls` returns empty; `vercel ls` sh
    snapshot before any dev schema change that could matter.
 10. **Don't over-engineer migrations** (state machines, complex guards). A simple idempotent `alreadyApplied()` +
     fail-closed count check + snapshot recovery is enough. Prefer the lean guard.
+11. **Verify the DB a script will WRITE to, not just read.** With local `dev.db` + remote dev both in play (see
+    §2), a "successful" Local API update may land on the wrong database. Check `DATABASE_URI` output from the
+    actual run (not the shell) and confirm against `sqlite3 dev.db` where local is the target.
 
 ---
 
@@ -553,6 +594,29 @@ See §13.5.
 Per-artist ordering via a relationship field + auto-sync `afterChange` hook on Posts. This was the reference
 pattern for the Repertoire ordering feature. Full design:
 `docs/plans/2025-12-13-artist-projects-ordering-design.md`.
+
+### 2026-08-24: Post 215 "Poltéra + Juho Pohjonen" invisible on frontend
+
+**Symptom:** client reported a Poltéra/Juho project post that "doesn't show up at all". Present in admin, blank on
+site.
+
+**Root cause (two compounding bugs):**
+1. **Version/live desync** — post 215's live `posts_locales` rows were empty (title/slug/content/artists wiped);
+   full content survived only in `_posts_v` versions. Admin reads versions; frontend reads live.
+2. **Slug collision** — post 198 (Mara project) held the EN slug `christian-poltera-and-juho-pohjonen` that
+   belonged to post 215. `unique: true` made publishing 215 fail with a generic "invalid slug" error.
+
+**Fix:** (1) freed 198's EN slug → `christian-poltera-and-wolf-wondratschek-the-mara` via Local API with inline
+env targeting local `dev.db`; (2) published 215 in admin → version promoted to live.
+
+**Prod (2026-08-24):** same empty-215 + 198-slug-collision present. Fixed both on prod (198 EN slug freed via
+Local API, 215 published), plus 39/193/184/197 (197 EN was a Mara-content duplicate — rewrote from DE as the
+Münchener Kammerorchester translation), plus 20+ garbage slugs regenerated from titles, plus post 247
+(EN-only news post whose live locales never committed — version had content, live empty; wrote version → live).
+Post-247 root cause: create+publish at 10:27:17→10:27:31 wrote relationships but the locale commit failed
+(transient "backend painfully slow" window), leaving `posts_locales` empty with `published_locale: null`.
+
+**Guards:** see §9 entries on drafts/live, slug collisions, and the two-dev-DB env trap.
 
 ---
 
