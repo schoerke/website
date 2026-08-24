@@ -513,6 +513,17 @@ Vercel Blob free tier: 10 GB/month bandwidth. Large files (ZIPs 40-60 MB) exhaus
 id.** So a migration that moves only references (e.g. id re-pointing) never touches the actual files — no file/R2
 backup needed for such reference-only migrations; a DB snapshot suffices.
 
+### 13.6 Vercel Blob Operation Limits (Simple/Advanced)
+
+Hobby caps: **Simple ops 10k/month**, **Advanced ops 2k/month** (1 GB storage, 10 GB transfer). Exceeding = **no
+billing, but Blob inaccessible until 30-day window resets** → images 404 site-wide. Simple op = **URL access cache
+MISS** or **every `head()` call**. Advanced op = `put()`/`copy()`/`list()` (uploads). Critical: the
+`@payloadcms/storage-vercel-blob` static handler (`getFile`) calls `head()` **on every request** to
+`/api/images/file/*` — so **admin CMS browsing burns 1 Simple op per image rendered**, cache HITs don't help.
+Uploading ~100 images ≈ 100 Advanced + ~200 Simple; thousands of ops ≠ image count, it's admin `head()` traffic +
+public cache-miss/eviction traffic. Dashboard per-day data is capped at 12h on Hobby. Fix: Pro trial (100k/10k
+included) or move images to R2. Vercel usage API: `GET /v2/team/{teamId}/usage`.
+
 ---
 
 ## 14. Historical Incident Log (pre-2026-08)
@@ -542,3 +553,28 @@ See §13.5.
 Per-artist ordering via a relationship field + auto-sync `afterChange` hook on Posts. This was the reference
 pattern for the Repertoire ordering feature. Full design:
 `docs/plans/2025-12-13-artist-projects-ordering-design.md`.
+
+---
+
+## 15. Vercel Team / Account Management (CRITICAL)
+
+**This project's Vercel deployment is managed by a DIFFERENT team than the local CLI account.** The local `vercel`
+CLI is authenticated as **zeitchef** (teams: `zeitchef-projects`, `zeitweb`). Do NOT assume either owns this
+project.
+
+- ⚠️ `.vercel/project.json` is **STALE**: its `orgId` `team_FEM8tiqNlj16ZQJsumWmUC4R` is an **OLD copy of this
+  project that was transferred to the client**. Never use it as the current team id.
+- ✅ **Verified current team (2026-08-23):** `team_VW0SXoOVtcPZ7edNwwzmcPnD` — client Eva Wagner's team
+  ("eva-wagners-projects"), owner `e.wagner@ks-schoerke.de`. Project `website` →
+  `schoerke-website.vercel.app`, plan **hobby**.
+- `vercel link` / `vercel whoami` / `vercel teams ls` under the local `zeitchef` CLI auth point at the WRONG
+  teams. Always use a token from the client account.
+- ⚠️ **Token scope matters:** a **project-scoped** token (`vcp_...`) cannot call team/user endpoints
+  (`/v2/teams`, `/v2/user`, usage, observability) — all return 403/"User not found". For usage/operations/observability
+  you need a **team-scoped** token. `vercel usage`, `/v2/team/{teamId}/usage`, `/v1/billing/charges` are the API
+  surfaces (charges returns "Plan not found" on hobby).
+- ✅ **Blob store (verified 2026-08-23):** `store_3jIBiIxvBnjU5oC1` "schoerke-website-storage" —
+  **922 blobs, 275 MB**, hobby, region `fra1`, public. Project `prj_KS2v04GAnLLPne2n1ILRFJaQ6iLk`.
+- ⚠️ **Hobby has NO programmatic usage/operations API**: `vercel usage` + `/v1/billing/charges` → "Plan not
+  found". Blob Simple/Advanced operation counters are **dashboard-only** (team Observability → Blob, or store →
+  Usage). API gives store size/count (`GET /v1/storage/stores`) but not operation counts.
