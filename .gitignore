@@ -75,6 +75,9 @@ src/payload-generated-schema.ts
 # opencode
 .opencode
 
+# git worktrees
+/.worktrees
+
 # Local SQLite dev DB + WAL/SHM/journal companions (libsql opens file: DBs in WAL mode)
 *.db-wal
 *.db-shm
