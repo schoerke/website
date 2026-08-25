@@ -70,6 +70,7 @@ export interface Config {
   collections: {
     artists: Artist;
     employees: Employee;
+    guides: Guide;
     pages: Page;
     posts: Post;
     recordings: Recording;
@@ -88,6 +89,7 @@ export interface Config {
   collectionsSelect: {
     artists: ArtistsSelect<false> | ArtistsSelect<true>;
     employees: EmployeesSelect<false> | EmployeesSelect<true>;
+    guides: GuidesSelect<false> | GuidesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     recordings: RecordingsSelect<false> | RecordingsSelect<true>;
@@ -414,6 +416,34 @@ export interface Document {
   focalY?: number | null;
 }
 /**
+ * Internal guides for the content team: workflow how-tos and troubleshooting notes. Team-only, never public.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "guides".
+ */
+export interface Guide {
+  id: number;
+  title: string;
+  category: 'workflow' | 'troubleshooting';
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -681,6 +711,10 @@ export interface PayloadLockedDocument {
         value: number | Employee;
       } | null)
     | ({
+        relationTo: 'guides';
+        value: number | Guide;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: number | Page;
       } | null)
@@ -823,6 +857,17 @@ export interface EmployeesSelect<T extends boolean = true> {
   mobile?: T;
   image?: T;
   order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "guides_select".
+ */
+export interface GuidesSelect<T extends boolean = true> {
+  title?: T;
+  category?: T;
+  content?: T;
   updatedAt?: T;
   createdAt?: T;
 }

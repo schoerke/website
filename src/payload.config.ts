@@ -16,6 +16,7 @@ import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { Artists } from './collections/Artists'
 import { Documents } from './collections/Documents'
 import { Employees } from './collections/Employees'
+import { Guides } from './collections/Guides'
 import { Images } from './collections/Images'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
@@ -62,7 +63,7 @@ export default buildConfig({
       actions: ['/components/admin/LocaleSwitcherHider'],
     },
   },
-  collections: [Artists, Employees, Pages, Posts, Recordings, Repertoire, Users, Images, Documents],
+  collections: [Artists, Employees, Guides, Pages, Posts, Recordings, Repertoire, Users, Images, Documents],
   globals: [HomePageGlobal],
   db: sqliteAdapter({
     client: {
