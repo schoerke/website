@@ -289,7 +289,13 @@ describe('ArtistTabContent', () => {
       const user = userEvent.setup()
       const onSectionChange = vi.fn()
       render(
-        <MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" onSectionChange={onSectionChange} />
+        <MediaTab
+          images={mockImages}
+          videos={mockVideos}
+          emptyMessage="No media"
+          section="images"
+          onSectionChange={onSectionChange}
+        />
       )
       await user.click(screen.getByText('Videos'))
       expect(onSectionChange).toHaveBeenCalledWith('videos')
