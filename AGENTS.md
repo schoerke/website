@@ -26,7 +26,7 @@ This includes:
 **BEFORE ANY DATABASE OPERATION (including read operations for context):**
 
 1. **CHECK** the current database configuration in `.env`:
-   - Run `cat .env | grep DATABASE_URI`
+   - Run `grep DATABASE_URI .env` (avoids printing unrelated secrets)
    - Identify if it's local (file:// or local.db) or remote (libsql://, postgres://, etc.)
 2. **VERIFY** with the user which database should be used for the current task
 3. **CONFIRM** the database environment before proceeding
@@ -84,7 +84,7 @@ over writing ad-hoc scripts:
   - `turso db export <db>` — **full SQLite snapshot backup** to a local `.db` file (covers ALL tables, no `.env`
     swap needed; uses CLI credentials)
   - `turso db shell <db>` — interactive SQL shell
-  - Databases: `ksschoerke-development`, `ksschoerke-production`
+  - Databases: `ksschoerke-production` (live). `ksschoerke-development` does NOT exist — never target it.
 - **`sqlite3`** (macOS built-in) — inspect/query exported `.db` backup files locally (read-only)
 - **`payload` CLI** (`pnpm payload ...`) — `migrate:create`, `migrate`, `migrate:status`, `generate:types`,
   `generate:importmap`, `run <script>`

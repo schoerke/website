@@ -7,25 +7,17 @@ Source: repo-root `MEMORY.md` — extracted from §2 (Databases & Environments) 
 
 ## Databases & Environments (CRITICAL)
 
-Two Turso databases, both in `eu-west`. **`ksschoerke-development` is the sandbox; `ksschoerke-production` is
-live.** There is no local SQLite in normal use.
+**`ksschoerke-development` does not exist — never target it.** The only databases are the **local SQLite
+`dev.db`** (canonical dev) and **`ksschoerke-production`** (live). Any doc/script referencing
+`ksschoerke-development` is stale.
 
-| Name | Turso db name            | URI host                                                 |
-| ---- | ------------------------ | -------------------------------------------------------- |
-| Dev  | `ksschoerke-development` | `ksschoerke-development-zeitchef.aws-eu-west-1.turso.io` |
-| Prod | `ksschoerke-production`  | `ksschoerke-production-zeitchef.aws-eu-west-1.turso.io`  |
+| Name | URI |
+| ---- | --- |
+| Dev (canonical) | **local** `file:./dev.db` |
+| Prod | `libsql://ksschoerke-production-zeitchef.aws-eu-west-1.turso.io` |
 
-`.env` always holds BOTH pairs; dev is active (uncommented), prod is commented. **Do not swap `.env` to run
-operations — use Turso CLI or inline env vars instead** (see docs/memory/migrations.md).
-
-**Since 2026-08-23 there is ALSO a local SQLite dev DB.** `.env.local` overrides `DATABASE_URI` to
-`file:./dev.db` for the dev server (`pnpm dev`) and the Payload MCP endpoint. So there are effectively TWO dev
-databases:
-
-| Context | Reads | URI |
-| ------- | ----- | --- |
-| Dev server / admin / MCP | **local** `dev.db` | `.env.local` |
-| `tsx` scripts (`dotenv/config`) | **remote** `ksschoerke-development` | `.env` |
+`.env.local` overrides `DATABASE_URI` to `file:./dev.db` for the dev server (`pnpm dev`) and the Payload MCP
+endpoint. `tsx` scripts (`dotenv/config`) read `.env` (prod pair).
 
 **Traps:** MCP/admin show local data; `tsx` scripts show remote data. A `sqlite3 dev.db` read is local. To make a
 `tsx` script hit LOCAL, set env inline in the command (`DATABASE_URI="file:./dev.db" DATABASE_AUTH_TOKEN="local"`)

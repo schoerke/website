@@ -86,7 +86,10 @@ Creates a new DB you can inspect before any prod impact. **Note:** `turso db imp
 
 ---
 
-## 3c. Clone prod → dev (standard workflow — with data)
+## 3c. Clone prod → dev — ⚠️ STALE (targets deleted `ksschoerke-development`)
+
+> **DEPRECATED.** `ksschoerke-development` no longer exists. To refresh dev, use §3d (local `dev.db` from the
+> nightly R2 backup). Kept only as historical reference — do NOT run.
 
 **This is the normal way to refresh dev from prod.** Dev is a sandbox; no GDPR concern (small team, public
 content). Clone with data so dev matches prod for realistic testing.
@@ -163,9 +166,9 @@ sqlite3 dev.db "DELETE FROM payload_migrations WHERE name='dev';"
 sqlite3 dev.db "SELECT name FROM payload_migrations ORDER BY name;"
 ```
 
-  Expected after delete: the 4 repo migrations (`20260815_artist_repertoire_ordering`,
+  Expected after delete: the repo migrations (`20260815_artist_repertoire_ordering`,
   `20260816_ensure_employee_email_unique`, `20260819_localize_artist_biography_pdf`,
-  `20260820_localize_video_link_label`). If missing, step 6 re-runs them.
+  `20260820_localize_video_link_label`, `20260825_remove_autosave_columns`). If missing, step 6 re-runs them.
 
 - [ ] **6. Apply pending migrations (repo-root cwd required):**
 

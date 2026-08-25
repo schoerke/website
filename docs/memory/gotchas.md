@@ -67,8 +67,9 @@ Source: repo-root `MEMORY.md` — extracted from §9, §10.
 6. **Don't guess Payload/drizzle behavior** — check `payload-generated-schema.ts`, the migration `.ts`+`.json`,
    and the live `PRAGMA` output. Dev push ≠ migration output; trust the migration + generated schema.
 7. **Take a fresh backup before ANY prod write**, and keep it until verified.
-8. **Confirm the database before operating** — `ksschoerke-development` vs `ksschoerke-production` are one
-   character different; verify with `turso db shell <name> "SELECT 1"` or the URI host.
+8. **Confirm the database before operating** — `dev.db` (local) vs `ksschoerke-production` (live) are easy to
+   confuse; verify with `turso db shell ksschoerke-production "SELECT 1"` or check `DATABASE_URI` output from the
+   actual run. `ksschoerke-development` does not exist — never target it.
 9. **Don't assume dev data-loss is acceptable** — dev schema push drops values silently. Verify with the user and
    snapshot before any dev schema change that could matter.
 10. **Don't over-engineer migrations** (state machines, complex guards). A simple idempotent `alreadyApplied()` +

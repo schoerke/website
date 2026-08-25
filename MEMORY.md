@@ -7,7 +7,7 @@
 ## 0. Non-Negotiable Guardrails (one-liners; depth in linked files)
 
 - Never run prod scripts w/o `NODE_ENV=production` → `docs/memory/scripts.md`
-- Two dev DBs (local `dev.db` vs remote `ksschoerke-development`); verify the target → `docs/memory/environments.md`
+- Two dev DBs are gone — `ksschoerke-development` does NOT exist; only local `dev.db` and `ksschoerke-production` → `docs/memory/environments.md`
 - Never raw SQL/`@libsql/client` to copy/write prod; use the Payload Local API → `docs/memory/data-operations.md`
 - Migrations MUST be idempotent (previews re-run them) → `docs/memory/migrations.md`
 - Never `turso db import` expecting an overwrite → `docs/memory/gotchas.md`
