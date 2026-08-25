@@ -19,14 +19,14 @@ const baseData = { slug: 'mein-slug' }
 
 describe('blockDuplicateSlug', () => {
   it('throws APIError when another post holds the slug (create)', async () => {
-    const req = createMockRequest({ totalDocs: 1, docs: [{ id: 12 }] })
+    const req = createMockRequest({ totalDocs: 1, docs: [{ id: 12 }] }, 'en')
     await expect(
       blockDuplicateSlug({ data: baseData, originalDoc: undefined, req, operation: 'create' } as never)
     ).rejects.toThrow('This slug is already being used')
   })
 
   it('throws APIError when another post holds the slug (update)', async () => {
-    const req = createMockRequest({ totalDocs: 1, docs: [{ id: 12 }] })
+    const req = createMockRequest({ totalDocs: 1, docs: [{ id: 12 }] }, 'en')
     await expect(
       blockDuplicateSlug({
         data: { slug: 'christian-poltera' },
@@ -35,6 +35,13 @@ describe('blockDuplicateSlug', () => {
         operation: 'update',
       } as never)
     ).rejects.toThrow('This slug is already being used')
+  })
+
+  it('throws German message when req.locale is de', async () => {
+    const req = createMockRequest({ totalDocs: 1, docs: [{ id: 12 }] }, 'de')
+    await expect(
+      blockDuplicateSlug({ data: baseData, originalDoc: undefined, req, operation: 'create' } as never)
+    ).rejects.toThrow('Dieser Slug wird bereits verwendet')
   })
 
   it('passes when the slug belongs to the current doc only (self-collision)', async () => {

@@ -41,7 +41,9 @@ export const blockDuplicateSlug: CollectionBeforeChangeHook = async ({ data, ori
     })
 
     if (result.totalDocs > 0) {
-      throw new APIError(`This slug is already being used`, 400, undefined, true)
+      const locale = req.locale ?? 'de'
+      const message = locale === 'de' ? 'Dieser Slug wird bereits verwendet' : 'This slug is already being used'
+      throw new APIError(message, 400, undefined, true)
     }
   } catch (e) {
     if (e instanceof APIError) throw e
