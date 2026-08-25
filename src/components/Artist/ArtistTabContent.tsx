@@ -9,6 +9,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import { Link } from '@/i18n/navigation'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
+import type { MediaSection } from '@/utils/tabPersistence'
 import { Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
@@ -110,29 +111,21 @@ export const RepertoireTab: React.FC<RepertoireTabProps> = ({ repertoires, loadi
 }
 
 // Media Tab
-type MediaSection = 'images' | 'videos'
-
 interface MediaTabProps {
   images: Artist['galleryImages']
   videos: Artist['videoLinks']
   emptyMessage: string
-  initialSection?: MediaSection
+  section: MediaSection
   onSectionChange?: (section: MediaSection) => void
 }
 
-export const MediaTab: React.FC<MediaTabProps> = ({
-  images,
-  videos,
-  emptyMessage,
-  initialSection = 'images',
-  onSectionChange,
-}) => {
+// Controlled component: the active section lives in the parent (ArtistTabs) so
+// back/forward navigation (popstate) can sync it without a local copy desyncing.
+export const MediaTab: React.FC<MediaTabProps> = ({ images, videos, emptyMessage, section, onSectionChange }) => {
   const t = useTranslations('custom.pages.artist')
-  const [section, setSection] = React.useState<MediaSection>(initialSection)
 
   const handleSectionChange = (value: string) => {
     if (value === 'images' || value === 'videos') {
-      setSection(value)
       onSectionChange?.(value)
     }
   }

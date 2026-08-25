@@ -2,6 +2,7 @@ import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 // @vitest-environment happy-dom
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { BiographyTab, ConcertDatesTab, MediaTab, ProjectsTab, RecordingsTab, RepertoireTab } from './ArtistTabContent'
 
@@ -233,21 +234,36 @@ describe('ArtistTabContent', () => {
     ]
     const mockVideos: Artist['videoLinks'] = [{ label: 'Performance 1', url: 'https://youtube.com/watch?v=abc123' }]
 
+    // Controlled component: section lives in the parent. Harness simulates the
+    // parent holding state so toggle-click behavior is exercised end to end.
+    const ControlledMediaTab: React.FC = () => {
+      const [section, setSection] = React.useState<'images' | 'videos'>('images')
+      return (
+        <MediaTab
+          images={mockImages}
+          videos={mockVideos}
+          emptyMessage="No media"
+          section={section}
+          onSectionChange={setSection}
+        />
+      )
+    }
+
     it('should default to images sub-section', () => {
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" />)
+      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" section="images" />)
       expect(screen.getByTestId('image-gallery')).toBeInTheDocument()
       expect(screen.queryByTestId('video-accordion')).not.toBeInTheDocument()
     })
 
-    it('should show video accordion when initialSection is videos', () => {
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" initialSection="videos" />)
+    it('should show video accordion when section is videos', () => {
+      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" section="videos" />)
       expect(screen.getByTestId('video-accordion')).toBeInTheDocument()
       expect(screen.queryByTestId('image-gallery')).not.toBeInTheDocument()
     })
 
     it('should switch to videos section when Videos button is clicked', async () => {
       const user = userEvent.setup()
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" />)
+      render(<ControlledMediaTab />)
       await user.click(screen.getByText('Videos'))
       expect(screen.getByTestId('video-accordion')).toBeInTheDocument()
       expect(screen.queryByTestId('image-gallery')).not.toBeInTheDocument()
@@ -255,10 +271,18 @@ describe('ArtistTabContent', () => {
 
     it('should switch to images section when Images button is clicked', async () => {
       const user = userEvent.setup()
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" initialSection="videos" />)
+      const onSectionChange = vi.fn()
+      render(
+        <MediaTab
+          images={mockImages}
+          videos={mockVideos}
+          emptyMessage="No media"
+          section="videos"
+          onSectionChange={onSectionChange}
+        />
+      )
       await user.click(screen.getByText('Images'))
-      expect(screen.getByTestId('image-gallery')).toBeInTheDocument()
-      expect(screen.queryByTestId('video-accordion')).not.toBeInTheDocument()
+      expect(onSectionChange).toHaveBeenCalledWith('images')
     })
 
     it('should call onSectionChange when section changes', async () => {
@@ -272,49 +296,12 @@ describe('ArtistTabContent', () => {
     })
 
     it('should show empty message when no images and on images section', () => {
-      render(<MediaTab images={[]} videos={[]} emptyMessage="No media available" />)
-      expect(screen.getByText('No media available')).toBeInTheDocument()
-    })
-
-    it('should show video accordion when initialSection is videos', () => {
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" initialSection="videos" />)
-      expect(screen.getByTestId('video-accordion')).toBeInTheDocument()
-      expect(screen.queryByTestId('image-gallery')).not.toBeInTheDocument()
-    })
-
-    it('should switch to videos section when Videos button is clicked', async () => {
-      const user = userEvent.setup()
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" />)
-      await user.click(screen.getByText('Videos'))
-      expect(screen.getByTestId('video-accordion')).toBeInTheDocument()
-      expect(screen.queryByTestId('image-gallery')).not.toBeInTheDocument()
-    })
-
-    it('should switch to images section when Images button is clicked', async () => {
-      const user = userEvent.setup()
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" initialSection="videos" />)
-      await user.click(screen.getByText('Images'))
-      expect(screen.getByTestId('image-gallery')).toBeInTheDocument()
-      expect(screen.queryByTestId('video-accordion')).not.toBeInTheDocument()
-    })
-
-    it('should call onSectionChange when section changes', async () => {
-      const user = userEvent.setup()
-      const onSectionChange = vi.fn()
-      render(
-        <MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" onSectionChange={onSectionChange} />
-      )
-      await user.click(screen.getByText('Videos'))
-      expect(onSectionChange).toHaveBeenCalledWith('videos')
-    })
-
-    it('should show empty message when no images and on images section', () => {
-      render(<MediaTab images={[]} videos={[]} emptyMessage="No media available" />)
+      render(<MediaTab images={[]} videos={[]} emptyMessage="No media available" section="images" />)
       expect(screen.getByText('No media available')).toBeInTheDocument()
     })
 
     it('styles section toggles as underline subtabs matching Repertoire', () => {
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" />)
+      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" section="images" />)
 
       const imagesButton = screen.getByRole('radio', { name: 'Images' })
       const videosButton = screen.getByRole('radio', { name: 'Videos' })

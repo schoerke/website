@@ -3,6 +3,7 @@
 import { Link } from '@/i18n/navigation'
 import type { Image as PayloadImage } from '@/payload-types'
 import { getValidImageUrl, isImageObject } from '@/utils/image'
+import { setListMarker } from '@/utils/tabPersistence'
 import { UserRound } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
@@ -82,7 +83,16 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug, 
   )
 
   return slug ? (
-    <Link href={{ pathname: '/artists/[slug]', params: { slug } }} className={cardClasses}>
+    <Link
+      href={{ pathname: '/artists/[slug]', params: { slug } }}
+      className={cardClasses}
+      onClick={() => {
+        // Signal the artist page that this visit came from the list, so it
+        // defaults to the biography tab instead of restoring a previous tab.
+        // Scoped to the slug so a stale marker never affects another artist.
+        setListMarker(slug)
+      }}
+    >
       <ArtistCardImage image={image} name={name} />
       {overlay}
     </Link>

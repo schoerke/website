@@ -3,6 +3,7 @@ import type { Artist, Recording, Repertoire } from '@/payload-types'
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { StrictMode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ArtistTabs from './ArtistTabs'
 
@@ -88,16 +89,16 @@ vi.mock('./ArtistTabContent', () => ({
     images,
     videos,
     emptyMessage,
-    initialSection,
+    section,
   }: {
     images?: unknown[]
     videos?: Array<{ url: string }>
     emptyMessage: string
-    initialSection?: string
+    section?: string
     onSectionChange?: (section: string) => void
   }) => (
     <div data-testid="media-tab">
-      {initialSection === 'videos'
+      {section === 'videos'
         ? videos && videos.length > 0
           ? `${videos.length} videos`
           : emptyMessage
@@ -748,31 +749,158 @@ describe('ArtistTabs', async () => {
       expect(stored).toEqual({ tab: 'media', mediaSection: 'images' })
     })
 
-    it('restores the active tab from sessionStorage when no hash is present', async () => {
-      // Simulate a remount on the same artist page (e.g. locale switch where
-      // Next.js unmounts the client tree and the hash was dropped by navigation)
+    it('forces biography and clears the marker when arriving from the artist list', () => {
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+      sessionStorage.setItem('artist-tab-from-list', 'test-artist')
+      sessionStorage.setItem('/artists/test-artist', JSON.stringify({ tab: 'media', mediaSection: 'videos' }))
+
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
+      expect(screen.queryByTestId('media-tab')).not.toBeInTheDocument()
+      expect(sessionStorage.getItem('artist-tab-from-list')).toBeNull()
+    })
+
+    it('forces biography under StrictMode double-effect (regression for dev)', () => {
+      // React StrictMode double-invokes effects in dev. The marker is cleared
+      // on the first pass; without a one-shot guard the second pass would
+      // restore the stored tab instead of staying on biography.
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+      sessionStorage.setItem('artist-tab-from-list', 'test-artist')
+      sessionStorage.setItem('/artists/test-artist', JSON.stringify({ tab: 'media', mediaSection: 'videos' }))
+
+      const artist = createMockArtist()
+      renderWithIntl(
+        <StrictMode>
+          <ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />
+        </StrictMode>
+      )
+
+      expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
+      expect(screen.queryByTestId('media-tab')).not.toBeInTheDocument()
+    })
+
+    it('ignores a list marker for a different artist slug', () => {
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+      sessionStorage.setItem('artist-tab-from-list', 'other-artist')
+      sessionStorage.setItem('/artists/test-artist', JSON.stringify({ tab: 'media', mediaSection: 'videos' }))
+
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      expect(screen.getByTestId('media-tab')).toBeInTheDocument()
+      expect(screen.queryByTestId('biography-tab')).not.toBeInTheDocument()
+    })
+
+    it('restores the last-viewed tab when no hash or list marker is present (e.g. back from article)', () => {
       window.history.replaceState({}, '', '/de/artists/test-artist')
       sessionStorage.setItem('/artists/test-artist', JSON.stringify({ tab: 'media', mediaSection: 'videos' }))
 
       const artist = createMockArtist()
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
+      expect(screen.getByTestId('media-tab')).toBeInTheDocument()
+      expect(screen.queryByTestId('biography-tab')).not.toBeInTheDocument()
+    })
+
+    it('restores the news tab after navigating away and back (journey)', async () => {
+      const user = userEvent.setup()
+      const artist = createMockArtist()
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+
+      // First visit: click the News tab, which persists it to sessionStorage
+      const first = renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      await user.click(screen.getAllByText('News')[0])
+      expect(screen.getByTestId('newsfeed-news')).toBeInTheDocument()
+
+      const stored = JSON.parse(sessionStorage.getItem('/artists/test-artist') ?? 'null')
+      expect(stored).toEqual({ tab: 'news', mediaSection: 'images' })
+
+      // Simulate navigating to a news article (artist page unmounts) and Back
+      // (artist page remounts with a clean URL, no hash)
+      first.unmount()
+      window.location.hash = ''
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
       await waitFor(() => {
-        expect(screen.getByTestId('media-tab')).toBeInTheDocument()
+        expect(screen.getByTestId('newsfeed-news')).toBeInTheDocument()
         expect(screen.queryByTestId('biography-tab')).not.toBeInTheDocument()
       })
     })
 
-    it('prefers the URL hash over sessionStorage when both are present', () => {
+    it('falls back to biography when the stored tab is no longer available', () => {
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+      sessionStorage.setItem('/artists/test-artist', JSON.stringify({ tab: 'news', mediaSection: 'images' }))
+
+      const artist = createMockArtist()
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={false} hasProjects={true} />)
+
+      expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
+      expect(screen.queryByTestId('newsfeed-news')).not.toBeInTheDocument()
+    })
+
+    it('syncs the media section on popstate', async () => {
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+      window.location.hash = '#media-videos'
+      const artist = createMockArtist({
+        galleryImages: [
+          { id: 'img1', image: { id: 1, alt: 'Photo', url: '/p.jpg', updatedAt: '', createdAt: '' } },
+          { id: 'img2', image: { id: 2, alt: 'Photo', url: '/p2.jpg', updatedAt: '', createdAt: '' } },
+        ],
+        videoLinks: [
+          { label: 'V1', url: 'https://youtube.com/watch?v=a' },
+          { label: 'V2', url: 'https://youtube.com/watch?v=b' },
+        ],
+      })
+
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+      expect(screen.getByText('2 videos')).toBeInTheDocument()
+
+      // Browser Back reverts the URL to #media-images and fires popstate
+      window.location.hash = '#media-images'
+      window.dispatchEvent(new PopStateEvent('popstate'))
+
+      await waitFor(() => {
+        expect(screen.getByText('2 images')).toBeInTheDocument()
+        expect(screen.queryByText('2 videos')).not.toBeInTheDocument()
+      })
+    })
+
+    it('syncs the active tab on back/forward popstate within the artist page', async () => {
+      const user = userEvent.setup()
+      const artist = createMockArtist()
+      window.history.replaceState({}, '', '/de/artists/test-artist')
+
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
+
+      // Land on News tab, then switch to Media (each click pushes a hash entry)
+      await user.click(screen.getAllByText('News')[0])
+      expect(screen.getByTestId('newsfeed-news')).toBeInTheDocument()
+
+      await user.click(screen.getAllByText('Media')[0])
+      expect(screen.getByTestId('media-tab')).toBeInTheDocument()
+
+      // Browser Back reverts the URL to #news and fires popstate
+      window.location.hash = '#news'
+      window.dispatchEvent(new PopStateEvent('popstate'))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('newsfeed-news')).toBeInTheDocument()
+        expect(screen.queryByTestId('media-tab')).not.toBeInTheDocument()
+      })
+    })
+
+    it('uses the URL hash when present', () => {
       window.history.replaceState({}, '', '/de/artists/test-artist')
       window.location.hash = '#repertoire'
-      sessionStorage.setItem('/artists/test-artist', JSON.stringify({ tab: 'media', mediaSection: 'images' }))
 
       const artist = createMockArtist({ repertoire: [createMockRepertoire()] })
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
 
       expect(screen.getByTestId('repertoire-tab')).toBeInTheDocument()
-      expect(screen.queryByTestId('media-tab')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('biography-tab')).not.toBeInTheDocument()
     })
   })
 

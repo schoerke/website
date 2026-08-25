@@ -4,14 +4,20 @@ import { fetchRecordingsByArtist } from '@/actions/recordings'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
+import {
+  clearListMarker,
+  isFromList,
+  readStoredTab,
+  storeTab,
+  type MediaSection,
+  type TabId,
+} from '@/utils/tabPersistence'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { ChevronDown } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useRef, useState } from 'react'
 import NewsFeedClient from '../NewsFeed/NewsFeedClient'
 import { BiographyTab, MediaTab, ProjectsTab, RecordingsTab, RepertoireTab } from './ArtistTabContent'
-
-type TabId = 'biography' | 'repertoire' | 'discography' | 'media' | 'news' | 'projects'
 
 interface MobileTabSelectProps {
   tabs: TabId[]
@@ -86,36 +92,6 @@ function getInitialTab(): TabId {
   return 'biography'
 }
 
-type MediaSection = 'images' | 'videos'
-
-// Strip the locale prefix so the key is identical across languages
-// (e.g. /de/artists/foo and /en/artists/foo both map to /artists/foo)
-function getTabStorageKey(pathname: string): string {
-  return pathname.replace(/^\/(de|en)(?=\/)/, '') || '/'
-}
-
-function readStoredTab(pathname: string): { tab: TabId; mediaSection?: MediaSection } | null {
-  try {
-    const raw = sessionStorage.getItem(getTabStorageKey(pathname))
-    if (!raw) return null
-    const parsed = JSON.parse(raw) as { tab?: unknown; mediaSection?: unknown }
-    if (typeof parsed.tab !== 'string') return null
-    const mediaSection: MediaSection | undefined =
-      parsed.mediaSection === 'videos' ? 'videos' : parsed.mediaSection === 'images' ? 'images' : undefined
-    return { tab: parsed.tab as TabId, mediaSection }
-  } catch {
-    return null
-  }
-}
-
-function storeTab(pathname: string, tab: TabId, mediaSection: MediaSection): void {
-  try {
-    sessionStorage.setItem(getTabStorageKey(pathname), JSON.stringify({ tab, mediaSection }))
-  } catch {
-    // Storage unavailable (private mode, quota) — persistence is best-effort
-  }
-}
-
 /**
  * Manages tab state and data fetching. State (active tab, media section, role filter)
  * is intentionally NOT reset when the locale changes so the user keeps their place;
@@ -140,10 +116,28 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
 
   const [mediaSection, setMediaSection] = useState<MediaSection>('images')
 
-  // Read hash from URL after hydration to set initial tab; fall back to the
-  // sessionStorage snapshot so the tab survives a locale switch that causes a
-  // remount (e.g. App Router unmounting the client tree during navigation).
+  // Read hash from URL after hydration to set initial tab. Explicit URL hashes
+  // (deep links, back/forward to a hashed entry) take priority. Otherwise, only
+  // visits that came from the artist list (marked via sessionStorage) default to
+  // biography; all other navigations (e.g. back from a news article) restore the
+  // last-viewed tab from sessionStorage so the user keeps their place.
+  //
+  // A one-shot ref guard is required: React StrictMode double-invokes effects
+  // in dev, and the marker is cleared on the first pass, so the second pass
+  // would otherwise fall through to the stored tab and restore it instead of
+  // forcing biography.
+  const tabResolvedRef = useRef(false)
   useEffect(() => {
+    if (tabResolvedRef.current) return
+    tabResolvedRef.current = true
+
+    const slug = artist.slug ?? ''
+    if (isFromList(slug)) {
+      // Arrived from the artist list — force biography and drop the marker.
+      clearListMarker()
+      return
+    }
+
     const hash = window.location.hash.slice(1) // e.g. "media-videos"
     const mediaMatch = /^media-(images|videos)$/.exec(hash)
     if (mediaMatch) {
@@ -155,15 +149,42 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
       const stored = readStoredTab(window.location.pathname)
       if (stored && tabs.includes(stored.tab)) {
         setActiveTab(stored.tab)
-        if (stored.tab === 'media' && stored.mediaSection) {
-          setMediaSection(stored.mediaSection)
-        }
+      }
+      // Restore the media section regardless of the restored tab so a later
+      // visit to the media tab keeps the last-viewed section (e.g. videos).
+      if (stored?.mediaSection) {
+        setMediaSection(stored.mediaSection)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only run once after mount
 
-  // Update URL hash when tab changes
+  // Sync the active tab on back/forward navigation. Tab hashes are pushed with
+  // raw history.pushState (untracked by Next Router), so the browser fires
+  // popstate on Back/Forward without remounting — re-read the hash here to keep
+  // the tab in line with the URL. An empty hash (back past all tab entries)
+  // resets to biography, matching a fresh visit.
+  useEffect(() => {
+    const resolveHash = () => {
+      const hash = window.location.hash.slice(1) // e.g. "media-videos"
+      const mediaMatch = /^media-(images|videos)$/.exec(hash)
+      if (mediaMatch) {
+        setActiveTab('media')
+        setMediaSection(mediaMatch[1] as MediaSection)
+      } else if (tabs.includes(hash as TabId)) {
+        setActiveTab(hash as TabId)
+      } else if (hash === '') {
+        setActiveTab('biography')
+      }
+    }
+    window.addEventListener('popstate', resolveHash)
+    return () => window.removeEventListener('popstate', resolveHash)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Tabs only depend on hasNews/hasProjects, which are static per page
+
+  // Update URL hash when tab changes. pushState (not replaceState) is
+  // deliberate: it lets Back/Forward step through each tab, which the popstate
+  // listener above depends on. The cost is extra history entries.
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab)
     storeTab(window.location.pathname, tab, mediaSection)
@@ -316,7 +337,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
             images={artist.galleryImages || []}
             videos={artist.videoLinks}
             emptyMessage={t('empty.media')}
-            initialSection={mediaSection}
+            section={mediaSection}
             onSectionChange={handleMediaSectionChange}
           />
         )}
