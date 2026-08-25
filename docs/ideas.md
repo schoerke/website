@@ -32,6 +32,14 @@
 - concert dates
 - programs
 
+## Idea: Sentry Error Monitoring
+
+- monitor errors for Schoerke site using existing Sentry account (own website already monitored)
+- separate Sentry project per site, own DSN per project
+- add `SENTRY_DSN` env var to Vercel project (Member role can add env vars)
+- free Developer plan: 5K errors/month per org, 1 user, email alerts
+- complementary to free Vercel deploy notifications
+
 ## Docs
 
 - generate a change log from git commits
