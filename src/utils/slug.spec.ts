@@ -86,6 +86,9 @@ describe('generateSlug', () => {
       expect(generateSlug('2026/27')).toBe('2026-27')
       expect(generateSlug('Season Programs 2026/27')).toBe('season-programs-2026-27')
       expect(generateSlug('Saisonprogramme 2027/2028')).toBe('saisonprogramme-2027-2028')
+      expect(generateSlug('2026/27/')).toBe('2026-27')
+      expect(generateSlug('/2026')).toBe('2026')
+      expect(generateSlug('2026//27')).toBe('2026-27')
     })
 
     it('should preserve existing hyphens', () => {

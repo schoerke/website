@@ -1,4 +1,4 @@
-import { FieldHook } from 'payload'
+import type { FieldHook } from 'payload'
 
 /**
  * Maximum length of a generated slug in bytes.
@@ -65,6 +65,7 @@ export function generateSlug(text: string): string {
       .trim()
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .replace(/^-+|-+$/g, '') // Trim leading/trailing hyphens (e.g. from edge slashes)
   )
 }
 
