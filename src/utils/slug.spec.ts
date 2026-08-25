@@ -82,6 +82,12 @@ describe('generateSlug', () => {
       expect(generateSlug('Number 42')).toBe('number-42')
     })
 
+    it('should convert slashes to hyphens', () => {
+      expect(generateSlug('2026/27')).toBe('2026-27')
+      expect(generateSlug('Season Programs 2026/27')).toBe('season-programs-2026-27')
+      expect(generateSlug('Saisonprogramme 2027/2028')).toBe('saisonprogramme-2027-2028')
+    })
+
     it('should preserve existing hyphens', () => {
       expect(generateSlug('pre-existing-slug')).toBe('pre-existing-slug')
       expect(generateSlug('multi-part-name')).toBe('multi-part-name')

@@ -58,6 +58,7 @@ export function generateSlug(text: string): string {
       .replace(/ö/g, 'oe')
       .replace(/ü/g, 'ue')
       .replace(/ß/g, 'ss')
+      .replace(/\//g, '-') // Slashes separate words (e.g. "2026/27" → "2026-27")
       .normalize('NFD') // Normalize unicode characters
       .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
       .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
