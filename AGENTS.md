@@ -4,6 +4,13 @@
 
 **RULE: NEVER MODIFY THE DATABASE OR GENERATE CREDENTIALS WITHOUT EXPLICIT USER CONFIRMATION**
 
+**NEVER USE `ksschoerke-development` — IT DOES NOT EXIST. Forget it entirely.** The only databases are:
+- **Local `dev.db`** (dev server/MCP/admin — canonical dev)
+- **`ksschoerke-production`** (live)
+
+Any `.env`/docs/scripts that reference `ksschoerke-development` are STALE. Never target it, never read it, never
+mention it.
+
 This includes:
 
 - **Schema changes** (migrations, field additions/removals, type changes)

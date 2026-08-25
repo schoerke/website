@@ -120,6 +120,73 @@ turso db shell ksschoerke-development "SELECT COUNT(*) FROM artists;"
 
 ---
 
+## 3d. Refresh local `dev.db` from nightly R2 backup (VERIFIED CHECKLIST)
+
+**Use this to seed/refresh the LOCAL dev SQLite file (`file:./dev.db`, canonical dev) from the nightly prod
+backup.** Source: `docs/superpowers/plans/2026-08-23-local-sqlite-dev.md` Task 4 (verified). This is the ONLY
+sanctioned way to refresh local dev — do NOT invent a different procedure.
+
+**Prereq:** R2 creds `BACKUP_R2_ACCESS_KEY` / `BACKUP_R2_SECRET` / `BACKUP_R2_ENDPOINT` (GitHub Actions secrets,
+NOT `.env`/`.env.local`). Export in your shell, not inline (avoids shell history). They must be sourced each
+shell session; they are not in `.env`.
+
+- [ ] **1. Stop dev** (must be stopped before replacing dev.db — split-brain otherwise)
+- [ ] **2. List backups, note latest** — `aws s3 ls s3://schoerke-website-backup/backups/ --endpoint-url "$BACKUP_R2_ENDPOINT"` → pick newest `ksschoerke-production-<TIMESTAMP>.db.gz` (= `<LATEST>`)
+- [ ] **3. Download + decompress atomically, clear stale companions:**
+
+```bash
+aws s3 cp s3://schoerke-website-backup/backups/ksschoerke-production-<LATEST>.db.gz \
+  --endpoint-url "$BACKUP_R2_ENDPOINT" ./dev.db.gz
+gunzip -c dev.db.gz > dev.db.new && mv dev.db.new dev.db
+rm -f dev.db-wal dev.db-shm dev.db.gz
+```
+
+  (Atomic replace via `gunzip -c > dev.db.new && mv` avoids partial-file corruption; `rm` clears stale WAL/SHM.)
+
+- [ ] **4. Sanity check — integrity + several key tables** (not a single sample):
+
+```bash
+sqlite3 dev.db "PRAGMA integrity_check;"
+sqlite3 dev.db "SELECT 'artists', COUNT(*) FROM artists UNION ALL
+                SELECT 'posts', COUNT(*) FROM posts UNION ALL
+                SELECT 'search', COUNT(*) FROM search UNION ALL
+                SELECT 'payload_migrations', COUNT(*) FROM payload_migrations;"
+```
+
+  Expected: `integrity_check` = `ok`; nonzero counts; migrations present. If integrity fails, delete dev.db and re-download.
+
+- [ ] **5. Clear `dev|-1`, assert real migrations present:**
+
+```bash
+sqlite3 dev.db "SELECT name, batch FROM payload_migrations;"
+sqlite3 dev.db "DELETE FROM payload_migrations WHERE name='dev';"
+sqlite3 dev.db "SELECT name FROM payload_migrations ORDER BY name;"
+```
+
+  Expected after delete: the 4 repo migrations (`20260815_artist_repertoire_ordering`,
+  `20260816_ensure_employee_email_unique`, `20260819_localize_artist_biography_pdf`,
+  `20260820_localize_video_link_label`). If missing, step 6 re-runs them.
+
+- [ ] **6. Apply pending migrations (repo-root cwd required):**
+
+```bash
+cd <repo-root>
+DATABASE_URI="file:./dev.db" DATABASE_AUTH_TOKEN="local" NODE_ENV=production pnpm payload migrate
+```
+
+  Expected: applies any missing migrations, exits 0. If it prompts interactively, the `dev|-1` delete failed — stop.
+
+- [ ] **7. MCP re-key (HUMAN — admin UI).** The prod backup has NO `payload_mcp_api_keys` table (MCP is
+  `NODE_ENV !== 'production'` gated; prod disables it). Full steps in
+  `docs/superpowers/plans/2026-08-23-local-sqlite-dev.md` Task 5: start dev → admin → create MCP API key →
+  enable `find` on all 8 collections + home-page global → write key to
+  `~/.config/opencode/secrets/payload-mcp.key` → restart opencode MCP client → verify a `payload_find*` tool.
+
+**Do NOT preserve/copy the `payload_mcp_api_keys` table across the swap** — re-key is the sanctioned path
+(Task 5). The swap itself never touches `payload_mcp*` (the R2 prod export has none to begin with).
+
+---
+
 ## 4. Schema parity reset (schema only, no data)
 
 Use when dev's schema has drifted from prod (e.g. dev was schema-pushed without FKs while prod has migrations).

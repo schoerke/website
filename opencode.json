@@ -51,19 +51,23 @@
       "tail ~/.zsh*": "deny",
       "cat ~/.bash*": "deny",
       "tail ~/.bash*": "deny",
+      "*cat *.env*": "deny",
+      "*tail *.env*": "deny",
       "*cat*~/.config/opencode/secrets/*": "deny",
       "*tail*~/.config/opencode/secrets/*": "deny"
     },
     "edit": {
       "*": "allow",
-      ".env": "deny",
-      ".env.*": "deny",
+      "**/.env": "deny",
+      "**/.env.*": "deny",
       "~/.zsh*": "deny",
       "~/.bash*": "deny",
       "~/.config/opencode/secrets/**": "deny"
     },
     "read": {
       "*": "allow",
+      "**/.env": "deny",
+      "**/.env.*": "deny",
       "~/.zsh*": "deny",
       "~/.bash*": "deny",
       "~/.config/opencode/secrets/**": "deny"
