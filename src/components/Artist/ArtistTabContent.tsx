@@ -26,7 +26,7 @@ export const BiographyTab: React.FC<BiographyTabProps> = ({ content, quote }) =>
   return (
     <div className="bio-prose prose max-w-none">
       {quote && (
-        <blockquote className="border-primary-yellow mb-6 border-l-4 pl-6 font-playfair text-3xl italic text-gray-700">
+        <blockquote className="border-primary-yellow mb-6 border-l-4 pl-6 font-playfair not-italic text-2xl text-gray-700 md:max-w-[75%]">
           {quote}
         </blockquote>
       )}
