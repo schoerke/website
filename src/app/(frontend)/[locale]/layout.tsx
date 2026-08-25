@@ -3,6 +3,8 @@ import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
 import HeaderLogo from '@/components/Header/HeaderLogo'
 import SearchProvider from '@/components/Search/SearchProvider'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { routing } from '@/i18n/routing'
 import { hasLocale, NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
@@ -48,6 +50,8 @@ export default async function LocaleLayout({ children, params }: Props) {
             <Footer locale={locale} />
           </ErrorBoundary>
         </NextIntlClientProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
