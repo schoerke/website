@@ -43,23 +43,25 @@ turso db export ksschoerke-production --output-file data/dumps/NAME.db   # full 
 
 ## Vercel Team / Account Management (CRITICAL)
 
-**This project's Vercel deployment is managed by a DIFFERENT team than the local CLI account.** The local `vercel`
-CLI is authenticated as **zeitchef** (teams: `zeitchef-projects`, `zeitweb`). Do NOT assume either owns this
-project.
+**This project's Vercel deployment lives on the client team `eva-wagners-projects`.** Local `vercel` CLI
+authenticates as **zeitchef**, who is a **Member** of that team (since 2026-08-25) and can use his own CLI
+auth/token — no client token needed.
 
-- ⚠️ `.vercel/project.json` is **STALE**: its `orgId` `team_FEM8tiqNlj16ZQJsumWmUC4R` is an **OLD copy of this
-  project that was transferred to the client**. Never use it as the current team id.
-- ✅ **Verified current team (2026-08-23):** `team_VW0SXoOVtcPZ7edNwwzmcPnD` — client Eva Wagner's team
-  ("eva-wagners-projects"), owner `e.wagner@ks-schoerke.de`. Project `website` →
-  `schoerke-website.vercel.app`, plan **hobby**.
-- `vercel link` / `vercel whoami` / `vercel teams ls` under the local `zeitchef` CLI auth point at the WRONG
-  teams. Always use a token from the client account.
+- ⚠️ `.vercel/project.json` was **STALE** (old `orgId` `team_FEM8tiqNlj16ZQJsumWmUC4R`, an old copy of this
+  project transferred to the client). **Re-linked 2026-08-25** to the real project.
+- ✅ **Verified current team (2026-08-23, re-verified 2026-08-25):** `team_VW0SXoOVtcPZ7edNwwzmcPnD` — client
+  Eva Wagner's team ("eva-wagners-projects" / Künstlersekretariat Schoerke), owner `e.wagner@ks-schoerke.de`
+  (Eva is the maintainer's wife — Owner-only tasks like billing/SSO/member mgmt go through her account).
+  Project `website` → `schoerke-website.vercel.app`, plan **Pro** (upgraded from hobby).
+- `vercel teams ls` as zeitchef shows: `zeitchef-projects` (own), `eva-wagners-projects`, `zeitweb`.
+- **Member role limits:** no billing, no inviting/removing members, no team deletion, no team-level SSO/security.
+  Full project control otherwise (prod deploy, all env vars incl prod, settings, domains).
+- **Own projects unaffected:** per-repo `.vercel` links keep scopes separate; use `--scope` per command or
+  `vercel teams switch`.
 - ⚠️ **Token scope matters:** a **project-scoped** token (`vcp_...`) cannot call team/user endpoints
   (`/v2/teams`, `/v2/user`, usage, observability) — all return 403/"User not found". For usage/operations/observability
   you need a **team-scoped** token. `vercel usage`, `/v2/team/{teamId}/usage`, `/v1/billing/charges` are the API
-  surfaces (charges returns "Plan not found" on hobby).
+  surfaces. With Member role on a Pro team, CLI auth covers these directly.
 - ✅ **Blob store (verified 2026-08-23):** `store_3jIBiIxvBnjU5oC1` "schoerke-website-storage" —
-  **922 blobs, 275 MB**, hobby, region `fra1`, public. Project `prj_KS2v04GAnLLPne2n1ILRFJaQ6iLk`.
-- ⚠️ **Hobby has NO programmatic usage/operations API**: `vercel usage` + `/v1/billing/charges` → "Plan not
-  found". Blob Simple/Advanced operation counters are **dashboard-only** (team Observability → Blob, or store →
-  Usage). API gives store size/count (`GET /v1/storage/stores`) but not operation counts.
+  **922 blobs, 275 MB**, region `fra1`, public. Project `prj_KS2v04GAnLLPne2n1ILRFJaQ6iLk` (= current linked
+  projectId since 2026-08-25 re-link).

@@ -84,3 +84,4 @@ src/payload-generated-schema.ts
 *.db-journal
 dev.db*
 test.db*
+.env*
