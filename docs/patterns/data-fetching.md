@@ -404,4 +404,3 @@ describe('NewsFeedClient', () => {
 - [Next.js Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
 - [Payload Local API](https://payloadcms.com/docs/local-api/overview)
 - See `AGENTS.md` for component patterns and coding standards
-- See `docs/components.md` for component architecture

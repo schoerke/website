@@ -91,7 +91,7 @@ verification, row-count checks, backup/restore/clone, env identity). Every `turs
 `opencode.json`.
 
 **Note:** `turso db import` creates a **new** database — it does NOT overwrite an existing one. For backup,
-restore, clone prod→dev, and schema-parity procedures, see `docs/turso-operations.md` (verified methods).
+restore, clone prod→dev, and schema-parity procedures, see `docs/memory/db-operations.md` (verified methods).
 
 ## Operational Knowledge (see MEMORY.md)
 

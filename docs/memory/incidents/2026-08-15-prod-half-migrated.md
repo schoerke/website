@@ -40,8 +40,8 @@ FK**, array tables dropped, `payload_migrations` empty. A later build's `migrate
 4. Verify: compare every table's `COUNT(*)` and index set snapshot vs restored.
 
 **The full verified procedures (backup, dump, restore, clone prod→dev, schema parity) live in
-`docs/turso-operations.md` — use that file, not ad-hoc attempts.** When wiping a DB for a clone/restore
-(`docs/turso-operations.md` §3c), the per-table `DROP` loop can **silently skip tables** (FK ordering) — verify
+`docs/memory/db-operations.md` — use that file, not ad-hoc attempts.** When wiping a DB for a clone/restore
+(`docs/memory/db-operations.md` §3c), the per-table `DROP` loop can **silently skip tables** (FK ordering) — verify
 `0 tables remain` (`sqlite_master` count) BEFORE importing the restore, or the wipe is incomplete and the clone is
 contaminated.
 

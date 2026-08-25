@@ -120,13 +120,13 @@ If you want to add the page to navigation, update the relevant components:
 
 The Pages collection uses the Lexical rich text editor. When adding content:
 
-#### ✅ DO:
+#### ✅ DO
 
 - Use the editor's formatting toolbar for headings, lists, bold, etc.
 - Paste content as **plain text first**, then format using the toolbar
 - Use consistent heading hierarchy (h1 → h2 → h3)
 
-#### ❌ DON'T:
+#### ❌ DON'T
 
 - Copy/paste directly from HTML pages (preserves inline styles)
 - Use inline styles or custom HTML

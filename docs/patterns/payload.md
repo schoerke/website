@@ -1,7 +1,7 @@
 # Payload CMS Operational Patterns
 
 Payload-specific knowledge that bit us (and patterns that work). Complements docs/memory/ (incidents/procedures)
-and `docs/turso-operations.md` (DB ops). Loaded every session via `opencode.json`.
+and `docs/memory/db-operations.md` (DB ops). Loaded every session via `opencode.json`.
 
 ---
 

@@ -1,11 +1,15 @@
-# Turso Database Operations — Dump, Restore, Inspection
+# DB Operations — Backup, Restore, Inspection (Turso)
 
-**Verified 2026-08-15 against a throwaway DB.** Follow these EXACT steps. The 2026-08-15 prod incident was
-caused by deviating from the official restore path (using `sqlite3 .dump`, which emits `unistr()` calls that
-Turso's server SQLite can't execute). The methods below are Turso-native and verified.
+Verified Turso-native procedures (dump, restore, clone prod→dev, schema parity). **Verified 2026-08-15 against a
+throwaway DB.** Follow these EXACT steps. The 2026-08-15 prod incident was caused by deviating from the official
+restore path (using `sqlite3 .dump`, which emits `unistr()` calls Turso's server SQLite can't execute).
 
-**Databases:** `ksschoerke-development` (sandbox, cloned from prod), `ksschoerke-production` (live). All commands
-use Turso CLI credentials — **no `.env` swap needed.**
+**Databases:** `ksschoerke-development` (sandbox), `ksschoerke-production` (live). All commands use Turso CLI
+credentials — **no `.env` swap needed.** Every `turso` command requires approval per `opencode.json`.
+
+> ⚠️ For reading **content** data (artists, repertoires, posts…), prefer the Payload Local API
+> (`pnpm dump <collection>`, `tsx` read script, service/action) — see docs/memory/data-operations.md. Turso CLI is
+> for DB/SQL-specific work (backup/restore/clone, schema inspection, counts, env identity).
 
 ---
 
@@ -18,7 +22,7 @@ turso db export ksschoerke-production --output-file data/dumps/ksschoerke-produc
 
 - Produces a complete SQLite snapshot (`.db`) + optional `.db-wal` file.
 - **This is the ONLY safe pre-write backup.** Take one before ANY prod mutation and keep it until verified.
-- Inspect it locally: `sqlite3 data/dumps/NAME.db "SELECT COUNT(*) FROM artists"`.
+- Inspect locally: `sqlite3 data/dumps/NAME.db "SELECT COUNT(*) FROM artists"`.
 
 ---
 
@@ -30,7 +34,7 @@ Use **Turso's own shell** `.dump`, NOT `sqlite3 .dump` (the latter emits `unistr
 turso db shell ksschoerke-production .dump > data/dumps/ksschoerke-production-$(date +%Y%m%d-%H%M%S).sql
 ```
 
-Output is clean SQL (`CREATE TABLE IF NOT EXISTS`, `INSERT`, `COMMIT`) that Turso can reload directly.
+Output is clean SQL (`CREATE TABLE IF NOT EXISTS`, `INSERT`, `COMMIT`) Turso can reload directly.
 
 ---
 
@@ -52,7 +56,7 @@ Output is clean SQL (`CREATE TABLE IF NOT EXISTS`, `INSERT`, `COMMIT`) that Turs
    turso db shell ksschoerke-production "PRAGMA foreign_keys=ON;"
    ```
 
-4. **Load the dump**:
+4. **Load the dump:**
 
    ```bash
    turso db shell ksschoerke-production < data/dumps/NAME.sql
@@ -61,10 +65,13 @@ Output is clean SQL (`CREATE TABLE IF NOT EXISTS`, `INSERT`, `COMMIT`) that Turs
 5. **Verify** against the dump source:
 
    ```bash
-   # compare key counts (source vs restored)
    sqlite3 data/dumps/SOURCE.db "SELECT COUNT(*) FROM artists;"
    turso db shell ksschoerke-production "SELECT COUNT(*) FROM artists;"
    ```
+
+**⚠️ The per-table `DROP` loop can silently skip tables (FK ordering).** Verify `0 tables remain`
+(`sqlite_master` count) BEFORE importing the restore, or the wipe is incomplete and the clone/restore is
+contaminated.
 
 ### 3b. Restore into a NEW database (simplest, non-destructive)
 
@@ -81,7 +88,7 @@ Creates a new DB you can inspect before any prod impact. **Note:** `turso db imp
 
 ## 3c. Clone prod → dev (standard workflow — with data)
 
-**This is the normal way to refresh dev from prod.** Dev is a sandbox; no GDPR concern here (small team, public
+**This is the normal way to refresh dev from prod.** Dev is a sandbox; no GDPR concern (small team, public
 content). Clone with data so dev matches prod for realistic testing.
 
 ```bash
@@ -91,7 +98,7 @@ turso db export ksschoerke-development --output-file data/dumps/ksschoerke-devel
 # 2. dump prod to SQL
 turso db shell ksschoerke-production .dump > data/dumps/prod-clone.sql
 
-# 3. wipe dev
+# 3. wipe dev (verify 0 tables remain after — see §3a warning)
 turso db shell ksschoerke-development "PRAGMA foreign_keys=OFF;"
 for t in $(turso db shell ksschoerke-development "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';" 2>&1 | tail -n +2); do
   echo "DROP TABLE IF EXISTS \"$t\";" | turso db shell ksschoerke-development >/dev/null 2>&1
@@ -109,7 +116,7 @@ turso db shell ksschoerke-development "SELECT COUNT(*) FROM artists;"
 **Notes:**
 
 - Dev inherits prod's `payload_migrations` (no `dev|-1`). First `pnpm dev` re-adds `dev|-1` — harmless in dev.
-- If you only need schema parity (e.g. after a migration), see §5 below.
+- If you only need schema parity (e.g. after a migration), see §4 below.
 
 ---
 
@@ -133,8 +140,8 @@ turso db shell ksschoerke-development "PRAGMA foreign_key_list(artists_rels);"
 ```
 
 **Prevention beats correction:** dev/prod diverge because dev uses `pushDevSchema` (ALTER, no FKs) while prod
-uses migrations (table-recreation, FKs). Always generate + review a migration for schema changes, and use the
-schema-parity reset when drift is detected.
+uses migrations (table-recreation, FKs). Always generate + review a migration for schema changes (see
+docs/memory/migrations.md), and use the schema-parity reset when drift is detected.
 
 ---
 
@@ -155,7 +162,8 @@ sqlite3 data/dumps/NAME.db "SELECT COUNT(*) FROM artists;"   # inspect a local s
 2. **`turso db import` and `turso db create --from-file` create NEW databases** — they never overwrite an
    existing one. For overwrites use `.dump` + wipe + restore (§3a/§3c).
 3. **Take a fresh export BEFORE any prod write**, and keep it until the restore is verified.
-4. **Verify after restore** — compare every table `COUNT(*)` and the index list against the source.
+4. **Verify after restore** — compare every table `COUNT(*)` and the index list against the source, and confirm
+   the wipe left `0 tables remain`.
 5. **prod scripts require `NODE_ENV=production`** (prevents `pushDevSchema` re-adding the `dev|-1` migration
    marker). See docs/memory/migrations.md.
 6. **`dev|-1` in `payload_migrations` breaks CI migrations** (interactive prompt silently cancels). Delete it if

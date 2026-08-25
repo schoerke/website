@@ -76,7 +76,6 @@ codebase is structured for clarity, ease of contribution, and long-term sustaina
 ├── docs/                  # Documentation (ADRs, plans, components, issues, questions, todos)
 │   ├── adr/
 │   ├── plans/
-│   ├── components.md
 │   └── ...
 ├── scripts/               # Data migration and utility scripts
 │   └── data/

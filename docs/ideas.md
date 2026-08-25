@@ -11,10 +11,6 @@
 - content creators add credit and identifier
 - Payload enforces/generates name on creation
 
-## Idea: Fixture Management
-
-- add Collection callback to create/update fixtures for easy seeding and testing
-
 ## Idea: PDF Generation
 
 - artist biographies
@@ -29,8 +25,12 @@
 
 ## UI: Enhancements
 
-- only render slider on artist list if filter active
 - global navigation on mobile/desktop
+
+## UI: Blocks
+
+- concert dates
+- programs
 
 ## Docs
 
