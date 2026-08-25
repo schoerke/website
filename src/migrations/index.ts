@@ -3,6 +3,7 @@ import * as migration_20260816_212049_ensure_employee_email_unique from './20260
 import * as migration_20260819_202221_localize_artist_biography_pdf from './20260819_202221_localize_artist_biography_pdf'
 import * as migration_20260820_194949_localize_video_link_label from './20260820_194949_localize_video_link_label'
 import * as migration_20260825_195406_remove_autosave_columns from './20260825_195406_remove_autosave_columns'
+import * as migration_20260825_211420_add_guides_collection from './20260825_211420_add_guides_collection'
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20260825_195406_remove_autosave_columns.up,
     down: migration_20260825_195406_remove_autosave_columns.down,
     name: '20260825_195406_remove_autosave_columns',
+  },
+  {
+    up: migration_20260825_211420_add_guides_collection.up,
+    down: migration_20260825_211420_add_guides_collection.down,
+    name: '20260825_211420_add_guides_collection',
   },
 ]
