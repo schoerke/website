@@ -11,6 +11,7 @@ import { VideoEmbed } from '@/blocks/VideoEmbed'
 import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '@/collections/hooks/revalidateHomePage'
 import { revalidatePostOnChange, revalidatePostOnDelete } from '@/collections/hooks/revalidatePost'
 import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
+import { blockDuplicateSlug } from '@/collections/hooks/blockDuplicateSlug'
 import { categoryOptions } from '@/data/options'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { extractLexicalText } from '@/utils/search/extractLexicalText'
@@ -198,6 +199,7 @@ export const Posts: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeChange: [blockDuplicateSlug],
     afterChange: [syncArtistProjects, revalidateHomePageOnPostChange, revalidatePostOnChange],
     afterDelete: [revalidateHomePageOnPostDelete, revalidatePostOnDelete],
   },
