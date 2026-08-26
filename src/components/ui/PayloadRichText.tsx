@@ -1,5 +1,7 @@
 'use client'
 
+/* oxlint-disable no-img-element -- mirrors the default UploadJSXConverter markup */
+
 import type { LinkFields } from '@payloadcms/richtext-lexical'
 import type { SerializedEditorState, SerializedLexicalNode } from '@payloadcms/richtext-lexical/lexical'
 
@@ -11,8 +13,30 @@ import AudioEmbed from '@/components/blocks/AudioEmbed'
 import type { VideoEmbedBlockFields } from '@/blocks/VideoEmbed'
 import type { AudioEmbedBlockFields } from '@/blocks/AudioEmbed'
 import { resolveTextStateStyle } from '@/data/postTextState'
+import { appendImageVersion } from '@/utils/image'
 
 const NODE_STATE_KEY = '$'
+
+interface VersionedUploadDoc {
+  url?: string | null
+  updatedAt?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  width?: number | null
+  height?: number | null
+  alt?: string | null
+  sizes?: Record<
+    string,
+    {
+      url?: string | null
+      width?: number | null
+      height?: number | null
+      mimeType?: string | null
+      filesize?: number | null
+      filename?: string | null
+    } | null
+  >
+}
 
 function hyphenToCamel(str: string): string {
   return str.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase())
@@ -44,6 +68,66 @@ function buildInternalHref(doc: NonNullable<LinkFields['doc']>, locale?: string)
     default:
       return slug ? `${localePart}/${slug}` : '#'
   }
+}
+
+interface VersionedUploadNodeArgs {
+  node: SerializedLexicalNode & { value?: unknown; fields?: { alt?: string } }
+}
+
+/**
+ * Lexical upload-node JSX converter that mirrors the default UploadJSXConverter
+ * but appends the cache-busting `?v=updatedAt` param to every image URL. Kept as
+ * a standalone export so the versioning behavior is unit-testable.
+ */
+export function versionedUploadJSXConverter({ node }: VersionedUploadNodeArgs): React.ReactNode {
+  const uploadDoc = typeof node.value === 'object' && node.value !== null ? (node.value as VersionedUploadDoc) : null
+  if (!uploadDoc) return null
+
+  const alt = node.fields?.alt || uploadDoc.alt || ''
+  // Non-image uploads render as a link, no cache-busting needed
+  if (!uploadDoc.mimeType?.startsWith('image')) {
+    return (
+      <a href={uploadDoc.url ?? ''} rel="noopener noreferrer">
+        {uploadDoc.filename}
+      </a>
+    )
+  }
+
+  const url = appendImageVersion(uploadDoc.url ?? '', uploadDoc)
+  const hasSizes = uploadDoc.sizes && Object.keys(uploadDoc.sizes).length > 0
+
+  if (!hasSizes) {
+    return <img alt={alt} height={uploadDoc.height ?? undefined} src={url} width={uploadDoc.width ?? undefined} />
+  }
+
+  // Mirror the default UploadJSXConverter <picture> markup with versioned URLs
+  const pictureJSX = []
+  for (const size in uploadDoc.sizes) {
+    const imageSize = uploadDoc.sizes[size]
+    if (
+      !imageSize ||
+      !imageSize.width ||
+      !imageSize.height ||
+      !imageSize.mimeType ||
+      !imageSize.filesize ||
+      !imageSize.filename ||
+      !imageSize.url
+    ) {
+      continue
+    }
+    pictureJSX.push(
+      <source
+        key={size}
+        media={`(max-width: ${imageSize.width}px)`}
+        srcSet={appendImageVersion(imageSize.url, uploadDoc)}
+        type={imageSize.mimeType}
+      />
+    )
+  }
+  pictureJSX.push(
+    <img key="image" alt={alt} height={uploadDoc.height ?? undefined} src={url} width={uploadDoc.width ?? undefined} />
+  )
+  return <picture>{pictureJSX}</picture>
 }
 
 const PayloadRichText: React.FC<PayloadRichTextProps> = ({ content, className, locale }) => {
@@ -91,6 +175,7 @@ const PayloadRichText: React.FC<PayloadRichTextProps> = ({ content, className, l
             return <AudioEmbed url={url} embedCode={embedCode} />
           },
         },
+        upload: (args) => versionedUploadJSXConverter(args),
       })}
     />
   )
