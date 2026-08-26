@@ -63,6 +63,10 @@ Source: repo-root `MEMORY.md` — extracted from §9, §10.
 - **[CRITICAL]** **Missing-locale audit:** a post can have one complete locale and none of the other. Check both
   `posts_locales` rows per post (title+slug+content). As of 2026-08-24 prod: 184/213 missing EN, 247 missing DE
   (content-team).
+- **[INFO]** **Posts `normalizedTitle`/`normalizedContent` self-populate on every create/update** via field
+  `beforeChange` hooks — columns are in the schema **baseline** (2026-08-15), not added later, so pre-existing
+  rows already have values. Verified 2026-08-26: dry-run on prod-shaped dev.db found **0 candidates**. The admin
+  list search hits these fields only when listed in `admin.listSearchableFields`.
 
 ---
 
@@ -90,3 +94,8 @@ Source: repo-root `MEMORY.md` — extracted from §9, §10.
     docs/memory/environments.md), a "successful" Local API update may land on the wrong database. Check
     `DATABASE_URI` output from the actual run (not the shell) and confirm against `sqlite3 dev.db` where local is
     the target.
+12. **Measure data state before designing backfill/migration machinery.** Run a read-only count or dry-run FIRST
+    (e.g. `payload.count` on `{ field: { exists: false } }`, or the script's `--dry-run`). 2026-08-26 lesson: we
+    specced + double code-reviewed a full posts backfill that was a **no-op** — the shadow fields lived in the
+    schema baseline and hooks populated them at create, so 0 rows needed filling. One dry-run would have collapsed
+    the whole exercise to a one-line config change. Spec/plan the machinery only after the data says it's needed.
