@@ -42,6 +42,18 @@ Source: repo-root `MEMORY.md` — extracted from §9, §10.
   MCP clients that send GET get "SSE error: Non-200 status code (405)". Do NOT set `oauth: false` on this server
   (it broke auth detection); the working opencode config is the Bearer header from `{env:...}` with no `oauth`
   field.
+- **[CRITICAL]** **MCP auth 401 root causes + re-key:** `/api/mcp` auth = `Authorization: Bearer <key>` →
+  HMAC-SHA256(PAYLOAD_SECRET, key) looked up against `api_key_index` in `payload_mcp_api_keys`
+  (`@payloadcms/plugin-mcp` `resolveAccessSettings`). A 401 means: (a) key not in that table, (b) stale key in
+  `~/.zshenv` from before a dev.db refresh, or (c) corrupt row (index ≠ HMAC of its own key). The stored
+  `api_key` field is ENCRYPTED at rest (Payload `useAPIKey`); the index is HMAC of the plaintext. Re-key: create
+  via admin UI (System → API Keys) or a Local API create with an explicit `apiKey`; the plaintext key is shown
+  once. Do NOT compare raw keys against `api_key` — compare HMACs or auth against the live server.
+- **[CRITICAL]** **Env-var changes don't reach opencode MCP without a FULL terminal-emulator restart.** opencode
+  caches BOTH its environment AND the MCP connection per session. Editing `PAYLOAD_MCP_KEY` in `~/.zshenv` (or
+  any rc) and restarting opencode inside the same terminal is NOT enough — the terminal emulator itself must be
+  restarted so a fresh shell re-sources zsh and opencode starts with the new env. Diagnose with
+  `echo ${#PAYLOAD_MCP_KEY}` (should match expected length) before blaming the server.
 - **[CRITICAL]** **`generateSlug` transliterates German umlauts** (ä→ae, ö→oe, ü→ue, ß→ss) BEFORE stripping other
   diacritics (é/à/ñ still strip). So `Münchener` → `muenchener`, `zurück` → `zurueck`. Changed 2026-08-24; old
   slugs may still use stripped forms (`munchener`) — regenerating from title applies the new rule.
