@@ -1,4 +1,5 @@
 import { authenticated } from '@/access/authenticated'
+import { revalidateImageOnChange, revalidateImageOnDelete } from '@/collections/hooks/revalidateImage'
 import type { CollectionConfig } from 'payload'
 
 export const Images: CollectionConfig = {
@@ -18,6 +19,10 @@ export const Images: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateImageOnChange],
+    afterDelete: [revalidateImageOnDelete],
   },
   admin: {
     group: 'Media',
