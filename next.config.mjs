@@ -27,6 +27,14 @@ const nextConfig = {
         hostname: 'pub-ff0ee23113d64c13b1d4b075f4d0b9b8.r2.dev',
       },
     ],
+    // Allow the cache-busting query string (?v=updatedAt) on Payload's media
+    // static route. Next 16 requires localPatterns when local image srcs carry
+    // a query string (otherwise it 400s / throws unconfigured-localpatterns).
+    localPatterns: [
+      {
+        pathname: '/api/images/file/**',
+      },
+    ],
     // Increase device sizes for better image optimization
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     // Increase image sizes for responsive images

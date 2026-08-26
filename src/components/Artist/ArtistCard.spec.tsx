@@ -138,7 +138,7 @@ describe('ArtistCard', () => {
       const img = screen.getByTestId('artist-image')
       expect(img).toBeInTheDocument()
       // Should use original full-res URL for Next.js image optimization
-      expect(img).toHaveAttribute('src', 'https://example.com/artist.jpg')
+      expect(img).toHaveAttribute('src', 'https://example.com/artist.jpg?v=2023-01-01T00%3A00%3A00.000Z')
       expect(img).toHaveAttribute('alt', 'John Doe')
     })
 
@@ -176,7 +176,7 @@ describe('ArtistCard', () => {
       renderWithIntl(<ArtistCard {...defaultProps} image={image} />)
 
       const img = screen.getByTestId('artist-image')
-      expect(img).toHaveAttribute('src', 'https://example.com/artist.jpg')
+      expect(img).toHaveAttribute('src', 'https://example.com/artist.jpg?v=2023-01-01T00%3A00%3A00.000Z')
     })
   })
 

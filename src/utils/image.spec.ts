@@ -1,6 +1,6 @@
 import type { Image as PayloadImage } from '@/payload-types'
 import { describe, expect, it } from 'vitest'
-import { getImageUrl, getValidImageUrl, isImageObject, isValidUrl } from './image'
+import { getImageUrl, getImageUrlForSize, getValidImageUrl, isImageObject, isValidUrl } from './image'
 
 describe('Image Utilities', () => {
   describe('isImageObject', () => {
@@ -179,6 +179,95 @@ describe('Image Utilities', () => {
       } as PayloadImage
 
       expect(getValidImageUrl(imageWithEmptyUrl)).toBeNull()
+    })
+  })
+
+  describe('getImageUrl cache-busting (?v=updatedAt)', () => {
+    it('should append ?v=updatedAt when updatedAt is present', () => {
+      const image = {
+        url: '/api/images/file/test.jpg',
+        updatedAt: '2026-08-26T20:38:13.739Z',
+      } as PayloadImage
+
+      expect(getImageUrl(image)).toBe('/api/images/file/test.jpg?v=2026-08-26T20%3A38%3A13.739Z')
+      expect(getValidImageUrl(image)).toBe('/api/images/file/test.jpg?v=2026-08-26T20%3A38%3A13.739Z')
+    })
+
+    it('should append with & when the URL already has a query string', () => {
+      const image = {
+        url: 'https://example.com/image.jpg?w=100',
+        updatedAt: '2026-08-26T00:00:00.000Z',
+      } as PayloadImage
+
+      expect(getImageUrl(image)).toBe('https://example.com/image.jpg?w=100&v=2026-08-26T00%3A00%3A00.000Z')
+    })
+
+    it('should return URL unchanged when updatedAt is missing', () => {
+      const image = {
+        url: 'https://example.com/original.jpg',
+      } as PayloadImage
+
+      expect(getImageUrl(image)).toBe('https://example.com/original.jpg')
+    })
+  })
+
+  describe('getImageUrlForSize', () => {
+    it('should return the thumbnail URL with cache-busting version', () => {
+      const image = {
+        url: 'https://example.com/original.jpg',
+        updatedAt: '2026-08-26T10:00:00.000Z',
+        sizes: {
+          thumbnail: {
+            url: '/api/images/file/test-400x300.webp',
+            width: 400,
+            height: 300,
+            mimeType: 'image/webp',
+            filesize: 15000,
+            filename: 'test-400x300.webp',
+          },
+        },
+      } as PayloadImage
+
+      expect(getImageUrlForSize(image, 'thumbnail')).toBe(
+        '/api/images/file/test-400x300.webp?v=2026-08-26T10%3A00%3A00.000Z'
+      )
+    })
+
+    it('should fall back to the original URL when the size is missing', () => {
+      const image = {
+        url: '/api/images/file/test.jpg',
+        updatedAt: '2026-08-26T10:00:00.000Z',
+        sizes: {},
+      } as PayloadImage
+
+      expect(getImageUrlForSize(image, 'thumbnail')).toBe('/api/images/file/test.jpg?v=2026-08-26T10%3A00%3A00.000Z')
+    })
+
+    it('should fall back to the original URL when the size URL is invalid', () => {
+      const image = {
+        url: '/api/images/file/test.jpg',
+        updatedAt: '2026-08-26T10:00:00.000Z',
+        sizes: {
+          thumbnail: {
+            url: 'null',
+            width: 400,
+            height: 300,
+            mimeType: 'image/webp',
+            filesize: 15000,
+            filename: 'test-400x300.webp',
+          },
+        },
+      } as PayloadImage
+
+      expect(getImageUrlForSize(image, 'thumbnail')).toBe('/api/images/file/test.jpg?v=2026-08-26T10%3A00%3A00.000Z')
+    })
+
+    it('should return null for null image or invalid URLs', () => {
+      expect(getImageUrlForSize(null, 'thumbnail')).toBeNull()
+      expect(getImageUrlForSize(undefined, 'thumbnail')).toBeNull()
+
+      const invalid = { url: 'null', updatedAt: '2026-08-26T10:00:00.000Z' } as PayloadImage
+      expect(getImageUrlForSize(invalid, 'thumbnail')).toBeNull()
     })
   })
 })

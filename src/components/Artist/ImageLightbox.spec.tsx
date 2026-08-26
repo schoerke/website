@@ -49,7 +49,7 @@ describe('ImageLightbox', () => {
     renderLightbox(images)
 
     const img = screen.getByAltText('Gallery photo')
-    expect(img).toHaveAttribute('src', 'https://example.com/gallery-1.jpg')
+    expect(img).toHaveAttribute('src', 'https://example.com/gallery-1.jpg?v=2024-01-01T00%3A00%3A00.000Z')
   })
 
   it('renders an Image icon placeholder when the item has no image', () => {

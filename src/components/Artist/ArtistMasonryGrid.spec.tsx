@@ -63,7 +63,7 @@ describe('ArtistMasonryGrid', () => {
     renderGrid([artist])
 
     const img = screen.getByAltText('Jane Artist')
-    expect(img).toHaveAttribute('src', 'https://example.com/jane.jpg')
+    expect(img).toHaveAttribute('src', 'https://example.com/jane.jpg?v=2024-01-01T00%3A00%3A00.000Z')
   })
 
   it('reserves the image box with the Payload aspect ratio before the image loads', () => {

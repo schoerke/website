@@ -36,7 +36,7 @@ describe('DogCard', () => {
   it('renders the dog photo grayscale', () => {
     renderDog()
     const img = screen.getByAltText('Yuki')
-    expect(img).toHaveAttribute('src', '/dog.jpg')
+    expect(img).toHaveAttribute('src', '/dog.jpg?v=2024-01-01T00%3A00%3A00.000Z')
     expect(img).toHaveAttribute('class', expect.stringContaining('grayscale'))
   })
 
