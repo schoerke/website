@@ -3,7 +3,7 @@
 import { Link } from '@/i18n/navigation'
 import type { Image as PayloadImage, Post } from '@/payload-types'
 import { formatDate } from '@/utils/post'
-import { isValidUrl } from '@/utils/image'
+import { getValidImageUrl } from '@/utils/image'
 import { UserRound } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import Image from 'next/image'
@@ -14,16 +14,6 @@ interface NewsFeedListProps {
   emptyMessage: string
   category?: 'news' | 'projects'
   showDate?: boolean
-}
-
-/**
- * Returns the post's real image URL, or null when there isn't a valid one.
- * Callers should render an icon placeholder when this returns null, rather
- * than falling back to a raster placeholder image.
- */
-function getImageUrl(img: PayloadImage | null | undefined): string | null {
-  if (img && typeof img === 'object' && isValidUrl(img.url)) return img.url
-  return null
 }
 
 interface NewsFeedItemImageProps {
@@ -90,12 +80,7 @@ function extractTextPreview(content: Post['content'], maxLength: number = 180): 
   return fullText.substring(0, maxLength).trim() + '...'
 }
 
-const NewsFeedList: React.FC<NewsFeedListProps> = ({
-  posts,
-  emptyMessage,
-  category = 'news',
-  showDate = true,
-}) => {
+const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, category = 'news', showDate = true }) => {
   const t = useTranslations(`custom.pages.${category}`)
   const locale = useLocale()
 
@@ -119,7 +104,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({
     <div className="divide-y divide-gray-200">
       {posts.map((post) => {
         const img = typeof post.image === 'object' && post.image !== null ? (post.image as PayloadImage) : null
-        const imageUrl = getImageUrl(img)
+        const imageUrl = getValidImageUrl(img)
         const preview = extractTextPreview(post.content)
         const postPath = getPostPath(post)
 

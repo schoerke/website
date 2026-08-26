@@ -8,6 +8,7 @@ import Image from 'next/image'
 import React, { useState } from 'react'
 
 import RecordingDetailsDialog from '@/components/Recording/RecordingDetailsDialog'
+import { getImageUrlForSize } from '@/utils/image'
 import { hasVisibleTextContent } from '@/utils/lexical'
 
 interface RecordingListItemProps {
@@ -28,7 +29,7 @@ const RecordingListItem: React.FC<RecordingListItemProps> = ({ recording }) => {
 
   const coverArt =
     typeof recording.coverArt === 'object' && recording.coverArt !== null ? (recording.coverArt as PayloadImage) : null
-  const coverArtUrl = coverArt?.sizes?.thumbnail?.url || coverArt?.url
+  const coverArtUrl = getImageUrlForSize(coverArt, 'thumbnail')
 
   const metaItems = [recording.recordingLabel, recording.recordingYear?.toString()].filter((m): m is string =>
     Boolean(m)

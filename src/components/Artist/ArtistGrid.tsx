@@ -7,7 +7,7 @@ import ImageSlider from '@/components/ui/ImageSlider'
 import { useDisableHoverOnScroll } from '@/hooks/useDisableHoverOnScroll'
 import type { Artist } from '@/payload-types'
 import { shuffleArray } from '@/utils/array'
-import { isImageObject, isValidUrl } from '@/utils/image'
+import { getValidImageUrl, isImageObject } from '@/utils/image'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 
@@ -106,8 +106,8 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
         // Type guard: ensure image is a valid Image object, not a number or null
         const image = isImageObject(artist.image) ? artist.image : null
         if (!image) return null
-        const imageUrl = image.url
-        if (!isValidUrl(imageUrl)) return null
+        const imageUrl = getValidImageUrl(image)
+        if (!imageUrl) return null
 
         const translatedInstruments =
           artist.instrument?.map((inst) => tInstruments(inst as Parameters<typeof tInstruments>[0])).join(', ') ?? ''

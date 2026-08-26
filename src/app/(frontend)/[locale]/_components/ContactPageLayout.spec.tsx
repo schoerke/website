@@ -31,7 +31,7 @@ describe('ContactPageLayout', () => {
 
     expect(screen.getByText('Yuki')).toBeInTheDocument()
     expect(screen.getByText('Office Dog')).toBeInTheDocument()
-    expect(screen.getByAltText('Yuki')).toHaveAttribute('src', '/dog.jpg')
+    expect(screen.getByAltText('Yuki')).toHaveAttribute('src', '/dog.jpg?v=2024-01-01T00%3A00%3A00.000Z')
     expect(screen.getByAltText('Yuki')).toHaveAttribute('class', expect.stringContaining('grayscale'))
   })
 

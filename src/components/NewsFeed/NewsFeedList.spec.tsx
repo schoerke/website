@@ -53,7 +53,7 @@ describe('NewsFeedList', () => {
 
     const image = screen.getByRole('img', { name: 'Post with image' })
     expect(image).toBeInTheDocument()
-    expect(image).toHaveAttribute('src', 'https://example.com/image.jpg')
+    expect(image).toHaveAttribute('src', 'https://example.com/image.jpg?v=2024-01-01T00%3A00%3A00.000Z')
   })
 
   it('should render a UserRound icon placeholder when the post has no image', () => {

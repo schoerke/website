@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 import { cache } from 'react'
+import { getImageUrlForSize } from '@/utils/image'
 
 /**
  * Resolves the avatar image URL for the admin account icon of a logged-in user.
@@ -20,6 +21,6 @@ export const resolveAccountAvatarImage = cache(
     })
     const image = docs[0]?.image
     if (!image || typeof image === 'number') return null
-    return image.sizes?.thumbnail?.url ?? image.url ?? null
+    return getImageUrlForSize(image, 'thumbnail')
   }
 )

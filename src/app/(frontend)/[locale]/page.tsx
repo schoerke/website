@@ -5,7 +5,8 @@ import HomePageSlider from '@/components/HomePageSlider/HomePageSlider'
 import SchoerkeLink from '@/components/ui/SchoerkeLink'
 import SectionHeading from '@/components/ui/SectionHeading'
 import { routing } from '@/i18n/routing'
-import { Artist, Image as PayloadImage, Post } from '@/payload-types'
+import { Artist, Post } from '@/payload-types'
+import { getValidImageUrl } from '@/utils/image'
 import { getArtistListData } from '@/services/artist'
 import { getHomePage } from '@/services/homePage'
 import { getPaginatedPosts } from '@/services/post'
@@ -19,8 +20,7 @@ type HomePageProps = {
 }
 
 function getPostImageUrl(post: Post): string | null {
-  const img = typeof post.image === 'object' && post.image !== null ? (post.image as PayloadImage) : null
-  return img?.url && img.url !== 'null' && !img.url.includes('/null') ? img.url : null
+  return getValidImageUrl(post.image)
 }
 
 function getPostPath(post: Post): string {
@@ -51,7 +51,7 @@ const HomePage = async ({ params }: HomePageProps) => {
   const artists = (artistsResult?.docs as Artist[]) || []
 
   const newsSlides: HomePageSlide[] = newsResult.docs.map((post) => {
-    const img = typeof post.image === 'object' && post.image !== null ? (post.image as PayloadImage) : null
+    const img = typeof post.image === 'object' && post.image !== null ? post.image : null
     return {
       src: getPostImageUrl(post),
       alt: post.title,

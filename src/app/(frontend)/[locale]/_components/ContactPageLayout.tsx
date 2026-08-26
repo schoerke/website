@@ -4,6 +4,7 @@ import ContactPageSidebar from '@/components/ContactPageSidebar/ContactPageSideb
 import PayloadRichText from '@/components/ui/PayloadRichText'
 import ImageWithSkeleton from '@/components/ui/ImageWithSkeleton'
 import type { Employee, Page, Image as PayloadImage } from '@/payload-types'
+import { getValidImageUrl } from '@/utils/image'
 import React from 'react'
 
 interface ContactPageLayoutProps {
@@ -36,7 +37,7 @@ const ContactPageLayout: React.FC<ContactPageLayoutProps> = ({
         <ContactPageSidebar />
         {image && (
           <ImageWithSkeleton
-            src={image.url || ''}
+            src={getValidImageUrl(image) ?? ''}
             alt={image.alt || 'Wiesbaden, Germany'}
             className="rounded-lg lg:order-first"
             sizes="(max-width: 1024px) 100vw, 75vw"
