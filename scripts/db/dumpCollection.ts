@@ -27,6 +27,16 @@ import path from 'path'
 import type { SanitizedConfig } from 'payload'
 import { getPayload, type Payload } from 'payload'
 
+const isProd = (process.env.DATABASE_URI || '').includes('ksschoerke-production')
+if (isProd && process.env.NODE_ENV !== 'production') {
+  console.error(
+    '❌ ABORT: DATABASE_URI points to production but NODE_ENV is not production.\n' +
+      '   Run with NODE_ENV=production (prevents pushDevSchema from writing the dev|-1 marker to prod)\n' +
+      '   or switch .env DATABASE_URI to the local file:./dev.db.'
+  )
+  process.exit(1)
+}
+
 /**
  * Dynamically imports and resolves the Payload configuration.
  *
