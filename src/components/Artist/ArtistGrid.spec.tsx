@@ -200,7 +200,7 @@ describe('ArtistGrid', () => {
   describe('Sorting', () => {
     it('sorts by instrument priority', () => {
       const artists = [
-        createMockArtist({ id: 1, name: 'Cellist', instrument: ['cello'] }), // Priority 4
+        createMockArtist({ id: 1, name: 'Cellist', instrument: ['cello'] }), // Priority 5
         createMockArtist({ id: 2, name: 'Conductor', instrument: ['conductor'] }), // Priority 1
         createMockArtist({ id: 3, name: 'Violinist', instrument: ['violin'] }), // Priority 3
         createMockArtist({ id: 4, name: 'Pianist', instrument: ['piano'] }), // Priority 2
@@ -253,6 +253,103 @@ describe('ArtistGrid', () => {
       const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
       expect(cards[0]).toHaveTextContent('Violinist')
       expect(cards[1]).toHaveTextContent('No Instrument')
+    })
+
+    it('orders viola before cello', () => {
+      const artists = [
+        createMockArtist({ id: 1, name: 'Cellist', instrument: ['cello'] }),
+        createMockArtist({ id: 2, name: 'Violist', instrument: ['viola'] }),
+      ]
+
+      const { container } = render(
+        <NextIntlTestProvider>
+          <ArtistGrid artists={artists} instruments={['cello', 'viola']} />
+        </NextIntlTestProvider>
+      )
+
+      const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
+      expect(cards[0]).toHaveTextContent('Violist')
+      expect(cards[1]).toHaveTextContent('Cellist')
+    })
+
+    it('groups multi-instrument artists by highest-priority instrument', () => {
+      const artists = [
+        createMockArtist({ id: 1, name: 'Pianist', instrument: ['piano'] }),
+        createMockArtist({ id: 2, name: 'Multi', instrument: ['piano', 'conductor'] }),
+      ]
+
+      const { container } = render(
+        <NextIntlTestProvider>
+          <ArtistGrid artists={artists} instruments={['piano', 'conductor']} />
+        </NextIntlTestProvider>
+      )
+
+      const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
+      expect(cards[0]).toHaveTextContent('Multi') // Conductor group (priority 1)
+      expect(cards[1]).toHaveTextContent('Pianist') // Piano group (priority 2)
+    })
+
+    it('splits horn and chamber music, sorting chamber music by ensemble name', () => {
+      const artists = [
+        createMockArtist({ id: 1, name: 'Zehetmair Quartett', instrument: ['chamber-music'] }),
+        createMockArtist({ id: 2, name: 'Monet Quintett', instrument: ['chamber-music'] }),
+        createMockArtist({ id: 3, name: 'Marc Gruber', instrument: ['horn'] }),
+        createMockArtist({ id: 4, name: 'Trio Gaspard', instrument: ['chamber-music'] }),
+      ]
+
+      const { container } = render(
+        <NextIntlTestProvider>
+          <ArtistGrid artists={artists} instruments={['horn', 'chamber-music']} />
+        </NextIntlTestProvider>
+      )
+
+      const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
+      // Horn before chamber music
+      expect(cards[0]).toHaveTextContent('Marc Gruber')
+      // Chamber music ordered by first word of ensemble name
+      expect(cards[1]).toHaveTextContent('Monet Quintett')
+      expect(cards[2]).toHaveTextContent('Trio Gaspard')
+      expect(cards[3]).toHaveTextContent('Zehetmair Quartett')
+    })
+
+    it('sorts horn players by last name', () => {
+      const artists = [
+        createMockArtist({ id: 1, name: 'Marie-Luise Neunecker', instrument: ['horn'] }),
+        createMockArtist({ id: 2, name: 'Marc Gruber', instrument: ['horn'] }),
+      ]
+
+      const { container } = render(
+        <NextIntlTestProvider>
+          <ArtistGrid artists={artists} instruments={['horn']} />
+        </NextIntlTestProvider>
+      )
+
+      const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
+      expect(cards[0]).toHaveTextContent('Marc Gruber')
+      expect(cards[1]).toHaveTextContent('Marie-Luise Neunecker')
+    })
+
+    it('sorts ensembles with extra solo instruments by ensemble name', () => {
+      const artists = [
+        // Groups with violinists (priority 3) but must sort by ensemble name, not last word "Paul"
+        createMockArtist({ id: 1, name: 'Trio Jean Paul', instrument: ['chamber-music', 'violin'] }),
+        createMockArtist({ id: 2, name: 'Alice Smith', instrument: ['violin'] }),
+        // Pure chamber-music ensemble stays in its own group (priority 8)
+        createMockArtist({ id: 3, name: 'Monet Quintett', instrument: ['chamber-music'] }),
+      ]
+
+      const { container } = render(
+        <NextIntlTestProvider>
+          <ArtistGrid artists={artists} instruments={['violin', 'chamber-music']} />
+        </NextIntlTestProvider>
+      )
+
+      const cards = container.querySelectorAll('[data-testid^="artist-card-"]')
+      // "Smith" < "Trio Jean Paul", so Smith first (old last-word logic would put Trio first via "Paul")
+      expect(cards[0]).toHaveTextContent('Alice Smith')
+      expect(cards[1]).toHaveTextContent('Trio Jean Paul')
+      // Mixed-instrument ensemble groups with violinists, before the pure chamber-music group
+      expect(cards[2]).toHaveTextContent('Monet Quintett')
     })
 
     it('treats piano-forte same as piano priority', () => {

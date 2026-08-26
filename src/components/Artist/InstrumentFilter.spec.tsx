@@ -139,14 +139,14 @@ describe('InstrumentFilter', () => {
       expect(buttonTexts[2]).toBe('Violin')
     })
 
-    it('should sort with correct priority: conductor, piano, violin, cello, viola, bass', () => {
+    it('should sort with correct priority: conductor, piano, violin, viola, cello, bass', () => {
       const instruments = ['bass', 'viola', 'cello', 'violin', 'piano', 'conductor']
       renderWithIntl(<InstrumentFilter instruments={instruments} selected={[]} onChange={vi.fn()} />)
 
       const buttons = screen.getAllByRole('button')
       const buttonTexts = buttons.map((btn) => btn.textContent)
 
-      expect(buttonTexts).toEqual(['Conductor', 'Piano', 'Violin', 'Cello', 'Viola', 'Double Bass'])
+      expect(buttonTexts).toEqual(['Conductor', 'Piano', 'Violin', 'Viola', 'Cello', 'Double Bass'])
     })
 
     it('should sort piano-forte with same priority as piano', () => {
@@ -170,12 +170,12 @@ describe('InstrumentFilter', () => {
       const buttons = screen.getAllByRole('button')
       const buttonTexts = buttons.map((btn) => btn.textContent)
 
-      // Conductor and violin have priority, others sorted alphabetically
+      // Conductor and violin have priority, then horn and chamber-music, unknown sorted last
       expect(buttonTexts[0]).toBe('Conductor')
       expect(buttonTexts[1]).toBe('Violin')
-      // chamber-music, horn, recorder (alphabetically)
-      expect(buttonTexts[2]).toBe('Chamber Music')
-      expect(buttonTexts[3]).toBe('Horn')
+      // horn, chamber-music (priority), then recorder (unknown, alphabetical at end)
+      expect(buttonTexts[2]).toBe('Horn')
+      expect(buttonTexts[3]).toBe('Chamber Music')
       expect(buttonTexts[4]).toBe('Recorder')
     })
   })

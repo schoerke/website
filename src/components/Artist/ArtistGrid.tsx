@@ -24,7 +24,7 @@ function getArtistPriority(artist: Artist): number {
     return 999 // Artists with no instrument go last
   }
 
-  const priorities = artist.instrument.map((inst) => INSTRUMENT_PRIORITY[inst] ?? 7) // Default to 7 for winds and others
+  const priorities = artist.instrument.map((inst) => INSTRUMENT_PRIORITY[inst] ?? 9) // Default to 9 for unknown instruments
 
   return priorities.length > 0 ? Math.min(...priorities) : 999
 }
@@ -39,7 +39,19 @@ function getLastName(fullName: string): string {
 }
 
 /**
- * Sort artists by instrument priority, then alphabetically by last name
+ * Determine the name used for alphabetical sorting.
+ * Chamber ensembles sort by their ensemble name (first word onwards),
+ * all other artists sort by last name.
+ */
+function getSortName(artist: Artist): string {
+  if (artist.instrument?.includes('chamber-music')) {
+    return artist.name.trim()
+  }
+  return getLastName(artist.name)
+}
+
+/**
+ * Sort artists by instrument priority, then alphabetically within each group
  */
 function sortArtists(artists: Artist[]): Artist[] {
   return [...artists].sort((a, b) => {
@@ -51,10 +63,8 @@ function sortArtists(artists: Artist[]): Artist[] {
       return priorityA - priorityB
     }
 
-    // Then sort alphabetically by last name
-    const lastNameA = getLastName(a.name)
-    const lastNameB = getLastName(b.name)
-    return lastNameA.localeCompare(lastNameB)
+    // Then sort alphabetically (last name for soloists, ensemble name for chamber groups)
+    return getSortName(a).localeCompare(getSortName(b))
   })
 }
 

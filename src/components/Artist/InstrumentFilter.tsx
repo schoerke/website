@@ -16,8 +16,8 @@ interface InstrumentFilterProps {
  */
 function sortInstruments(instruments: string[]): string[] {
   return [...instruments].sort((a, b) => {
-    const priorityA = INSTRUMENT_PRIORITY[a] ?? 7
-    const priorityB = INSTRUMENT_PRIORITY[b] ?? 7
+    const priorityA = INSTRUMENT_PRIORITY[a] ?? 9
+    const priorityB = INSTRUMENT_PRIORITY[b] ?? 9
 
     // First sort by priority
     if (priorityA !== priorityB) {
