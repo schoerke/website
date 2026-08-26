@@ -29,8 +29,18 @@
 
 ## UI: Blocks
 
-- concert dates
-- programs
+### ConcertDates
+
+- displays a list of upcoming concerts with date and location
+
+### ConcertProgram
+
+- displays the program for a concert, including composers, works, performers, and program pauses
+- should also support optional program title
+
+### BiographyFooter
+
+- replaces the existing biography footer text
 
 ## Idea: Sentry Error Monitoring
 
@@ -43,3 +53,12 @@
 ## Docs
 
 - generate a change log from git commits
+
+## Musical Composition Metadata
+
+- add metadata for musical compositions, including composer, title, opus number, key
+- useful for concert programs
+
+## Shortcodes for Content Management
+
+- composer names
