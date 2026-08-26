@@ -59,3 +59,20 @@ MISS** or **every `head()` call**. Advanced op = `put()`/`copy()`/`list()` (uplo
 Uploading ~100 images ≈ 100 Advanced + ~200 Simple; thousands of ops ≠ image count, it's admin `head()` traffic +
 public cache-miss/eviction traffic. Dashboard per-day data is capped at 12h on Hobby. Fix: Pro trial (100k/10k
 included) or move images to R2. Vercel usage API: `GET /v2/team/{teamId}/usage`.
+
+### 13.7 Vercel Security Checkpoint blocks server-to-server blob fetches (2026-08-26)
+
+Vercel's edge **Security Checkpoint** intermittently challenges Node/undici fetches to `*.public.blob.vercel-storage.com`
+with a **403** ("Vercel Security Checkpoint" HTML), while curl/browser requests pass. Server-to-server fetches from the
+**dev machine** (and any non-Vercel network) hit it ~50% of the time.
+
+Impact on the Payload admin edit flow: on a crop/focal save Payload re-processes the file — the client hits
+`/api/images/file/*` → `getFile.js` re-fetches the blob; any `!ok` blob fetch is masked as a **204 empty response**
+→ the crop re-encode gets an empty buffer → sharp fails with
+**`VipsJpeg: premature end of JPEG image`** → admin shows **"There was a problem uploading the file."** The blob itself
+is fine (direct fetch 200). Intermittent, dev-only — production Vercel-function→Blob fetches are internal and unaffected.
+
+- Verify: `curl` the blob URL (200) vs Node `fetch` (alternating 200/403).
+- Fix: Vercel dashboard → Project → Settings → Security → disable **Security Checkpoint** (or whitelist the blob host).
+- Long-term: move images to R2 (no checkpoint, unlimited egress — see §13.5, `docs/todo.md`).
+- NOTE: this also intermittently breaks `/api/images/file/*` serving in dev (204 empty → broken frontend images).
