@@ -35,6 +35,9 @@ This includes:
 
 ### Required Process for ANY Database Operation:
 
+> Applies to prod/remote/credential-affecting operations. **Routine local `dev.db` refresh**
+> (`docs/memory/checklists.md` §3) is the documented exception — confirm with the user first, no approval gate.
+
 1. **VERIFY DATABASE** - Check `.env` and confirm with user which database to use
 2. **STOP** - Do NOT run the command yet
 3. **EXPLAIN** exactly what will change in the database AND which database (local vs remote)
@@ -73,8 +76,11 @@ layer gates those even though they may be read-only. Prefer Local API reads over
 ### Available Tooling (check BEFORE writing new scripts)
 
 > **⚠️ READ `MEMORY.md` (the index) FIRST** — it points to the operational lessons, environment facts, the 2026-08-15 prod
-> incident, and hard-won workflows. Full learnings live in `docs/memory/`. It is mandatory reading before any database,
-> migration, or deployment work.
+> incident, and hard-won workflows. Full learnings live in `docs/memory/`; it is **NOT auto-loaded** — open files
+> explicitly, MEMORY.md maps the whole system. Mandatory reading before any database, migration, or deployment work.
+>
+> **⚠️ For quick deterministic steps on common tasks (inspect prod read-only, full backup, refresh local `dev.db`):**
+> after `MEMORY.md`, use **`docs/memory/checklists.md`**.
 
 This project runs on Turso (SQLite), deployed to Vercel. The following tools are already available — prefer them
 over writing ad-hoc scripts:
@@ -88,17 +94,20 @@ over writing ad-hoc scripts:
 - **`sqlite3`** (macOS built-in) — inspect/query exported `.db` backup files locally (read-only)
 - **`payload` CLI** (`pnpm payload ...`) — `migrate:create`, `migrate`, `migrate:status`, `generate:types`,
   `generate:importmap`, `run <script>`
+- **`aws s3`** (R2, GitHub Actions creds `BACKUP_R2_*`/AWS keys — NOT `.env`) — read the nightly prod backup; see checklists.md §1/§3
 - **`scripts/db/dumpCollection.ts`** (`pnpm dump <collection>`) — per-collection JSON exports to `data/dumps/`
 
 **Rule:** for full-database backups, use `turso db export` — never a hand-rolled script. For read-only
-inspection of an exported backup, use `sqlite3`. Only reach for custom scripts when none of these fit.
+inspection of an exported backup, use `sqlite3`. For read-only prod inspection, prefer the nightly R2 backup
+(checklists.md §1) — zero prod reads, no approval. Only reach for custom scripts when none of these fit.
 **Reading content data (artists, repertoires, posts, etc.): use Payload Local API via `pnpm dump <collection>` or a
 small `tsx` read script.** Turso CLI is appropriate for DB/SQL-specific work (schema inspection, migration
 verification, row-count checks, backup/restore/clone, env identity). Every `turso` command requires approval per
 `opencode.json`.
 
-**Note:** `turso db import` creates a **new** database — it does NOT overwrite an existing one. For backup,
-restore, clone prod→dev, and schema-parity procedures, see `docs/memory/db-operations.md` (verified methods).
+**Note:** `turso db import` creates a **new** database — it does NOT overwrite an existing one. For restore,
+see `docs/memory/db-operations.md` §3a–§3b (verified methods). Clone prod→dev / schema parity: refresh local
+`dev.db` via `docs/memory/checklists.md` §3 (supersedes deprecated db-operations §3c/§4).
 
 ## Operational Knowledge (see MEMORY.md)
 
