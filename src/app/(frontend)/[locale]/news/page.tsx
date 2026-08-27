@@ -1,6 +1,6 @@
 import { NewsFeed } from '@/components/NewsFeed'
 import { routing } from '@/i18n/routing'
-import { getPaginatedPosts } from '@/services/post'
+import { getPostListData } from '@/services/post'
 import { parsePaginationParams, shouldRedirectToLastPage } from '@/utils/pagination'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
@@ -47,13 +47,12 @@ const NewsPage = async ({ params, searchParams }: NewsPageProps) => {
   const search = searchParam && searchParam.trim().length >= 3 ? searchParam.trim() : undefined
 
   // Fetch data to validate page number doesn't exceed totalPages
-  const result = await getPaginatedPosts({
+  const result = await getPostListData({
     category: 'news',
     search,
     page,
     limit,
     locale,
-    publishedOnly: true,
   })
 
   // Redirect if page exceeds totalPages

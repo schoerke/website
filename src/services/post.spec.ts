@@ -1,6 +1,7 @@
 import { createMockPaginatedDocs, createMockPost } from '@/tests/utils/payloadMocks'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { POST_LIST_IMAGES_POPULATE, POST_LIST_SELECT } from '@/constants/postList'
 import {
   getAllHomepagePosts,
   getAllNewsPosts,
@@ -12,6 +13,7 @@ import {
   getNewsPostCountByArtist,
   getPaginatedPosts,
   getPostBySlug,
+  getPostListData,
 } from './post'
 
 // Mock getPayload at the module level
@@ -587,6 +589,95 @@ describe('Post Service', () => {
       await getPaginatedPosts({ category: 'news' })
 
       expect(vi.mocked(mockPayload.find).mock.calls[0][0]).not.toHaveProperty('select')
+    })
+
+    it('should pass select and populate to payload.find when provided', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({
+        category: 'news',
+        select: { title: true, slug: true, image: true },
+        populate: { images: { filename: true, url: true } },
+      })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          select: { title: true, slug: true, image: true },
+          populate: { images: { filename: true, url: true } },
+        })
+      )
+    })
+
+    it('should not pass populate to payload.find when omitted', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news' })
+
+      expect(vi.mocked(mockPayload.find).mock.calls[0][0]).not.toHaveProperty('populate')
+    })
+  })
+
+  describe('getPostListData', () => {
+    it('should fetch published posts with the slim list select and populate baked in', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPostListData({ category: 'news', page: 1, limit: 25, locale: 'de' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ _status: { equals: 'published' } }),
+          page: 1,
+          limit: 25,
+          locale: 'de',
+          select: POST_LIST_SELECT,
+          populate: POST_LIST_IMAGES_POPULATE,
+        })
+      )
+    })
+
+    it('should pass search through to the underlying query', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPostListData({ category: 'projects', search: 'haydn', page: 1, limit: 25, locale: 'en' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            or: [
+              { normalizedTitle: { contains: expect.any(String) } },
+              { normalizedContent: { contains: expect.any(String) } },
+            ],
+          }),
+        })
+      )
+    })
+  })
+
+  describe('post list constants', () => {
+    it('POST_LIST_SELECT covers every field the list renderers use', () => {
+      expect(POST_LIST_SELECT).toEqual({
+        title: true,
+        slug: true,
+        image: true,
+        content: true,
+        categories: true,
+        createdAt: true,
+      })
+    })
+
+    it('POST_LIST_IMAGES_POPULATE includes filename and updatedAt for url + cache-busting', () => {
+      expect(POST_LIST_IMAGES_POPULATE).toEqual({
+        images: {
+          filename: true,
+          url: true,
+          alt: true,
+          width: true,
+          height: true,
+          focalX: true,
+          focalY: true,
+          updatedAt: true,
+        },
+      })
     })
   })
 

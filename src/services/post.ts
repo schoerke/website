@@ -1,4 +1,5 @@
 import config from '@/payload.config'
+import { POST_LIST_IMAGES_POPULATE, POST_LIST_SELECT } from '@/constants/postList'
 import { normalizeText } from '@/utils/search/normalizeText'
 import type { PopulateType, SelectType, Where } from 'payload'
 import { getPayload } from 'payload'
@@ -355,6 +356,7 @@ export const getPaginatedPosts = async (options: {
   locale?: LocaleCode
   publishedOnly?: boolean
   select?: SelectType
+  populate?: PopulateType
 }) => {
   const payload = await getPayload({ config })
 
@@ -388,6 +390,41 @@ export const getPaginatedPosts = async (options: {
     sort: '-createdAt', // Most recent first
     depth: 1, // Populate image and other relationships
     ...(options.select ? { select: options.select } : {}),
+    ...(options.populate ? { populate: options.populate } : {}),
+  })
+}
+
+/**
+ * Retrieves paginated, published posts for LIST views (news/projects pages) with the slim
+ * list select + image populate baked in — callers can't forget to slim the payload.
+ *
+ * @param options - Query options
+ * @param options.category - Filter by category (single string or array of strings)
+ * @param options.search - Filter by search text (diacritic-insensitive, minimum 3 characters)
+ * @param options.page - Page number (1-indexed, default: 1)
+ * @param options.limit - Number of posts per page (default: 25)
+ * @param options.locale - Locale code ('de', 'en', or 'all'). Defaults to 'de'
+ * @returns A promise resolving to paginated posts with the list-view field set
+ *
+ * @example
+ * const result = await getPostListData({ category: 'news', page: 1, limit: 25, locale: 'de' })
+ */
+export const getPostListData = async (options: {
+  category?: string | string[]
+  search?: string
+  page?: number
+  limit?: number
+  locale?: LocaleCode
+}) => {
+  return await getPaginatedPosts({
+    category: options.category,
+    search: options.search,
+    page: options.page,
+    limit: options.limit,
+    locale: options.locale || 'de',
+    publishedOnly: true,
+    select: POST_LIST_SELECT,
+    populate: POST_LIST_IMAGES_POPULATE,
   })
 }
 
