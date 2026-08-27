@@ -115,6 +115,24 @@ For **reading content data**, prefer the Local API (`pnpm dump <collection>`, `t
 Turso stays right for DB/SQL-specific work (schema inspection, migration verification, counts, backups, env
 identity) — every `turso` command requires approval per `opencode.json`.
 
+### `select`/`populate` on upload collections: `url` is virtual — include `filename`
+
+`url` (and `sizes`/`thumbnailURL`) on upload collections is **computed at read time from `filename`**
+(`generateFilePathOrURL`), not stored. A slim `select`/`populate` that omits `filename` returns `url: null`
+silently — images render as placeholders/skeletons with no error.
+
+```typescript
+// ❌ url comes back null — filename excluded, virtual field can't compute
+populate: { images: { url: true, width: true, height: true } }
+
+// ✅ filename included → url derives correctly
+populate: { images: { filename: true, url: true, width: true, height: true, updatedAt: true } }
+```
+
+`updatedAt` also matters when `appendImageVersion` adds `?v=` cache-busting (Vercel Blob immutable-cache workaround).
+Populate keys are **collection slugs**, not relationship field names (`populate: { images: {...} }`, not
+`{ image: {...} }`).
+
 ---
 
 ## Search plugin
