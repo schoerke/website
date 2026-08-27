@@ -27,4 +27,32 @@ describe('isEmbedHostAllowed', () => {
     expect(isEmbedHostAllowed('RTS.CH')).toBe(true)
     expect(isEmbedHostAllowed('WWW.RTS.CH')).toBe(true)
   })
+
+  it('allows rsi.ch (RSI) and its subdomains', () => {
+    expect(isEmbedHostAllowed('rsi.ch')).toBe(true)
+    expect(isEmbedHostAllowed('www.rsi.ch')).toBe(true)
+  })
+
+  it('allows ardmediathek.de (ARD Mediathek) and its subdomains', () => {
+    expect(isEmbedHostAllowed('ardmediathek.de')).toBe(true)
+    expect(isEmbedHostAllowed('www.ardmediathek.de')).toBe(true)
+    expect(isEmbedHostAllowed('api.ardmediathek.de')).toBe(true)
+  })
+
+  it('rejects lookalikes of the new hosts', () => {
+    expect(isEmbedHostAllowed('rsi-ch.com')).toBe(false)
+    expect(isEmbedHostAllowed('rsi.ch.evil.com')).toBe(false)
+    expect(isEmbedHostAllowed('ardmediathek.de.evil.com')).toBe(false)
+    expect(isEmbedHostAllowed('ardmediathek.com')).toBe(false)
+  })
+
+  it('keeps rts.ch allowlisted', () => {
+    expect(isEmbedHostAllowed('rts.ch')).toBe(true)
+  })
+
+  it('honors an explicit allowlist argument (override)', () => {
+    expect(isEmbedHostAllowed('rts.ch', [])).toBe(false)
+    expect(isEmbedHostAllowed('foo.com', ['foo.com'])).toBe(true)
+    expect(isEmbedHostAllowed('www.foo.com', ['foo.com'])).toBe(true)
+  })
 })
