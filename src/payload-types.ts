@@ -227,9 +227,13 @@ export interface Artist {
     | {
         label: string;
         /**
-         * Supports YouTube and arte.tv URLs
+         * Supports YouTube and arte.tv URLs (leave empty when using an embed code)
          */
-        url: string;
+        url?: string | null;
+        /**
+         * Paste an <iframe> embed code from a supported provider (e.g. RSI, ARD Mediathek, RTS). Leave empty when using a URL.
+         */
+        embedCode?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -827,6 +831,7 @@ export interface ArtistsSelect<T extends boolean = true> {
     | {
         label?: T;
         url?: T;
+        embedCode?: T;
         id?: T;
       };
   galleryImages?:
