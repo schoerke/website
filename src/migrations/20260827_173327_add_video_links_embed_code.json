@@ -4214,189 +4214,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "payload_mcp_api_keys": {
-      "name": "payload_mcp_api_keys",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "label": {
-          "name": "label",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "artists_find": {
-          "name": "artists_find",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "employees_find": {
-          "name": "employees_find",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "pages_find": {
-          "name": "pages_find",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "posts_find": {
-          "name": "posts_find",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "recordings_find": {
-          "name": "recordings_find",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "repertoire_find": {
-          "name": "repertoire_find",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "images_find": {
-          "name": "images_find",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "documents_find": {
-          "name": "documents_find",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "home_page_find": {
-          "name": "home_page_find",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))"
-        },
-        "enable_a_p_i_key": {
-          "name": "enable_a_p_i_key",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "api_key": {
-          "name": "api_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "api_key_index": {
-          "name": "api_key_index",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "payload_mcp_api_keys_user_idx": {
-          "name": "payload_mcp_api_keys_user_idx",
-          "columns": [
-            "user_id"
-          ],
-          "isUnique": false
-        },
-        "payload_mcp_api_keys_updated_at_idx": {
-          "name": "payload_mcp_api_keys_updated_at_idx",
-          "columns": [
-            "updated_at"
-          ],
-          "isUnique": false
-        },
-        "payload_mcp_api_keys_created_at_idx": {
-          "name": "payload_mcp_api_keys_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "payload_mcp_api_keys_user_id_users_id_fk": {
-          "name": "payload_mcp_api_keys_user_id_users_id_fk",
-          "tableFrom": "payload_mcp_api_keys",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "payload_kv": {
       "name": "payload_kv",
       "columns": {
@@ -4605,13 +4422,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "payload_mcp_api_keys_id": {
-          "name": "payload_mcp_api_keys_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
@@ -4710,13 +4520,6 @@
           "name": "payload_locked_documents_rels_search_id_idx",
           "columns": [
             "search_id"
-          ],
-          "isUnique": false
-        },
-        "payload_locked_documents_rels_payload_mcp_api_keys_id_idx": {
-          "name": "payload_locked_documents_rels_payload_mcp_api_keys_id_idx",
-          "columns": [
-            "payload_mcp_api_keys_id"
           ],
           "isUnique": false
         }
@@ -4877,19 +4680,6 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
-        },
-        "payload_locked_documents_rels_payload_mcp_api_keys_fk": {
-          "name": "payload_locked_documents_rels_payload_mcp_api_keys_fk",
-          "tableFrom": "payload_locked_documents_rels",
-          "tableTo": "payload_mcp_api_keys",
-          "columnsFrom": [
-            "payload_mcp_api_keys_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -5002,13 +4792,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "payload_mcp_api_keys_id": {
-          "name": "payload_mcp_api_keys_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
@@ -5039,13 +4822,6 @@
             "users_id"
           ],
           "isUnique": false
-        },
-        "payload_preferences_rels_payload_mcp_api_keys_id_idx": {
-          "name": "payload_preferences_rels_payload_mcp_api_keys_id_idx",
-          "columns": [
-            "payload_mcp_api_keys_id"
-          ],
-          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -5068,19 +4844,6 @@
           "tableTo": "users",
           "columnsFrom": [
             "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "payload_preferences_rels_payload_mcp_api_keys_fk": {
-          "name": "payload_preferences_rels_payload_mcp_api_keys_fk",
-          "tableFrom": "payload_preferences_rels",
-          "tableTo": "payload_mcp_api_keys",
-          "columnsFrom": [
-            "payload_mcp_api_keys_id"
           ],
           "columnsTo": [
             "id"
@@ -5271,6 +5034,6 @@
   "internal": {
     "indexes": {}
   },
-  "id": "b79ba24b-41fd-47da-99b1-daa374d3a6ab",
+  "id": "089ef2b5-9f61-4cfc-8560-8a52b563277e",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
