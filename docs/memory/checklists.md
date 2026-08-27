@@ -18,7 +18,15 @@ checks. True-latest (> last night): `turso db shell` or the Local API instead.
 `BACKUP_R2_SECRET` / `BACKUP_R2_ENDPOINT` — or plain `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`. Sourced each
 shell session. **Never put credentials inline in this file or on the command line.**
 
+> **R2 endpoint (FIXED VALUE, hardcode it):** `https://496742b731be907f75ffa1639eef9bee.r2.cloudflarestorage.com/`
+> — the real endpoint for this account. The `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` already in the shell ARE
+> the R2 backup creds (they authenticate against R2, not AWS proper) — use them WITH the endpoint, no `BACKUP_R2_*`
+> vars needed. If `BACKUP_R2_ENDPOINT` is unset, pass `--endpoint-url "https://496742b731be907f75ffa1639eef9bee.r2.cloudflarestorage.com/"`.
+
 ```bash
+# 0. if BACKUP_R2_ENDPOINT is unset, export it (fixed value for this account):
+export BACKUP_R2_ENDPOINT="https://496742b731be907f75ffa1639eef9bee.r2.cloudflarestorage.com/"
+
 # 1. list nightly backups, pick newest by name (lexicographic sort = timestamp order)
 LATEST=$(aws s3 ls s3://schoerke-website-backup/backups/ \
   --endpoint-url "$BACKUP_R2_ENDPOINT" | sort | tail -1 | awk '{print $NF}')
@@ -69,8 +77,9 @@ sanctioned way to refresh local dev.** MCP key is **preserved** (verified 2026-0
 Source lineage: plan `docs/superpowers/plans/2026-08-23-local-sqlite-dev.md` Task 4; commands moved here
 2026-08-27.
 
-**Preconditions:** dev server STOPPED (split-brain otherwise). cwd = repo root. R2 creds exported (§1).
-`dev.db*` is gitignored. Preserved MCP rows only authenticate if `PAYLOAD_SECRET` is unchanged since the key
+**Preconditions:** dev server STOPPED (split-brain otherwise). cwd = repo root. R2 creds exported (§1)
+— `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` in shell ARE the R2 creds, plus `BACKUP_R2_ENDPOINT` (fixed value
+in §1). `dev.db*` is gitignored. Preserved MCP rows only authenticate if `PAYLOAD_SECRET` is unchanged since the key
 was created — verify at the end (§ step 9).
 
 ```bash
