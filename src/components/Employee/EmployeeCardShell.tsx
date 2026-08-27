@@ -85,7 +85,7 @@ const EmployeeCardShell: React.FC<EmployeeCardShellProps> = ({
         <div data-testid="employee-card-gradient" aria-hidden="true" className={gradientClasses} />
         <div className={scrimClasses}>
           <div data-testid="employee-card-name" className="min-w-0">
-            <p className="font-playfair text-2xl font-bold italic text-white drop-shadow">{name}</p>
+            <p className="font-playfair text-2xl font-bold text-white drop-shadow">{name}</p>
             {title && <p className="text-primary-yellow mt-0.5 text-sm drop-shadow">{title}</p>}
           </div>
           {mobileContent && (

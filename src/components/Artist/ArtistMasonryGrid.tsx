@@ -82,7 +82,7 @@ const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedIns
       {/* Hover overlay */}
       <div className={bgClasses}>
         <div className={overlayClasses}>
-          <p className="font-playfair text-3xl font-bold italic text-white drop-shadow">{artist.name}</p>
+          <p className="font-playfair text-3xl font-bold text-white drop-shadow">{artist.name}</p>
           {translatedInstruments && (
             <p className="text-primary-yellow mt-0.5 text-sm drop-shadow">{translatedInstruments}</p>
           )}

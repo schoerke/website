@@ -75,7 +75,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug, 
 
   const overlay = (
     <div className={scrimClasses}>
-      <p className="font-playfair text-2xl font-bold italic text-white drop-shadow">{name}</p>
+      <p className="font-playfair text-2xl font-bold text-white drop-shadow">{name}</p>
       {translatedInstruments && (
         <p className="text-primary-yellow mt-0.5 text-sm drop-shadow">{translatedInstruments}</p>
       )}
