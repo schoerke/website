@@ -132,6 +132,18 @@ export const getArtistListData = async (locale?: LocaleCode) => {
       id: true,
       slug: true,
     },
+    populate: {
+      images: {
+        url: true,
+        alt: true,
+        width: true,
+        height: true,
+        focalX: true,
+        focalY: true,
+        updatedAt: true,
+        filename: true,
+      },
+    },
     depth: 1, // Populate image relationship
     locale: locale || 'de',
     fallbackLocale: 'de',

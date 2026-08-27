@@ -114,6 +114,18 @@ describe('Artist Service', () => {
           id: true,
           slug: true,
         },
+        populate: {
+          images: {
+            url: true,
+            alt: true,
+            width: true,
+            height: true,
+            focalX: true,
+            focalY: true,
+            updatedAt: true,
+            filename: true,
+          },
+        },
         depth: 1,
         locale: 'de',
         fallbackLocale: 'de',

@@ -43,7 +43,12 @@ const HomePage = async ({ params }: HomePageProps) => {
   const t = await getTranslations({ locale, namespace: 'custom.pages.home' })
 
   const [newsResult, artistsResult, homePageGlobal] = await Promise.all([
-    getPaginatedPosts({ category: 'home', locale, publishedOnly: true }),
+    getPaginatedPosts({
+      category: 'home',
+      locale,
+      publishedOnly: true,
+      select: { title: true, slug: true, image: true, categories: true },
+    }),
     getArtistListData(locale),
     getHomePage(locale),
   ])

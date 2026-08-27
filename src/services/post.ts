@@ -1,6 +1,6 @@
 import config from '@/payload.config'
 import { normalizeText } from '@/utils/search/normalizeText'
-import type { Where } from 'payload'
+import type { SelectType, Where } from 'payload'
 import { getPayload } from 'payload'
 
 type LocaleCode = 'de' | 'en' | 'all'
@@ -350,6 +350,7 @@ export const getPaginatedPosts = async (options: {
   limit?: number
   locale?: LocaleCode
   publishedOnly?: boolean
+  select?: SelectType
 }) => {
   const payload = await getPayload({ config })
 
@@ -382,6 +383,7 @@ export const getPaginatedPosts = async (options: {
     locale: options.locale || 'de',
     sort: '-createdAt', // Most recent first
     depth: 1, // Populate image and other relationships
+    ...(options.select ? { select: options.select } : {}),
   })
 }
 
