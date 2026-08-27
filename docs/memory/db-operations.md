@@ -1,11 +1,17 @@
 # DB Operations — Backup, Restore, Inspection (Turso)
 
 Verified Turso-native procedures (dump, restore, clone prod→dev, schema parity). **Verified 2026-08-15 against a
-throwaway DB.** Follow these EXACT steps. The 2026-08-15 prod incident was caused by deviating from the official
-restore path (using `sqlite3 .dump`, which emits `unistr()` calls Turso's server SQLite can't execute).
+throwaway DB.** The 2026-08-15 prod incident was caused by deviating from the official restore path (using
+`sqlite3 .dump`, which emits `unistr()` calls Turso's server SQLite can't execute).
 
-**Databases:** `ksschoerke-development` (sandbox), `ksschoerke-production` (live). All commands use Turso CLI
-credentials — **no `.env` swap needed.** Every `turso` command requires approval per `opencode.json`.
+> ⚠️ **Command locations (since 2026-08-27):** the common-task commands (full backup, read-only inspection,
+> refresh local `dev.db`) live in **`docs/memory/checklists.md`** (§1–§3). This file keeps internals, rationale,
+> and the destructive/procedure-specific commands (§2 dump-to-SQL, §3 restore, §3c/§4 deprecated). If a command
+> you need is missing here, check checklists.md first.
+
+**Databases:** local `dev.db` (canonical dev) and `ksschoerke-production` (live). `ksschoerke-development` does
+NOT exist — sections referencing it are deprecated. Turso CLI commands use CLI credentials — **no `.env` swap
+needed.** Every `turso` command requires approval per `opencode.json`.
 
 > ⚠️ For reading **content** data (artists, repertoires, posts…), prefer the Payload Local API
 > (`pnpm dump <collection>`, `tsx` read script, service/action) — see docs/memory/data-operations.md. Turso CLI is
@@ -13,16 +19,16 @@ credentials — **no `.env` swap needed.** Every `turso` command requires approv
 
 ---
 
-## 1. Full backup (snapshot) — READ-ONLY, always safe
+## 1. Full backup (snapshot) — ⚠️ COMMANDS MOVED
 
-```bash
-mkdir -p data/dumps
-turso db export ksschoerke-production --output-file data/dumps/ksschoerke-production-$(date +%Y%m%d-%H%M%S).db
-```
+> **AUTHORITATIVE STEPS: `docs/memory/checklists.md` §2.**
+> This section keeps internals only (why it's the ONLY safe pre-write backup, `.db-wal` sibling, ordering rule).
+> No commands here.
 
-- Produces a complete SQLite snapshot (`.db`) + optional `.db-wal` file.
+- Produces a complete SQLite snapshot (`.db`) + optional `.db-wal` file — keep both.
 - **This is the ONLY safe pre-write backup.** Take one before ANY prod mutation and keep it until verified.
-- Inspect locally: `sqlite3 data/dumps/NAME.db "SELECT COUNT(*) FROM artists"`.
+- **For read-only inspection/audits, prefer the nightly R2 backup (checklists.md §1) — zero prod reads, no turso
+  approval.** Only `turso db export` when you need a fresh, pre-write snapshot.
 
 ---
 
@@ -123,105 +129,60 @@ turso db shell ksschoerke-development "SELECT COUNT(*) FROM artists;"
 
 ---
 
-## 3d. Refresh local `dev.db` from nightly R2 backup (VERIFIED CHECKLIST)
+## 3d. Refresh local `dev.db` — ⚠️ COMMANDS MOVED
+
+> **AUTHORITATIVE STEPS: `docs/memory/checklists.md` §3.**
+> This section keeps internals only (`dev|-1` mechanism, MCP auth, atomic-replace rationale). No commands here.
+> Source lineage: `docs/superpowers/plans/2026-08-23-local-sqlite-dev.md` Task 4; commands moved to
+> checklists.md 2026-08-27.
 
 **Use this to seed/refresh the LOCAL dev SQLite file (`file:./dev.db`, canonical dev) from the nightly prod
-backup.** Source: `docs/superpowers/plans/2026-08-23-local-sqlite-dev.md` Task 4 (verified). This is the ONLY
-sanctioned way to refresh local dev — do NOT invent a different procedure.
+backup.** This is the ONLY sanctioned way to refresh local dev — do NOT invent a different procedure.
 
-**Prereq:** R2 creds `BACKUP_R2_ACCESS_KEY` / `BACKUP_R2_SECRET` / `BACKUP_R2_ENDPOINT` (GitHub Actions secrets,
-NOT `.env`/`.env.local`). Export in your shell, not inline (avoids shell history). They must be sourced each
-shell session; they are not in `.env`.
-
-- [ ] **1. Stop dev** (must be stopped before replacing dev.db — split-brain otherwise)
-- [ ] **2. List backups, note latest** — `aws s3 ls s3://schoerke-website-backup/backups/ --endpoint-url "$BACKUP_R2_ENDPOINT"` → pick newest `ksschoerke-production-<TIMESTAMP>.db.gz` (= `<LATEST>`)
-- [ ] **3. Download + decompress atomically, clear stale companions:**
-
-```bash
-aws s3 cp s3://schoerke-website-backup/backups/ksschoerke-production-<LATEST>.db.gz \
-  --endpoint-url "$BACKUP_R2_ENDPOINT" ./dev.db.gz
-gunzip -c dev.db.gz > dev.db.new && mv dev.db.new dev.db
-rm -f dev.db-wal dev.db-shm dev.db.gz
-```
-
-  (Atomic replace via `gunzip -c > dev.db.new && mv` avoids partial-file corruption; `rm` clears stale WAL/SHM.)
-
-- [ ] **4. Sanity check — integrity + several key tables** (not a single sample):
-
-```bash
-sqlite3 dev.db "PRAGMA integrity_check;"
-sqlite3 dev.db "SELECT 'artists', COUNT(*) FROM artists UNION ALL
-                SELECT 'posts', COUNT(*) FROM posts UNION ALL
-                SELECT 'search', COUNT(*) FROM search UNION ALL
-                SELECT 'payload_migrations', COUNT(*) FROM payload_migrations;"
-```
-
-  Expected: `integrity_check` = `ok`; nonzero counts; migrations present. If integrity fails, delete dev.db and re-download.
-
-- [ ] **5. Clear `dev|-1`, assert real migrations present:**
-
-```bash
-sqlite3 dev.db "SELECT name, batch FROM payload_migrations;"
-sqlite3 dev.db "DELETE FROM payload_migrations WHERE name='dev';"
-sqlite3 dev.db "SELECT name FROM payload_migrations ORDER BY name;"
-```
-
-  Expected after delete: the repo migrations (`20260815_artist_repertoire_ordering`,
-  `20260816_ensure_employee_email_unique`, `20260819_localize_artist_biography_pdf`,
-  `20260820_localize_video_link_label`, `20260825_remove_autosave_columns`). If missing, step 6 re-runs them.
-
-- [ ] **6. Apply pending migrations (repo-root cwd required):**
-
-```bash
-cd <repo-root>
-DATABASE_URI="file:./dev.db" DATABASE_AUTH_TOKEN="local" NODE_ENV=production pnpm payload migrate
-```
-
-  Expected: applies any missing migrations, exits 0. If it prompts interactively, the `dev|-1` delete failed — stop.
-
-- [ ] **7. MCP re-key (HUMAN — admin UI).** The prod backup has NO `payload_mcp_api_keys` table (MCP is
-  `NODE_ENV !== 'production'` gated; prod disables it). Full steps in
-  `docs/superpowers/plans/2026-08-23-local-sqlite-dev.md` Task 5: start dev → admin → create MCP API key →
-  enable `find` on all 8 collections + home-page global → write key to
-  `~/.config/opencode/secrets/payload-mcp.key` → restart opencode MCP client → verify a `payload_find*` tool.
-
-**Do NOT preserve/copy the `payload_mcp_api_keys` table across the swap** — re-key is the sanctioned path
-(Task 5). The swap itself never touches `payload_mcp*` (the R2 prod export has none to begin with).
+- **Atomic replace** (decompress to a `.db.new` temp file, then rename over `dev.db`) avoids partial-file
+  corruption; deleting stale WAL/SHM companions completes the swap.
+- **`dev|-1` mechanism:** the first dev-mode connection (`pushDevSchema`) writes a `dev|-1` migration marker. It
+  makes `payload migrate` show the interactive "data loss" prompt, which silently cancels in CI. The checklist
+  deletes it before migrating. Prod-targeting scripts run with `NODE_ENV=production` so the marker is never
+  written to prod.
+- **`NODE_ENV=production` on the local migrate is NOT about prod** — it prevents `pushDevSchema` from re-adding
+  `dev|-1` while migrating the local file. Do not "fix" it away.
+- **MCP key handling (policy since 2026-08-26):** the prod backup has NO `payload_mcp_api_keys` table (MCP is
+  `NODE_ENV !== 'production'` gated; prod disables it). **We PRESERVE the table across the swap** — dump schema +
+  rows from the old `dev.db` before the swap, recreate + insert into the new `dev.db` after (checklists.md §3).
+  Preserved rows keep working because `api_key_index` is an HMAC that stays valid as long as `PAYLOAD_SECRET` is
+  unchanged. **Fallback:** if a `payload_find*` tool returns 401 after the swap, re-key via the admin UI (old
+  documented path — plan Task 5). A future Payload bump that changes the `payload_mcp_api_keys` schema breaks
+  preserved rows → re-key.
 
 ---
 
-## 4. Schema parity reset (schema only, no data)
+## 4. Schema parity reset — ⚠️ STALE (targets deleted `ksschoerke-development`)
 
-Use when dev's schema has drifted from prod (e.g. dev was schema-pushed without FKs while prod has migrations).
-Copy prod's schema (tables + FKs + indexes) to dev WITHOUT data:
+> **DEPRECATED.** `ksschoerke-development` no longer exists, so the commands below fail. Dev is the local
+> `dev.db` file. To get prod's schema+data into local dev, refresh `dev.db` from the nightly R2 backup —
+> **AUTHORITATIVE STEPS: `docs/memory/checklists.md` §3.** Kept only as historical reference — do NOT run.
 
-```bash
-# 1. dump prod schema only
-turso db shell ksschoerke-production .schema > data/dumps/prod-schema.sql
-
-# 2. wipe dev tables (see §3c step 3)
-
-# 3. apply prod schema to dev
-turso db shell ksschoerke-development < data/dumps/prod-schema.sql
-
-# 4. verify FKs + indexes match
-turso db shell ksschoerke-production  "PRAGMA foreign_key_list(artists_rels);"
-turso db shell ksschoerke-development "PRAGMA foreign_key_list(artists_rels);"
-```
-
-**Prevention beats correction:** dev/prod diverge because dev uses `pushDevSchema` (ALTER, no FKs) while prod
-uses migrations (table-recreation, FKs). Always generate + review a migration for schema changes (see
-docs/memory/migrations.md), and use the schema-parity reset when drift is detected.
+The schema-only parity idea (copy tables + FKs + indexes without data) is superseded by the full dev.db refresh,
+which is simpler and verified. The underlying drift cause still stands: dev uses `pushDevSchema` (ALTER, no FKs)
+while prod uses migrations (table-recreation, FKs). Always generate + review a migration for schema changes (see
+docs/memory/migrations.md).
 
 ---
 
-## 5. Read-only inspection (no write risk)
+## 5. Read-only inspection — ⚠️ COMMANDS MOVED
 
-```bash
-turso db shell ksschoerke-production "SELECT name, batch FROM payload_migrations;"
-turso db shell ksschoerke-production "PRAGMA foreign_key_list(artists_rels);"
-sqlite3 data/dumps/NAME.db "SELECT COUNT(*) FROM artists;"   # inspect a local snapshot
-```
+> **AUTHORITATIVE STEPS: `docs/memory/checklists.md` §1.**
+> This section keeps rationale only. The R2-read commands live in checklists.md.
+
+**PREFERRED: read the nightly R2 backup locally — zero prod reads, no turso approval needed.** The nightly
+`ksschoerke-production-<TIMESTAMP>.db.gz` is the previous night's full snapshot. Good enough for audits, counts,
+schema inspection, and "what is live" questions. For true-latest data (newer than last night), fall back to
+`turso db shell` (§1) or the Local API. **Never write the download over `dev.db` unless refreshing it — see
+checklists.md §3.**
+
+Legacy fallbacks: `turso db shell ksschoerke-production "SELECT ..."` (live read, requires approval per
+opencode.json) or `sqlite3 data/dumps/NAME.db "..."` (inspect an existing local snapshot).
 
 ---
 
@@ -230,7 +191,7 @@ sqlite3 data/dumps/NAME.db "SELECT COUNT(*) FROM artists;"   # inspect a local s
 1. **Never use `sqlite3 .dump` to restore Turso** — it emits `unistr()` (and needs empty tables). Use
    `turso db shell <db> .dump` + `< dump.sql`.
 2. **`turso db import` and `turso db create --from-file` create NEW databases** — they never overwrite an
-   existing one. For overwrites use `.dump` + wipe + restore (§3a/§3c).
+   existing one. For overwrites use `.dump` + wipe + restore (§3a).
 3. **Take a fresh export BEFORE any prod write**, and keep it until the restore is verified.
 4. **Verify after restore** — compare every table `COUNT(*)` and the index list against the source, and confirm
    the wipe left `0 tables remain`.
