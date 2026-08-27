@@ -83,7 +83,20 @@ describe('Recording Service', () => {
   })
 
   describe('getRecordingsByArtist', () => {
-    it('should fetch published recordings by artist ID', async () => {
+    const RECORDING_SELECT = {
+      title: true,
+      description: true,
+      recordingYear: true,
+      recordingLabel: true,
+      catalogNumber: true,
+      coverArt: true,
+      spotifyURL: true,
+      appleMusicURL: true,
+      roles: true,
+      createdAt: true,
+    }
+
+    it('should fetch published recordings by artist ID with slim select (no artists)', async () => {
       const mockRecording = createMockRecording({ artists: [1] as never })
       vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockRecording]))
 
@@ -97,8 +110,9 @@ describe('Recording Service', () => {
           _status: { equals: 'published' },
         },
         locale: 'de',
-        depth: 2,
+        depth: 1,
         limit: 0,
+        select: RECORDING_SELECT,
       })
     })
 
@@ -114,21 +128,24 @@ describe('Recording Service', () => {
           _status: { equals: 'published' },
         },
         locale: 'de',
-        depth: 2,
+        depth: 1,
         limit: 0,
+        select: RECORDING_SELECT,
       })
     })
 
-    it('should populate artist relationships and cover art with depth 2', async () => {
+    it('should slim relationships with depth 1 and select, excluding the artists field', async () => {
       vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getRecordingsByArtist('1')
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
-          depth: 2,
+          depth: 1,
+          select: RECORDING_SELECT,
         })
       )
+      expect(vi.mocked(mockPayload.find).mock.calls[0][0]).not.toHaveProperty('populate')
     })
   })
 

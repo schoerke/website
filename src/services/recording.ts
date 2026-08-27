@@ -75,8 +75,20 @@ export const getRecordingsByArtist = async (artistId: string, locale?: LocaleCod
       },
     },
     locale: locale || 'de',
-    depth: 2, // Populate artist relationships and cover art
+    depth: 1, // Populate cover art; the artists relationship is not rendered on the discography list
     limit: 0, // Return all recordings for artist (no limit)
+    select: {
+      title: true,
+      description: true,
+      recordingYear: true,
+      recordingLabel: true,
+      catalogNumber: true,
+      coverArt: true,
+      spotifyURL: true,
+      appleMusicURL: true,
+      roles: true,
+      createdAt: true,
+    },
   })
 
   /**

@@ -229,7 +229,7 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
       try {
         const data = await fetchRecordingsByArtist(artist.id.toString(), lang)
         if (!cancelled) {
-          setRecordings(data.docs || [])
+          setRecordings((data.docs || []) as Recording[])
           fetchedLocaleRef.current = { locale: lang, artistId: artist.id }
           setRecordingsFetched(true)
         }
