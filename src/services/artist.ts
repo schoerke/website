@@ -1,4 +1,4 @@
-import type { Artist, Post, Repertoire } from '@/payload-types'
+import type { Artist } from '@/payload-types'
 import config from '@/payload.config'
 import { getPayload } from 'payload'
 
@@ -12,36 +12,27 @@ type LocaleCode = 'de' | 'en' | 'all'
  * @returns A promise resolving to the first matching artist document, or undefined if not found
  *
  * @remarks
- * **Manual Project & Repertoire Population:**
- * This function uses depth:2 for initial population, then makes additional queries to manually
- * populate the `artist.projects` and `artist.repertoire` arrays. This ensures:
- * - Projects are fully populated with their images (depth:2 level)
- * - Repertoire sections are fully populated
- * - Ordering from the database (relationship array order) is preserved
- * - Consistent behavior across Payload versions
+ * **Single-query population:**
+ * This function uses depth:2 with a `populate` override for every relationship collection,
+ * so projects, repertoire, contact persons, images, and downloads come back fully populated
+ * and slimmed in ONE round trip. The `posts` populate override is REQUIRED because the posts
+ * collection configures `defaultPopulate: {}` — without the override, `artist.projects` returns
+ * bare `{ id }` objects regardless of depth.
  *
- * **Performance Impact:**
- * - Query 1: `artists.find()` with depth:2 (~50-100ms)
- * - Query 2: `posts.find()` for projects (~30-70ms) — only if artist has projects
- * - Query 3: `repertoire.find()` for repertoire (~20-50ms) — only if artist has repertoire
- * - Total overhead: ~100-220ms per page load
+ * **Ordering:** Payload populates relationship arrays in stored order (rels table `order` ASC),
+ * so repertoire/projects order is preserved by the query itself — no manual re-fetch needed.
  *
- * **Optimization Opportunity:**
- * The manual population may be unnecessary with current Payload versions. The second query
- * could potentially be eliminated if depth:2 properly populates relationship arrays.
- * Testing required to verify. See: `tmp/testDepthPopulation.ts`
+ * **Performance:** one `artists.find()` (~50-100ms), slimmed payloads only.
  *
- * @see {@link docs/plans/2025-12-13-artist-projects-ordering-design.md}
- * @see {@link https://payloadcms.com/docs/queries/depth}
+ * @see {@link docs/patterns/payload.md} for the select/populate-on-uploads `filename` gotcha
  *
  * @example
  * const artist = await getArtistBySlug('john-doe', 'en')
  * if (artist) {
  *   console.log(artist.name) // "John Doe"
  *   if (artist.projects) {
- *     // Projects are fully populated Post objects with images
  *     console.log(artist.projects[0].title)
- *     console.log(artist.projects[0].image.url) // Image is populated
+ *     console.log(artist.projects[0].image?.url) // Slim image doc
  *   }
  * }
  */
@@ -51,61 +42,49 @@ export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
     collection: 'artists',
     where: { slug: { equals: slug } },
     limit: 1,
-    depth: 2, // Populate image, contactPersons, and projects with their featured images
+    depth: 2, // Populate all relationships below
     locale: locale || 'de',
     fallbackLocale: 'de',
+    select: {
+      name: true,
+      slug: true,
+      image: true,
+      biography: true,
+      quote: true,
+      contactPersons: true,
+      homepageURL: true,
+      externalCalendarURL: true,
+      facebookURL: true,
+      instagramURL: true,
+      twitterURL: true,
+      youtubeURL: true,
+      spotifyURL: true,
+      downloads: true,
+      videoLinks: true,
+      galleryImages: true,
+      projects: true,
+      repertoire: true,
+    },
+    populate: {
+      images: {
+        filename: true,
+        url: true,
+        alt: true,
+        credit: true,
+        width: true,
+        height: true,
+        focalX: true,
+        focalY: true,
+        updatedAt: true,
+      },
+      employees: { name: true, title: true, email: true, phone: true, mobile: true },
+      repertoire: { title: true, content: true },
+      posts: { title: true, slug: true, image: true, content: true },
+      documents: { filename: true, url: true, updatedAt: true },
+    },
   })
 
-  const artist = result.docs[0] as Artist & {
-    projects?: (number | { id: number } | Post)[]
-    repertoire?: (number | { id: number } | Repertoire)[]
-  }
-
-  // Manually populate projects if they exist (depth doesn't always work for relationship arrays)
-  if (artist?.projects && Array.isArray(artist.projects) && artist.projects.length > 0) {
-    const projectIds = artist.projects
-      .map((p: number | { id: number } | Post) => (typeof p === 'number' ? p : p.id))
-      .filter((id): id is number => typeof id === 'number')
-
-    if (projectIds.length > 0) {
-      const projectsResult = await payload.find({
-        collection: 'posts',
-        where: { id: { in: projectIds } },
-        depth: 1, // Populate images
-        locale: locale || 'de',
-        fallbackLocale: 'de',
-      })
-
-      // Maintain the order from artist.projects array
-      const projectsMap = new Map(projectsResult.docs.map((p) => [p.id, p]))
-      artist.projects = projectIds.map((id) => projectsMap.get(id)).filter((p): p is Post => p !== undefined)
-    }
-  }
-
-  // Manually populate repertoire if it exists (mirrors projects population)
-  if (artist?.repertoire && Array.isArray(artist.repertoire) && artist.repertoire.length > 0) {
-    const repertoireIds = artist.repertoire
-      .map((r: number | { id: number } | Repertoire) => (typeof r === 'number' ? r : r.id))
-      .filter((id): id is number => typeof id === 'number')
-
-    if (repertoireIds.length > 0) {
-      const repertoireResult = await payload.find({
-        collection: 'repertoire',
-        where: { id: { in: repertoireIds } },
-        depth: 1,
-        locale: locale || 'de',
-        fallbackLocale: 'de',
-      })
-
-      // Maintain the order from artist.repertoire array
-      const repertoireMap = new Map(repertoireResult.docs.map((r) => [r.id, r]))
-      artist.repertoire = repertoireIds
-        .map((id) => repertoireMap.get(id))
-        .filter((r): r is Repertoire => r !== undefined)
-    }
-  }
-
-  return artist
+  return result.docs[0] as Artist | undefined
 }
 
 /**
@@ -149,4 +128,26 @@ export const getArtistListData = async (locale?: LocaleCode) => {
     fallbackLocale: 'de',
     limit: 0, // Fetch all artists (no limit)
   })
+}
+
+/**
+ * Retrieves all artist slugs for static route generation.
+ * Slugs are NOT localized — the same slug is used for both DE and EN.
+ *
+ * @returns A promise resolving to the array of artist slugs
+ *
+ * @example
+ * const slugs = await getArtistSlugs()
+ * // ['marc-gruber', 'olga-scheps']
+ */
+export const getArtistSlugs = async (): Promise<string[]> => {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'artists',
+    select: { slug: true },
+    locale: 'de',
+    fallbackLocale: 'de',
+    limit: 0,
+  })
+  return result.docs.map((doc) => doc.slug).filter((slug): slug is string => typeof slug === 'string' && slug !== '')
 }
