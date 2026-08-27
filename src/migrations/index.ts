@@ -4,6 +4,7 @@ import * as migration_20260819_202221_localize_artist_biography_pdf from './2026
 import * as migration_20260820_194949_localize_video_link_label from './20260820_194949_localize_video_link_label'
 import * as migration_20260825_195406_remove_autosave_columns from './20260825_195406_remove_autosave_columns'
 import * as migration_20260825_211420_add_guides_collection from './20260825_211420_add_guides_collection'
+import * as migration_20260827_173327_add_video_links_embed_code from './20260827_173327_add_video_links_embed_code'
 
 export const migrations = [
   {
@@ -35,5 +36,10 @@ export const migrations = [
     up: migration_20260825_211420_add_guides_collection.up,
     down: migration_20260825_211420_add_guides_collection.down,
     name: '20260825_211420_add_guides_collection',
+  },
+  {
+    up: migration_20260827_173327_add_video_links_embed_code.up,
+    down: migration_20260827_173327_add_video_links_embed_code.down,
+    name: '20260827_173327_add_video_links_embed_code',
   },
 ]
