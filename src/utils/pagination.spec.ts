@@ -5,7 +5,7 @@ describe('pagination utilities', () => {
   describe('PAGINATION_DEFAULTS', () => {
     it('should have correct default values', () => {
       expect(PAGINATION_DEFAULTS.page).toBe(1)
-      expect(PAGINATION_DEFAULTS.limit).toBe(25)
+      expect(PAGINATION_DEFAULTS.limit).toBe(10)
       expect(PAGINATION_DEFAULTS.allowedLimits).toEqual([10, 25, 50])
     })
   })
@@ -69,34 +69,34 @@ describe('pagination utilities', () => {
         expect(result.limit).toBe(25)
       })
 
-      it('should default to 25 for missing limit parameter', () => {
+      it('should default to 10 for missing limit parameter', () => {
         const result = parsePaginationParams('1', undefined)
-        expect(result.limit).toBe(25)
+        expect(result.limit).toBe(10)
       })
 
-      it('should default to 25 for empty limit parameter', () => {
+      it('should default to 10 for empty limit parameter', () => {
         const result = parsePaginationParams('1', '')
-        expect(result.limit).toBe(25)
+        expect(result.limit).toBe(10)
       })
 
-      it('should default to 25 for non-numeric limit parameter', () => {
+      it('should default to 10 for non-numeric limit parameter', () => {
         const result = parsePaginationParams('1', 'abc')
-        expect(result.limit).toBe(25)
+        expect(result.limit).toBe(10)
       })
 
-      it('should default to 25 for limit not in allowed limits', () => {
+      it('should default to 10 for limit not in allowed limits', () => {
         const result = parsePaginationParams('1', '100')
-        expect(result.limit).toBe(25)
+        expect(result.limit).toBe(10)
       })
 
-      it('should default to 25 for negative limit', () => {
+      it('should default to 10 for negative limit', () => {
         const result = parsePaginationParams('1', '-10')
-        expect(result.limit).toBe(25)
+        expect(result.limit).toBe(10)
       })
 
-      it('should default to 25 for zero limit', () => {
+      it('should default to 10 for zero limit', () => {
         const result = parsePaginationParams('1', '0')
-        expect(result.limit).toBe(25)
+        expect(result.limit).toBe(10)
       })
 
       it('should handle decimal limits (rounds down, then validates)', () => {
@@ -111,9 +111,9 @@ describe('pagination utilities', () => {
         expect(result.limit).toBe(20)
       })
 
-      it('should default to 25 when limit not in custom allowed limits', () => {
+      it('should default to 10 when limit not in custom allowed limits', () => {
         const result = parsePaginationParams('1', '30', [5, 20, 100])
-        expect(result.limit).toBe(25)
+        expect(result.limit).toBe(10)
       })
 
       it('should validate against custom limits correctly', () => {
@@ -130,17 +130,17 @@ describe('pagination utilities', () => {
 
       it('should handle both missing parameters', () => {
         const result = parsePaginationParams(undefined, undefined)
-        expect(result).toEqual({ page: 1, limit: 25 })
+        expect(result).toEqual({ page: 1, limit: 10 })
       })
 
       it('should handle both invalid parameters', () => {
         const result = parsePaginationParams('invalid', 'invalid')
-        expect(result).toEqual({ page: 1, limit: 25 })
+        expect(result).toEqual({ page: 1, limit: 10 })
       })
 
       it('should handle valid page with invalid limit', () => {
         const result = parsePaginationParams('5', '999')
-        expect(result).toEqual({ page: 5, limit: 25 })
+        expect(result).toEqual({ page: 5, limit: 10 })
       })
 
       it('should handle invalid page with valid limit', () => {

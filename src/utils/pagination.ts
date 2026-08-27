@@ -7,7 +7,7 @@
  */
 export const PAGINATION_DEFAULTS = {
   page: 1,
-  limit: 25,
+  limit: 10,
   allowedLimits: [10, 25, 50],
 } as const
 
@@ -35,7 +35,7 @@ export interface PaginationParams {
  * // Returns: { page: 2, limit: 25 }
  *
  * const { page, limit } = parsePaginationParams('invalid', '100')
- * // Returns: { page: 1, limit: 25 } (falls back to defaults)
+ * // Returns: { page: 1, limit: 10 } (falls back to defaults)
  * ```
  */
 export function parsePaginationParams(

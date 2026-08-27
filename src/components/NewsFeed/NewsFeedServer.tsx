@@ -36,7 +36,7 @@ interface NewsFeedServerProps {
   search?: string
   /** Current page number (1-indexed, default: 1) */
   page?: number
-  /** Number of posts per page (default: 25) */
+  /** Number of posts per page (default: 10) */
   limit?: number
   /** Locale for content and translations (default: 'de') */
   locale?: 'de' | 'en'
@@ -74,7 +74,7 @@ interface NewsFeedServerProps {
  * <NewsFeed.Server
  *   category="news"
  *   page={1}
- *   limit={25}
+ *   limit={10}
  *   locale="en"
  *   basePath="/en/news"
  * />
@@ -107,7 +107,7 @@ const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
   artistId,
   search,
   page = 1,
-  limit = 25,
+  limit = 10,
   locale = 'de',
   emptyMessage = 'No posts found',
   showPagination = true,

@@ -47,6 +47,7 @@ const HomePage = async ({ params }: HomePageProps) => {
       category: 'home',
       locale,
       publishedOnly: true,
+      limit: 10,
       select: { title: true, slug: true, image: true, categories: true },
     }),
     getArtistListData(locale),
