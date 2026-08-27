@@ -2,6 +2,7 @@
 
 import { fetchRecordingsByArtist } from '@/actions/recordings'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
+import { POST_LIST_IMAGES_POPULATE, POST_LIST_SELECT } from '@/constants/postList'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import {
@@ -347,19 +348,8 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
             artistId={artist.id.toString()}
             locale={locale}
             emptyMessage={t('empty.news')}
-            select={{ title: true, slug: true, image: true, content: true, categories: true, createdAt: true }}
-            populate={{
-              images: {
-                filename: true,
-                url: true,
-                alt: true,
-                width: true,
-                height: true,
-                focalX: true,
-                focalY: true,
-                updatedAt: true,
-              },
-            }}
+            select={POST_LIST_SELECT}
+            populate={POST_LIST_IMAGES_POPULATE}
           />
         )}
         {activeTab === 'projects' && (
