@@ -833,6 +833,96 @@ git commit -m "chore(types): regenerate payload types after VideoEmbed embedCode
 
 ---
 
+### Task 8: Artists `videoLinks` embedCode support (reuse VideoEmbed)
+
+**Context:** The Artists collection's `videoLinks` array (rendered by `VideoAccordion`) only supports YouTube/arte.tv URLs via `buildEmbedSrc`. Add an optional `embedCode` to each array item so editors can paste broadcaster iframes there too. REUSE the already-built `<VideoEmbed>` component for rendering — DRY, single source of hardened rendering truth.
+
+**Files:**
+- Modify: `src/collections/Artists.ts` — add `embedCode` field to `videoLinks` array item
+- Modify: `src/components/Artist/VideoAccordion.tsx` — `VideoLink` interface + render via `<VideoEmbed>`
+- Modify: `src/components/Artist/VideoAccordion.spec.tsx` — tests
+- Modify: `src/components/Artist/ArtistTabs.spec.tsx` / `ArtistTabContent.spec.tsx` if mock data types break
+
+- [ ] **Step 1: Add `embedCode` field to the `videoLinks` array item**
+
+In `src/collections/Artists.ts`, the `videoLinks` array item currently has `label` + `url` fields. Add an `embedCode` textarea field after `url`, with mutual exclusion:
+
+```ts
+                {
+                  name: 'embedCode',
+                  label: { en: 'Embed Code', de: 'Einbettungscode' },
+                  type: 'textarea',
+                  required: false,
+                  admin: {
+                    placeholder:
+                      '<iframe src="https://www.rsi.ch/play/embed?urn=urn:rsi:video:2051761" width="392" height="220" allowfullscreen></iframe>',
+                    description: {
+                      en: 'Paste an <iframe> embed code from a supported provider (e.g. RSI, ARD Mediathek, RTS). Leave empty when using a URL.',
+                      de: '<iframe>-Einbettungscode eines unterstützten Anbieters einfügen (z. B. RSI, ARD Mediathek, RTS). Bei Verwendung einer URL leer lassen.',
+                    },
+                    condition: (_, siblingData) => !siblingData?.url,
+                    rows: 4,
+                  },
+                  validate: validateVideoEmbedCode,
+                },
+```
+
+And update the `url` field: `required: true` → `required: false`, add `admin.condition: (_, siblingData) => !siblingData?.embedCode`, update description to mention embed code.
+
+Import `validateVideoEmbedCode` from `@/validators/videoFields` (add to the existing `import { validateURL, validateVideoURL } from '@/validators/fields'`).
+
+- [ ] **Step 2: Write failing test for VideoAccordion embedCode rendering**
+
+In `src/components/Artist/VideoAccordion.spec.tsx`, add a test that an item with `embedCode` renders (mock `<VideoEmbed>` to avoid iframe/network). Read the existing spec first — it likely mocks child components. If it renders real iframes, mock `@/components/blocks/VideoEmbed` instead:
+
+```tsx
+vi.mock('@/components/blocks/VideoEmbed', () => ({
+  default: ({ url, embedCode }: { url?: string; embedCode?: string }) => (
+    <div data-testid="video-embed" data-url={url} data-embed-code={embedCode ?? ''} />
+  ),
+}))
+```
+
+Test: an item with `embedCode` (and no url) renders the VideoEmbed mock with the embedCode passed through.
+
+- [ ] **Step 3: Run test to verify it fails**
+
+Run: `pnpm exec vitest run src/components/Artist/VideoAccordion.spec.tsx`
+Expected: FAIL — `VideoLink` has no `embedCode`, component ignores it.
+
+- [ ] **Step 4: Update VideoAccordion to reuse VideoEmbed**
+
+In `src/components/Artist/VideoAccordion.tsx`:
+- `VideoLink` interface: add `embedCode?: string | null`.
+- Import `VideoEmbed` from `@/components/blocks/VideoEmbed`.
+- Replace the `buildEmbedSrc(video.url)`-based iframe rendering with a `<VideoEmbed url={video.url} embedCode={video.embedCode ?? undefined} />` for each mounted item. Keep the lazy-mount logic (`mountedIndices`) and the accordion shell.
+- If a video has neither a valid URL nor embedCode, `VideoEmbed` renders nothing (its null-guard) — the accordion row can still show the label. Decide: keep showing rows for videos VideoEmbed can't render (label-only, empty panel) or filter them. RECOMMENDED: keep the existing behavior of filtering unsupported rows — but since `buildEmbedSrc` is replaced, use a simpler check: a video is renderable if `video.embedCode` is truthy OR `buildEmbedSrc(video.url)` is non-null. Keep `buildEmbedSrc` for the URL validity check and `firstValidIndex`.
+- Panel content: replace the manual `<iframe>` block with `<VideoEmbed ... />` inside the same aspect-video wrapper div.
+
+- [ ] **Step 5: Run test to verify it passes**
+
+Run: `pnpm exec vitest run src/components/Artist/VideoAccordion.spec.tsx`
+Expected: PASS.
+
+- [ ] **Step 6: Typecheck + format**
+
+Run: `pnpm exec tsc --noEmit` — expect PASS.
+Run: `pnpm exec oxfmt --check src/collections/Artists.ts src/components/Artist/VideoAccordion.tsx src/components/Artist/VideoAccordion.spec.tsx` — fix if needed.
+
+- [ ] **Step 7: Run full suite**
+
+Run: `pnpm exec vitest run src/components/Artist`
+Expected: PASS (VideoAccordion + ArtistTabs + ArtistTabContent specs).
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add src/collections/Artists.ts src/components/Artist/VideoAccordion.tsx src/components/Artist/VideoAccordion.spec.tsx
+git commit -m "feat(artists): support embed codes in videoLinks via VideoEmbed"
+```
+
+---
+
 ## Self-Review Notes
 
 - **Spec coverage:** Spec §1 (block config) → Task 4; §2 (validator + validateVideoURL) → Tasks 2-3; §3 (allowlist) → Task 1; §4 (render) → Task 5; §5 (rich-text) → Task 6; §6 (typegen) → Task 7. Tests section → Tasks 1,2,3,5. Docs (mark old spec rejected) already done in spec commit.
