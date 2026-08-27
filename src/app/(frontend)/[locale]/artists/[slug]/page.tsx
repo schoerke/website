@@ -2,13 +2,24 @@ import ArtistTabs from '@/components/Artist/ArtistTabs'
 import ContactPersons from '@/components/Artist/ContactPersons'
 import ArtistLinks from '@/components/ArtistLinks'
 import { Link } from '@/i18n/navigation'
-import { getArtistBySlug } from '@/services/artist'
+import { getArtistBySlug, getArtistSlugs } from '@/services/artist'
 import { getNewsPostCountByArtist } from '@/services/post'
 import { isEmployee } from '@/utils/collection'
 import { getImageUrl, isImageObject, isValidUrl } from '@/utils/image'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+
+export async function generateStaticParams() {
+  try {
+    const slugs = await getArtistSlugs()
+    const locales = ['de', 'en'] as const
+    return locales.flatMap((locale) => slugs.map((slug) => ({ locale, slug })))
+  } catch (error) {
+    console.warn('Failed to generate static params for artists:', error)
+    return []
+  }
+}
 
 export default async function ArtistDetailPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await params
