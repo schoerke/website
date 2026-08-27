@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 
+import VideoEmbed from '@/components/blocks/VideoEmbed'
 import { extractYouTubeVideoId } from '@/utils/videoEmbed'
 
 interface VideoLink {
   label: string
   url: string
+  embedCode?: string | null
   id?: string | null
 }
 
@@ -62,8 +64,17 @@ function buildEmbedSrc(url: string): string | null {
   return null
 }
 
+/**
+ * A video is renderable when it has an embed code OR a URL that maps to a
+ * supported platform (YouTube/arte.tv). Rendering itself is delegated to
+ * <VideoEmbed>.
+ */
+function isRenderable(video: VideoLink): boolean {
+  return Boolean(video.embedCode) || buildEmbedSrc(video.url) !== null
+}
+
 const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage }) => {
-  const firstValidIndex = videos.findIndex((v) => buildEmbedSrc(v.url) !== null)
+  const firstValidIndex = videos.findIndex(isRenderable)
   const [openIndex, setOpenIndex] = useState<number | null>(firstValidIndex >= 0 ? firstValidIndex : null)
   const [mountedIndices, setMountedIndices] = useState<Set<number>>(
     () => new Set(firstValidIndex >= 0 ? [firstValidIndex] : [])
@@ -86,11 +97,10 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
   return (
     <ul className="space-y-0">
       {videos.map((video, index) => {
-        const embedSrc = buildEmbedSrc(video.url)
         const isOpen = openIndex === index
         const panelId = `video-panel-${video.id || index}`
 
-        if (!embedSrc) {
+        if (!isRenderable(video)) {
           console.warn(`Unsupported video URL: ${video.url}`)
           return null
         }
@@ -120,17 +130,7 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
               style={!isOpen ? { position: 'absolute', visibility: 'hidden', pointerEvents: 'none' } : undefined}
             >
               <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
-                {mountedIndices.has(index) && (
-                  <iframe
-                    src={embedSrc}
-                    title={video.label}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    width="1280"
-                    height="720"
-                    className="absolute inset-0 h-full w-full"
-                  />
-                )}
+                {mountedIndices.has(index) && <VideoEmbed url={video.url} embedCode={video.embedCode ?? undefined} />}
               </div>
             </div>
           </li>

@@ -1,8 +1,17 @@
 // @vitest-environment happy-dom
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import VideoAccordion from './VideoAccordion'
+
+// VideoAccordion delegates iframe rendering to <VideoEmbed> (which has its own
+// spec). Stub it so these tests stay focused on accordion mechanics while still
+// asserting the url/embedCode props it receives.
+vi.mock('@/components/blocks/VideoEmbed', () => ({
+  default: ({ url, embedCode }: { url?: string; embedCode?: string }) => (
+    <div data-testid="video-embed" data-url={url ?? ''} data-embed-code={embedCode ?? ''} />
+  ),
+}))
 
 describe('VideoAccordion', () => {
   const mockVideos = [
@@ -10,37 +19,6 @@ describe('VideoAccordion', () => {
     { id: '2', label: 'Performance 2', url: 'https://youtu.be/jNQXAC9IVRw' },
     { id: '3', label: 'Performance 3', url: 'https://www.youtube.com/embed/9bZkp7q19f0' },
   ]
-
-  beforeAll(() => {
-    // Mock iframe element to prevent happy-dom network requests
-    const originalCreateElement = document.createElement.bind(document)
-    document.createElement = function (tagName: string, options?: ElementCreationOptions) {
-      if (tagName.toLowerCase() === 'iframe') {
-        const div = originalCreateElement('div', options) as unknown as HTMLIFrameElement
-        div.setAttribute('data-mock-iframe', 'true')
-        // Intercept src attribute to prevent network requests
-        Object.defineProperty(div, 'src', {
-          get() {
-            return this.getAttribute('src') || ''
-          },
-          set(value: string) {
-            this.setAttribute('src', value)
-          },
-        })
-        // Mock allow attribute
-        Object.defineProperty(div, 'allow', {
-          get() {
-            return this.getAttribute('allow') || ''
-          },
-          set(value: string) {
-            this.setAttribute('allow', value)
-          },
-        })
-        return div
-      }
-      return originalCreateElement(tagName, options)
-    }
-  })
 
   beforeEach(() => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
@@ -78,11 +56,12 @@ describe('VideoAccordion', () => {
       expect(buttons).toHaveLength(3)
     })
 
-    it('should render first video iframe open by default', () => {
+    it('should render first video open by default', () => {
       render(<VideoAccordion videos={mockVideos} emptyMessage="No videos" />)
 
       const firstPanel = document.getElementById('video-panel-1')
       expect(firstPanel).not.toHaveAttribute('hidden')
+      expect(screen.getAllByTestId('video-embed')).toHaveLength(1)
     })
 
     it('should render subsequent video panels hidden by default', () => {
@@ -106,6 +85,7 @@ describe('VideoAccordion', () => {
 
       const secondPanel = document.getElementById('video-panel-2')
       expect(secondPanel).not.toHaveAttribute('hidden')
+      expect(screen.getAllByTestId('video-embed')).toHaveLength(2)
     })
 
     it('should close accordion when clicked again', async () => {
@@ -157,8 +137,8 @@ describe('VideoAccordion', () => {
     })
   })
 
-  describe('YouTube URL parsing', () => {
-    it('should extract video ID from standard YouTube URL', async () => {
+  describe('YouTube URL pass-through', () => {
+    it('should pass standard YouTube URL to VideoEmbed', async () => {
       const user = userEvent.setup()
       const videos = [{ label: 'Test', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }]
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
@@ -166,11 +146,12 @@ describe('VideoAccordion', () => {
       const button = screen.getByRole('button')
       await user.click(button)
 
-      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
-      expect(iframe.src).toContain('dQw4w9WgXcQ')
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+      expect(embed).toHaveAttribute('data-embed-code', '')
     })
 
-    it('should extract video ID from short YouTube URL', async () => {
+    it('should pass short YouTube URL to VideoEmbed', async () => {
       const user = userEvent.setup()
       const videos = [{ label: 'Test', url: 'https://youtu.be/jNQXAC9IVRw' }]
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
@@ -178,11 +159,11 @@ describe('VideoAccordion', () => {
       const button = screen.getByRole('button')
       await user.click(button)
 
-      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
-      expect(iframe.src).toContain('jNQXAC9IVRw')
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://youtu.be/jNQXAC9IVRw')
     })
 
-    it('should extract video ID from embed URL', async () => {
+    it('should pass YouTube embed URL to VideoEmbed', async () => {
       const user = userEvent.setup()
       const videos = [{ label: 'Test', url: 'https://www.youtube.com/embed/9bZkp7q19f0' }]
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
@@ -190,11 +171,11 @@ describe('VideoAccordion', () => {
       const button = screen.getByRole('button')
       await user.click(button)
 
-      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
-      expect(iframe.src).toContain('9bZkp7q19f0')
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://www.youtube.com/embed/9bZkp7q19f0')
     })
 
-    it('should extract video ID from YouTube live URL with share params', async () => {
+    it('should pass YouTube live URL with share params to VideoEmbed', async () => {
       const user = userEvent.setup()
       const videos = [{ label: 'Test', url: 'https://www.youtube.com/live/S3ozsKGx864?si=rXYcx6VPNwbLIxx3' }]
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
@@ -202,11 +183,11 @@ describe('VideoAccordion', () => {
       const button = screen.getByRole('button')
       await user.click(button)
 
-      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
-      expect(iframe.src).toContain('S3ozsKGx864')
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://www.youtube.com/live/S3ozsKGx864?si=rXYcx6VPNwbLIxx3')
     })
 
-    it('should extract video ID from YouTube shorts URL', async () => {
+    it('should pass YouTube shorts URL to VideoEmbed', async () => {
       const user = userEvent.setup()
       const videos = [{ label: 'Test', url: 'https://www.youtube.com/shorts/9bZkp7q19f0' }]
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
@@ -214,11 +195,11 @@ describe('VideoAccordion', () => {
       const button = screen.getByRole('button')
       await user.click(button)
 
-      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
-      expect(iframe.src).toContain('9bZkp7q19f0')
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://www.youtube.com/shorts/9bZkp7q19f0')
     })
 
-    it('should extract video ID from YouTube live URL with trailing slash', async () => {
+    it('should pass YouTube live URL with trailing slash to VideoEmbed', async () => {
       const user = userEvent.setup()
       const videos = [{ label: 'Test', url: 'https://www.youtube.com/live/S3ozsKGx864/' }]
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
@@ -226,8 +207,32 @@ describe('VideoAccordion', () => {
       const button = screen.getByRole('button')
       await user.click(button)
 
-      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
-      expect(iframe.src).toContain('S3ozsKGx864')
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://www.youtube.com/live/S3ozsKGx864/')
+    })
+
+    it('should pass bare video ID to VideoEmbed', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Test', url: 'dQw4w9WgXcQ' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'dQw4w9WgXcQ')
+    })
+
+    it('should pass URL with query parameters to VideoEmbed', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Test', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=30s' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=30s')
     })
 
     it('should skip live URL with extra path segments', () => {
@@ -240,18 +245,6 @@ describe('VideoAccordion', () => {
       expect(screen.getByText('Valid')).toBeInTheDocument()
       expect(screen.queryByText('Invalid')).not.toBeInTheDocument()
       expect(console.warn).toHaveBeenCalledWith('Unsupported video URL: https://www.youtube.com/live/S3ozsKGx864/stats')
-    })
-
-    it('should handle direct video ID', async () => {
-      const user = userEvent.setup()
-      const videos = [{ label: 'Test', url: 'dQw4w9WgXcQ' }]
-      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
-
-      const button = screen.getByRole('button')
-      await user.click(button)
-
-      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
-      expect(iframe.src).toContain('dQw4w9WgXcQ')
     })
 
     it('should skip videos with invalid URLs', () => {
@@ -267,31 +260,80 @@ describe('VideoAccordion', () => {
     })
   })
 
-  describe('Iframe attributes', () => {
-    it('should set correct iframe attributes', async () => {
+  describe('Embed code support', () => {
+    it('should pass embed code to VideoEmbed when url is empty', async () => {
       const user = userEvent.setup()
-      const videos = [{ label: 'Test Video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }]
+      const embedCode = '<iframe src="https://www.rsi.ch/play/embed?urn=urn:rsi:video:2051761"></iframe>'
+      const videos = [{ label: 'RSI Concert', url: '', embedCode }]
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
 
       const button = screen.getByRole('button')
       await user.click(button)
 
-      const iframe = screen.getByTitle('Test Video') as HTMLIFrameElement
-      expect(iframe).toHaveAttribute('allowFullScreen')
-      expect(iframe.allow).toContain('accelerometer')
-      expect(iframe.allow).toContain('autoplay')
-      expect(iframe.allow).toContain('encrypted-media')
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', '')
+      expect(embed).toHaveAttribute('data-embed-code', embedCode)
     })
 
-    it('should use video label as iframe title', async () => {
+    it('should render embed code video open by default', () => {
+      const videos = [{ label: 'RSI Concert', url: '', embedCode: '<iframe src="https://www.rsi.ch/play/x"></iframe>' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-embed-code', '<iframe src="https://www.rsi.ch/play/x"></iframe>')
+    })
+
+    it('should prefer embed code over url when both are set', async () => {
       const user = userEvent.setup()
-      const videos = [{ label: 'My Custom Title', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }]
+      const videos = [
+        {
+          label: 'Both',
+          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+          embedCode: '<iframe src="https://www.rsi.ch/play/x"></iframe>',
+        },
+      ]
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
 
       const button = screen.getByRole('button')
       await user.click(button)
 
-      expect(screen.getByTitle('My Custom Title')).toBeInTheDocument()
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+      expect(embed).toHaveAttribute('data-embed-code', '<iframe src="https://www.rsi.ch/play/x"></iframe>')
+    })
+
+    it('should skip videos with neither url nor embed code', () => {
+      const videos = [{ label: 'Broken', url: '', embedCode: null }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      expect(screen.queryByText('Broken')).not.toBeInTheDocument()
+      expect(console.warn).toHaveBeenCalledWith('Unsupported video URL: ')
+    })
+  })
+
+  describe('arte.tv URL pass-through', () => {
+    it('should pass arte.tv video URL to VideoEmbed', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Arte Concert', url: 'https://www.arte.tv/de/videos/120894-000-A/some-title/' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://www.arte.tv/de/videos/120894-000-A/some-title/')
+    })
+
+    it('should pass arte.tv French URL to VideoEmbed', async () => {
+      const user = userEvent.setup()
+      const videos = [{ label: 'Arte FR', url: 'https://www.arte.tv/fr/videos/120894-000-A/some-title/' }]
+      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+
+      const embed = screen.getByTestId('video-embed')
+      expect(embed).toHaveAttribute('data-url', 'https://www.arte.tv/fr/videos/120894-000-A/some-title/')
     })
   })
 
@@ -326,56 +368,6 @@ describe('VideoAccordion', () => {
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
 
       expect(screen.getByText('Test')).toBeInTheDocument()
-    })
-
-    it('should handle URL with query parameters', async () => {
-      const user = userEvent.setup()
-      const videos = [{ label: 'Test', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=30s' }]
-      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
-
-      const button = screen.getByRole('button')
-      await user.click(button)
-
-      const iframe = screen.getByTitle('Test') as HTMLIFrameElement
-      expect(iframe.src).toContain('dQw4w9WgXcQ')
-    })
-  })
-
-  describe('arte.tv URL support', () => {
-    it('should render arte.tv video with correct embed URL', async () => {
-      const user = userEvent.setup()
-      const videos = [{ label: 'Arte Concert', url: 'https://www.arte.tv/de/videos/120894-000-A/some-title/' }]
-      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
-
-      const button = screen.getByRole('button')
-      await user.click(button)
-
-      const iframe = screen.getByTitle('Arte Concert') as HTMLIFrameElement
-      expect(iframe.src).toContain('arte.tv/embeds/de/120894-000-A')
-    })
-
-    it('should extract locale from arte.tv URL', async () => {
-      const user = userEvent.setup()
-      const videos = [{ label: 'Arte FR', url: 'https://www.arte.tv/fr/videos/120894-000-A/some-title/' }]
-      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
-
-      const button = screen.getByRole('button')
-      await user.click(button)
-
-      const iframe = screen.getByTitle('Arte FR') as HTMLIFrameElement
-      expect(iframe.src).toContain('/embeds/fr/')
-    })
-
-    it('should disable autoplay for arte.tv embeds', async () => {
-      const user = userEvent.setup()
-      const videos = [{ label: 'Arte Test', url: 'https://www.arte.tv/de/videos/120894-000-A/title/' }]
-      render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
-
-      const button = screen.getByRole('button')
-      await user.click(button)
-
-      const iframe = screen.getByTitle('Arte Test') as HTMLIFrameElement
-      expect(iframe.src).toContain('autoplay=false')
     })
   })
 })

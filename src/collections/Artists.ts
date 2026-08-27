@@ -3,6 +3,7 @@ import { enforceRepertoireOrderOnly } from '@/collections/hooks/enforceRepertoir
 import { revalidateArtistOnChange, revalidateArtistOnDelete } from '@/collections/hooks/revalidateArtist'
 import { createSlugHook } from '@/utils/slug'
 import { validateURL, validateVideoURL } from '@/validators/fields'
+import { validateVideoEmbedCode } from '@/validators/videoFields'
 import type { TFunction } from '@payloadcms/translations'
 import type { CollectionConfig } from 'payload'
 
@@ -178,7 +179,7 @@ export const Artists: CollectionConfig = {
               filterOptions: ({ id }) =>
                 ({
                   and: [{ artists: { contains: id } }],
-                } as const),
+                }) as const,
             },
           ],
         },
@@ -215,7 +216,7 @@ export const Artists: CollectionConfig = {
               filterOptions: ({ id }) =>
                 ({
                   and: [{ categories: { contains: 'projects' } }, { artists: { contains: id } }],
-                } as const),
+                }) as const,
             },
           ],
         },
@@ -285,12 +286,30 @@ export const Artists: CollectionConfig = {
                   name: 'url',
                   label: 'Video URL',
                   type: 'text',
-                  required: true,
+                  required: false,
                   admin: {
                     placeholder: 'arte.tv/de/videos/...',
-                    description: 'Supports YouTube and arte.tv URLs',
+                    description: 'Supports YouTube and arte.tv URLs (leave empty when using an embed code)',
+                    condition: (_, siblingData) => !siblingData?.embedCode,
                   },
                   validate: validateVideoURL,
+                },
+                {
+                  name: 'embedCode',
+                  label: { en: 'Embed Code', de: 'Einbettungscode' },
+                  type: 'textarea',
+                  required: false,
+                  admin: {
+                    placeholder:
+                      '<iframe src="https://www.rsi.ch/play/embed?urn=urn:rsi:video:2051761" width="392" height="220" allowfullscreen></iframe>',
+                    description: {
+                      en: 'Paste an <iframe> embed code from a supported provider (e.g. RSI, ARD Mediathek, RTS). Leave empty when using a URL.',
+                      de: '<iframe>-Einbettungscode eines unterstützten Anbieters einfügen (z. B. RSI, ARD Mediathek, RTS). Bei Verwendung einer URL leer lassen.',
+                    },
+                    condition: (_, siblingData) => !siblingData?.url,
+                    rows: 4,
+                  },
+                  validate: validateVideoEmbedCode,
                 },
               ],
             },
