@@ -9,11 +9,13 @@ interface VideoEmbedProps {
   embedCode?: string
   aspectRatio?: '16:9' | '4:3' | '21:9'
   locale?: 'de' | 'en'
+  noMargin?: boolean
+  title?: string
 }
 
 const VIDEO_EMBED_DEFAULT_HEIGHT = 315
 
-const VideoEmbed: React.FC<VideoEmbedProps> = ({ url, embedCode, aspectRatio = '16:9', locale }) => {
+const VideoEmbed: React.FC<VideoEmbedProps> = ({ url, embedCode, aspectRatio = '16:9', locale, noMargin, title }) => {
   // Block was just inserted and no field has been filled in yet - this is
   // expected (e.g. while editing in the live preview) and isn't an error.
   if (!url && !embedCode) {
@@ -57,11 +59,11 @@ const VideoEmbed: React.FC<VideoEmbedProps> = ({ url, embedCode, aspectRatio = '
     }
 
     return (
-      <div className="my-8">
+      <div className={noMargin ? '' : 'my-8'}>
         <div className="overflow-hidden rounded-lg bg-gray-900">
           <iframe
             src={parsed.src}
-            title={parsed.title ?? 'Video player'}
+            title={title ?? parsed.title ?? 'Video player'}
             width="100%"
             height={parsed.height ?? VIDEO_EMBED_DEFAULT_HEIGHT}
             frameBorder="0"
@@ -93,14 +95,14 @@ const VideoEmbed: React.FC<VideoEmbedProps> = ({ url, embedCode, aspectRatio = '
   const paddingBottom = getAspectRatioPadding(aspectRatio)
 
   return (
-    <div className="my-8">
+    <div className={noMargin ? '' : 'my-8'}>
       <div
         className="relative w-full overflow-hidden rounded-lg bg-gray-900"
         style={{ paddingBottom: `${paddingBottom}%` }}
       >
         <iframe
           src={embedData.embedUrl}
-          title={`${embedData.platform} video player`}
+          title={title ?? `${embedData.platform} video player`}
           sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen

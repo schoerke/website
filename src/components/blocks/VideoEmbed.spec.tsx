@@ -102,4 +102,31 @@ describe('VideoEmbed', () => {
     const { container } = render(<VideoEmbed />)
     expect(container).toBeEmptyDOMElement()
   })
+
+  it('renders with a margin wrapper by default', () => {
+    const { container } = render(<VideoEmbed url="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />)
+    expect(container.firstChild).toHaveClass('my-8')
+  })
+
+  it('renders the URL branch without the margin wrapper when noMargin is set', () => {
+    const { container } = render(<VideoEmbed url="https://www.youtube.com/watch?v=dQw4w9WgXcQ" noMargin />)
+    expect(container.firstChild).not.toHaveClass('my-8')
+  })
+
+  it('renders the embedCode branch without the margin wrapper when noMargin is set', () => {
+    const { container } = render(
+      <VideoEmbed embedCode='<iframe src="https://www.rsi.ch/play/embed?urn=x"></iframe>' noMargin />
+    )
+    expect(container.firstChild).not.toHaveClass('my-8')
+  })
+
+  it('uses a provided title over the default for the URL branch', () => {
+    render(<VideoEmbed url="https://www.youtube.com/watch?v=dQw4w9WgXcQ" title="My Concert" />)
+    expect(screen.getByTitle('My Concert')).toBeInTheDocument()
+  })
+
+  it('uses a provided title over the iframe title for the embedCode branch', () => {
+    render(<VideoEmbed embedCode='<iframe src="https://www.rsi.ch/play/embed?urn=x"></iframe>' title="My Concert" />)
+    expect(screen.getByTitle('My Concert')).toBeInTheDocument()
+  })
 })

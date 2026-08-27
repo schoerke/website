@@ -3,11 +3,11 @@
 import { useState } from 'react'
 
 import VideoEmbed from '@/components/blocks/VideoEmbed'
-import { extractYouTubeVideoId } from '@/utils/videoEmbed'
+import { getVideoEmbedData } from '@/utils/videoEmbed'
 
 interface VideoLink {
   label: string
-  url: string
+  url?: string | null
   embedCode?: string | null
   id?: string | null
 }
@@ -18,59 +18,12 @@ interface VideoAccordionProps {
 }
 
 /**
- * Extract YouTube video ID from a URL or a bare 11-character ID.
- * URL formats handled by the shared extractYouTubeVideoId util.
- */
-function extractYouTubeId(url: string): string | null {
-  const id = extractYouTubeVideoId(url)
-  if (id) return id
-  return /^[a-zA-Z0-9_-]{11}$/.test(url) ? url : null
-}
-
-/**
- * Parse an arte.tv watch URL, returning the locale and video ID.
- * - https://www.arte.tv/de/videos/120894-000-A/some-title/
- */
-function parseArteUrl(url: string): { locale: string; id: string } | null {
-  try {
-    const parsed = new URL(url)
-    const isArteDomain = parsed.hostname === 'www.arte.tv' || parsed.hostname === 'arte.tv'
-    if (!isArteDomain) return null
-
-    const match = parsed.pathname.match(/^\/([a-z]{2})\/videos\/([^/]+)/)
-    if (!match) return null
-    return { locale: match[1], id: match[2] }
-  } catch {
-    return null
-  }
-}
-
-/**
- * Build the embed iframe src for a video URL.
- * For arte.tv, the locale is extracted from the watch URL itself.
- * Returns null if the URL is not a supported platform.
- */
-function buildEmbedSrc(url: string): string | null {
-  const youtubeId = extractYouTubeId(url)
-  if (youtubeId) {
-    return `https://www.youtube.com/embed/${youtubeId}`
-  }
-
-  const arte = parseArteUrl(url)
-  if (arte) {
-    return `https://www.arte.tv/embeds/${arte.locale}/${arte.id}?autoplay=false`
-  }
-
-  return null
-}
-
-/**
- * A video is renderable when it has an embed code OR a URL that maps to a
- * supported platform (YouTube/arte.tv). Rendering itself is delegated to
- * <VideoEmbed>.
+ * A video is renderable when it has an embed code OR a URL that
+ * getVideoEmbedData can turn into an embed. This intentionally rejects bare
+ * 11-character IDs (legacy-only input) because VideoEmbed cannot render them.
  */
 function isRenderable(video: VideoLink): boolean {
-  return Boolean(video.embedCode) || buildEmbedSrc(video.url) !== null
+  return Boolean(video.embedCode) || getVideoEmbedData(video.url ?? '') !== null
 }
 
 const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage }) => {
@@ -130,7 +83,14 @@ const VideoAccordion: React.FC<VideoAccordionProps> = ({ videos, emptyMessage })
               style={!isOpen ? { position: 'absolute', visibility: 'hidden', pointerEvents: 'none' } : undefined}
             >
               <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
-                {mountedIndices.has(index) && <VideoEmbed url={video.url} embedCode={video.embedCode ?? undefined} />}
+                {mountedIndices.has(index) && (
+                  <VideoEmbed
+                    url={video.url ?? ''}
+                    embedCode={video.embedCode ?? undefined}
+                    title={video.label}
+                    noMargin
+                  />
+                )}
               </div>
             </div>
           </li>

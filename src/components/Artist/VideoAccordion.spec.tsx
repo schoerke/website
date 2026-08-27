@@ -8,8 +8,24 @@ import VideoAccordion from './VideoAccordion'
 // spec). Stub it so these tests stay focused on accordion mechanics while still
 // asserting the url/embedCode props it receives.
 vi.mock('@/components/blocks/VideoEmbed', () => ({
-  default: ({ url, embedCode }: { url?: string; embedCode?: string }) => (
-    <div data-testid="video-embed" data-url={url ?? ''} data-embed-code={embedCode ?? ''} />
+  default: ({
+    url,
+    embedCode,
+    noMargin,
+    title,
+  }: {
+    url?: string
+    embedCode?: string
+    noMargin?: boolean
+    title?: string
+  }) => (
+    <div
+      data-testid="video-embed"
+      data-url={url ?? ''}
+      data-embed-code={embedCode ?? ''}
+      data-no-margin={noMargin ? 'true' : 'false'}
+      data-title={title ?? ''}
+    />
   ),
 }))
 
@@ -149,6 +165,8 @@ describe('VideoAccordion', () => {
       const embed = screen.getByTestId('video-embed')
       expect(embed).toHaveAttribute('data-url', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
       expect(embed).toHaveAttribute('data-embed-code', '')
+      expect(embed).toHaveAttribute('data-no-margin', 'true')
+      expect(embed).toHaveAttribute('data-title', 'Test')
     })
 
     it('should pass short YouTube URL to VideoEmbed', async () => {
@@ -211,16 +229,12 @@ describe('VideoAccordion', () => {
       expect(embed).toHaveAttribute('data-url', 'https://www.youtube.com/live/S3ozsKGx864/')
     })
 
-    it('should pass bare video ID to VideoEmbed', async () => {
-      const user = userEvent.setup()
+    it('should skip bare video IDs (legacy-only, not renderable by VideoEmbed)', () => {
       const videos = [{ label: 'Test', url: 'dQw4w9WgXcQ' }]
       render(<VideoAccordion videos={videos} emptyMessage="No videos" />)
 
-      const button = screen.getByRole('button')
-      await user.click(button)
-
-      const embed = screen.getByTestId('video-embed')
-      expect(embed).toHaveAttribute('data-url', 'dQw4w9WgXcQ')
+      expect(screen.queryByText('Test')).not.toBeInTheDocument()
+      expect(console.warn).toHaveBeenCalledWith('Unsupported video URL: dQw4w9WgXcQ')
     })
 
     it('should pass URL with query parameters to VideoEmbed', async () => {
@@ -273,6 +287,7 @@ describe('VideoAccordion', () => {
       const embed = screen.getByTestId('video-embed')
       expect(embed).toHaveAttribute('data-url', '')
       expect(embed).toHaveAttribute('data-embed-code', embedCode)
+      expect(embed).toHaveAttribute('data-no-margin', 'true')
     })
 
     it('should render embed code video open by default', () => {
