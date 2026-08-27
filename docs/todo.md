@@ -2,6 +2,13 @@
 
 ## Search
 
+- [ ] **Search API timing out / aborting — observed in browser console** — 2026-08-27
+  - While testing locally, `/api/search` repeatedly logged: `API search failed, falling back to static JSON: AbortError` (from the abort-on-new-keystroke logic in `src/services/search.ts:110`) and `Error: API timeout after 2000ms` (`src/services/search.ts:124`).
+  - The abort logs are by-design (each keystroke aborts the prior in-flight request); the **2000ms timeout** is the real problem — the API route is slow (likely cold-start/Payload init in dev), so real searches degrade to the static JSON fallback.
+  - **Deferred** — decided to address later, after the artist-detail data-fetching work.
+  - **To investigate:** whether prod `/api/search` also exceeds 2000ms (raise/remove timeout? warm the route? cache search results?) — see related item below.
+  - **Files:** `src/services/search.ts`, `src/components/Search/SearchProvider.tsx`
+
 - [ ] **Search returns no results on prod for non-artist queries (e.g. "cello")** — 2026-05-25
   - Two root causes identified:
     1. **Static JSON fallback is too shallow** — `public/search-index-de.json` only has 34 docs (artist display names only). Repertoire, instruments, biographies not indexed. When API fails, fallback returns nothing for content-based queries.
