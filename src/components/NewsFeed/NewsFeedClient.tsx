@@ -3,6 +3,7 @@
 import { fetchPosts } from '@/actions/posts'
 import { Skeleton } from '@/components/ui/Skeleton'
 import type { Post } from '@/payload-types'
+import type { PopulateType, SelectType } from 'payload'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import NewsFeedList from './NewsFeedList'
@@ -28,6 +29,10 @@ interface NewsFeedClientProps {
   showSearch?: boolean
   /** Custom placeholder text for search input */
   searchPlaceholder?: string
+  /** Slim the returned post fields (optional) */
+  select?: SelectType
+  /** Slim the populated relationship docs (optional) */
+  populate?: PopulateType
 }
 
 /**
@@ -43,6 +48,8 @@ const NewsFeedClientInner: React.FC<NewsFeedClientProps> = ({
   showLoadingState = true,
   showSearch = true,
   searchPlaceholder,
+  select,
+  populate,
 }) => {
   const searchParams = useSearchParams()
   const search = searchParams.get('search') || undefined
@@ -65,6 +72,8 @@ const NewsFeedClientInner: React.FC<NewsFeedClientProps> = ({
           search,
           limit,
           locale: locale as 'de' | 'en',
+          select,
+          populate,
         })
 
         if (!cancelled) {
@@ -88,6 +97,9 @@ const NewsFeedClientInner: React.FC<NewsFeedClientProps> = ({
     return () => {
       cancelled = true
     }
+    // select/populate are static config objects (stable identity from parent) — including them would
+    // refetch on every parent re-render; the fetched/loading guards already prevent redundant fetches.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, artistId, search, limit, locale, fetched, loading])
 
   if (loading && showLoadingState) {
@@ -128,11 +140,7 @@ const NewsFeedClientInner: React.FC<NewsFeedClientProps> = ({
           <NewsFeedSearch placeholder={searchPlaceholder} />
         </div>
       )}
-      <NewsFeedList
-        posts={posts}
-        emptyMessage={emptyMessage}
-        category={translationCategory as 'news' | 'projects'}
-      />
+      <NewsFeedList posts={posts} emptyMessage={emptyMessage} category={translationCategory as 'news' | 'projects'} />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 'use server'
 
 import { getFilteredPosts, getPostBySlug, getPostSlugByIdAndLocale } from '@/services/post'
+import type { PopulateType, SelectType } from 'payload'
 
 /**
  * Server action to fetch posts filtered by category and/or artist.
@@ -12,6 +13,8 @@ import { getFilteredPosts, getPostBySlug, getPostSlugByIdAndLocale } from '@/ser
  * @param options.search - Filter by search text (searches title field, minimum 3 characters)
  * @param options.limit - Maximum number of posts to return (default: 100)
  * @param options.locale - Locale code ('de' or 'en', default: 'de')
+ * @param options.select - Slim the returned post fields (optional)
+ * @param options.populate - Slim the populated relationship docs (optional)
  * @returns Promise resolving to filtered posts with populated image relationships
  *
  * @example
@@ -28,6 +31,8 @@ export async function fetchPosts(options: {
   search?: string
   limit?: number
   locale?: 'de' | 'en'
+  select?: SelectType
+  populate?: PopulateType
 }) {
   return await getFilteredPosts({
     category: options.category,
@@ -36,6 +41,8 @@ export async function fetchPosts(options: {
     limit: options.limit || 100,
     locale: options.locale || 'de',
     publishedOnly: true,
+    select: options.select,
+    populate: options.populate,
   })
 }
 

@@ -347,6 +347,19 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
             artistId={artist.id.toString()}
             locale={locale}
             emptyMessage={t('empty.news')}
+            select={{ title: true, slug: true, image: true, content: true, categories: true, createdAt: true }}
+            populate={{
+              images: {
+                filename: true,
+                url: true,
+                alt: true,
+                width: true,
+                height: true,
+                focalX: true,
+                focalY: true,
+                updatedAt: true,
+              },
+            }}
           />
         )}
         {activeTab === 'projects' && (

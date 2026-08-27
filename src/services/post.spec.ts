@@ -369,6 +369,33 @@ describe('Post Service', () => {
         })
       )
     })
+
+    it('should pass select and populate to payload.find when provided', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({
+        category: 'news',
+        select: { title: true, slug: true, image: true },
+        populate: { images: { filename: true, url: true } },
+      })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          select: { title: true, slug: true, image: true },
+          populate: { images: { filename: true, url: true } },
+        })
+      )
+    })
+
+    it('should not pass select or populate to payload.find when omitted', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ category: 'news' })
+
+      const call = vi.mocked(mockPayload.find).mock.calls[0][0]
+      expect(call).not.toHaveProperty('select')
+      expect(call).not.toHaveProperty('populate')
+    })
   })
 
   describe('getPaginatedPosts', () => {
