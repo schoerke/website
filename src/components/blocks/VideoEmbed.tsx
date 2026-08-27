@@ -3,7 +3,7 @@
 import { getAspectRatioPadding, getVideoEmbedData } from '@/utils/videoEmbed'
 
 interface VideoEmbedProps {
-  url: string
+  url?: string
   aspectRatio?: '16:9' | '4:3' | '21:9'
   locale?: 'de' | 'en'
 }

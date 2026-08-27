@@ -1,24 +1,29 @@
 import type { Block } from 'payload'
 
 import { validateVideoURL } from '@/validators/fields'
+import { validateVideoEmbedCode } from '@/validators/videoFields'
 
 /**
  * Video Embed Block Field Types
  */
 export interface VideoEmbedBlockFields {
-  url: string
+  url?: string
+  embedCode?: string
   aspectRatio?: '16:9' | '4:3' | '21:9'
 }
 
 /**
  * Video Embed Block
  *
- * Allows embedding YouTube and arte.tv videos within rich text content.
- * Uses existing validateVideoURL validator for URL validation.
+ * Allows embedding videos within rich text content, either by URL or by pasting
+ * a provider-supplied <iframe> embed code.
  *
- * Supported platforms:
+ * URL path (uses validateVideoURL):
  * - YouTube: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/live|embed|shorts/ID
  * - arte.tv: arte.tv/{locale}/videos/{ID}/...
+ *
+ * Embed code path (uses validateVideoEmbedCode):
+ * - raw <iframe> snippet from an allowlisted host (rts.ch, rsi.ch, ardmediathek.de)
  */
 export const VideoEmbed: Block = {
   slug: 'videoEmbed',
@@ -43,7 +48,7 @@ export const VideoEmbed: Block = {
     {
       name: 'url',
       type: 'text',
-      required: true,
+      required: false,
       label: {
         en: 'Video URL',
         de: 'Video-URL',
@@ -51,11 +56,32 @@ export const VideoEmbed: Block = {
       admin: {
         placeholder: 'arte.tv/de/videos/...',
         description: {
-          en: 'Supports YouTube and arte.tv URLs',
-          de: 'Unterstützt YouTube- und arte.tv-URLs',
+          en: 'YouTube or arte.tv URL (leave empty when using an embed code)',
+          de: 'YouTube- oder arte.tv-URL (bei Einbettungscode leer lassen)',
         },
+        condition: (_, siblingData) => !siblingData?.embedCode,
       },
       validate: validateVideoURL,
+    },
+    {
+      name: 'embedCode',
+      type: 'textarea',
+      required: false,
+      label: {
+        en: 'Embed Code',
+        de: 'Einbettungscode',
+      },
+      admin: {
+        placeholder:
+          '<iframe src="https://www.ardmediathek.de/embed/Y3JpZDovL2FyZC5kZS92aWRlby0xNjA4Nw?clientType=ardde" width="100%" height="315" allowfullscreen></iframe>',
+        description: {
+          en: 'Paste an <iframe> embed code from a supported provider (e.g. RSI, ARD Mediathek, RTS). If the embed looks cropped or oversized on the site, edit the width/height values in the pasted code and save again.',
+          de: '<iframe>-Einbettungscode eines unterstützten Anbieters einfügen (z. B. RSI, ARD Mediathek, RTS). Falls die Einbettung auf der Website abgeschnitten oder zu groß wirkt, die Werte für width/height im eingefügten Code anpassen und erneut speichern.',
+        },
+        condition: (_, siblingData) => !siblingData?.url,
+        rows: 4,
+      },
+      validate: validateVideoEmbedCode,
     },
     {
       name: 'aspectRatio',
