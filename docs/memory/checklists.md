@@ -154,5 +154,29 @@ admin render breaks → re-key.
 
 ---
 
-**Verified:** §3 2026-08-26 (MCP preserve). §1 pattern 2026-08-26. db-operations.md retains internals:
-`dev|-1` mechanism, MCP auth detail, atomic-replace rationale, FK/restore caveats.
+## 5. Connect to prod via Payload Local API — NO token generation needed (VERIFIED 2026-08-27)
+
+`getPayload({ config })` script against PROD, using the EXISTING `.env` token — do NOT run `turso db tokens create`.
+
+**Key fact:** `.env` has `DATABASE_URI=file:./dev.db` (local, by convention) but its `DATABASE_AUTH_TOKEN` is the
+**prod libsql token** (JWT). Combine that token with the prod URI inline to hit prod.
+
+```bash
+# prod Local API read OR write — one recipe
+TOKEN=$(grep '^DATABASE_AUTH_TOKEN=' .env | cut -d= -f2)
+DATABASE_URI="libsql://ksschoerke-production-zeitchef.aws-eu-west-1.turso.io" \
+DATABASE_AUTH_TOKEN="$TOKEN" NODE_ENV=production pnpm exec tsx <script>.ts
+```
+
+- `NODE_ENV=production` prevents `pushDevSchema` → no `dev|-1` marker on prod (see §3 step 7 + scripts.md).
+- Uses Payload Local API → hooks + `_posts_v` versions run normally (never raw SQL for writes).
+- Writes must pass `context: { skipRevalidation: true }` (revalidatePath throws outside Next — scripts.md).
+- Read-only prod inspection still prefers §1 (nightly R2 backup) — zero prod reads. Use this recipe only for
+  approved prod work (e.g. relink featured images).
+- VERIFIED: relinking posts' `image` field (data ops) with this recipe works end-to-end; the `.env` token
+  authenticates prod without generating a new credential.
+
+---
+
+**Verified:** §3 2026-08-26 (MCP preserve). §1 pattern 2026-08-26. §5 2026-08-27 (prod Local API connection).
+db-operations.md retains internals: `dev|-1` mechanism, MCP auth detail, atomic-replace rationale, FK/restore caveats.

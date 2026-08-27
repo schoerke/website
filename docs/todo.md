@@ -19,10 +19,25 @@
 
 ## Code Quality
 
-- [ ] **CRITICAL: Project-wide DB data-fetching audit** - reduce total rows read
-  - Analyze all data-fetching from the database across the project
-  - Goal: reduce total number of rows read per request/render
-  - **Effort:** Large
+### Data-fetching performance audit — progress (2026-08-27)
+
+Completed (see git log: `perf:`/`fix(revalidate):`/`style(ui):` commits):
+- Homepage: slider posts slimmed, artist grid images slimmed, logo lookups `React.cache()`d (4→2/request)
+- Artist detail: `getArtistBySlug` collapsed to ONE depth-2 query (was 3), route now SSG via `generateStaticParams` (49 artists × 2 locales), news/recordings tabs slimmed
+- Revalidation: artist pages purged on employee/project/repertoire/document changes (gated the static conversion)
+- News/projects lists: `getPostListData` wrapper with slim select/populate baked in
+- Gallery skeleton overlay fix (no layout reflow)
+
+#### Remaining performance items
+
+- [ ] **Lazy-load employee fetch in SearchProvider** — `src/components/Search/SearchProvider.tsx:237-254` fetches ALL employees on every page mount (layout-level provider). Move to first KBar open. Also `fetchEmployees` action (`src/actions/employees.ts:22-33`) fetches all then slices — pass `limit` down to the service. **Effort:** Small
+- [ ] **Slim `/api/search` artist subquery** — `src/app/api/search/route.ts:106-115` artist lookup uses `depth: 1` populating unused `image`; only `contactPersons` is consumed. Add `select: { contactPersons: true }`. **Effort:** Small
+- [ ] **Slim post detail pages** — `src/app/(frontend)/[locale]/news/[slug]/page.tsx` + `projects/[slug]/page.tsx`: `generateStaticParams` runs `getFilteredPosts` (limit 100, depth 1, FULL content) when only `slug` is needed — add `select: { slug: true }`; `getPostBySlug` populates unused `createdBy` — `select` to drop it; `getPostSlugByIdAndLocale` (`post.ts`) fetches whole doc for one slug — `select: { slug: true }`. **Effort:** Small
+- [ ] **Contact/kontakt page image population** — `getEmployees` returns depth 0 → employee `image` stays a bare ID → TeamMemberCard renders placeholder. Decide: populate image (depth 1 / populate) or accept placeholders. **Effort:** Small–Medium
+- [ ] **News/projects pages caching** — both `dynamic = 'force-dynamic'` and read `searchParams`, so page 1 without search re-queries DB every request. Investigate: static shell + Suspense for searchParams, or ISR per pathname. Slim select already applied (payload cut done); caching is the remaining win. **Effort:** Medium
+- [ ] **Recordings coverArt returns null at depth ≥ 1 on dev.db** — `recordings` collection (has `versions.drafts`) fails to populate the `coverArt` upload relationship (returns null), while `artist.image` populates fine. Behavior identical before/after the slim refactor, but covers may show placeholders. Investigate Payload versions-table + upload relationship population. **Effort:** Medium
+- [ ] **Dead code cleanup** — unused service functions with `limit: 0` / `depth: 2` shapes (specs-only, over-fetching if ever reused): `getAllPosts`, `getAllNewsPosts`, `getAllProjectPosts`, `getAllHomepagePosts`, `getAllNewsPostsByArtist`, `getAllProjectPostsByArtist` (`post.ts`), `getAllRecordings`, `getRecordingById` (`recording.ts`), `getEmployeeById`, `getEmployeeByName` (`employee.ts`), `getPages` (`page.ts`). Delete. **Effort:** Small
+- [ ] **Homepage global + slider micro-slim** — `getHomePage` global: add `select` for the 3 intro strings; homepage slider: add explicit `limit`. **Effort:** Trivial
 
 ### 404 Error Handling - Code Review Follow-ups (2025-12-21)
 
