@@ -18,15 +18,16 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     return
   }
 
-  // Recreate artists_video_links with the new nullable embed_code column.
-  // Table-recreate (not ALTER ADD COLUMN) keeps the ON DELETE CASCADE FK intact
-  // (ALTER would create a NO ACTION FK — see docs/memory/migrations.md).
+  // Recreate artists_video_links with the new nullable embed_code column and
+  // nullable url (url became optional in the collection config — embedCode-only
+  // rows omit it). Table-recreate (not ALTER ADD COLUMN) keeps the ON DELETE
+  // CASCADE FK intact (ALTER would create a NO ACTION FK — migrations.md).
   await db.run(sql`PRAGMA foreign_keys=OFF;`)
   await db.run(sql`CREATE TABLE IF NOT EXISTS \`__new_artists_video_links\` (
   	\`_order\` integer NOT NULL,
   	\`_parent_id\` integer NOT NULL,
   	\`id\` text PRIMARY KEY NOT NULL,
-  	\`url\` text NOT NULL,
+  	\`url\` text,
   	\`embed_code\` text,
   	FOREIGN KEY (\`_parent_id\`) REFERENCES \`artists\`(\`id\`) ON UPDATE no action ON DELETE cascade
   );
