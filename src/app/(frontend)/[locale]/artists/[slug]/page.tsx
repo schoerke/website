@@ -69,9 +69,10 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
                 alt={name}
                 fill
                 className="rounded-lg object-cover"
-                sizes="(min-width: 1024px) 600px, (min-width: 768px) 75vw, 100vw"
+                sizes="(min-width: 1024px) min(75vw, 912px), (min-width: 768px) 75vw, 100vw"
                 loading="eager"
                 priority
+                quality={80}
               />
             </div>
           </div>

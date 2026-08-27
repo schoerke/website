@@ -33,6 +33,7 @@ const PostFeaturedImage: React.FC<PostFeaturedImageProps> = ({ src, alt }) => {
       fill
       className="object-cover"
       priority
+      quality={80}
       sizes="(max-width: 896px) 100vw, 896px"
       onError={() => setImageFailed(true)}
     />

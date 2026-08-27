@@ -37,6 +37,11 @@ const nextConfig = {
     ],
     // Increase device sizes for better image optimization
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    // Next 16: qualities outside this allowlist are coerced to the closest value.
+    // Large-card images opt into 80 for sharper heroes/sliders (default 75).
+    qualities: [75, 80],
+    // Serve AVIF when the browser supports it (~40-50% smaller than JPEG/webp).
+    formats: ['image/avif', 'image/webp'],
     // Increase image sizes for responsive images
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
