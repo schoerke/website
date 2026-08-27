@@ -5,13 +5,15 @@ import { revalidatePath } from 'next/cache'
 const EMPLOYEE_PAGES = ['/de/contact', '/en/contact', '/de/kontakt', '/en/kontakt']
 
 /**
- * Revalidates all contact pages after an employee record changes.
- * Employees appear on the contact/kontakt pages for both locales.
+ * Revalidates all contact pages and the artists subtree after an employee record changes.
+ * Employees appear on the contact/kontakt pages for both locales AND as contactPersons on
+ * artist detail pages (now statically rendered — stale without this purge).
  */
-function revalidateContactPages(): void {
+function revalidateEmployeePages(): void {
   for (const path of EMPLOYEE_PAGES) {
     revalidatePath(path)
   }
+  revalidatePath('/(frontend)/[locale]/artists', 'layout')
 }
 
 /**
@@ -20,7 +22,7 @@ function revalidateContactPages(): void {
 export const revalidateEmployeeOnChange: CollectionAfterChangeHook = ({ doc, req }) => {
   if (req.context?.skipRevalidation) return doc
 
-  revalidateContactPages()
+  revalidateEmployeePages()
   console.log(`[revalidate] Contact pages revalidated after employee change (id: ${doc.id})`)
   return doc
 }
@@ -31,7 +33,7 @@ export const revalidateEmployeeOnChange: CollectionAfterChangeHook = ({ doc, req
 export const revalidateEmployeeOnDelete: CollectionAfterDeleteHook = ({ doc, req }) => {
   if (req.context?.skipRevalidation) return doc
 
-  revalidateContactPages()
+  revalidateEmployeePages()
   console.log(`[revalidate] Contact pages revalidated after employee delete (id: ${doc.id})`)
   return doc
 }

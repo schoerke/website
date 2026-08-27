@@ -58,12 +58,25 @@ function revalidatePostListPages(categories: string[]): void {
   }
 }
 
+/**
+ * Purges the statically-rendered artist detail pages when a PROJECT changes.
+ * Artist pages render projects (title/slug/image/content) server-side; a project edit without
+ * an artists-array change never touches the artist doc, so revalidateArtistOnChange never fires.
+ */
+function revalidateArtistSubtree(): void {
+  revalidatePath('/(frontend)/[locale]/artists', 'layout')
+}
+
 async function revalidatePostPaths(id: number, categories: string[], req: PayloadRequest): Promise<void> {
   const relevantCategories = categories.filter((c) => CATEGORY_PATHS[c])
   if (relevantCategories.length === 0) return
 
   // Revalidate list pages immediately (no async needed)
   revalidatePostListPages(relevantCategories)
+
+  if (relevantCategories.includes('projects')) {
+    revalidateArtistSubtree()
+  }
 
   // Fetch localized slugs in parallel — slugs may differ between DE and EN
   const slugEntries = await Promise.all(
@@ -124,6 +137,10 @@ export const revalidatePostOnDelete: CollectionAfterDeleteHook<Post> = async ({ 
 
   // Revalidate list pages
   revalidatePostListPages(relevantCategories)
+
+  if (relevantCategories.includes('projects')) {
+    revalidateArtistSubtree()
+  }
 
   const slug = doc.slug
   if (!slug) return doc

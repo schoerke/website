@@ -68,7 +68,7 @@ describe('revalidatePost hooks', () => {
       expect(revalidatePath).toHaveBeenCalledWith('/en/news')
     })
 
-    it('revalidates list pages for projects category', async () => {
+    it('revalidates list pages for projects category and purges the artists subtree', async () => {
       const req = createMockReq()
       const doc = createMockPost({ _status: 'published', categories: ['projects'] })
 
@@ -76,6 +76,17 @@ describe('revalidatePost hooks', () => {
 
       expect(revalidatePath).toHaveBeenCalledWith('/de/projects')
       expect(revalidatePath).toHaveBeenCalledWith('/en/projects')
+      expect(revalidatePath).toHaveBeenCalledWith('/(frontend)/[locale]/artists', 'layout')
+    })
+
+    it('does not purge the artists subtree for news posts', async () => {
+      const req = createMockReq()
+      const doc = createMockPost({ _status: 'published', categories: ['news'] })
+
+      await revalidatePostOnChange(asChangeArgs({ doc, previousDoc: undefined, req }))
+
+      const calls = vi.mocked(revalidatePath).mock.calls.map(([p]) => p)
+      expect(calls.every((p) => !p.includes('artists'))).toBe(true)
     })
 
     it('skips when both current and previous doc are drafts', async () => {
@@ -171,6 +182,15 @@ describe('revalidatePost hooks', () => {
 
       expect(revalidatePath).toHaveBeenCalledWith('/de/news')
       expect(revalidatePath).toHaveBeenCalledWith('/en/news')
+    })
+
+    it('purges the artists subtree when deleting a project', async () => {
+      const req = createMockReq()
+      const doc = createMockPost({ _status: 'published', slug: 'my-project', categories: ['projects'] })
+
+      await revalidatePostOnDelete(asDeleteArgs({ doc, req }))
+
+      expect(revalidatePath).toHaveBeenCalledWith('/(frontend)/[locale]/artists', 'layout')
     })
 
     it('skips when doc is not published', async () => {

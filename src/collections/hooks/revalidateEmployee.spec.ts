@@ -33,14 +33,15 @@ describe('revalidateEmployee hooks', () => {
   })
 
   describe('revalidateEmployeeOnChange', () => {
-    it('revalidates all contact pages on change', () => {
+    it('revalidates all contact pages and the artists subtree on change', () => {
       const doc = createMockDoc()
       revalidateEmployeeOnChange({ doc, req: createMockReq() } as ChangeHookArgs)
 
-      expect(revalidatePath).toHaveBeenCalledTimes(4)
+      expect(revalidatePath).toHaveBeenCalledTimes(5)
       for (const path of CONTACT_PAGES) {
         expect(revalidatePath).toHaveBeenCalledWith(path)
       }
+      expect(revalidatePath).toHaveBeenCalledWith('/(frontend)/[locale]/artists', 'layout')
     })
 
     it('skips revalidation when skipRevalidation context flag is set', () => {
@@ -61,14 +62,15 @@ describe('revalidateEmployee hooks', () => {
   })
 
   describe('revalidateEmployeeOnDelete', () => {
-    it('revalidates all contact pages on delete', () => {
+    it('revalidates all contact pages and the artists subtree on delete', () => {
       const doc = createMockDoc()
       revalidateEmployeeOnDelete({ doc, req: createMockReq() } as unknown as DeleteHookArgs)
 
-      expect(revalidatePath).toHaveBeenCalledTimes(4)
+      expect(revalidatePath).toHaveBeenCalledTimes(5)
       for (const path of CONTACT_PAGES) {
         expect(revalidatePath).toHaveBeenCalledWith(path)
       }
+      expect(revalidatePath).toHaveBeenCalledWith('/(frontend)/[locale]/artists', 'layout')
     })
 
     it('skips revalidation when skipRevalidation context flag is set', () => {
