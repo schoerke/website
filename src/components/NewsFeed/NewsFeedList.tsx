@@ -19,13 +19,15 @@ interface NewsFeedListProps {
 interface NewsFeedItemImageProps {
   src: string | null
   alt: string
+  focalX?: number | null
+  focalY?: number | null
 }
 
 /**
  * Renders a post's thumbnail image, or a UserRound icon placeholder when
  * there's no valid image or the image fails to load.
  */
-const NewsFeedItemImage: React.FC<NewsFeedItemImageProps> = ({ src, alt }) => {
+const NewsFeedItemImage: React.FC<NewsFeedItemImageProps> = ({ src, alt, focalX, focalY }) => {
   const [imageFailed, setImageFailed] = useState(false)
   const showPlaceholder = !src || imageFailed
 
@@ -45,6 +47,12 @@ const NewsFeedItemImage: React.FC<NewsFeedItemImageProps> = ({ src, alt }) => {
           alt={alt}
           fill
           className="object-cover transition-opacity group-hover:opacity-75"
+          style={{
+            objectPosition:
+              focalX !== undefined && focalX !== null && focalY !== undefined && focalY !== null
+                ? `${focalX}% ${focalY}%`
+                : undefined,
+          }}
           sizes="(max-width: 640px) 80px, 112px"
           onError={() => setImageFailed(true)}
         />
@@ -113,7 +121,12 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
             {/* Content column */}
             <Link href={postPath as Parameters<typeof Link>['0']['href']} className="flex gap-4 sm:gap-6">
               {/* Image - always on the left */}
-              <NewsFeedItemImage src={imageUrl} alt={post.title} />
+              <NewsFeedItemImage
+                src={imageUrl}
+                alt={post.title}
+                focalX={img?.focalX}
+                focalY={img?.focalY}
+              />
 
               {/* Text content */}
               <div className="flex min-w-0 flex-1 flex-col justify-center">

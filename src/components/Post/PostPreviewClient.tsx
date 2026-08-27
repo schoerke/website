@@ -43,6 +43,8 @@ const PostPreviewClient: React.FC<PostPreviewClientProps> = ({
       content={data.content}
       createdAt={data.createdAt}
       imageUrl={getValidImageUrl(data.image)}
+      focalX={typeof data.image === 'object' && data.image !== null ? data.image.focalX : undefined}
+      focalY={typeof data.image === 'object' && data.image !== null ? data.image.focalY : undefined}
       locale={locale}
       relatedArtists={relatedArtists}
       backHref={backHref}

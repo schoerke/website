@@ -55,6 +55,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       content={content}
       createdAt={createdAt}
       imageUrl={getValidImageUrl(image)}
+      focalX={typeof image === 'object' && image !== null ? image.focalX : undefined}
+      focalY={typeof image === 'object' && image !== null ? image.focalY : undefined}
       locale={locale}
       relatedArtists={getRelatedArtists(artists)}
       backHref="/projects"

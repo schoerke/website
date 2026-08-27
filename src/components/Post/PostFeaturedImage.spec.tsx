@@ -13,6 +13,15 @@ describe('PostFeaturedImage', () => {
     expect(img).toHaveAttribute('src', expect.stringContaining('post-cover.jpg'))
   })
 
+  it('applies the image focal point as object-position', () => {
+    render(
+      <PostFeaturedImage src="/api/images/file/post-cover.jpg" alt="Post cover" focalX={42} focalY={68} />
+    )
+
+    const img = screen.getByRole('img', { name: 'Post cover' })
+    expect(img).toHaveStyle('object-position: 42% 68%')
+  })
+
   it('renders a UserRound icon placeholder when src is null', () => {
     render(<PostFeaturedImage src={null} alt="Post cover" />)
 

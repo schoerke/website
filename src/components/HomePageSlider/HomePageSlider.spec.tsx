@@ -62,3 +62,18 @@ describe('HomePageSlider skeleton', () => {
     expect(document.querySelector('.animate-pulse')).toBeNull()
   })
 })
+
+describe('HomePageSlider focal point', () => {
+  it('falls back to object-position top when no focal point is provided', () => {
+    render(<HomePageSlider slides={slides} />)
+    const img = document.querySelector('img[src="/img1.jpg"]') as HTMLImageElement
+    expect(img.style.objectPosition).toBe('top')
+  })
+
+  it('applies the slide focal point as object-position', () => {
+    const focalSlides = [{ ...slides[0], focalX: 42, focalY: 68 }]
+    render(<HomePageSlider slides={focalSlides} />)
+    const img = document.querySelector('img[src="/img1.jpg"]') as HTMLImageElement
+    expect(img.style.objectPosition).toBe('42% 68%')
+  })
+})

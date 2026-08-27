@@ -7,9 +7,11 @@ import { useState } from 'react'
 interface PostFeaturedImageProps {
   src: string | null
   alt: string
+  focalX?: number | null
+  focalY?: number | null
 }
 
-const PostFeaturedImage: React.FC<PostFeaturedImageProps> = ({ src, alt }) => {
+const PostFeaturedImage: React.FC<PostFeaturedImageProps> = ({ src, alt, focalX, focalY }) => {
   const [imageFailed, setImageFailed] = useState(false)
 
   const showPlaceholder = !src || imageFailed
@@ -32,6 +34,12 @@ const PostFeaturedImage: React.FC<PostFeaturedImageProps> = ({ src, alt }) => {
       alt={alt}
       fill
       className="object-cover"
+      style={{
+        objectPosition:
+          focalX !== undefined && focalX !== null && focalY !== undefined && focalY !== null
+            ? `${focalX}% ${focalY}%`
+            : undefined,
+      }}
       priority
       quality={80}
       sizes="(max-width: 896px) 100vw, 896px"

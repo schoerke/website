@@ -11,6 +11,8 @@ interface PostDetailContentProps {
   content: Post['content']
   createdAt: string
   imageUrl: string | null
+  focalX?: number | null
+  focalY?: number | null
   locale: 'de' | 'en'
   relatedArtists: Artist[]
   /** Href for both the top back button and the bottom navigation link */
@@ -30,6 +32,8 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
   content,
   createdAt,
   imageUrl,
+  focalX,
+  focalY,
   locale,
   relatedArtists,
   backHref,
@@ -62,7 +66,7 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
 
         {/* Featured image — placeholder icon rendered when the post has no image */}
         <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg">
-          <PostFeaturedImage src={imageUrl} alt={title} />
+          <PostFeaturedImage src={imageUrl} alt={title} focalX={focalX} focalY={focalY} />
         </div>
 
         {/* Article content */}

@@ -127,7 +127,14 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
                 src={slide.src}
                 alt={slide.alt}
                 fill
-                className="object-cover object-top"
+                className="object-cover"
+                style={{
+                  objectPosition:
+                    slide.focalX !== undefined && slide.focalX !== null &&
+                    slide.focalY !== undefined && slide.focalY !== null
+                      ? `${slide.focalX}% ${slide.focalY}%`
+                      : 'top',
+                }}
                 sizes="(max-width: 1024px) 100vw, min(75vw, 888px)"
                 priority={idx === 0}
                 quality={80}

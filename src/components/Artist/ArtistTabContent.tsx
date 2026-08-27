@@ -272,9 +272,11 @@ function extractTextPreview(content: Post['content'], maxLength: number = 180): 
 interface ProjectImageProps {
   src: string | null
   alt: string
+  focalX?: number | null
+  focalY?: number | null
 }
 
-const ProjectImage: React.FC<ProjectImageProps> = ({ src, alt }) => {
+const ProjectImage: React.FC<ProjectImageProps> = ({ src, alt, focalX, focalY }) => {
   const [imageFailed, setImageFailed] = React.useState(false)
 
   if (src === null || imageFailed) {
@@ -295,6 +297,12 @@ const ProjectImage: React.FC<ProjectImageProps> = ({ src, alt }) => {
       alt={alt}
       fill
       className="object-cover transition-opacity group-hover:opacity-75"
+      style={{
+        objectPosition:
+          focalX !== undefined && focalX !== null && focalY !== undefined && focalY !== null
+            ? `${focalX}% ${focalY}%`
+            : undefined,
+      }}
       sizes="(max-width: 640px) 80px, 112px"
       onError={() => setImageFailed(true)}
     />
@@ -327,7 +335,7 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ projects, emptyMessage
           >
             {/* Image */}
             <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden bg-gray-100 sm:h-28 sm:w-28">
-              <ProjectImage src={imageUrl} alt={imageAlt} />
+              <ProjectImage src={imageUrl} alt={imageAlt} focalX={image?.focalX} focalY={image?.focalY} />
             </div>
 
             {/* Text content */}
