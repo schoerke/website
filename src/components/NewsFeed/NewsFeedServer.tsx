@@ -1,4 +1,5 @@
 import type { Post } from '@/payload-types'
+import { POST_LIST_IMAGES_POPULATE, POST_LIST_SELECT } from '@/constants/postList'
 import { getPaginatedPosts } from '@/services/post'
 import NewsFeedList from './NewsFeedList'
 import NewsFeedPagination from './NewsFeedPagination'
@@ -125,6 +126,8 @@ const NewsFeedServer: React.FC<NewsFeedServerProps> = async ({
       limit,
       locale,
       publishedOnly: true,
+      select: POST_LIST_SELECT,
+      populate: POST_LIST_IMAGES_POPULATE,
     }))
 
   // Determine which category to use for translations

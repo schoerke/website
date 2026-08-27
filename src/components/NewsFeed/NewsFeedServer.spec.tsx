@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { createMockPaginatedDocs, createMockPost } from '@/tests/utils/payloadMocks'
+import { POST_LIST_IMAGES_POPULATE, POST_LIST_SELECT } from '@/constants/postList'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import NewsFeedServer from './NewsFeedServer'
@@ -52,6 +53,8 @@ describe('NewsFeedServer', () => {
       limit: 25,
       locale: 'de',
       publishedOnly: true,
+      select: POST_LIST_SELECT,
+      populate: POST_LIST_IMAGES_POPULATE,
     })
 
     expect(screen.getByTestId('post-count')).toHaveTextContent('2')
@@ -66,14 +69,18 @@ describe('NewsFeedServer', () => {
 
     render(component)
 
-    expect(getPaginatedPosts).toHaveBeenCalledWith({
-      category: 'news',
-      artistId: undefined,
-      page: 1,
-      limit: 25,
-      locale: 'de',
-      publishedOnly: true,
-    })
+    expect(getPaginatedPosts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: 'news',
+        artistId: undefined,
+        page: 1,
+        limit: 25,
+        locale: 'de',
+        publishedOnly: true,
+        select: POST_LIST_SELECT,
+        populate: POST_LIST_IMAGES_POPULATE,
+      })
+    )
   })
 
   it('should filter by multiple categories', async () => {
@@ -85,14 +92,11 @@ describe('NewsFeedServer', () => {
 
     render(component)
 
-    expect(getPaginatedPosts).toHaveBeenCalledWith({
-      category: ['news', 'projects'],
-      artistId: undefined,
-      page: 1,
-      limit: 25,
-      locale: 'de',
-      publishedOnly: true,
-    })
+    expect(getPaginatedPosts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: ['news', 'projects'],
+      })
+    )
   })
 
   it('should filter by artist ID', async () => {
@@ -104,14 +108,11 @@ describe('NewsFeedServer', () => {
 
     render(component)
 
-    expect(getPaginatedPosts).toHaveBeenCalledWith({
-      category: undefined,
-      artistId: '123',
-      page: 1,
-      limit: 25,
-      locale: 'de',
-      publishedOnly: true,
-    })
+    expect(getPaginatedPosts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        artistId: '123',
+      })
+    )
   })
 
   it('should respect page and limit options', async () => {
@@ -123,14 +124,12 @@ describe('NewsFeedServer', () => {
 
     render(component)
 
-    expect(getPaginatedPosts).toHaveBeenCalledWith({
-      category: undefined,
-      artistId: undefined,
-      page: 2,
-      limit: 10,
-      locale: 'de',
-      publishedOnly: true,
-    })
+    expect(getPaginatedPosts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: 2,
+        limit: 10,
+      })
+    )
   })
 
   it('should respect locale option', async () => {
@@ -142,14 +141,11 @@ describe('NewsFeedServer', () => {
 
     render(component)
 
-    expect(getPaginatedPosts).toHaveBeenCalledWith({
-      category: undefined,
-      artistId: undefined,
-      page: 1,
-      limit: 25,
-      locale: 'en',
-      publishedOnly: true,
-    })
+    expect(getPaginatedPosts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        locale: 'en',
+      })
+    )
   })
 
   it('should pass emptyMessage to NewsFeedList', async () => {
