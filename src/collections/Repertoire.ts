@@ -1,4 +1,5 @@
 import { syncArtistRepertoire, syncArtistRepertoireOnDelete } from '@/collections/hooks/syncArtistRepertoire'
+import { revalidateRepertoireOnChange, revalidateRepertoireOnDelete } from '@/collections/hooks/revalidateRepertoire'
 import { AudioEmbed } from '@/blocks/AudioEmbed'
 import { VideoEmbed } from '@/blocks/VideoEmbed'
 import {
@@ -172,7 +173,7 @@ export const Repertoire: CollectionConfig = {
     },
   ],
   hooks: {
-    afterChange: [syncArtistRepertoire],
-    afterDelete: [syncArtistRepertoireOnDelete],
+    afterChange: [syncArtistRepertoire, revalidateRepertoireOnChange],
+    afterDelete: [syncArtistRepertoireOnDelete, revalidateRepertoireOnDelete],
   },
 }

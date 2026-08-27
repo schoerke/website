@@ -1,4 +1,5 @@
 import { authenticated } from '@/access/authenticated'
+import { revalidateDocumentOnChange, revalidateDocumentOnDelete } from '@/collections/hooks/revalidateDocument'
 import type { CollectionConfig } from 'payload'
 
 export const Documents: CollectionConfig = {
@@ -18,6 +19,10 @@ export const Documents: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateDocumentOnChange],
+    afterDelete: [revalidateDocumentOnDelete],
   },
   admin: {
     group: 'Media',
