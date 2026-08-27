@@ -1,6 +1,7 @@
 import type { Image as PayloadImage } from '@/payload-types'
 import config from '@/payload.config'
 import { getPayload } from 'payload'
+import { cache } from 'react'
 
 /**
  * Fetches an image from Payload by filename using the Local API.
@@ -17,7 +18,7 @@ import { getPayload } from 'payload'
  * }
  * ```
  */
-export async function getImageByFilename(filename: string): Promise<PayloadImage | null> {
+export const getImageByFilename = cache(async (filename: string): Promise<PayloadImage | null> => {
   try {
     const payload = await getPayload({ config })
     const result = await payload.find({
@@ -34,4 +35,4 @@ export async function getImageByFilename(filename: string): Promise<PayloadImage
     console.error(`Failed to fetch image with filename "${filename}":`, error)
     throw new Error(`Failed to fetch image: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
-}
+})
