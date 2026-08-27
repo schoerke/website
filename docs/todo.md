@@ -39,10 +39,13 @@
     - **Location:** Create `docs/404-architecture.md` or add to existing docs
     - **Effort:** ~30 minutes
 
-## Monitoring
+## Monitoring & Auditing
 
 - [ ] Setup [Sentry Plugin](https://payloadcms.com/docs/plugins/sentry)
 - db monitoring?
+- SEO auditing?
+- Lighthouse
+- a11y
 
 ## SEO
 

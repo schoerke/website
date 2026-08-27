@@ -1,6 +1,6 @@
 # Ideas for Future Features
 
-## Idea: Scheduled Publishing
+## Idea: Scheduled Publishing (v2)
 
 - allow content creators to schedule posts, events, and media for future publication
 - add a calendar view in the admin panel to manage scheduled content
@@ -27,9 +27,9 @@
 
 - global navigation on mobile/desktop
 
-## UI: Blocks
+## UI: Blocks (v2)
 
-### ConcertDates
+### DatesList
 
 - displays a list of upcoming concerts with date and location
 
@@ -38,7 +38,7 @@
 - displays the program for a concert, including composers, works, performers, and program pauses
 - should also support optional program title
 
-### BiographyFooter
+### BiographyDetails
 
 - replaces the existing biography footer text
 
