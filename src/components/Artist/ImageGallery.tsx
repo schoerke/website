@@ -48,8 +48,15 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, idx, onOpen }) => {
           </div>
         ) : (
           <>
-            {/* Skeleton shimmer — collapses once image loads */}
-            {!loaded && <ImageSkeleton width={imageObj?.width} height={imageObj?.height} fallbackRatio="3 / 2" />}
+            {/* Skeleton shimmer — absolute overlay so only the image box sizes the item (no reflow on load) */}
+            {!loaded && (
+              <ImageSkeleton
+                width={imageObj?.width}
+                height={imageObj?.height}
+                fallbackRatio="3 / 2"
+                className="absolute inset-0"
+              />
+            )}
             <Image
               src={src}
               alt={alt}
