@@ -1,5 +1,5 @@
 import { IFRAME_ATTR, IFRAME_TAG } from '@/utils/audioEmbed'
-import { ALLOWED_EMBED_HOSTS, isEmbedHostAllowed } from '@/utils/embeds'
+import { ALLOWED_EMBED_HOSTS, isEmptyField, isEmbedHostAllowed } from '@/utils/embeds'
 
 /**
  * Context passed by Payload to field validators
@@ -7,12 +7,6 @@ import { ALLOWED_EMBED_HOSTS, isEmbedHostAllowed } from '@/utils/embeds'
 interface VideoEmbedCodeContext {
   siblingData?: { url?: unknown; embedCode?: unknown }
 }
-
-/**
- * Returns true when a field value is effectively empty (missing or whitespace-only)
- */
-const isEmptyVideoField = (value: unknown): boolean =>
-  value === undefined || value === null || (typeof value === 'string' && value.trim() === '')
 
 /**
  * Validates raw <iframe> embed codes (e.g. RSI, ARD Mediathek, RTS) against the
@@ -27,11 +21,11 @@ const isEmptyVideoField = (value: unknown): boolean =>
 export const validateVideoEmbedCode = (value: unknown, { siblingData }: VideoEmbedCodeContext = {}): true | string => {
   const siblingUrl = siblingData?.url
 
-  if (isEmptyVideoField(value) && typeof siblingUrl === 'string' && siblingUrl.trim() !== '') {
+  if (isEmptyField(value) && typeof siblingUrl === 'string' && siblingUrl.trim() !== '') {
     return true
   }
 
-  if (isEmptyVideoField(value)) {
+  if (isEmptyField(value)) {
     return 'Please enter either a video URL or an embed code'
   }
 

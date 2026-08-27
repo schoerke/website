@@ -1,3 +1,4 @@
+import { isEmptyField } from '@/utils/embeds'
 import { YOUTUBE_HOSTS, extractYouTubeVideoId } from '@/utils/videoEmbed'
 
 /**
@@ -6,11 +7,34 @@ import { YOUTUBE_HOSTS, extractYouTubeVideoId } from '@/utils/videoEmbed'
  */
 
 /**
+ * Context passed by Payload to field validators
+ */
+interface VideoURLContext {
+  siblingData?: { url?: unknown; embedCode?: unknown }
+}
+
+/**
  * Validates video URLs for supported platforms: YouTube and arte.tv
  * YouTube: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/live|embed|shorts/ID
  * arte.tv: arte.tv/{locale}/videos/{ID}/...
+ *
+ * An empty url is allowed when an embed code is set on the sibling field.
  */
-export const validateVideoURL = (value: unknown): true | string => {
+export const validateVideoURL = (value: unknown, { siblingData }: VideoURLContext = {}): true | string => {
+  const embedCode = siblingData?.embedCode
+
+  if (isEmptyField(value)) {
+    // Empty url is fine when an embed code is set on the sibling field
+    if (typeof embedCode === 'string' && embedCode.trim() !== '') {
+      return true
+    }
+    // No embedCode sibling -> generic URL message (e.g. Artists array-item context).
+    // embedCode sibling present but empty -> block context asks for either field.
+    return embedCode === undefined
+      ? 'Please enter a valid video URL'
+      : 'Please enter either a video URL or an embed code'
+  }
+
   if (typeof value !== 'string') return 'Please enter a valid video URL'
 
   try {

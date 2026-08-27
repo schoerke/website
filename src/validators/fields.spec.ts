@@ -145,6 +145,48 @@ describe('validateVideoURL', () => {
       expect(validateVideoURL('https://youtube.com/watch?v=dQw4w9WgXcQ#t=30')).toBe(true)
     })
   })
+
+  describe('embedCode sibling context', () => {
+    it('accepts an empty url when sibling embedCode is present', () => {
+      expect(validateVideoURL('', { siblingData: { embedCode: '<iframe src="https://www.rsi.ch/x"></iframe>' } })).toBe(
+        true
+      )
+    })
+
+    it('accepts an undefined url when sibling embedCode is present', () => {
+      expect(
+        validateVideoURL(undefined, { siblingData: { embedCode: '<iframe src="https://www.rsi.ch/x"></iframe>' } })
+      ).toBe(true)
+    })
+
+    it('rejects an empty url when sibling embedCode is also empty', () => {
+      expect(validateVideoURL('', { siblingData: { embedCode: '' } })).toBe(
+        'Please enter either a video URL or an embed code'
+      )
+    })
+
+    it('rejects an empty url with no sibling context (Artists array-item contract unchanged)', () => {
+      expect(validateVideoURL('')).toBe('Please enter a valid video URL')
+    })
+
+    it('accepts a whitespace-only url when sibling embedCode is valid', () => {
+      expect(
+        validateVideoURL('   ', { siblingData: { embedCode: '<iframe src="https://www.rsi.ch/x"></iframe>' } })
+      ).toBe(true)
+    })
+
+    it('rejects an empty url when sibling embedCode is whitespace-only', () => {
+      expect(validateVideoURL('', { siblingData: { embedCode: '   ' } })).toBe(
+        'Please enter either a video URL or an embed code'
+      )
+    })
+
+    it('rejects a non-string url even when sibling embedCode is valid', () => {
+      expect(
+        validateVideoURL(123, { siblingData: { embedCode: '<iframe src="https://www.rsi.ch/x"></iframe>' } })
+      ).toBe('Please enter a valid video URL')
+    })
+  })
 })
 
 describe('validateURL', () => {
