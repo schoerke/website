@@ -28,10 +28,11 @@ endpoint. `tsx` scripts (`dotenv/config`) read `.env` (prod pair).
 
 ```bash
 turso db shell ksschoerke-production "SELECT ..."          # read/write via CLI credentials (approval required per opencode.json)
-turso db export ksschoerke-production --output-file data/dumps/NAME.db   # full snapshot backup
+turso db export ksschoerke-production --output-file data/dumps/NAME.db   # full snapshot backup (steps: checklists.md §2)
 ```
 
-**Prefer the Payload Local API for reading content data** — see docs/memory/data-operations.md.
+**Prefer the Payload Local API for reading content data** — see docs/memory/data-operations.md. For read-only
+inspection/audits, prefer checklists.md §1 (nightly R2 backup → local sqlite3) over turso reads.
 
 ## Vercel Team / Account Management (CRITICAL)
 
