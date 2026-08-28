@@ -60,6 +60,12 @@ Uploading ~100 images ≈ 100 Advanced + ~200 Simple; thousands of ops ≠ image
 public cache-miss/eviction traffic. Dashboard per-day data is capped at 12h on Hobby. Fix: Pro trial (100k/10k
 included) or move images to R2. Vercel usage API: `GET /v2/team/{teamId}/usage`.
 
+**Client uploads (`clientUploads: true`, images since 2026-08-28):** the browser PUTs directly to Blob, so the
+upload itself counts **1 Advanced op per file** but incurs **no data transfer charge** (Vercel: client uploads are
+not billed for data transfer). Server uploads instead incur Fast Data Transfer. Dev + prod share the same store
+(`store_3jIBiIxvBnjU5oC1`), so dev admin activity counts against the same quota — dev image writes (uploads,
+renames, deletes) hit the **prod** store; guard destructive scripts.
+
 ### 13.7 Vercel Security Checkpoint blocks server-to-server blob fetches (2026-08-26)
 
 Vercel's edge **Security Checkpoint** intermittently challenges Node/undici fetches to `*.public.blob.vercel-storage.com`

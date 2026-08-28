@@ -87,6 +87,11 @@ const nextConfig = {
 - **Images** (JPG, PNG, WEBP) → Vercel Blob (Next.js optimization)
 - **Documents** (ZIPs, PDFs) → Cloudflare R2 (unlimited bandwidth)
 
+**Upload path (2026-08-28):** images use Payload **client uploads** (`clientUploads: true` on
+`vercelBlobStorage`) — browser → Blob direct, bypassing the Vercel Function 4.5 MB body cap. Images capped at
+15 MB via `limitImageFileSize` hook. Documents still upload server-side → 4.5 MB admin ceiling until
+`s3Storage` client uploads + R2 CORS are enabled. See ADR 2025-12-10 §Upload Mechanism.
+
 **Results:**
 
 - 45 documents migrated to R2 (22 ZIPs + 23 PDFs)

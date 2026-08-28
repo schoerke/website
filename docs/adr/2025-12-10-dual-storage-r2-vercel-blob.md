@@ -35,6 +35,38 @@ We will implement a **dual storage architecture** with domain-specific storage:
 - **Images Collection** → **Vercel Blob** (optimized for Next.js Image component)
 - **Documents Collection** → **Cloudflare R2** (unlimited egress bandwidth for large downloads)
 
+### Upload Mechanism (client uploads, 2026-08-28)
+
+Vercel serverless Functions cap request bodies at **4.5 MB**. Both storage plugins upload
+**server-side** by default (`handleUpload`), so file bytes pass through a Function → anything
+over 4.5 MB fails with 413 regardless of the configured limit.
+
+To support larger uploads we enable Payload's **client uploads** (`clientUploads: true`):
+the browser PUTs bytes directly to storage (Vercel Blob or a presigned R2 URL), then sends only
+metadata JSON to create the DB record. File bytes never cross a Function.
+
+**Current state (images only, branch `feat/client-uploads`):**
+
+- **Images** → `vercelBlobStorage` has `clientUploads: true`. Browser → Blob direct.
+  Enforcement: `src/collections/hooks/limitImageFileSize.ts` (`beforeChange` hook) caps images at
+  **15 MB** — the Blob client-upload route enforces no size, so the hook is the gate. It checks
+  both the declared `data.filesize` and the actual `req.file.data.length` (client-declared size is
+  spoofable). Oversized uploads leave an **orphan blob** in the store (bytes land in Blob before
+  the hook rejects).
+- **Documents** → `s3Storage` does **NOT** yet have `clientUploads` (requires R2 bucket CORS for
+  PUT). Documents still upload server-side → **4.5 MB runtime ceiling** in admin despite the global
+  `upload.limits.fileSize: 60 MB` (which only the S3 signed-URL route would enforce once client
+  uploads are enabled). 60 MB ZIP uploads are therefore **not yet possible** from the admin UI.
+
+Global `upload.limits.fileSize: 60_000_000` (`src/payload.config.ts`) governs server-side multipart
+parsing for all collections and the documents S3 client-upload route once enabled.
+
+**Note on storage sharing:** dev and prod share the same Blob store (`.env` token =
+`store_3jIBiIxvBnjU5oC1`, `.env.local` has none so dev falls back). This is intentional — cloning
+the prod DB locally (checklists §3) references prod image URLs, so a separate dev store would 404.
+Consequence: any dev script that PUTs/renames/deletes images touches the **prod** store — guard
+such scripts, never run destructive cleanup in dev against the shared store.
+
 ### Technical Implementation
 
 **Payload CMS Configuration** (`src/payload.config.ts`):
