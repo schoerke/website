@@ -32,8 +32,16 @@ function imageWithCredit(credit: string): Artist['image'] {
 describe('BiographyFooter', () => {
   it('renders German season, photo, source, and consent', () => {
     state.locale = 'de'
-    render(<BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} quoteSource="Online Merker" />)
+    const { container } = render(
+      <BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} quoteSource="Online Merker" />
+    )
 
+    const footer = container.querySelector('footer')
+    const [details, consent] = container.querySelectorAll('footer > p')
+
+    expect(footer).toBeInTheDocument()
+    expect(details).toHaveClass('!m-0', 'font-bold', 'text-sm')
+    expect(consent).toHaveClass('!mt-1', '!mb-0', 'font-bold', 'text-sm')
     expect(screen.getByText('Saison 2025/2026 • Foto: Uwe Arens • Online Merker')).toBeInTheDocument()
     expect(
       screen.getByText(

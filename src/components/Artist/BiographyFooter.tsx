@@ -18,8 +18,8 @@ const BiographyFooter: React.FC<BiographyFooterProps> = ({ season, quoteSource, 
 
   return (
     <footer>
-      <p className="font-bold text-sm">{details}</p>
-      <p className="font-bold text-sm">{t('consent')}</p>
+      <p className="!m-0 font-bold text-sm">{details}</p>
+      <p className="!mt-1 !mb-0 font-bold text-sm">{t('consent')}</p>
     </footer>
   )
 }
