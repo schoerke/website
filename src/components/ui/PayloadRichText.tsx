@@ -10,8 +10,10 @@ import React from 'react'
 
 import VideoEmbed from '@/components/blocks/VideoEmbed'
 import AudioEmbed from '@/components/blocks/AudioEmbed'
+import EventDates from '@/components/blocks/EventDates'
 import type { VideoEmbedBlockFields } from '@/blocks/VideoEmbed'
 import type { AudioEmbedBlockFields } from '@/blocks/AudioEmbed'
+import type { EventDatesBlockFields } from '@/blocks/EventDates'
 import { resolveTextStateStyle } from '@/data/postTextState'
 import { appendImageVersion } from '@/utils/image'
 
@@ -175,6 +177,9 @@ const PayloadRichText: React.FC<PayloadRichTextProps> = ({ content, className, l
           audioEmbed: ({ node }: { node: SerializedLexicalNode & { fields: AudioEmbedBlockFields } }) => {
             const { url, embedCode } = node.fields
             return <AudioEmbed url={url} embedCode={embedCode} />
+          },
+          eventDates: ({ node }: { node: SerializedLexicalNode & { fields: EventDatesBlockFields } }) => {
+            return <EventDates events={node.fields.events} locale={locale as 'de' | 'en'} />
           },
         },
         upload: (args) => versionedUploadJSXConverter(args),
