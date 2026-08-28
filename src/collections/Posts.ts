@@ -7,6 +7,7 @@ import { BlocksFeature, TextStateFeature, lexicalEditor } from '@payloadcms/rich
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { AudioEmbed } from '@/blocks/AudioEmbed'
+import { EventDates } from '@/blocks/EventDates'
 import { VideoEmbed } from '@/blocks/VideoEmbed'
 import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '@/collections/hooks/revalidateHomePage'
 import { revalidatePostOnChange, revalidatePostOnDelete } from '@/collections/hooks/revalidatePost'
@@ -129,7 +130,7 @@ export const Posts: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
           BlocksFeature({
-            blocks: [VideoEmbed, AudioEmbed],
+            blocks: [VideoEmbed, AudioEmbed, EventDates],
           }),
           TextStateFeature({
             state: postTextState,
