@@ -190,6 +190,9 @@ export default buildConfig({
         images: true,
       },
       token: process.env.BLOB_READ_WRITE_TOKEN,
+      // clientUploads: browser uploads directly to Blob, bypassing the Vercel
+      // Function 4.5MB body limit (enables images > 4.5MB)
+      clientUploads: true,
     }),
 
     // Cloudflare R2 Storage for Documents collection (PDFs + ZIPs)

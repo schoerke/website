@@ -1,4 +1,5 @@
 import { authenticated } from '@/access/authenticated'
+import { limitImageFileSize } from '@/collections/hooks/limitImageFileSize'
 import { revalidateImageOnChange, revalidateImageOnDelete } from '@/collections/hooks/revalidateImage'
 import type { CollectionConfig } from 'payload'
 
@@ -21,6 +22,7 @@ export const Images: CollectionConfig = {
     delete: authenticated,
   },
   hooks: {
+    beforeChange: [limitImageFileSize],
     afterChange: [revalidateImageOnChange],
     afterDelete: [revalidateImageOnDelete],
   },
