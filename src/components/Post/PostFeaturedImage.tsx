@@ -1,8 +1,8 @@
 'use client'
 
 import { UserRound } from 'lucide-react'
-import Image from 'next/image'
 import { useState } from 'react'
+import ImageWithSkeleton from '@/components/ui/ImageWithSkeleton'
 
 interface PostFeaturedImageProps {
   src: string | null
@@ -29,20 +29,19 @@ const PostFeaturedImage: React.FC<PostFeaturedImageProps> = ({ src, alt, focalX,
   }
 
   return (
-    <Image
+    <ImageWithSkeleton
       src={src}
       alt={alt}
-      fill
-      className="object-cover"
-      style={{
-        objectPosition:
-          focalX !== undefined && focalX !== null && focalY !== undefined && focalY !== null
-            ? `${focalX}% ${focalY}%`
-            : undefined,
-      }}
+      aspectRatio="16 / 9"
+      className="rounded-lg"
       priority
       quality={80}
       sizes="(max-width: 896px) 100vw, 896px"
+      objectPosition={
+        focalX !== undefined && focalX !== null && focalY !== undefined && focalY !== null
+          ? `${focalX}% ${focalY}%`
+          : undefined
+      }
       onError={() => setImageFailed(true)}
     />
   )

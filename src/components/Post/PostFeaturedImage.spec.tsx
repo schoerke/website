@@ -4,10 +4,17 @@ import PostFeaturedImage from '@/components/Post/PostFeaturedImage'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
-// Mock next/image so the real optimizer config (images.qualities) isn't loaded in tests —
-// the quality={80} prop would otherwise warn "not configured in images.qualities [75]".
+// Mock next/image so the real optimizer module isn't loaded in tests.
 vi.mock('next/image', () => ({
-  default: ({ src, alt, onLoad, onError, priority: _priority, fill: _fill, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean; fill?: boolean }) => (
+  default: ({
+    src,
+    alt,
+    onLoad,
+    onError,
+    priority: _priority,
+    fill: _fill,
+    ...props
+  }: React.ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean; fill?: boolean }) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={src as string} alt={alt} onLoad={onLoad} onError={onError} {...props} />
   ),
@@ -23,9 +30,7 @@ describe('PostFeaturedImage', () => {
   })
 
   it('applies the image focal point as object-position', () => {
-    render(
-      <PostFeaturedImage src="/api/images/file/post-cover.jpg" alt="Post cover" focalX={42} focalY={68} />
-    )
+    render(<PostFeaturedImage src="/api/images/file/post-cover.jpg" alt="Post cover" focalX={42} focalY={68} />)
 
     const img = screen.getByRole('img', { name: 'Post cover' })
     expect(img).toHaveStyle('object-position: 42% 68%')
@@ -45,5 +50,41 @@ describe('PostFeaturedImage', () => {
 
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
     expect(screen.getByTestId('post-featured-image-placeholder')).toBeInTheDocument()
+  })
+
+  it('shows a skeleton and keeps the image transparent while loading', () => {
+    render(<PostFeaturedImage src="/api/images/file/post-cover.jpg" alt="Post cover" />)
+
+    expect(document.getElementsByClassName('animate-pulse').length).toBe(1)
+    expect(screen.getByRole('img', { name: 'Post cover' })).toHaveAttribute(
+      'class',
+      expect.stringContaining('opacity-0')
+    )
+  })
+
+  it('removes the skeleton and fades the image in once loaded', () => {
+    render(<PostFeaturedImage src="/api/images/file/post-cover.jpg" alt="Post cover" />)
+
+    fireEvent.load(screen.getByRole('img', { name: 'Post cover' }))
+
+    expect(document.getElementsByClassName('animate-pulse').length).toBe(0)
+    expect(screen.getByRole('img', { name: 'Post cover' })).toHaveAttribute(
+      'class',
+      expect.stringContaining('opacity-100')
+    )
+  })
+
+  it('does not apply object-position when the focal point is missing', () => {
+    render(<PostFeaturedImage src="/api/images/file/post-cover.jpg" alt="Post cover" />)
+
+    const img = screen.getByRole('img', { name: 'Post cover' })
+    expect(img.style.objectPosition).toBe('')
+  })
+
+  it('applies object-position when the focal point is 0', () => {
+    render(<PostFeaturedImage src="/api/images/file/post-cover.jpg" alt="Post cover" focalX={0} focalY={0} />)
+
+    const img = screen.getByRole('img', { name: 'Post cover' })
+    expect(img).toHaveStyle('object-position: 0% 0%')
   })
 })
