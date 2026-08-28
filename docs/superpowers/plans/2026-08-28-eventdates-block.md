@@ -306,8 +306,9 @@ interface EventDatesProps {
 
 /**
  * Formats a Payload day-only date value for the given locale. Uses explicit UTC
- * because Payload stores day-only dates as midnight UTC: without `timeZone`
- * western viewers (and any SSR/client timezone mismatch) see the previous day.
+ * because Payload's day-only picker stores the picked day as noon UTC (API
+ * writes may vary). Without `timeZone` viewers in UTC+13/+14 see the next day,
+ * and an SSR(UTC)/client timezone mismatch hydrates the wrong day.
  */
 export function formatEventDate(iso: string | null | undefined, locale: 'de' | 'en'): string {
   if (!iso || typeof iso !== 'string') return ''
@@ -476,7 +477,7 @@ Expected: build succeeds.
 2. Open a post in the admin, insert the "Event Dates" block, add ≥2 events (date via day-only picker, location, url on one).
 3. Save and view the post in both `de` and `en`.
 4. Verify: renders like post 242 — `"4. Juli 2026, Yamagata"` linked, one per line; `en` shows `"July 4, 2026, Yamagata"`.
-5. **Verify the reviewer assumption:** confirm the day-only picker stores midnight UTC (date does not shift a day in the browser).
+5. **Reviewer assumption verified:** the day-only picker stores noon UTC (confirmed from node_modules source); API-written values vary. Date renders correctly via the explicit `timeZone: 'UTC'` formatter.
 
 Note: the block must be added to each locale separately (content is localized with fallback off) — same as today's manual 242 practice.
 

@@ -34,6 +34,15 @@ describe('formatEventDate', () => {
   it('does not shift the day for midnight-UTC values', () => {
     expect(formatEventDate('2026-07-04T00:00:00.000Z', 'en')).toBe('July 4, 2026')
   })
+
+  it('renders the correct day for a noon-UTC stored value', () => {
+    expect(formatEventDate('2026-07-04T12:00:00.000Z', 'de')).toBe('4. Juli 2026')
+    expect(formatEventDate('2026-07-04T12:00:00.000Z', 'en')).toBe('July 4, 2026')
+  })
+
+  it('renders the correct day for a midnight-UTC API value', () => {
+    expect(formatEventDate('2026-07-04T00:00:00.000Z', 'de')).toBe('4. Juli 2026')
+  })
 })
 
 describe('EventDates', () => {

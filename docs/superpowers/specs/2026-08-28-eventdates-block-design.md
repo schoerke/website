@@ -40,7 +40,7 @@ Follows the existing block pattern exactly (VideoEmbed / AudioEmbed):
   - plural: de `Termine`, en `Event Dates`
 - Single field `events` (array, `minRows: 1`), each row:
   - `date` — `type: 'date'`, required; label de `Datum` / en `Date`; admin
-    `date.pickerAppearance: 'dayOnly'` so the picker stores date-only midnight UTC values
+    `date.pickerAppearance: 'dayOnly'` so the picker stores the picked day as noon UTC
   - `location` — `type: 'text'`, required; label de `Ort` / en `Location`
   - `url` — `type: 'text'`, optional; label de `URL`; validated with existing `validateURL()`
     factory from `src/validators/fields.ts` (note: curried — must be invoked)
@@ -83,8 +83,9 @@ Repertoire).
   separated by `<br />` (exactly how 242 renders today).
 - Date formatted per locale with **explicit UTC timezone** via top-level helper
   `formatEventDate(iso, locale)` — `new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long',
-  year: 'numeric', timeZone: 'UTC' })`. Without `timeZone`, Payload's midnight-UTC date values shift a
-  day back for western-hemisphere en viewers. Explicit UTC also avoids SSR/client hydration mismatch
+  year: 'numeric', timeZone: 'UTC' })`. Without `timeZone`, Payload's day-only picker stores noon
+  UTC; API-written values vary; without `timeZone` viewers in UTC+13/+14 see the next day and
+  SSR/client timezone mismatch hydrates wrong. Explicit UTC also avoids SSR/client hydration mismatch
   (server TZ on Vercel is UTC, client varies). Inline UTC formatter keeps the fix isolated (do not
   reuse `formatDate` in `src/utils/post.ts`, which has the same gap). Invalid date input → guard
   first: `if (!iso || typeof iso !== 'string') return ''` — never let `new Date(null)` produce
