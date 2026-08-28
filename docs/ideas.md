@@ -27,20 +27,22 @@
 
 - global navigation on mobile/desktop
 
+### BiographyFooter
+
+- replaces the existing biography footer text with structured artist fields
+
 ## UI: Blocks (v2)
 
-### DatesList
+### DatesList — ✅ Implemented 2026-08-28
 
 - displays a list of upcoming concerts with date and location
+- → `eventDates` block: `src/blocks/EventDates.ts` + `src/components/blocks/EventDates.tsx`
+- spec: `docs/superpowers/specs/2026-08-28-eventdates-block-design.md`
 
 ### ConcertProgram
 
 - displays the program for a concert, including composers, works, performers, and program pauses
 - should also support optional program title
-
-### BiographyDetails
-
-- replaces the existing biography footer text
 
 ## Idea: Sentry Error Monitoring
 
