@@ -196,6 +196,9 @@ export default buildConfig({
     }),
 
     // Cloudflare R2 Storage for Documents collection (PDFs + ZIPs)
+    // clientUploads: browser uploads directly to R2 via presigned URL, bypassing
+    // the Vercel Function 4.5MB body limit (enables large ZIPs up to the global
+    // 60MB limit). Requires CORS on the R2 bucket allowing PUT from the site domain.
     s3Storage({
       bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
       collections: {
@@ -217,6 +220,7 @@ export default buildConfig({
         endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
         forcePathStyle: true, // Required for R2
       },
+      clientUploads: true,
     }),
   ],
   secret: payloadSecret,

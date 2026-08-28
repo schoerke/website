@@ -45,7 +45,7 @@ To support larger uploads we enable Payload's **client uploads** (`clientUploads
 the browser PUTs bytes directly to storage (Vercel Blob or a presigned R2 URL), then sends only
 metadata JSON to create the DB record. File bytes never cross a Function.
 
-**Current state (images only, branch `feat/client-uploads`):**
+**Current state (images + documents, branch `feat/client-uploads`):**
 
 - **Images** → `vercelBlobStorage` has `clientUploads: true`. Browser → Blob direct.
   Enforcement: `src/collections/hooks/limitImageFileSize.ts` (`beforeChange` hook) caps images at
@@ -53,13 +53,14 @@ metadata JSON to create the DB record. File bytes never cross a Function.
   both the declared `data.filesize` and the actual `req.file.data.length` (client-declared size is
   spoofable). Oversized uploads leave an **orphan blob** in the store (bytes land in Blob before
   the hook rejects).
-- **Documents** → `s3Storage` does **NOT** yet have `clientUploads` (requires R2 bucket CORS for
-  PUT). Documents still upload server-side → **4.5 MB runtime ceiling** in admin despite the global
-  `upload.limits.fileSize: 60 MB` (which only the S3 signed-URL route would enforce once client
-  uploads are enabled). 60 MB ZIP uploads are therefore **not yet possible** from the admin UI.
+- **Documents** → `s3Storage` has `clientUploads: true`. Browser → R2 direct via presigned URL.
+  The S3 signed-URL route (`storage-s3/dist/generateSignedURL.js`) enforces the **global 60 MB**
+  limit (`upload.limits.fileSize`) and signs `content-length` into the URL so R2 rejects oversize.
+  **Requires CORS on the R2 bucket** allowing `PUT` from the site domain — without it, the presigned
+  PUT fails in the browser.
 
 Global `upload.limits.fileSize: 60_000_000` (`src/payload.config.ts`) governs server-side multipart
-parsing for all collections and the documents S3 client-upload route once enabled.
+parsing for all collections and is enforced by the documents S3 client-upload signed-URL route.
 
 **Note on storage sharing:** dev and prod share the same Blob store (`.env` token =
 `store_3jIBiIxvBnjU5oC1`, `.env.local` has none so dev falls back). This is intentional — cloning
