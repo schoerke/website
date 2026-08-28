@@ -45,6 +45,9 @@ export const EventDates: Block = {
       type: 'array',
       required: true,
       minRows: 1,
+      // Seed one empty row so a freshly inserted block doesn't demand manual
+      // row creation (or surface the "at least one event" validation error).
+      defaultValue: [{}],
       validate: validateEventDates,
       labels: {
         singular: { en: 'Event', de: 'Veranstaltung' },

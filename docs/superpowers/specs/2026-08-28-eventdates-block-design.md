@@ -38,7 +38,9 @@ Follows the existing block pattern exactly (VideoEmbed / AudioEmbed):
 - Labels:
   - singular: de `Termin`, en `Event Dates`
   - plural: de `Termine`, en `Event Dates`
-- Single field `events` (array, `minRows: 1`), each row:
+- Single field `events` (array, `minRows: 1`, `defaultValue: [{}]` so a freshly inserted block
+  auto-creates one empty row — avoids manual row creation and the "at least one event" validation
+  error), each row:
   - `date` — `type: 'date'`, required; label de `Datum` / en `Date`; admin
     `date.pickerAppearance: 'dayOnly'` so the picker stores the picked day as noon UTC
   - `location` — `type: 'text'`, required; label de `Ort` / en `Location`
