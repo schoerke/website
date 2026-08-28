@@ -1,8 +1,9 @@
 'use client'
 
+import Image from 'next/image'
+import { useCallback } from 'react'
 import ImageSkeleton from '@/components/ui/ImageSkeleton'
 import { useImageLoad } from '@/hooks/useImageLoad'
-import Image from 'next/image'
 
 interface ImageWithSkeletonProps {
   src: string
@@ -11,6 +12,9 @@ interface ImageWithSkeletonProps {
   className?: string
   priority?: boolean
   sizes?: string
+  objectPosition?: string
+  quality?: number
+  onError?: () => void
 }
 
 const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
@@ -20,8 +24,16 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   className,
   priority = false,
   sizes,
+  objectPosition,
+  quality,
+  onError: onErrorProp,
 }) => {
   const { loaded, error, ref, onLoad, onError } = useImageLoad()
+
+  const handleError = useCallback(() => {
+    onError()
+    onErrorProp?.()
+  }, [onError, onErrorProp])
 
   return (
     <div className={`relative w-full overflow-hidden bg-gray-100 ${className ?? ''}`} style={{ aspectRatio }}>
@@ -34,10 +46,12 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
           alt={alt}
           fill
           priority={priority}
+          quality={quality}
           className={`object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          style={objectPosition ? { objectPosition } : undefined}
           ref={ref}
           onLoad={onLoad}
-          onError={onError}
+          onError={handleError}
           sizes={sizes}
         />
       )}

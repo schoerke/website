@@ -12,6 +12,7 @@ vi.mock('next/image', () => ({
     onLoad,
     onError,
     ref,
+    ...rest
   }: {
     src: string
     alt: string
@@ -19,9 +20,9 @@ vi.mock('next/image', () => ({
     onLoad?: () => void
     onError?: () => void
     ref?: (node: HTMLImageElement | null) => void
-  }) => (
+  } & Record<string, unknown>) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} className={className} ref={ref} onLoad={onLoad} onError={onError} />
+    <img src={src} alt={alt} className={className} ref={ref} onLoad={onLoad} onError={onError} {...rest} />
   ),
 }))
 
@@ -52,9 +53,29 @@ describe('ImageWithSkeleton', () => {
   })
 
   it('renders the image with the requested aspect ratio and priority', () => {
-    render(<ImageWithSkeleton src="/wiesbaden.jpg" alt="Wiesbaden" aspectRatio="3 / 2" priority />)
+    const { container } = render(
+      <ImageWithSkeleton src="/wiesbaden.jpg" alt="Wiesbaden" aspectRatio="3 / 2" priority />
+    )
 
-    const img = screen.getByAltText('Wiesbaden')
-    expect(img).toHaveAttribute('src', '/wiesbaden.jpg')
+    const wrapper = container.firstElementChild as HTMLElement
+    expect(wrapper.style.aspectRatio).toBe('3 / 2')
+    expect(screen.getByAltText('Wiesbaden')).toHaveAttribute('src', '/wiesbaden.jpg')
+  })
+
+  it('applies the object position and quality to the image', () => {
+    render(<ImageWithSkeleton src="/artist.jpg" alt="Artist" objectPosition="50% 20%" quality={80} />)
+
+    const img = screen.getByAltText('Artist')
+    expect(img).toHaveStyle({ objectPosition: '50% 20%' })
+    expect(img).toHaveAttribute('quality', '80')
+  })
+
+  it('calls the onError prop when the image fails', () => {
+    const onError = vi.fn()
+    render(<ImageWithSkeleton src="/wiesbaden.jpg" alt="Wiesbaden" onError={onError} />)
+
+    fireEvent.error(screen.getByAltText('Wiesbaden'))
+
+    expect(onError).toHaveBeenCalledTimes(1)
   })
 })
