@@ -1,8 +1,15 @@
 'use client'
 
-import { TextField, useDocumentInfo, useField, useFormSubmitted, useLocale } from '@payloadcms/ui'
+import {
+  TextField,
+  useDocumentInfo,
+  useField,
+  useFormProcessing,
+  useFormSubmitted,
+  useLocale,
+} from '@payloadcms/ui'
 import type { TextFieldClientProps } from 'payload'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { filterTitleSuggestions, type TitleSuggestion } from '@/utils/posts/titleSuggestions'
 
@@ -27,28 +34,33 @@ type TitleSuggestFieldProps = TextFieldClientProps
 const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
   const { code: locale } = useLocale()
   const { id: documentId } = useDocumentInfo()
+  const processing = useFormProcessing()
   const submitted = useFormSubmitted()
   const { value: fieldValue } = useField<{ value?: unknown }>({ path: props.path })
 
   const [titles, setTitles] = useState<TitleSuggestion[]>(() => titleCache.get(locale) ?? [])
   const [focused, setFocused] = useState(false)
   const [dismissed, setDismissed] = useState(false)
-  const lastSubmittedRef = useRef(submitted)
+  const lastProcessingRef = useRef(processing)
 
   const value = typeof fieldValue === 'string' ? fieldValue : ''
 
-  useEffect(() => {
-    const requestedLocale = locale
-    const cached = titleCache.get(requestedLocale)
+  // Loads (and caches) the existing post titles for a locale. `force` bypasses
+  // the cache — used to refresh after a successful save so the just-created
+  // title is suggested on the next post. Race-guarded: the response is cached
+  // under the REQUESTED locale and ignored once a newer fetch has started.
+  const loadTitles = useCallback((targetLocale: string, force = false): (() => void) => {
+    const cached = force ? undefined : titleCache.get(targetLocale)
     if (cached) {
       setTitles(cached)
-      return
+      return () => {}
     }
 
     let cancelled = false
     const controller = new AbortController()
 
-    fetch(FETCH_URL(requestedLocale), { signal: controller.signal })
+    setTitles([])
+    fetch(FETCH_URL(targetLocale), { signal: controller.signal })
       .then(async (res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return (await res.json()) as { docs?: TitleSuggestion[] }
@@ -56,7 +68,7 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
       .then((json) => {
         if (cancelled) return
         const docs = json.docs ?? []
-        titleCache.set(requestedLocale, docs)
+        titleCache.set(targetLocale, docs)
         setTitles(docs)
       })
       .catch((err) => {
@@ -68,28 +80,25 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
       cancelled = true
       controller.abort()
     }
-  }, [locale])
+  }, [])
+
+  useEffect(() => loadTitles(locale), [locale, loadTitles])
 
   const suggestions = useMemo(
     () => filterTitleSuggestions(value, titles, documentId),
     [value, titles, documentId]
   )
 
+  // On a COMPLETED save (processing true→false) that did not fail (submitted is
+  // false only on success — Payload sets it true on validation/HTTP errors),
+  // refresh the locale cache so a just-created title shows as used next time.
   useEffect(() => {
-    const wasSubmitted = lastSubmittedRef.current
-    if (submitted && !wasSubmitted) {
-      const trimmed = value.trim()
-      if (trimmed) {
-        const current = titleCache.get(locale) ?? []
-        if (!current.some((t) => t.id === documentId)) {
-          const next = [...current, { id: documentId as number, title: trimmed }]
-          titleCache.set(locale, next)
-          setTitles(next)
-        }
-      }
+    const wasProcessing = lastProcessingRef.current
+    if (wasProcessing && !processing && !submitted) {
+      loadTitles(locale, true)
     }
-    lastSubmittedRef.current = submitted
-  }, [submitted, value, locale, documentId])
+    lastProcessingRef.current = processing
+  }, [processing, submitted, value, locale, loadTitles])
 
   const showDropdown = focused && !dismissed && suggestions.length > 0
 
@@ -116,7 +125,7 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
       <TextField {...props} />
       {showDropdown && (
         <ul
-          aria-label="Bereits verwendete Titel"
+          aria-label={locale === 'de' ? 'Bereits verwendete Titel' : 'Already used titles'}
           style={{
             backgroundColor: 'var(--theme-elevation-100)',
             border: '1px solid var(--theme-elevation-200)',

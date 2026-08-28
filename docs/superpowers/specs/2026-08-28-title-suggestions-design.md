@@ -53,7 +53,7 @@ Component receives Payload field props; the **`path`** prop is the required piec
   - Diacritic-insensitive via `normalizeText` (pure, client-safe — verified zero imports).
 - **Dropdown vehicle:** `Popup` from `@payloadcms/ui` wrapping the TextField as trigger (or an absolutely-positioned div using Payload CSS vars `--theme-elevation-*`, `--style-radius-*`). List matching titles with `categories` as secondary text.
 - **Advisory-only:** items are **non-interactive** — click = no-op (does NOT autofill). Escape / blur dismisses (Popup handles, or manual state).
-- **Save-push:** effect on `[useFormSubmitted(), value]` — when `submitted` flips true and `value` is non-empty and the save was NOT blocked, push `{ id: documentInfo.id, title: value, categories }` into the active-locale cache so the next post edit sees it. Skip when the block hook rejected the save (`useFormSubmitted` stays false on APIError). `useFormSubmitted` + `useFormProcessing` are exported from `@payloadcms/ui` (verified).
+- **Save-refresh:** on a COMPLETED successful save (detected via `useFormProcessing` transitioning true→false with `useFormSubmitted` false — note Payload sets `submitted` TRUE on failure, so the success condition is `!processing && !submitted`), force a cache refresh for the active locale (one slim REST fetch). This makes a just-created title show as used on the next post without an id-guard hack. Verified against `@payloadcms/ui/dist/forms/Form/index.js`: `submitted` is set true only on failure paths and false on success — the initially-planned "push on submitted" was inverted and would have polluted the cache with rejected titles; replaced by refresh. `useFormProcessing` + `useFormSubmitted` exported from `@payloadcms/ui` (verified).
 
 ### Notes
 
@@ -135,7 +135,7 @@ No schema/DB change. No new dependencies.
 
 ### In-memory filter unit test (cheap)
 
-Extract the filter as a pure function for testability: ≥3-char threshold, normalize contains match, current-doc id exclusion (`id !== currentId`), locale key switching.
+Extract the filter as a pure function for testability: ≥3-char threshold, normalize contains match, current-doc id exclusion (`id !== currentId`). Note: **locale-key switching is NOT testable at the pure-function level** — locale separation lives in the component's module-level `titleCache` Map, not the filter. Component-level tests were deferred (heavy `@payloadcms/ui` hook mocking); the locale boundary is documented here instead.
 
 ## Out of scope (YAGNI)
 
