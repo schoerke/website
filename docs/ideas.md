@@ -62,3 +62,7 @@
 ## Shortcodes for Content Management
 
 - composer names
+
+## UI: admin
+
+- auto-suggest for post titles (show used titles)
