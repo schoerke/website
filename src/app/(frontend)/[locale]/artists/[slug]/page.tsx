@@ -7,8 +7,11 @@ import { getArtistBySlug, getArtistSlugs } from '@/services/artist'
 import { getNewsPostCountByArtist } from '@/services/post'
 import { isEmployee } from '@/utils/collection'
 import { getImageUrl, isImageObject, isValidUrl } from '@/utils/image'
+import { getConcertSeason } from '@/utils/season'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
+
+export const revalidate = 86400
 
 export async function generateStaticParams() {
   try {
@@ -35,6 +38,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
 
   const hasNews = newsCount > 0
   const hasProjects = (artist.projects ?? []).some((p) => typeof p === 'object' && p !== null)
+  const season = getConcertSeason(new Date())
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.artist' })
 
@@ -95,7 +99,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
       </div>
 
       {/* Artist Tabs - Biography, Repertoire, Discography, Video, News, Projects, Concert Dates */}
-      <ArtistTabs artist={artist} locale={locale} hasNews={hasNews} hasProjects={hasProjects} />
+      <ArtistTabs artist={artist} locale={locale} hasNews={hasNews} hasProjects={hasProjects} season={season} />
 
       {/* Show ArtistLinks below tabs on small screens */}
       <div className="mt-8 border-t border-gray-200 pt-8 md:hidden">

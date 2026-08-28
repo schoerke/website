@@ -9,21 +9,28 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import { Link } from '@/i18n/navigation'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
 import { getValidImageUrl } from '@/utils/image'
+import { hasVisibleTextContent } from '@/utils/lexical'
 import type { MediaSection } from '@/utils/tabPersistence'
 import { Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import React from 'react'
 import ImageGallery from './ImageGallery'
+import BiographyFooter from './BiographyFooter'
 import VideoAccordion from './VideoAccordion'
 
 // Biography Tab
 interface BiographyTabProps {
-  content: Artist['biography']
+  content: Artist['biography'] | null
   quote?: string | null
+  season?: string
+  quoteSource?: string | null
+  image?: Artist['image']
 }
 
-export const BiographyTab: React.FC<BiographyTabProps> = ({ content, quote }) => {
+export const BiographyTab: React.FC<BiographyTabProps> = ({ content, quote, season, quoteSource, image }) => {
+  if (content === null || !hasVisibleTextContent(content)) return null
+
   return (
     <div className="bio-prose prose max-w-none">
       {quote && (
@@ -32,6 +39,7 @@ export const BiographyTab: React.FC<BiographyTabProps> = ({ content, quote }) =>
         </blockquote>
       )}
       <PayloadRichText content={content} />
+      <BiographyFooter season={season ?? ''} quoteSource={quoteSource} image={image} />
     </div>
   )
 }

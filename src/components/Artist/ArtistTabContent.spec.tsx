@@ -24,6 +24,14 @@ vi.mock('@/components/ui/PayloadRichText', () => ({
   ),
 }))
 
+vi.mock('./BiographyFooter', () => ({
+  default: ({ season, quoteSource, image }: { season: string; quoteSource?: string | null; image?: Artist['image'] }) => (
+    <div data-testid="biography-footer">
+      {season} | {quoteSource || 'No source'} | {image ? 'Has image' : 'No image'}
+    </div>
+  ),
+}))
+
 vi.mock('@/components/Recording/EmptyRecordings', () => ({
   default: () => <div data-testid="empty-recordings">No recordings found</div>,
 }))
@@ -157,6 +165,31 @@ describe('ArtistTabContent', () => {
 
       expect(screen.getByText(quote)).toBeInTheDocument()
       expect(screen.getByText(quote).tagName).toBe('BLOCKQUOTE')
+    })
+
+    it('renders footer with biography metadata', () => {
+      const image = { id: 1, alt: 'Portrait', url: '/portrait.jpg', updatedAt: '', createdAt: '' }
+      render(<BiographyTab content={createMockBiography()} season="2026/2027" quoteSource="Interview" image={image} />)
+
+      expect(screen.getByTestId('biography-footer')).toHaveTextContent('2026/2027 | Interview | Has image')
+    })
+
+    it.each([null, (() => {
+      const content = createMockBiography()
+      content.root.children = []
+      return content
+    })()])('returns null without visible biography text', (content) => {
+      const { container } = render(<BiographyTab content={content} season="2026/2027" />)
+
+      expect(container).toBeEmptyDOMElement()
+    })
+
+    it('returns null for biography nodes without text', () => {
+      const content = createMockBiography()
+      content.root.children[0].children = []
+      const { container } = render(<BiographyTab content={content} season="2026/2027" />)
+
+      expect(container).toBeEmptyDOMElement()
     })
 
     it('should not render quote when null', () => {

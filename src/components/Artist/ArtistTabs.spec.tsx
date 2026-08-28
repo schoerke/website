@@ -54,9 +54,22 @@ interface BiographyContent {
 }
 
 vi.mock('./ArtistTabContent', () => ({
-  BiographyTab: ({ content, quote }: { content?: BiographyContent; quote?: string | null }) => (
+  BiographyTab: ({
+    content,
+    quote,
+    season,
+    quoteSource,
+    image,
+  }: {
+    content?: BiographyContent
+    quote?: string | null
+    season?: string
+    quoteSource?: string | null
+    image?: Artist['image']
+  }) => (
     <div data-testid="biography-tab">
-      Biography: {content ? 'Has content' : 'No bio'} - Quote: {quote || 'No quote'}
+      Biography: {content ? 'Has content' : 'No bio'} - Quote: {quote || 'No quote'} - Season: {season || 'No season'}
+      - Source: {quoteSource || 'No source'} - Image: {image ? 'Has image' : 'No image'}
     </div>
   ),
   RepertoireTab: ({
@@ -212,6 +225,17 @@ describe('ArtistTabs', async () => {
 
       expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
       expect(screen.getByText(/Biography: Has content/)).toBeInTheDocument()
+    })
+
+    it('forwards biography footer props', () => {
+      const image = { id: 1, alt: 'Portrait', url: '/portrait.jpg', updatedAt: '', createdAt: '' }
+      const artist = createMockArtist({ quoteSource: 'Interview', image })
+
+      renderWithIntl(
+        <ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} season="2026/2027" />
+      )
+
+      expect(screen.getByTestId('biography-tab')).toHaveTextContent(/Season: 2026\/2027- Source: Interview - Image: Has image/)
     })
 
     it('should render all tab buttons', () => {

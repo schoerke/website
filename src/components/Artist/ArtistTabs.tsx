@@ -85,6 +85,7 @@ interface ArtistTabsProps {
   locale: string
   hasNews: boolean
   hasProjects: boolean
+  season?: string
 }
 
 // Always return 'biography' for initial render to avoid hydration mismatch
@@ -98,7 +99,7 @@ function getInitialTab(): TabId {
  * is intentionally NOT reset when the locale changes so the user keeps their place;
  * locale-dependent data (recordings) is refetched for the new locale instead.
  */
-const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasProjects }) => {
+const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasProjects, season }) => {
   const t = useTranslations('custom.pages.artist')
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab)
   const [recordings, setRecordings] = useState<Recording[]>([])
@@ -319,7 +320,15 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
         tabIndex={0}
         className="animate-in fade-in duration-300"
       >
-        {activeTab === 'biography' && <BiographyTab content={artist.biography} quote={artist.quote} />}
+        {activeTab === 'biography' && (
+          <BiographyTab
+            content={artist.biography}
+            quote={artist.quote}
+            season={season}
+            quoteSource={artist.quoteSource}
+            image={artist.image}
+          />
+        )}
         {activeTab === 'repertoire' && (
           <RepertoireTab repertoires={repertoires} loading={false} emptyMessage={t('empty.repertoire')} />
         )}
