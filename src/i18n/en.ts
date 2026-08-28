@@ -92,6 +92,11 @@ const en = {
           concertDates: 'No upcoming dates.',
         },
         loading: 'Loading...',
+        biographyFooter: {
+          season: 'Season {season}',
+          photo: 'Photo: {credit}',
+          consent: 'Amendments or edits need the consent of Künstlersekretariat Astrid Schoerke GmbH',
+        },
         discography: {
           details: 'More details',
           roles: 'Roles',
