@@ -44,6 +44,11 @@ export const Posts: CollectionConfig = {
       type: 'text',
       localized: true,
       required: true,
+      admin: {
+        components: {
+          Field: '/components/admin/TitleSuggestField',
+        },
+      },
     },
     /**
      * Normalized version of title for diacritic-insensitive search.
