@@ -51,6 +51,7 @@ export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
       image: true,
       biography: true,
       quote: true,
+      quoteSource: true,
       contactPersons: true,
       homepageURL: true,
       externalCalendarURL: true,

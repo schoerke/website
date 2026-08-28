@@ -33,6 +33,7 @@ describe('Artist Service', () => {
       image: true,
       biography: true,
       quote: true,
+      quoteSource: true,
       contactPersons: true,
       homepageURL: true,
       externalCalendarURL: true,
@@ -95,6 +96,22 @@ describe('Artist Service', () => {
       const result = await getArtistBySlug('test-artist')
 
       expect(result).toEqual(mockArtist)
+    })
+
+    it('should retain quote source when fetching English with German fallback', async () => {
+      const mockArtist = createMockArtist({ quoteSource: 'German source' })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockArtist]))
+
+      const result = await getArtistBySlug('test-artist', 'en')
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          locale: 'en',
+          fallbackLocale: 'de',
+        })
+      )
+      expect(result).toEqual(mockArtist)
+      expect(result?.quoteSource).toBe('German source')
     })
 
     it('should return undefined when artist not found', async () => {
