@@ -98,8 +98,8 @@ describe('Artist Service', () => {
       expect(result).toEqual(mockArtist)
     })
 
-    it('should retain quote source when fetching English with German fallback', async () => {
-      const mockArtist = createMockArtist({ quoteSource: 'German source' })
+    it('should retain an English quote source when fetching English', async () => {
+      const mockArtist = createMockArtist({ quoteSource: 'English source' })
       vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockArtist]))
 
       const result = await getArtistBySlug('test-artist', 'en')
@@ -111,6 +111,21 @@ describe('Artist Service', () => {
         })
       )
       expect(result).toEqual(mockArtist)
+      expect(result?.quoteSource).toBe('English source')
+    })
+
+    it('should retain a German fallback quote source when fetching English', async () => {
+      const mockArtist = createMockArtist({ quoteSource: 'German source' })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockArtist]))
+
+      const result = await getArtistBySlug('test-artist', 'en')
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          locale: 'en',
+          fallbackLocale: 'de',
+        })
+      )
       expect(result?.quoteSource).toBe('German source')
     })
 
