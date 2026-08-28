@@ -78,10 +78,10 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="flex max-h-screen max-w-5xl flex-col items-center border-0 bg-black p-4 text-white">
+      <DialogContent className="flex h-[80vh] max-w-5xl flex-col items-center border-0 bg-black p-4 text-white">
         <DialogTitle className="sr-only">{t('media.galleryTitle')}</DialogTitle>
-        <div className="w-full overflow-hidden" ref={emblaRef}>
-          <div className="flex">
+        <div className="flex min-h-0 w-full flex-1 overflow-hidden" ref={emblaRef}>
+          <div className="flex h-full">
             {images.map((item, idx) => {
               const imageObj = typeof item.image === 'object' ? (item.image as PayloadImage) : null
               const src = getValidImageUrl(item.image)
@@ -89,8 +89,8 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
               const alt = caption || `Gallery image ${idx + 1}`
 
               return (
-                <div key={item.id || idx} className="relative min-w-0 flex-[0_0_100%]">
-                  <div className="relative aspect-[4/3] w-full">
+                <div key={item.id || idx} className="flex h-full min-w-0 flex-[0_0_100%] flex-col">
+                  <div data-testid="lightbox-slide-image" className="relative min-h-0 w-full flex-1">
                     <LightboxSlideImage src={src} alt={alt} />
                   </div>
                   {caption && <p className="mt-2 text-center text-sm text-gray-300">{caption}</p>}

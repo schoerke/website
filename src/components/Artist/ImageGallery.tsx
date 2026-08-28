@@ -27,6 +27,9 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, idx, onOpen }) => {
   const src = getValidImageUrl(item.image)
   const hasRealImage = src !== null
   const alt = imageObj?.alt || `Gallery image ${idx + 1}`
+  const focalX = imageObj?.focalX ?? 50
+  const focalY = imageObj?.focalY ?? 50
+  const aspectRatio = imageObj?.width && imageObj?.height ? `${imageObj.width} / ${imageObj.height}` : '3 / 2'
 
   const showPlaceholder = !hasRealImage || error
 
@@ -63,6 +66,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, idx, onOpen }) => {
               width={600}
               height={400}
               className={`block h-auto w-full object-cover transition-opacity duration-500 group-hover:opacity-80 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+              style={{ aspectRatio, objectPosition: `${focalX}% ${focalY}%` }}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               ref={ref}
               onLoad={onLoad}

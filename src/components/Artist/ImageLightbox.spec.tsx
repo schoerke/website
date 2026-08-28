@@ -73,4 +73,30 @@ describe('ImageLightbox', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
     expect(screen.getByTestId('lightbox-image-placeholder')).toBeInTheDocument()
   })
+
+  it('renders the credit as a copyright caption below the image', () => {
+    const images: GalleryImage[] = [
+      {
+        id: '1',
+        image: createMockImage({ url: 'https://example.com/gallery-1.jpg', alt: 'Gallery photo', credit: 'Photo Co.' }),
+      },
+    ]
+
+    renderLightbox(images)
+
+    expect(screen.getByText('© Photo Co.')).toBeInTheDocument()
+  })
+
+  it('constrains the slide image box by viewport height so the caption fits', () => {
+    const images: GalleryImage[] = [
+      { id: '1', image: createMockImage({ url: 'https://example.com/gallery-1.jpg', alt: 'Gallery photo' }) },
+    ]
+
+    renderLightbox(images)
+
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveClass('h-[80vh]')
+    const slideImage = screen.getByTestId('lightbox-slide-image')
+    expect(slideImage).toHaveClass('flex-1', 'min-h-0')
+  })
 })

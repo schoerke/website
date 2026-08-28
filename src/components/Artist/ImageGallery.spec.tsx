@@ -10,16 +10,18 @@ vi.mock('next/image', () => ({
   default: ({
     src,
     alt,
+    style,
     onLoad,
     onError,
   }: {
     src: string
     alt: string
+    style?: React.CSSProperties
     onLoad?: () => void
     onError?: () => void
   }) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} onLoad={onLoad} onError={onError} />
+    <img src={src} alt={alt} style={style} onLoad={onLoad} onError={onError} />
   ),
 }))
 
@@ -59,5 +61,43 @@ describe('ImageGallery', () => {
 
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
     expect(screen.getByTestId('gallery-image-placeholder')).toBeInTheDocument()
+  })
+
+  it('reserves the image box with the Payload aspect ratio before the image loads', () => {
+    const items: GalleryImage[] = [
+      {
+        id: '1',
+        image: createMockImage({
+          url: 'https://example.com/gallery-1.jpg',
+          alt: 'Gallery photo',
+          width: 900,
+          height: 600,
+        }),
+      },
+    ]
+
+    render(<ImageGallery images={items} emptyMessage="No images" />)
+
+    const img = screen.getByAltText('Gallery photo') as HTMLElement
+    expect(img).toHaveStyle({ aspectRatio: '900 / 600' })
+  })
+
+  it('falls back to a 3:2 aspect ratio when image dimensions are unknown', () => {
+    const items: GalleryImage[] = [
+      {
+        id: '1',
+        image: createMockImage({
+          url: 'https://example.com/gallery-1.jpg',
+          alt: 'Gallery photo',
+          width: null,
+          height: null,
+        }),
+      },
+    ]
+
+    render(<ImageGallery images={items} emptyMessage="No images" />)
+
+    const img = screen.getByAltText('Gallery photo') as HTMLElement
+    expect(img).toHaveStyle({ aspectRatio: '3 / 2' })
   })
 })
