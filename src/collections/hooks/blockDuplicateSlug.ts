@@ -13,9 +13,11 @@ import type { CollectionBeforeChangeHook } from 'payload'
  * Runs on create AND update. On update, the current doc is excluded from the
  * collision query. Only the active locale is checked (localized slug).
  *
- * Note: `payload.find` (even with `draft: true`) queries the LIVE table, so a
- * draft-vs-draft slug collision is not detected here — it surfaces at publish
- * time when the version copies to live, and this hook re-checks then.
+ * Note: `payload.find` without `draft: true` queries the LIVE table. Never-published
+ * drafts (main-table rows with `_status='draft'`) are matched; drafts of
+ * previously-published docs live only in `_posts_v` and are NOT covered — such a
+ * collision surfaces at publish time when the version copies to live, and this
+ * hook re-checks then.
  */
 export const blockDuplicateSlug: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
   const slug = typeof data?.slug === 'string' ? data.slug : undefined

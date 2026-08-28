@@ -12,6 +12,7 @@ import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '
 import { revalidatePostOnChange, revalidatePostOnDelete } from '@/collections/hooks/revalidatePost'
 import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
 import { blockDuplicateSlug } from '@/collections/hooks/blockDuplicateSlug'
+import { blockDuplicateTitle } from '@/collections/hooks/blockDuplicateTitle'
 import { categoryOptions } from '@/data/options'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { extractLexicalText } from '@/utils/search/extractLexicalText'
@@ -200,7 +201,7 @@ export const Posts: CollectionConfig = {
     },
   ],
   hooks: {
-    beforeChange: [blockDuplicateSlug],
+    beforeChange: [blockDuplicateTitle, blockDuplicateSlug],
     afterChange: [syncArtistProjects, revalidateHomePageOnPostChange, revalidatePostOnChange],
     afterDelete: [revalidateHomePageOnPostDelete, revalidatePostOnDelete],
   },
