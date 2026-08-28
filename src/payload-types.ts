@@ -196,6 +196,7 @@ export interface Artist {
    */
   contactPersons?: (number | Employee)[] | null;
   quote?: string | null;
+  quoteSource?: string | null;
   biography: {
     root: {
       type: string;
@@ -817,6 +818,7 @@ export interface ArtistsSelect<T extends boolean = true> {
   slug?: T;
   contactPersons?: T;
   quote?: T;
+  quoteSource?: T;
   biography?: T;
   repertoire?: T;
   projects?: T;

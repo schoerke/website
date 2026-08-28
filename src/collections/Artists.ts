@@ -137,6 +137,16 @@ export const Artists: CollectionConfig = {
               localized: true,
             },
             {
+              name: 'quoteSource',
+              type: 'text',
+              localized: true,
+              required: false,
+              label: {
+                de: 'Zitatquelle',
+                en: 'Quote source',
+              },
+            },
+            {
               name: 'biography',
               type: 'richText',
               required: true,

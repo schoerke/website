@@ -5,6 +5,7 @@ import * as migration_20260820_194949_localize_video_link_label from './20260820
 import * as migration_20260825_195406_remove_autosave_columns from './20260825_195406_remove_autosave_columns'
 import * as migration_20260825_211420_add_guides_collection from './20260825_211420_add_guides_collection'
 import * as migration_20260827_173327_add_video_links_embed_code from './20260827_173327_add_video_links_embed_code'
+import * as migration_20260828_210415_add_artist_quote_source from './20260828_210415_add_artist_quote_source'
 
 export const migrations = [
   {
@@ -41,5 +42,10 @@ export const migrations = [
     up: migration_20260827_173327_add_video_links_embed_code.up,
     down: migration_20260827_173327_add_video_links_embed_code.down,
     name: '20260827_173327_add_video_links_embed_code',
+  },
+  {
+    up: migration_20260828_210415_add_artist_quote_source.up,
+    down: migration_20260828_210415_add_artist_quote_source.down,
+    name: '20260828_210415_add_artist_quote_source',
   },
 ]
