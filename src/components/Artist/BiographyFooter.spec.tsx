@@ -36,12 +36,14 @@ describe('BiographyFooter', () => {
       <BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} quoteSource="Online Merker" />
     )
 
-    const footer = container.querySelector('footer')
+    const footer = container.querySelector('footer.biography-footer')
     const [details, consent] = container.querySelectorAll('footer > p')
 
     expect(footer).toBeInTheDocument()
-    expect(details).toHaveClass('!m-0', 'font-bold', 'text-sm')
-    expect(consent).toHaveClass('!mt-1', '!mb-0', 'font-bold', 'text-sm')
+    expect(details).toHaveClass('font-bold', 'text-sm')
+    expect(details).not.toHaveClass('!m-0', '!mt-1', '!mb-0')
+    expect(consent).toHaveClass('font-bold', 'text-sm')
+    expect(consent).not.toHaveClass('!m-0', '!mt-1', '!mb-0')
     expect(screen.getByText('Saison 2025/2026 • Foto: Uwe Arens • Online Merker')).toBeInTheDocument()
     expect(
       screen.getByText(

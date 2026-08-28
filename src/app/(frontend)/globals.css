@@ -150,6 +150,12 @@
     margin-top: 1.5rem !important;
     margin-bottom: 1.5rem !important;
   }
+  .bio-prose .biography-footer p {
+    margin: 0 !important;
+  }
+  .bio-prose .biography-footer p + p {
+    margin-top: 0.25rem !important;
+  }
 
   /* Payload Lexical Rich Text Styles */
   .prose .payload-richtext ul.list-bullet,

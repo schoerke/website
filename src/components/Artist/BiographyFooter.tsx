@@ -17,9 +17,9 @@ const BiographyFooter: React.FC<BiographyFooterProps> = ({ season, quoteSource, 
   const details = [t('season', { season }), credit && t('photo', { credit }), source].filter(Boolean).join(' • ')
 
   return (
-    <footer>
-      <p className="!m-0 font-bold text-sm">{details}</p>
-      <p className="!mt-1 !mb-0 font-bold text-sm">{t('consent')}</p>
+    <footer className="biography-footer">
+      <p className="font-bold text-sm">{details}</p>
+      <p className="font-bold text-sm">{t('consent')}</p>
     </footer>
   )
 }
