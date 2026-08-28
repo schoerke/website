@@ -1,13 +1,13 @@
 import ArtistTabs from '@/components/Artist/ArtistTabs'
 import ContactPersons from '@/components/Artist/ContactPersons'
 import ArtistLinks from '@/components/ArtistLinks'
+import ImageWithSkeleton from '@/components/ui/ImageWithSkeleton'
 import { Link } from '@/i18n/navigation'
 import { getArtistBySlug, getArtistSlugs } from '@/services/artist'
 import { getNewsPostCountByArtist } from '@/services/post'
 import { isEmployee } from '@/utils/collection'
 import { getImageUrl, isImageObject, isValidUrl } from '@/utils/image'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 export async function generateStaticParams() {
@@ -63,24 +63,19 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
       <div className="mb-8 flex flex-col gap-8 md:flex-row md:items-start md:gap-8 lg:gap-12">
         {isValidUrl(imageUrl) && (
           <div className="mb-0 md:mb-0 md:w-3/4">
-            <div className="relative w-full" style={{ aspectRatio: '4 / 3' }}>
-              <Image
-                src={imageUrl}
-                alt={name}
-                fill
-                className="rounded-lg object-cover"
-                style={{
-                  objectPosition:
-                    typeof image === 'object' && image !== null && image.focalX != null && image.focalY != null
-                      ? `${image.focalX}% ${image.focalY}%`
-                      : undefined,
-                }}
-                sizes="(min-width: 1024px) min(75vw, 912px), (min-width: 768px) 75vw, 100vw"
-                loading="eager"
-                priority
-                quality={80}
-              />
-            </div>
+            <ImageWithSkeleton
+              src={imageUrl}
+              alt={name}
+              className="rounded-lg"
+              sizes="(min-width: 1024px) min(75vw, 912px), (min-width: 768px) 75vw, 100vw"
+              priority
+              quality={80}
+              objectPosition={
+                typeof image === 'object' && image !== null && image.focalX != null && image.focalY != null
+                  ? `${image.focalX}% ${image.focalY}%`
+                  : undefined
+              }
+            />
           </div>
         )}
         <div className="md:w-1/4 md:space-y-6">
