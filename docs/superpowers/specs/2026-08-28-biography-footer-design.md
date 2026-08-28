@@ -16,11 +16,14 @@ added to Artists.
 - Artists collection: add localized `quoteSource` field (Biographie tab, next to `quote`).
 - Artist detail page: render a derived 2-line BiographyFooter under the biography.
 - **Schema change on `artists`** → Payload migration required (gated, needs explicit user
-  approval before executing). Also regenerate types (`generate:types`) and the drizzle schema
-  (`generate:db-schema`). Prod-targeting scripts must run with `NODE_ENV=production` (avoids the
+  approval before executing). Workflow: config → `pnpm payload migrate:create` → review generated
+  `up()`/`down()` → add idempotency guards → preflight local production snapshot → regenerate types
+  (`generate:types`) and drizzle schema (`generate:db-schema`) → deploy. The nullable localized
+  text column needs an idempotent `artists_locales.quote_source` migration; generated files alone do
+  not change the database. Prod-targeting scripts must run with `NODE_ENV=production` (avoids the
   `dev|-1` migration marker).
-- **Retrofit of existing bios** (strip embedded blurbs, parse quote sources) is a **separate,
-  gated data migration** — not part of this feature's code. See "Retrofit".
+- **Legacy bio cleanup is manual before deployment.** Editors remove each hand-typed footer and
+  enter quoteSource for each locale. No automated retrofit script or data migration.
 
 ## Current State (verified from data)
 
@@ -65,7 +68,8 @@ client BiographyTab never calls `new Date()` — avoids SSR/client hydration mis
 localized: de `Saison 2025/2026`, en `Season 2025/2026`.
 
 The artist page is statically generated, so add `export const revalidate = 86400` to refresh the
-derived season daily. Without it, the displayed season stays frozen until an artist edit or deploy.
+derived season within 24 hours. Without it, the displayed season stays frozen until an artist edit
+or deploy.
 
 Example: today (2026-08-28) → `2025/2026`, matching live blurbs.
 
@@ -83,14 +87,15 @@ No field. Rendered from translation strings:
 
 ### Render (BiographyFooter)
 
-Below `PayloadRichText` in `src/components/Artist/ArtistTabContent.tsx` `BiographyTab`, two bold
-lines, small font:
+Below `PayloadRichText` in `src/components/Artist/ArtistTabContent.tsx` `BiographyTab`, a semantic
+`<footer>` with two `<p>` elements, both bold small text and explicit spacing:
 
 - L1: `[season, foto, quoteSource].filter(Boolean).join(' • ')` (same bullet separator as RecordingListItem)
 - L2: consent
 
 Rendered uniformly on every biography (footer appears even when quoteSource/credit empty →
-season + consent). Footer hidden entirely if biography absent.
+season + consent). Render neither rich text nor footer when biography has no visible Lexical text
+(null, empty root, or no text nodes).
 
 ## Data Flow
 
@@ -102,29 +107,38 @@ artist page (server) — computes season, fetches artist via getArtistBySlug (im
 
 `getArtistBySlug` has an explicit `select` whitelist, so add `quoteSource: true` there. Regenerate
 `src/payload-types.ts` after the schema change and update `src/services/artist.spec.ts`, whose
-`ARTIST_SELECT` assertion expects the complete select object.
+`ARTIST_SELECT` assertion expects the complete select object. The footer narrows image values
+(`typeof image === 'object' && image !== null`), trims `image.credit`, and omits photo credit for
+ID, null, undefined, empty, or whitespace-only values.
 
 ## Localization
 
 - `quoteSource` field localized (editors provide per-locale wording, e.g. date phrasing).
-- Consent + footer labels via next-intl `custom` translations (de/en).
+- Consent + footer labels via next-intl `custom.pages.artist.biographyFooter` translations (de/en):
+  `season`, `photo`, and `consent`.
 - `quote` blockquote unchanged.
 - Global localization fallback is off, but `getArtistBySlug` passes `fallbackLocale: 'de'`; an empty
-  English quoteSource can therefore display the German value. The retrofit fills both locales.
+  English quoteSource can therefore display the German value.
 
 ## Testing
 
-- `src/utils/season.spec.ts`: helper accepts an injected `Date` for deterministic tests; Aug 31 →
-  "2025/2026", Sep 1 → "2026/2027", Dec → same as Sep, Jan → previous season.
+- `src/utils/season.spec.ts`: `getConcertSeason(date: Date): string` accepts an injected Date for
+  deterministic tests; Aug 31 → "2025/2026", Sep 1 → "2026/2027", Dec 31 → same as Sep, Jan 1 →
+  previous season.
 - `BiographyTab` footer spec:
   - localized `Saison`/`Season` and `Foto:`/`Photo:` labels
   - season + foto + quoteSource joined with " • " (in order)
   - season-only details line has no stray separator
-  - foto omitted when `image.credit` empty
+  - foto omitted when image is ID/null/undefined or `image.credit` is empty/whitespace-only
   - quoteSource omitted when empty
   - consent line renders (both locales)
-  - no footer when biography absent
-- Existing `ArtistTabContent.spec.tsx` / `ArtistTabs.spec.tsx` updated for new props.
+  - no footer when biography is null, has an empty root, or has no visible text node
+- Existing `ArtistTabContent.spec.tsx` / `ArtistTabs.spec.tsx` updated for new props; assert
+  season, quoteSource, and safely narrowed image credit flow through ArtistTabs to BiographyTab.
+- Service coverage: EN quoteSource absent → DE fallback returned; EN quoteSource present → EN value
+  retained. Update ARTIST_SELECT exact-match assertion.
+- Migration coverage: up/down idempotency and generated schema has `artists_locales.quote_source`.
+- Route coverage: `revalidate === 86400`.
 
 ## Verification
 
@@ -132,22 +146,17 @@ artist page (server) — computes season, fetches artist via getArtistBySlug (im
 - Manual admin check: set quoteSource, save, verify footer on live artist page (de + en), season
   boundary around Sept 1.
 
-## Retrofit (gated, separate step)
+## Manual Rollout (required before deployment)
 
-Existing bios still contain the embedded blurb paragraph → after this feature ships, blurbs would
-render twice until cleaned. Retrofit (requires explicit user approval before execution):
+Existing bios retain the hand-typed footer. Shipping the derived footer before cleanup duplicates
+the details and consent lines. Before deployment, editors must update every affected locale:
 
-1. Backup before running (per db-operations checklists). Use Payload Local API, never raw SQL, and
-   pass `context: { skipRevalidation: true }` because revalidation hooks run outside a Next request.
-2. For each locale, strip the final paragraph only when it matches a blurb signature: a season label
-   plus either a quote label or consent text. Otherwise skip it and report for manual review. Mario
-   Venzago's de bio has no blurb.
-3. Parse by locale-independent label regex `/(?:Anfangszitat|Quote|Quotation):/`; trim leading quote
-   characters and whitespace, collapse doubled labels, and preserve an empty source as empty. The
-   label/format variants above make fixed locale-specific string splitting unsafe.
-4. Update each artist through the Local API with the cleaned localized biography and localized
-   quoteSource. Derived season normalizes legacy `2025/26` values and makes older values such as
-   Franck Juery's `2024/2025` show the current season.
+1. Remove the final hand-typed two-line footer paragraph from the biography.
+2. Enter the quote portion in localized `quoteSource` when available; leave it empty otherwise.
+3. Save and verify the derived footer renders once with auto season, image credit (if set), and
+   consent. Mario Venzago's de bio has no legacy footer to remove.
+
+No automated parsing, Payload Local API bulk updates, or data migration is authorized for cleanup.
 
 ## Out of Scope
 
