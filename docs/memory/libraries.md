@@ -61,10 +61,11 @@ public cache-miss/eviction traffic. Dashboard per-day data is capped at 12h on H
 included) or move images to R2. Vercel usage API: `GET /v2/team/{teamId}/usage`.
 
 **Client uploads (`clientUploads: true`, images since 2026-08-28):** the browser PUTs directly to Blob, so the
-upload itself counts **1 Advanced op per file** but incurs **no data transfer charge** (Vercel: client uploads are
-not billed for data transfer). Server uploads instead incur Fast Data Transfer. Dev + prod share the same store
-(`store_3jIBiIxvBnjU5oC1`), so dev admin activity counts against the same quota — dev image writes (uploads,
-renames, deletes) hit the **prod** store; guard destructive scripts.
+upload itself counts **1 Advanced op per file** and incurs **no data transfer charge** (per Vercel's docs —
+external claim, verify at write time if it matters). Server uploads instead incur Fast Data Transfer. Dev + prod
+share the same store (`store_3jIBiIxvBnjU5oC1`), so dev admin activity counts against the same quota — dev image
+writes (uploads, renames, deletes) hit the **prod** store; guard destructive scripts. Documents client uploads are
+gated behind `DOCUMENT_CLIENT_UPLOADS=true` (needs R2 CORS for PUT first).
 
 ### 13.7 Vercel Security Checkpoint blocks server-to-server blob fetches (2026-08-26)
 

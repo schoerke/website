@@ -7,6 +7,9 @@ process.env.DATABASE_URI = process.env.DATABASE_URI || 'file:./test.db'
 process.env.DATABASE_AUTH_TOKEN = process.env.DATABASE_AUTH_TOKEN || 'test-auth-token'
 process.env.BLOB_READ_WRITE_TOKEN =
   process.env.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_test1234567890_abcdefghijklmnopqrstuvwxyz'
+process.env.CLOUDFLARE_S3_BUCKET = process.env.CLOUDFLARE_S3_BUCKET || 'test-bucket'
+process.env.CLOUDFLARE_S3_ACCESS_KEY = process.env.CLOUDFLARE_S3_ACCESS_KEY || 'test-access-key'
+process.env.CLOUDFLARE_SECRET = process.env.CLOUDFLARE_SECRET || 'test-secret'
 process.env.NEXT_PUBLIC_S3_HOSTNAME = process.env.NEXT_PUBLIC_S3_HOSTNAME || 'https://example.r2.dev'
 process.env.EMAIL_FROM = process.env.EMAIL_FROM || 'test@example.com'
 

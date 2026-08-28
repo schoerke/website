@@ -45,6 +45,10 @@ if (!payloadSecret) throw new Error('PAYLOAD_SECRET environment variable is requ
 if (!process.env.DATABASE_URI) throw new Error('DATABASE_URI environment variable is required')
 if (!process.env.DATABASE_AUTH_TOKEN) throw new Error('DATABASE_AUTH_TOKEN environment variable is required')
 if (!process.env.BLOB_READ_WRITE_TOKEN) throw new Error('BLOB_READ_WRITE_TOKEN environment variable is required')
+if (!process.env.CLOUDFLARE_S3_BUCKET || !process.env.CLOUDFLARE_S3_ACCESS_KEY || !process.env.CLOUDFLARE_SECRET)
+  throw new Error(
+    'Cloudflare R2 credentials are required (CLOUDFLARE_S3_BUCKET, CLOUDFLARE_S3_ACCESS_KEY, CLOUDFLARE_SECRET)'
+  )
 
 export default buildConfig({
   admin: {
@@ -198,7 +202,9 @@ export default buildConfig({
     // Cloudflare R2 Storage for Documents collection (PDFs + ZIPs)
     // clientUploads: browser uploads directly to R2 via presigned URL, bypassing
     // the Vercel Function 4.5MB body limit (enables large ZIPs up to the global
-    // 60MB limit). Requires CORS on the R2 bucket allowing PUT from the site domain.
+    // 60MB limit). Requires CORS on the R2 bucket allowing PUT from the site
+    // domain — gated behind DOCUMENT_CLIENT_UPLOADS so deploying before the
+    // bucket CORS is configured doesn't break document uploads.
     s3Storage({
       bucket: process.env.CLOUDFLARE_S3_BUCKET ?? '',
       collections: {
@@ -220,7 +226,7 @@ export default buildConfig({
         endpoint: process.env.CLOUDFLARE_S3_API_ENDPOINT ?? '',
         forcePathStyle: true, // Required for R2
       },
-      clientUploads: true,
+      clientUploads: process.env.DOCUMENT_CLIENT_UPLOADS === 'true',
     }),
   ],
   secret: payloadSecret,

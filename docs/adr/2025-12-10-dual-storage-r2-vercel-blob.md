@@ -53,14 +53,22 @@ metadata JSON to create the DB record. File bytes never cross a Function.
   both the declared `data.filesize` and the actual `req.file.data.length` (client-declared size is
   spoofable). Oversized uploads leave an **orphan blob** in the store (bytes land in Blob before
   the hook rejects).
-- **Documents** → `s3Storage` has `clientUploads: true`. Browser → R2 direct via presigned URL.
-  The S3 signed-URL route (`storage-s3/dist/generateSignedURL.js`) enforces the **global 60 MB**
-  limit (`upload.limits.fileSize`) and signs `content-length` into the URL so R2 rejects oversize.
-  **Requires CORS on the R2 bucket** allowing `PUT` from the site domain — without it, the presigned
-  PUT fails in the browser.
+- **Documents** → `s3Storage` has `clientUploads: true` (gated behind
+  `DOCUMENT_CLIENT_UPLOADS=true` — see infra note below). Browser → R2 direct via
+  presigned URL. The S3 signed-URL route (`storage-s3/dist/generateSignedURL.js`) enforces the
+  **global 60 MB** limit (`upload.limits.fileSize`) and signs `content-length` into the URL so R2
+  rejects oversize. **Requires CORS on the R2 bucket** allowing `PUT` from the site domain —
+  without it, the presigned PUT fails in the browser (client handler surfaces an opaque "Failed to
+  fetch"). Documents also **orphan an R2 object on ANY create-time failure after the PUT**
+  (missing required `title`, access denial, mime restriction, DB error) — same as images, not just
+  oversize.
 
 Global `upload.limits.fileSize: 60_000_000` (`src/payload.config.ts`) governs server-side multipart
 parsing for all collections and is enforced by the documents S3 client-upload signed-URL route.
+
+**Deployment order (documents):** R2 bucket CORS for `PUT` must be configured BEFORE
+`DOCUMENT_CLIENT_UPLOADS=true` is set. The code is gated so deploying with client uploads disabled
+keeps documents on the server-upload path (4.5 MB admin ceiling) until CORS is in place.
 
 **Note on storage sharing:** dev and prod share the same Blob store (`.env` token =
 `store_3jIBiIxvBnjU5oC1`, `.env.local` has none so dev falls back). This is intentional — cloning

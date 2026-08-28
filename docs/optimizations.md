@@ -90,8 +90,9 @@ const nextConfig = {
 **Upload path (2026-08-28):** images and documents use Payload **client uploads**
 (`clientUploads: true` on `vercelBlobStorage` + `s3Storage`) — browser → storage direct, bypassing
 the Vercel Function 4.5 MB body cap. Images capped at 15 MB via `limitImageFileSize` hook;
-documents capped at 60 MB by the S3 signed-URL route (needs R2 bucket CORS for PUT). See ADR
-2025-12-10 §Upload Mechanism.
+documents capped at 60 MB by the S3 signed-URL route (needs R2 bucket CORS for PUT, and is gated
+behind `DOCUMENT_CLIENT_UPLOADS=true` until CORS is configured). See ADR 2025-12-10 §Upload
+Mechanism.
 
 **Results:**
 
