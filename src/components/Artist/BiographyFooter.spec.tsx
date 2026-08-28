@@ -1,29 +1,21 @@
 // @vitest-environment happy-dom
 import type { Artist } from '@/payload-types'
+import de from '@/i18n/de'
+import en from '@/i18n/en'
+import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import BiographyFooter from './BiographyFooter'
 
-const state = vi.hoisted(() => ({ locale: 'de' as 'de' | 'en' }))
+const messages = { de, en }
 
-vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string, values?: { season?: string; credit?: string }) => {
-    const translations = {
-      de: {
-        season: `Saison ${values?.season}`,
-        photo: `Foto: ${values?.credit}`,
-        consent: 'Änderungen und Kürzungen bedürfen der Absprache mit der Künstlersekretariat Astrid Schoerke GmbH',
-      },
-      en: {
-        season: `Season ${values?.season}`,
-        photo: `Photo: ${values?.credit}`,
-        consent: 'Amendments or edits need the consent of Künstlersekretariat Astrid Schoerke GmbH',
-      },
-    }
-
-    return translations[state.locale][key as keyof (typeof translations)['de']]
-  },
-}))
+function renderFooter(ui: React.ReactElement, locale: 'de' | 'en' = 'de') {
+  return render(
+    <NextIntlTestProvider locale={locale} messages={messages[locale]}>
+      {ui}
+    </NextIntlTestProvider>
+  )
+}
 
 function imageWithCredit(credit: string): Artist['image'] {
   return { id: 1, url: '/artist.jpg', credit } as Artist['image']
@@ -31,8 +23,7 @@ function imageWithCredit(credit: string): Artist['image'] {
 
 describe('BiographyFooter', () => {
   it('renders German season, photo, source, and consent', () => {
-    state.locale = 'de'
-    const { container } = render(
+    const { container } = renderFooter(
       <BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} quoteSource="Online Merker" />
     )
 
@@ -53,8 +44,7 @@ describe('BiographyFooter', () => {
   })
 
   it('renders English labels and consent', () => {
-    state.locale = 'en'
-    render(<BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} />)
+    renderFooter(<BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} />, 'en')
 
     expect(screen.getByText('Season 2025/2026 • Photo: Uwe Arens')).toBeInTheDocument()
     expect(
@@ -63,16 +53,16 @@ describe('BiographyFooter', () => {
   })
 
   it('renders season alone without a separator', () => {
-    state.locale = 'de'
-    render(<BiographyFooter season="2025/2026" />)
+    renderFooter(<BiographyFooter season="2025/2026" />)
 
     expect(screen.getByText('Saison 2025/2026')).toBeInTheDocument()
     expect(screen.getByText('Saison 2025/2026')).not.toHaveTextContent('•')
   })
 
   it('trims photo credit and quote source', () => {
-    state.locale = 'de'
-    render(<BiographyFooter season="2025/2026" image={imageWithCredit(' Uwe Arens ')} quoteSource=" Online Merker " />)
+    renderFooter(
+      <BiographyFooter season="2025/2026" image={imageWithCredit(' Uwe Arens ')} quoteSource=" Online Merker " />
+    )
 
     expect(screen.getByText('Saison 2025/2026 • Foto: Uwe Arens • Online Merker')).toBeInTheDocument()
   })
@@ -83,18 +73,34 @@ describe('BiographyFooter', () => {
     ['undefined', undefined],
     ['a blank credit', imageWithCredit('   ')],
   ])('omits photo for %s', (_shape, image) => {
-    state.locale = 'de'
-    render(<BiographyFooter season="2025/2026" image={image} />)
+    renderFooter(<BiographyFooter season="2025/2026" image={image} />)
 
     expect(screen.getByText('Saison 2025/2026')).toBeInTheDocument()
     expect(screen.queryByText(/^Foto:/)).not.toBeInTheDocument()
   })
 
   it('omits a blank quote source', () => {
-    state.locale = 'de'
-    render(<BiographyFooter season="2025/2026" quoteSource="  " />)
+    renderFooter(<BiographyFooter season="2025/2026" quoteSource="  " />)
 
     expect(screen.getByText('Saison 2025/2026')).toBeInTheDocument()
     expect(screen.getByText('Saison 2025/2026')).not.toHaveTextContent('•')
+  })
+
+  it.each([
+    [
+      'de',
+      'Saison 2025/2026 • Foto: Uwe Arens',
+      'Änderungen und Kürzungen bedürfen der Absprache mit der Künstlersekretariat Astrid Schoerke GmbH',
+    ],
+    [
+      'en',
+      'Season 2025/2026 • Photo: Uwe Arens',
+      'Amendments or edits need the consent of Künstlersekretariat Astrid Schoerke GmbH',
+    ],
+  ] as const)('resolves biographyFooter catalog messages for %s', (locale, details, consent) => {
+    renderFooter(<BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} />, locale)
+
+    expect(screen.getByText(details)).toBeInTheDocument()
+    expect(screen.getByText(consent)).toBeInTheDocument()
   })
 })
