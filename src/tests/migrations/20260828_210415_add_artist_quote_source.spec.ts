@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { down, up } from './20260828_210415_add_artist_quote_source'
+import { down, up } from '@/migrations/20260828_210415_add_artist_quote_source'
 
 function migrationArgs(run: ReturnType<typeof vi.fn>): Parameters<typeof up>[0] {
   return { db: { run } } as unknown as Parameters<typeof up>[0]
