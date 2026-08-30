@@ -135,6 +135,11 @@ export const Artists: CollectionConfig = {
               type: 'text',
               required: false,
               localized: true,
+              admin: {
+                components: {
+                  Field: '/components/admin/QuoteField',
+                },
+              },
             },
             {
               name: 'quoteSource',

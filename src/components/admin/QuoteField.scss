@@ -1,0 +1,17 @@
+.field-type.text.quote-field-warning input {
+  border-color: var(--theme-warning-400);
+  box-shadow: 0 0 0 1px var(--theme-warning-400);
+}
+
+.quote-field-warning-hidden {
+  visibility: hidden;
+}
+
+.quote-field-warning-space {
+  margin-top: calc(var(--base) / 2);
+}
+
+.quote-field-warning-message {
+  color: var(--theme-warning-600);
+  font-size: 0.875rem;
+}

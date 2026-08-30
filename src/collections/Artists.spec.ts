@@ -12,6 +12,11 @@ describe('Artists', () => {
     const quoteIndex = fields.findIndex((field) => 'name' in field && field.name === 'quote')
     const quoteSource = fields[quoteIndex + 1]
 
+    expect(quoteIndex).toBeGreaterThanOrEqual(0)
+    expect(fields[quoteIndex]).toMatchObject({
+      admin: { components: { Field: '/components/admin/QuoteField' } },
+      name: 'quote',
+    })
     expect(quoteSource).toMatchObject({
       name: 'quoteSource',
       type: 'text',
