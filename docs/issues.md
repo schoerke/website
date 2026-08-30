@@ -65,7 +65,14 @@ remounts in Next.js.
 
 ---
 
-_No other known issues at this time._
+## Public History Vercel Blob Token Alert
+
+**Status**: DEFERRED (2026-08-30)
+
+GitGuardian public monitoring flagged a Vercel Blob token-shaped string in public repository history.
+Current local `BLOB_READ_WRITE_TOKEN` hash differs from the tracked historic strings. Later: verify
+the alert's exact finding and revoke the historic token in Vercel if it was ever active. Do not
+commit credentials or generate a replacement without explicit approval.
 
 ---
 
