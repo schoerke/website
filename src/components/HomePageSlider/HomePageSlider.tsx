@@ -11,8 +11,8 @@ export interface HomePageSlide {
   src: string | null
   alt: string
   title: string
-  /** next-intl compatible pathname, e.g. '/news/my-post' */
-  href: string
+  /** next-intl compatible destination, e.g. '/news/my-post' */
+  destination: { type: 'internal'; href: string | { pathname: string; params: Record<string, string> } }
   focalX?: number | null
   focalY?: number | null
 }
@@ -110,8 +110,12 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
 
         return (
           <Link
-            key={slide.href}
-            href={slide.href as Parameters<typeof Link>['0']['href']}
+            key={
+              typeof slide.destination.href === 'string'
+                ? slide.destination.href
+                : JSON.stringify(slide.destination.href)
+            }
+            href={slide.destination.href as Parameters<typeof Link>['0']['href']}
             className="absolute inset-0 block"
             aria-label={slide.title}
             aria-hidden={!isActive}
@@ -130,8 +134,10 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
                 className="object-cover"
                 style={{
                   objectPosition:
-                    slide.focalX !== undefined && slide.focalX !== null &&
-                    slide.focalY !== undefined && slide.focalY !== null
+                    slide.focalX !== undefined &&
+                    slide.focalX !== null &&
+                    slide.focalY !== undefined &&
+                    slide.focalY !== null
                       ? `${slide.focalX}% ${slide.focalY}%`
                       : 'top',
                 }}

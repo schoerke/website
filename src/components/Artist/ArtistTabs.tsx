@@ -5,20 +5,13 @@ import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { POST_LIST_IMAGES_POPULATE, POST_LIST_SELECT } from '@/constants/postList'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup'
 import type { Artist, Post, Recording, Repertoire } from '@/payload-types'
-import {
-  clearListMarker,
-  isFromList,
-  readStoredTab,
-  storeTab,
-  type MediaSection,
-  type TabId,
-} from '@/utils/tabPersistence'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { ChevronDown } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useRef, useState } from 'react'
 import NewsFeedClient from '../NewsFeed/NewsFeedClient'
 import { BiographyTab, MediaTab, ProjectsTab, RecordingsTab, RepertoireTab } from './ArtistTabContent'
+import type { MediaSection, TabId } from './types'
 
 interface MobileTabSelectProps {
   tabs: TabId[]
@@ -94,10 +87,33 @@ function getInitialTab(): TabId {
   return 'biography'
 }
 
+function getAvailableTabs(hasNews: boolean, hasProjects: boolean): TabId[] {
+  return (['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]).filter((tab) => {
+    if (tab === 'news') return hasNews
+    if (tab === 'projects') return hasProjects
+    return true
+  })
+}
+
+function resolveTabState(hash: string, tabs: TabId[]): { tab: TabId; mediaSection: MediaSection } {
+  const mediaMatch = /^media-(images|videos)$/.exec(hash)
+  if (mediaMatch) {
+    return { tab: 'media', mediaSection: mediaMatch[1] as MediaSection }
+  }
+  if (hash !== 'media' && tabs.includes(hash as TabId)) {
+    return { tab: hash as TabId, mediaSection: 'images' }
+  }
+  return { tab: 'biography', mediaSection: 'images' }
+}
+
+function pushHash(hash: string): void {
+  if (window.location.hash === `#${hash}`) return
+  window.location.hash = hash
+}
+
 /**
- * Manages tab state and data fetching. State (active tab, media section, role filter)
- * is intentionally NOT reset when the locale changes so the user keeps their place;
- * locale-dependent data (recordings) is refetched for the new locale instead.
+ * Manages tab state and data fetching. Active tab and media section are owned by
+ * the URL hash; locale-dependent recordings are refetched for the active tab.
  */
 const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasProjects, season }) => {
   const t = useTranslations('custom.pages.artist')
@@ -108,99 +124,34 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
   const fetchedLocaleRef = useRef<{ locale: 'de' | 'en'; artistId: number } | null>(null)
 
   // Available tabs
-  const tabs: TabId[] = (['biography', 'repertoire', 'discography', 'media', 'news', 'projects'] as TabId[]).filter(
-    (tab) => {
-      if (tab === 'news') return hasNews
-      if (tab === 'projects') return hasProjects
-      return true
-    }
-  )
+  const tabs = getAvailableTabs(hasNews, hasProjects)
 
   const [mediaSection, setMediaSection] = useState<MediaSection>('images')
-
-  // Read hash from URL after hydration to set initial tab. Explicit URL hashes
-  // (deep links, back/forward to a hashed entry) take priority. Otherwise, only
-  // visits that came from the artist list (marked via sessionStorage) default to
-  // biography; all other navigations (e.g. back from a news article) restore the
-  // last-viewed tab from sessionStorage so the user keeps their place.
-  //
-  // A one-shot ref guard is required: React StrictMode double-invokes effects
-  // in dev, and the marker is cleared on the first pass, so the second pass
-  // would otherwise fall through to the stored tab and restore it instead of
-  // forcing biography.
-  const tabResolvedRef = useRef(false)
-  useEffect(() => {
-    if (tabResolvedRef.current) return
-    tabResolvedRef.current = true
-
-    const slug = artist.slug ?? ''
-    if (isFromList(slug)) {
-      // Arrived from the artist list — force biography and drop the marker.
-      clearListMarker()
-      return
-    }
-
-    const hash = window.location.hash.slice(1) // e.g. "media-videos"
-    const mediaMatch = /^media-(images|videos)$/.exec(hash)
-    if (mediaMatch) {
-      setActiveTab('media')
-      setMediaSection(mediaMatch[1] as MediaSection)
-    } else if (tabs.includes(hash as TabId)) {
-      setActiveTab(hash as TabId)
-    } else {
-      const stored = readStoredTab(window.location.pathname)
-      if (stored && tabs.includes(stored.tab)) {
-        setActiveTab(stored.tab)
-      }
-      // Restore the media section regardless of the restored tab so a later
-      // visit to the media tab keeps the last-viewed section (e.g. videos).
-      if (stored?.mediaSection) {
-        setMediaSection(stored.mediaSection)
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only run once after mount
-
-  // Sync the active tab on back/forward navigation. Tab hashes are pushed with
-  // raw history.pushState (untracked by Next Router), so the browser fires
-  // popstate on Back/Forward without remounting — re-read the hash here to keep
-  // the tab in line with the URL. An empty hash (back past all tab entries)
-  // resets to biography, matching a fresh visit.
   useEffect(() => {
     const resolveHash = () => {
-      const hash = window.location.hash.slice(1) // e.g. "media-videos"
-      const mediaMatch = /^media-(images|videos)$/.exec(hash)
-      if (mediaMatch) {
-        setActiveTab('media')
-        setMediaSection(mediaMatch[1] as MediaSection)
-      } else if (tabs.includes(hash as TabId)) {
-        setActiveTab(hash as TabId)
-      } else if (hash === '') {
-        setActiveTab('biography')
-      }
+      const state = resolveTabState(window.location.hash.slice(1), getAvailableTabs(hasNews, hasProjects))
+      setActiveTab(state.tab)
+      setMediaSection(state.mediaSection)
     }
-    window.addEventListener('popstate', resolveHash)
-    return () => window.removeEventListener('popstate', resolveHash)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Tabs only depend on hasNews/hasProjects, which are static per page
 
-  // Update URL hash when tab changes. pushState (not replaceState) is
-  // deliberate: it lets Back/Forward step through each tab, which the popstate
-  // listener above depends on. The cost is extra history entries.
+    resolveHash()
+    window.addEventListener('popstate', resolveHash)
+    window.addEventListener('hashchange', resolveHash)
+    return () => {
+      window.removeEventListener('popstate', resolveHash)
+      window.removeEventListener('hashchange', resolveHash)
+    }
+  }, [artist.id, hasNews, hasProjects])
+
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab)
-    storeTab(window.location.pathname, tab, mediaSection)
-    if (tab === 'media') {
-      window.history.pushState(null, '', `#media-${mediaSection}`)
-    } else {
-      window.history.pushState(null, '', `#${tab}`)
-    }
+    pushHash(tab === 'media' ? `media-${mediaSection}` : tab)
   }
 
   const handleMediaSectionChange = (section: MediaSection) => {
+    setActiveTab('media')
     setMediaSection(section)
-    storeTab(window.location.pathname, 'media', section)
-    window.history.pushState(null, '', `#media-${section}`)
+    pushHash(`media-${section}`)
   }
 
   // Fetch recordings when discography tab is selected, refetching when the

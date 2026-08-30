@@ -56,9 +56,12 @@ vi.mock('@/i18n/navigation', () => ({
     ...props
   }: {
     children: React.ReactNode
-    href: string | { pathname: string; params: Record<string, string> }
+    href: string | { pathname: string; params: Record<string, string>; hash?: string }
   }) => {
-    const hrefString = typeof href === 'string' ? href : `/de${href.pathname.replace('[slug]', href.params.slug || '')}`
+    const hrefString =
+      typeof href === 'string'
+        ? href
+        : `/de${href.pathname.replace('[slug]', href.params.slug || '')}${href.hash ? `#${href.hash}` : ''}`
     return (
       <a href={hrefString} {...props}>
         {children}
@@ -104,7 +107,7 @@ describe('ImageSlider', () => {
       render(<ImageSlider images={mockImages} />)
       const links = screen.getAllByRole('link')
       expect(links).toHaveLength(3)
-      expect(links[0]).toHaveAttribute('href', '/de/artists/artist-1')
+      expect(links[0]).toHaveAttribute('href', '/de/artists/artist-1#biography')
     })
 
     it('should render images without links when not provided', () => {

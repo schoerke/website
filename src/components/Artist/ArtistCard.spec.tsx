@@ -25,6 +25,7 @@ vi.mock('next/image', () => ({
 
 // Mock @/i18n/navigation
 interface LinkHref {
+  hash?: string
   params?: {
     slug?: string
   }
@@ -32,7 +33,10 @@ interface LinkHref {
 
 vi.mock('@/i18n/navigation', () => ({
   Link: ({ href, children, className }: { href: string | LinkHref; children: React.ReactNode; className?: string }) => (
-    <a href={typeof href === 'string' ? href : `/artists/${href.params?.slug}`} className={className}>
+    <a
+      href={typeof href === 'string' ? href : `/artists/${href.params?.slug}${href.hash ? `#${href.hash}` : ''}`}
+      className={className}
+    >
       {children}
     </a>
   ),
@@ -119,7 +123,7 @@ describe('ArtistCard', () => {
       renderWithIntl(<ArtistCard {...defaultProps} />)
       const link = screen.getByRole('link')
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/artists/john-doe')
+      expect(link).toHaveAttribute('href', '/artists/john-doe#biography')
     })
 
     it('should render as div when slug is not provided', () => {

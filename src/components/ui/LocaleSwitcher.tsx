@@ -1,10 +1,10 @@
 'use client'
 
 import { resolvePostSlugInLocale } from '@/actions/posts'
-import { usePathname, useRouter } from '@/i18n/navigation'
+import { getPathname, usePathname } from '@/i18n/navigation'
 import { useLocale } from 'next-intl'
-import { useParams } from 'next/navigation'
-import { useState } from 'react'
+import { useParams, useRouter as useNextRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
 const SUPPORTED_LOCALES = [
   { code: 'de', label: 'Deutsch' },
@@ -16,18 +16,31 @@ type LocaleCode = (typeof SUPPORTED_LOCALES)[number]['code']
 const LocaleSwitcher: React.FC = () => {
   const pathname = usePathname()
   const params = useParams()
-  const router = useRouter()
+  const router = useNextRouter()
   const currentLocale = useLocale() as LocaleCode
   const [announcement, setAnnouncement] = useState('')
+  const [isPending, setIsPending] = useState(false)
+  const isMountedRef = useRef(true)
+  const isPendingRef = useRef(false)
+  const requestIdRef = useRef(0)
+
+  useEffect(() => {
+    isMountedRef.current = true
+
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   const targetLocale = SUPPORTED_LOCALES.find((l) => l.code !== currentLocale)!
 
   const handleLocaleChange = async () => {
-    const locale: LocaleCode = targetLocale.code
+    if (isPendingRef.current) return
 
-    // Pass the hash in the replacement URL so the destination mounts on the
-    // current tab instead of briefly mounting without it.
-    const hash = window.location.hash.slice(1)
+    isPendingRef.current = true
+    const requestId = ++requestIdRef.current
+    setIsPending(true)
+    const locale: LocaleCode = targetLocale.code
 
     // Announce language change to screen readers
     setAnnouncement(`Language changed to ${targetLocale.label}`)
@@ -40,19 +53,36 @@ const LocaleSwitcher: React.FC = () => {
     const slug = params?.slug
     const isLocalizedSlugRoute =
       typeof slug === 'string' && (pathname === '/news/[slug]' || pathname === '/projects/[slug]')
-    if (isLocalizedSlugRoute) {
-      const targetSlug = await resolvePostSlugInLocale(slug, currentLocale, locale)
-      if (targetSlug) {
-        resolvedParams = { ...pathParams, slug: targetSlug }
+    try {
+      if (isLocalizedSlugRoute) {
+        const targetSlug = await resolvePostSlugInLocale(slug, currentLocale, locale)
+        if (targetSlug) {
+          resolvedParams = { ...pathParams, slug: targetSlug }
+        }
+      }
+
+      if (!isMountedRef.current || requestId !== requestIdRef.current) return
+
+      // Read after slug resolution so navigation preserves hash changes made while awaiting it.
+      const hash = window.location.hash
+
+      const localizedPathname = getPathname({
+        // @ts-expect-error -- `pathname` is dynamic, so TypeScript cannot
+        // correlate params with pathname or infer the URL params shape.
+        href: { pathname, params: resolvedParams },
+        locale,
+        forcePrefix: true,
+      })
+      router.replace(`${localizedPathname}${hash}`, { scroll: false })
+
+      // Clear announcement after screen reader has read it
+      setTimeout(() => setAnnouncement(''), 1000)
+    } finally {
+      if (isMountedRef.current && requestId === requestIdRef.current) {
+        isPendingRef.current = false
+        setIsPending(false)
       }
     }
-
-    // @ts-expect-error -- `pathname` is dynamic, so TypeScript cannot
-    // correlate params with pathname or infer the URL hash object shape.
-    router.replace({ pathname, params: resolvedParams, ...(hash ? { hash } : {}) }, { locale, scroll: false })
-
-    // Clear announcement after screen reader has read it
-    setTimeout(() => setAnnouncement(''), 1000)
   }
 
   return (
@@ -65,6 +95,7 @@ const LocaleSwitcher: React.FC = () => {
       {/* DE / EN toggle - single click switches to the other locale */}
       <button
         onClick={handleLocaleChange}
+        disabled={isPending}
         lang={targetLocale.code}
         className="flex h-full shrink-0 cursor-pointer items-center justify-center gap-1 px-4 transition-colors hover:text-gray-900"
         aria-label={`Switch to ${targetLocale.label}`}

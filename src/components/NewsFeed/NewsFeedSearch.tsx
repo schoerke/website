@@ -75,7 +75,7 @@ const NewsFeedSearch: React.FC<NewsFeedSearchProps> = ({ minChars = 3, debounceM
         setShowMinCharsWarning(trimmedValue.length > 0 && trimmedValue.length < minChars)
       }
 
-      const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
+      const newUrl = `${params.toString() ? `${pathname}?${params.toString()}` : pathname}${window.location.hash}`
       router.push(newUrl, { scroll: false })
     }, debounceMs)
 

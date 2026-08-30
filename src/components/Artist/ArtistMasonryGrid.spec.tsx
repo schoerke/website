@@ -30,16 +30,20 @@ vi.mock('next/image', () => ({
 
 vi.mock('@/i18n/navigation', () => ({
   Link: ({ href, children, onClick }: { href: unknown; children: React.ReactNode; onClick?: () => void }) => (
-    <a href={typeof href === 'string' ? href : '#'} onClick={onClick}>
+    <a
+      href={
+        typeof href === 'string'
+          ? href
+          : `/artists/${(href as { params?: { slug?: string }; hash?: string }).params?.slug}${
+              (href as { hash?: string }).hash ? `#${(href as { hash?: string }).hash}` : ''
+            }`
+      }
+      onClick={onClick}
+    >
       {children}
     </a>
   ),
 }))
-
-vi.mock('@/utils/tabPersistence', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/utils/tabPersistence')>()
-  return { ...actual, setListMarker: vi.fn() }
-})
 
 function createMockArtist(overrides?: Partial<Artist>): Artist {
   return {
@@ -162,14 +166,10 @@ describe('ArtistMasonryGrid', () => {
     expect(overlay).toHaveClass('group-hover:translate-y-0', 'group-hover:opacity-100')
   })
 
-  it('sets the list marker on card click so the artist page opens on biography', async () => {
-    const { setListMarker } = await import('@/utils/tabPersistence')
-    vi.mocked(setListMarker).mockClear()
+  it('links artists to their biography tab', () => {
     const artist = createMockArtist({ id: 7, slug: 'jane-artist' })
     renderGrid([artist])
 
-    fireEvent.click(screen.getByText('Jane Artist'))
-
-    expect(setListMarker).toHaveBeenCalledWith('jane-artist')
+    expect(screen.getByRole('link', { name: /Jane Artist/ })).toHaveAttribute('href', '/artists/jane-artist#biography')
   })
 })

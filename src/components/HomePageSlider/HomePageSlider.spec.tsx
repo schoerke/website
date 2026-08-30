@@ -4,7 +4,7 @@
 
 import { render, fireEvent } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import HomePageSlider from './HomePageSlider'
+import HomePageSlider, { type HomePageSlide } from './HomePageSlider'
 
 vi.mock('next/image', () => ({
   default: ({
@@ -30,16 +30,23 @@ vi.mock('next/image', () => ({
 }))
 
 vi.mock('@/i18n/navigation', () => ({
-  Link: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => (
-    <a href={href as string} {...props}>
+  Link: ({
+    href,
+    children,
+    ...props
+  }: {
+    href: string | { pathname: string; params: { slug: string } }
+    children: React.ReactNode
+  }) => (
+    <a href={typeof href === 'string' ? href : href.pathname.replace('[slug]', href.params.slug)} {...props}>
       {children}
     </a>
   ),
 }))
 
-const slides = [
-  { src: '/img1.jpg', alt: 'Slide 1', title: 'News One', href: '/news/one' },
-  { src: '/img2.jpg', alt: 'Slide 2', title: 'News Two', href: '/news/two' },
+const slides: HomePageSlide[] = [
+  { src: '/img1.jpg', alt: 'Slide 1', title: 'News One', destination: { type: 'internal', href: '/news/one' } },
+  { src: '/img2.jpg', alt: 'Slide 2', title: 'News Two', destination: { type: 'internal', href: '/news/two' } },
 ]
 
 describe('HomePageSlider skeleton', () => {
@@ -75,5 +82,16 @@ describe('HomePageSlider focal point', () => {
     render(<HomePageSlider slides={focalSlides} />)
     const img = document.querySelector('img[src="/img1.jpg"]') as HTMLImageElement
     expect(img.style.objectPosition).toBe('42% 68%')
+  })
+})
+
+describe('HomePageSlider destinations', () => {
+  it('passes a next-intl pathname object to its slide link', () => {
+    const destination = { pathname: '/news/[slug]', params: { slug: 'news-one' } }
+    const destinationSlides: HomePageSlide[] = [{ ...slides[0], destination: { type: 'internal', href: destination } }]
+
+    const { getByRole } = render(<HomePageSlider slides={destinationSlides} />)
+
+    expect(getByRole('link', { name: 'News One' })).toHaveAttribute('href', '/news/news-one')
   })
 })

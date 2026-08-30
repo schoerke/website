@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
 import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import NewsFeedSearch from './NewsFeedSearch'
 
 // Mock Next.js navigation
 const mockPush = vi.fn()
-const mockPathname = '/en/news'
+let mockPathname = '/en/news'
 const mockSearchParams = new URLSearchParams()
 
 vi.mock('next/navigation', () => ({
@@ -21,11 +21,31 @@ const renderWithIntl = (ui: React.ReactElement) => {
 }
 
 describe('NewsFeedSearch', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
+    mockPathname = '/en/news'
+    window.history.replaceState({}, '', '/en/news')
     // Reset all search params
     const keys = Array.from(mockSearchParams.keys())
     keys.forEach((key) => mockSearchParams.delete(key))
+  })
+
+  it('preserves the current hash when the mount debounce updates an empty search', () => {
+    vi.useFakeTimers()
+    mockPathname = '/en/artists/test-artist'
+    window.history.replaceState({}, '', '/en/artists/test-artist#news')
+
+    renderWithIntl(<NewsFeedSearch />)
+
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+
+    expect(mockPush).toHaveBeenCalledWith('/en/artists/test-artist#news', { scroll: false })
   })
 
   it('should render search input with placeholder', () => {

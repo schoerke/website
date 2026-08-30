@@ -472,7 +472,7 @@ function getDocumentPath(doc: SearchDoc): string {
   switch (doc.relationTo) {
     case 'artists':
       // Use slug if available, otherwise fall back to ID
-      return `/artists/${doc.slug || doc.relationId}`
+      return `/artists/${doc.slug || doc.relationId}#biography`
     case 'employees':
       return `/kontakt` // Employees are listed on the contact page
     case 'pages':

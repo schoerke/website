@@ -54,7 +54,8 @@ function buildInternalHref(doc: NonNullable<LinkFields['doc']>, locale?: string)
   const { relationTo, value } = doc
 
   // value can be a populated document object or just an ID string/number
-  const slug = typeof value === 'object' && value !== null && 'slug' in value ? (value.slug as string) : null
+  const slug =
+    typeof value === 'object' && value !== null && 'slug' in value && typeof value.slug === 'string' ? value.slug : null
 
   const localePart = locale ? `/${locale}` : ''
 
@@ -64,7 +65,7 @@ function buildInternalHref(doc: NonNullable<LinkFields['doc']>, locale?: string)
     case 'posts':
       return slug ? `${localePart}/news/${slug}` : '#'
     case 'artists':
-      return slug ? `${localePart}/artists/${slug}` : '#'
+      return slug ? `${localePart}/artists/${slug}#biography` : '#'
     case 'projects':
       return slug ? `${localePart}/projects/${slug}` : '#'
     default:

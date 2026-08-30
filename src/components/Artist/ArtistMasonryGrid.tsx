@@ -6,7 +6,6 @@ import ImageSkeleton from '@/components/ui/ImageSkeleton'
 import { useDisableHoverOnScroll } from '@/hooks/useDisableHoverOnScroll'
 import { useImageLoad } from '@/hooks/useImageLoad'
 import { shuffleArray } from '@/utils/array'
-import { setListMarker } from '@/utils/tabPersistence'
 import { getValidImageUrl, isImageObject } from '@/utils/image'
 import { UserRound } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -96,14 +95,9 @@ const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedIns
 
   return (
     <Link
-      href={{ pathname: '/artists/[slug]', params: { slug: artist.slug } }}
+      href={{ pathname: '/artists/[slug]', params: { slug: artist.slug }, hash: 'biography' }}
       className="mb-1 block break-inside-avoid"
       aria-label={translatedInstruments ? `${artist.name}, ${translatedInstruments}` : artist.name}
-      onClick={() => {
-        // Signal the artist page that this visit came from the list, so it
-        // defaults to the biography tab instead of restoring a previous tab.
-        setListMarker(artist.slug)
-      }}
     >
       {content}
     </Link>
