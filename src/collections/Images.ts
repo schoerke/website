@@ -58,6 +58,9 @@ export const Images: CollectionConfig = {
       name: 'credit',
       type: 'text',
       admin: {
+        components: {
+          Field: '/components/admin/CreditField',
+        },
         description: 'Photo credit or attribution (e.g., photographer name)',
       },
     },

@@ -1,0 +1,8 @@
+.field-type.text.credit-field-warning input {
+  border-color: var(--theme-warning-400);
+  box-shadow: 0 0 0 1px var(--theme-warning-400);
+}
+
+.credit-field-warning-hidden {
+  visibility: hidden;
+}
