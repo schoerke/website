@@ -25,8 +25,9 @@ const LocaleSwitcher: React.FC = () => {
   const handleLocaleChange = async () => {
     const locale: LocaleCode = targetLocale.code
 
-    // Preserve hash fragment when switching locales
-    const hash = window.location.hash
+    // Pass the hash in the replacement URL so the destination mounts on the
+    // current tab instead of briefly mounting without it.
+    const hash = window.location.hash.slice(1)
 
     // Announce language change to screen readers
     setAnnouncement(`Language changed to ${targetLocale.label}`)
@@ -46,19 +47,9 @@ const LocaleSwitcher: React.FC = () => {
       }
     }
 
-    // With `pathnames`: Pass `params` as well.
-    // @ts-expect-error -- `pathname` is dynamic, so TypeScript can't correlate
-    // params with it; they always match at runtime since they come from the
-    // current route (with the `locale` segment stripped above).
-    router.replace({ pathname, params: resolvedParams }, { locale, scroll: false })
-
-    // Re-apply hash after navigation
-    // Note: This uses requestAnimationFrame for better timing than setTimeout(0)
-    if (hash) {
-      requestAnimationFrame(() => {
-        window.location.hash = hash
-      })
-    }
+    // @ts-expect-error -- `pathname` is dynamic, so TypeScript cannot
+    // correlate params with pathname or infer the URL hash object shape.
+    router.replace({ pathname, params: resolvedParams, ...(hash ? { hash } : {}) }, { locale, scroll: false })
 
     // Clear announcement after screen reader has read it
     setTimeout(() => setAnnouncement(''), 1000)

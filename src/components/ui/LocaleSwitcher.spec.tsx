@@ -52,6 +52,7 @@ describe('LocaleSwitcher', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(useLocale).mockReturnValue('de')
+    window.location.hash = ''
   })
 
   describe('Initial Rendering', () => {
@@ -120,6 +121,26 @@ describe('LocaleSwitcher', () => {
       await user.click(screen.getByRole('button', { name: /switch to/i }))
 
       expect(mockReplace).toHaveBeenCalledWith({ pathname: '/', params: {} }, { locale: 'de', scroll: false })
+    })
+
+    it('passes the active artist tab hash to the target locale navigation', async () => {
+      const user = userEvent.setup()
+      const { usePathname, useRouter } = await import('@/i18n/navigation')
+      const { useParams } = await import('next/navigation')
+      const mockReplace = vi.fn()
+      vi.mocked(useRouter).mockReturnValue(buildMockRouter(mockReplace))
+      vi.mocked(usePathname).mockReturnValue('/artists/[slug]')
+      vi.mocked(useParams).mockReturnValue({ locale: 'en', slug: 'test-artist' })
+      vi.mocked(useLocale).mockReturnValue('en')
+      window.location.hash = '#news'
+
+      render(<LocaleSwitcher />)
+      await user.click(screen.getByRole('button', { name: /switch to/i }))
+
+      expect(mockReplace).toHaveBeenCalledWith(
+        { pathname: '/artists/[slug]', params: { slug: 'test-artist' }, hash: 'news' },
+        { locale: 'de', scroll: false }
+      )
     })
 
     it('announces the target locale to screen readers', async () => {
