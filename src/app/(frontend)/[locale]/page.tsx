@@ -23,10 +23,11 @@ function getPostImageUrl(post: Post): string | null {
   return getValidImageUrl(post.image)
 }
 
-function getPostPath(post: Post): string {
+function getPostPath(post: Post): HomePageSlide['destination'] {
   const isProject = post.categories?.includes('projects')
-  const base = isProject ? 'projects' : 'news'
-  return `/${base}/${post.slug}`
+  return isProject
+    ? { type: 'internal', href: { pathname: '/projects/[slug]', params: { slug: post.slug } } }
+    : { type: 'internal', href: { pathname: '/news/[slug]', params: { slug: post.slug } } }
 }
 
 const HomePage = async ({ params }: HomePageProps) => {
@@ -62,7 +63,7 @@ const HomePage = async ({ params }: HomePageProps) => {
       src: getPostImageUrl(post),
       alt: post.title,
       title: post.title,
-      href: getPostPath(post),
+      destination: getPostPath(post),
       focalX: img?.focalX ?? null,
       focalY: img?.focalY ?? null,
     }
