@@ -95,6 +95,7 @@ const en = {
         biographyFooter: {
           season: 'Season {season}',
           photo: 'Photo: {credit}',
+          quote: 'Quote: {source}',
           consent: 'Amendments or edits need the consent of Künstlersekretariat Astrid Schoerke GmbH',
         },
         discography: {

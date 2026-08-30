@@ -153,8 +153,34 @@
   .bio-prose .biography-footer p {
     margin: 0 !important;
   }
+  .bio-prose .biography-footer {
+    margin-top: 1.5rem !important;
+    margin-bottom: 0 !important;
+  }
+  .bio-prose .biography-footer hr {
+    margin: 0 0 1.5rem !important;
+  }
+  @media (min-width: 640px) {
+    .bio-prose .biography-footer hr {
+      margin-bottom: 0.75rem !important;
+    }
+  }
   .bio-prose .biography-footer p + p {
     margin-top: 0.25rem !important;
+  }
+  @media (max-width: 639px) {
+    .bio-prose .biography-footer p + p {
+      margin-top: 0.75rem !important;
+    }
+  }
+  .bio-prose .payload-richtext:has(+ .biography-footer) > p:empty,
+  .bio-prose .payload-richtext:has(+ .biography-footer) > p:has(> br:only-child) {
+    margin: 0 !important;
+  }
+  .bio-prose .payload-richtext:has(+ .biography-footer) > p:last-child:not(:empty):not(:has(> br:only-child)),
+  .bio-prose .payload-richtext:has(+ .biography-footer) > p:not(:empty):has(+ p:empty),
+  .bio-prose .payload-richtext:has(+ .biography-footer) > p:not(:empty):has(+ p:has(> br:only-child)) {
+    margin-bottom: 1.5rem !important;
   }
 
   /* Payload Lexical Rich Text Styles */

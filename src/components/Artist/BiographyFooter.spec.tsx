@@ -31,11 +31,13 @@ describe('BiographyFooter', () => {
     const [details, consent] = container.querySelectorAll('footer > p')
 
     expect(footer).toBeInTheDocument()
-    expect(details).toHaveClass('font-bold', 'text-sm')
+    expect(details).toHaveClass('font-normal', 'text-sm')
     expect(details).not.toHaveClass('!m-0', '!mt-1', '!mb-0')
-    expect(consent).toHaveClass('font-bold', 'text-sm')
+    expect(consent).toHaveClass('font-normal', 'text-sm')
     expect(consent).not.toHaveClass('!m-0', '!mt-1', '!mb-0')
-    expect(screen.getByText('Saison 2025/2026 • Foto: Uwe Arens • Online Merker')).toBeInTheDocument()
+    expect(screen.getByTestId('biography-footer-details')).toHaveTextContent(
+      'Saison 2025/2026 • Foto: Uwe Arens • Zitat: Online Merker'
+    )
     expect(
       screen.getByText(
         'Änderungen und Kürzungen bedürfen der Absprache mit der Künstlersekretariat Astrid Schoerke GmbH'
@@ -46,7 +48,7 @@ describe('BiographyFooter', () => {
   it('renders English labels and consent', () => {
     renderFooter(<BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} />, 'en')
 
-    expect(screen.getByText('Season 2025/2026 • Photo: Uwe Arens')).toBeInTheDocument()
+    expect(screen.getByTestId('biography-footer-details')).toHaveTextContent('Season 2025/2026 • Photo: Uwe Arens')
     expect(
       screen.getByText('Amendments or edits need the consent of Künstlersekretariat Astrid Schoerke GmbH')
     ).toBeInTheDocument()
@@ -64,7 +66,9 @@ describe('BiographyFooter', () => {
       <BiographyFooter season="2025/2026" image={imageWithCredit(' Uwe Arens ')} quoteSource=" Online Merker " />
     )
 
-    expect(screen.getByText('Saison 2025/2026 • Foto: Uwe Arens • Online Merker')).toBeInTheDocument()
+    expect(screen.getByTestId('biography-footer-details')).toHaveTextContent(
+      'Saison 2025/2026 • Foto: Uwe Arens • Zitat: Online Merker'
+    )
   })
 
   it.each([
@@ -86,6 +90,24 @@ describe('BiographyFooter', () => {
     expect(screen.getByText('Saison 2025/2026')).not.toHaveTextContent('•')
   })
 
+  it('renders a responsive divider and regular-weight text', () => {
+    const { container } = renderFooter(<BiographyFooter season="2025/2026" />)
+
+    expect(container.querySelector('hr')).toHaveClass('w-full', 'md:w-3/4')
+    expect(screen.getByTestId('biography-footer-details')).toHaveClass('font-normal')
+  })
+
+  it('stacks metadata on mobile and joins it inline from sm', () => {
+    const { container } = renderFooter(
+      <BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} quoteSource="Online Merker" />
+    )
+
+    expect(screen.getByText('Saison 2025/2026')).toHaveClass('block', 'sm:inline')
+    expect(screen.getByText('Foto: Uwe Arens')).toHaveClass('block', 'sm:inline')
+    expect(screen.getByText('Zitat: Online Merker')).toHaveClass('block', 'sm:inline')
+    expect(container.querySelectorAll('span.hidden.sm\\:inline')).toHaveLength(2)
+  })
+
   it.each([
     [
       'de',
@@ -100,7 +122,7 @@ describe('BiographyFooter', () => {
   ] as const)('resolves biographyFooter catalog messages for %s', (locale, details, consent) => {
     renderFooter(<BiographyFooter season="2025/2026" image={imageWithCredit('Uwe Arens')} />, locale)
 
-    expect(screen.getByText(details)).toBeInTheDocument()
+    expect(screen.getByTestId('biography-footer-details')).toHaveTextContent(details)
     expect(screen.getByText(consent)).toBeInTheDocument()
   })
 })

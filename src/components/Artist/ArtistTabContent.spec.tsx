@@ -165,6 +165,8 @@ describe('ArtistTabContent', () => {
 
       expect(screen.getByText(quote)).toBeInTheDocument()
       expect(screen.getByText(quote).tagName).toBe('BLOCKQUOTE')
+      expect(screen.getByText(quote)).toHaveClass('text-xl')
+      expect(screen.getByText(quote)).not.toHaveClass('text-2xl')
     })
 
     it('renders footer with biography metadata', () => {
