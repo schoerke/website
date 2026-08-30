@@ -58,7 +58,7 @@ This includes:
 ### What You CAN Do Without Approval:
 
 - ✅ Read operations via **Payload Local API** (`pnpm dump <collection>`, `tsx` read script, existing services/actions)
-- ✅ Creating backup files (local copies, e.g. `sqlite3` on exported `.db` — note: `turso db export` requires approval per `opencode.json`)
+- ✅ Downloading and inspecting the nightly R2 production snapshot locally
 - ✅ Writing migration scripts without executing them
 - ✅ Analyzing data structure
 - ✅ Read-only inspection of an **exported** `.db` backup with `sqlite3`
@@ -85,10 +85,8 @@ layer gates those even though they may be read-only. Prefer Local API reads over
 This project runs on Turso (SQLite), deployed to Vercel. The following tools are already available — prefer them
 over writing ad-hoc scripts:
 
-- **Turso CLI** (`turso`, authenticated) — native database operations without touching `.env`:
+- **Turso CLI** (`turso`, authenticated) — DB-specific operations without touching `.env`:
   - `turso db list` — list databases (dev + prod)
-  - `turso db export <db>` — **full SQLite snapshot backup** to a local `.db` file (covers ALL tables, no `.env`
-    swap needed; uses CLI credentials)
   - `turso db shell <db>` — interactive SQL shell
   - Databases: `ksschoerke-production` (live). `ksschoerke-development` does NOT exist — never target it.
 - **`sqlite3`** (macOS built-in) — inspect/query exported `.db` backup files locally (read-only)
@@ -97,9 +95,9 @@ over writing ad-hoc scripts:
 - **`aws s3`** (R2, GitHub Actions creds `BACKUP_R2_*`/AWS keys — NOT `.env`) — read the nightly prod backup; see checklists.md §1/§3
 - **`scripts/db/dumpCollection.ts`** (`pnpm dump <collection>`) — per-collection JSON exports to `data/dumps/`
 
-**Rule:** for full-database backups, use `turso db export` — never a hand-rolled script. For read-only
-inspection of an exported backup, use `sqlite3`. For read-only prod inspection, prefer the nightly R2 backup
-(checklists.md §1) — zero prod reads, no approval. Only reach for custom scripts when none of these fit.
+**Rule:** use the nightly R2 production snapshot for backups and read-only production inspection
+(`docs/memory/checklists.md` §1). Do not run `turso db export` unless the user explicitly requests it. Inspect a
+downloaded snapshot with `sqlite3`. Only reach for custom scripts when none of these fit.
 **Reading content data (artists, repertoires, posts, etc.): use Payload Local API via `pnpm dump <collection>` or a
 small `tsx` read script.** Turso CLI is appropriate for DB/SQL-specific work (schema inspection, migration
 verification, row-count checks, backup/restore/clone, env identity). Every `turso` command requires approval per

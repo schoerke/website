@@ -19,16 +19,15 @@ needed.** Every `turso` command requires approval per `opencode.json`.
 
 ---
 
-## 1. Full backup (snapshot) — ⚠️ COMMANDS MOVED
+## 1. Production backup (snapshot) — ⚠️ COMMANDS MOVED
 
 > **AUTHORITATIVE STEPS: `docs/memory/checklists.md` §2.**
-> This section keeps internals only (why it's the ONLY safe pre-write backup, `.db-wal` sibling, ordering rule).
+> This section keeps Turso-specific internals only. The standard production backup is the nightly R2 snapshot in
+> `docs/memory/checklists.md` §1.
 > No commands here.
 
-- Produces a complete SQLite snapshot (`.db`) + optional `.db-wal` file — keep both.
-- **This is the ONLY safe pre-write backup.** Take one before ANY prod mutation and keep it until verified.
-- **For read-only inspection/audits, prefer the nightly R2 backup (checklists.md §1) — zero prod reads, no turso
-  approval.** Only `turso db export` when you need a fresh, pre-write snapshot.
+- Download and integrity-check the nightly R2 snapshot before a production mutation; keep it until verified.
+- Do not use `turso db export` unless the user explicitly requests it.
 
 ---
 

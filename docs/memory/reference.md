@@ -9,7 +9,7 @@ Source: repo-root `MEMORY.md` — extracted from §8.
 
 | Task                      | Command                                                                  |
 | ------------------------- | ------------------------------------------------------------------------ |
-| Full prod backup          | `turso db export ksschoerke-production --output-file data/dumps/NAME.db` (full steps: checklists.md §2) |
+| Production backup         | Download nightly R2 snapshot (full steps: checklists.md §1); `turso db export` only on explicit user request |
 | Inspect prod (read/write) | `turso db shell ksschoerke-production "SQL"`                             |
 | Inspect prod read-only (preferred) | checklists.md §1 (nightly R2 backup → local sqlite3)                |
 | Inspect an exported `.db` | `sqlite3 data/dumps/NAME.db "SQL"`                                       |

@@ -29,11 +29,11 @@
 | `docs/memory/migrations.md` | workflow, idempotency, FK/ALTER trap, array renames | payload migrate, dev\|-1, alreadyApplied, pushDevSchema |
 | `docs/memory/scripts.md` | prod-safe conventions, guards, revalidation | NODE_ENV, guard, skipRevalidation, backfill |
 | `docs/memory/data-operations.md` | Local API vs raw SQL | Local API, raw SQL, import, versions, hooks |
-| `docs/memory/db-operations.md` | verified Turso backup/restore internals (dump-to-SQL, restore; §3c/§4 clone/schema-parity deprecated → checklists §3) | turso db export, .dump, restore, dev\|-1, MCP auth |
+| `docs/memory/db-operations.md` | verified Turso restore internals (dump-to-SQL, restore; §3c/§4 clone/schema-parity deprecated → checklists §3) | R2 snapshot, .dump, restore, dev\|-1, MCP auth |
 | `docs/memory/checklists.md` | **quick-access steps for common tasks** (inspect prod, backup, refresh dev.db) | checklists, R2, dev.db refresh, backup, inspect |
 | `docs/memory/libraries.md` | search plugin, WordPress, Blob | plugin-search, localize, WordPress, R2, Vercel Blob |
 | `docs/memory/gotchas.md` | severity-tagged facts + never-again policies | drafts, slug, unique, umlauts, diacritics, optimistic, MCP auth |
-| `docs/memory/reference.md` | tooling commands | turso db export, migrate:create, generate:types |
+| `docs/memory/reference.md` | tooling commands | R2 snapshot, migrate:create, generate:types |
 | `docs/memory/features/repertoire.md` | repertoire feature | repertoire, syncArtistRepertoire, order-only |
 | `docs/memory/incidents/2026-08-15-prod-half-migrated.md` | prod half-migrated, restore | CASCADE, dev\|-1, restore, snapshot |
 | `docs/memory/incidents/2026-08-24-posts-desync-slug-incident.md` | post 215/247, slug collisions | Poltéra, slug, versions, desync |

@@ -50,23 +50,14 @@ previous night for stable reads.
 
 ---
 
-## 2. Full prod backup before any write
+## 2. Production backup before any write
 
-**The ONLY safe pre-write backup.** Take before ANY prod mutation; keep until the mutation is verified.
+Use the nightly R2 snapshot from §1 as the production backup and inspect it before a production mutation. Keep the
+downloaded `.db` until the mutation is verified. Do not use `turso db export` unless the user explicitly requests
+it.
 
-**Preconditions:** expects turso approval prompt (per `opencode.json` every `turso` command is approval-gated).
-
-```bash
-mkdir -p data/dumps
-turso db export ksschoerke-production --output-file data/dumps/ksschoerke-production-$(date +%Y%m%d-%H%M%S).db
-```
-
-Produces a complete SQLite snapshot (`.db`) + optional `.db-wal` sibling — keep both. Inspect locally:
-`sqlite3 data/dumps/NAME.db "SELECT COUNT(*) FROM artists"`.
-
-**Failure branches:** export fails/partial → do NOT write to prod until a verified good snapshot exists.
-**Ordering rule:** read-only inspection → §1 (zero prod reads, no approval). Pre-write snapshot → §2
-(`turso db export`).
+**Failure branches:** download or integrity check fails → do NOT write to production until a verified R2 snapshot
+exists. **Ordering rule:** read-only inspection and backup → §1 (zero production reads, no Turso command).
 
 ---
 

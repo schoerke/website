@@ -29,7 +29,9 @@ copy of a prod snapshot, then read the data back via the **Payload Local API**. 
 1:1 — never re-verify with a raw-SQL re-implementation of the migration (it can't prove what Payload actually does).
 
 ```bash
-turso db export ksschoerke-production --output-file data/dumps/scratch.db
+# Download and decompress the nightly R2 snapshot using checklists.md §1.
+# Then use its local copy as the scratch DB:
+cp /tmp/prod.db data/dumps/scratch.db
 # against the scratch copy, NOT prod:
 DATABASE_URI=file:data/dumps/scratch.db NODE_ENV=production pnpm payload migrate
 # then read back via Local API: NODE_ENV=production DATABASE_URI=file:data/dumps/scratch.db pnpm tsx <read script>
