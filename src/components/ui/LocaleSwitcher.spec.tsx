@@ -137,6 +137,8 @@ describe('LocaleSwitcher', () => {
     expect(resolvePostSlugInLocale).toHaveBeenCalledTimes(1)
     expect(button).toBeDisabled()
     resolveSlug!('concert-in-vienna')
+
+    await waitFor(() => expect(button).not.toBeDisabled())
   })
 
   it('navigates once after deferred slug resolution in StrictMode', async () => {
