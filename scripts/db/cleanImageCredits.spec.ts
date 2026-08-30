@@ -9,7 +9,7 @@ import {
   isDirectExecution,
   parseArguments,
   validateManifest,
-} from '../../scripts/db/cleanImageCredits'
+} from './cleanImageCredits'
 
 function createPayload(images: Array<{ id: number; filename: string; credit: unknown }>) {
   return {
