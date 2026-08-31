@@ -210,13 +210,13 @@ describe('ContactPersons', () => {
       expect(listItems).toHaveLength(2)
     })
 
-    it('desktop section is hidden below md and visible at md and up', () => {
+    it('desktop section is hidden below sm and visible at sm and up', () => {
       const employee = createMockEmployee()
       render(<ContactPersons employees={[employee]} />)
 
       const section = screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop)
       expect(section).toHaveClass('hidden')
-      expect(section).toHaveClass('md:block')
+      expect(section).toHaveClass('sm:block')
     })
   })
 })
@@ -239,11 +239,11 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
       expect(mobile.queryByRole('link', { name: /mobile.*künstlersekretariat/i })).not.toBeInTheDocument()
     })
 
-    it('mobile section is visible below md and hidden at md and up', () => {
+    it('mobile section is visible below sm and hidden at sm and up', () => {
       render(<ContactPersons />)
 
       const section = screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile)
-      expect(section).toHaveClass('md:hidden')
+      expect(section).toHaveClass('sm:hidden')
     })
 
     it('mobile icons are decorative (aria-hidden) since parent link has aria-label', () => {

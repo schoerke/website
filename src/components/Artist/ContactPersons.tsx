@@ -20,7 +20,7 @@ function hasAllFields(employee: Employee): boolean {
 
 const EmptyContactPersons: React.FC = () => {
   return (
-    <section className="hidden sm:text-left md:block md:text-right" data-testid={CONTACT_PERSONS_TESTIDS.desktop}>
+    <section className="hidden sm:block sm:text-left md:text-right" data-testid={CONTACT_PERSONS_TESTIDS.desktop}>
       <ul className="flex gap-6 md:flex-col md:gap-4">
         <li>
           <div>
@@ -66,7 +66,7 @@ const ContactPersons: React.FC<ContactPersonsProps> = ({ employees }) => {
 
   return (
     <>
-      <section className="hidden sm:text-left md:block md:text-right" data-testid={CONTACT_PERSONS_TESTIDS.desktop}>
+      <section className="hidden sm:block sm:text-left md:text-right" data-testid={CONTACT_PERSONS_TESTIDS.desktop}>
         <ul className="flex gap-6 md:flex-col md:gap-4">
           {employees.map((emp) => {
             return (
