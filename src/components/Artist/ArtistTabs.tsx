@@ -313,6 +313,8 @@ const ArtistTabs: React.FC<ArtistTabsProps> = ({ artist, locale, hasNews, hasPro
             emptyMessage={t('empty.news')}
             select={POST_LIST_SELECT}
             populate={POST_LIST_IMAGES_POPULATE}
+            limit={25}
+            showSearch={false}
           />
         )}
         {activeTab === 'projects' && (
