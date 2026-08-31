@@ -27,6 +27,7 @@ export const Recordings: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     group: 'Content Management',
+    listSearchableFields: ['title', 'artists.name'],
   },
   fields: [
     {

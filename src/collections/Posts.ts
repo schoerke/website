@@ -33,7 +33,7 @@ export const Posts: CollectionConfig = {
   admin: {
     group: 'Content Management',
     useAsTitle: 'title',
-    listSearchableFields: ['title', 'normalizedTitle'],
+    listSearchableFields: ['title', 'normalizedTitle', 'artists.name'],
     livePreview: {
       url: ({ data, req }) => generatePostPreviewPath({ data, req, collection: 'posts' }) ?? null,
     },

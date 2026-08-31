@@ -35,6 +35,7 @@ export const Repertoire: CollectionConfig = {
     useAsTitle: 'title',
     group: 'Content Management',
     defaultColumns: ['title', 'artists', 'roles', 'updatedAt'],
+    listSearchableFields: ['title', 'artists.name'],
   },
   fields: [
     {

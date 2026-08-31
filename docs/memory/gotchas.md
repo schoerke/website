@@ -67,6 +67,21 @@ Source: repo-root `MEMORY.md` — extracted from §9, §10.
   `beforeChange` hooks — columns are in the schema **baseline** (2026-08-15), not added later, so pre-existing
   rows already have values. Verified 2026-08-26: dry-run on prod-shaped dev.db found **0 candidates**. The admin
   list search hits these fields only when listed in `admin.listSearchableFields`.
+- **[CRITICAL]** **`admin.listSearchableFields` dot-notation (`'artists.name'`) works and needs no backfill** —
+  it resolves through Payload's generic relationship-join query engine (same code path as any `where` filter),
+  producing a real SQL join + `LIKE` on the joined text column. Confirmed via `node_modules` source trace
+  (`payload/dist/utilities/mergeListSearchAndWhere.js`, `@payloadcms/drizzle` `parseParams.js` +
+  `getTableColumnFromPath.js`) and a live dev-server test on Recordings. Requires a non-polymorphic `hasMany`
+  relationship (`relationTo` as a bare string) and a plain non-localized text field on the far side.
+  **DO NOT add the bare relationship field name (e.g. `'artists'`, no dot path) to the array** — Payload
+  coerces a bare relationship-field search entry from `like` to `equals` against the numeric ID column,
+  producing `NaN` as a SQL bind parameter and crashing the entire admin list-view search with
+  `RangeError: Only finite numbers ... can be passed`. (Live-reproduced 2026-08-31 on Recordings.) Applied to
+  `Recordings.ts`, `Repertoire.ts`, `Posts.ts` (`artists.name`, alongside `title`/`normalizedTitle`). Payload's
+  auto-generated search placeholder text only reflects top-level field names/labels, so it won't mention
+  "Artists" even though the search works — there's no lightweight per-collection way to fix just the
+  placeholder (would require a full List View component replacement, or a global `general:searchBy` i18n
+  override that'd corrupt every other collection's placeholder).
 
 ---
 
