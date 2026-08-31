@@ -5,7 +5,7 @@ import React from 'react'
 import { CONTACT_PERSONS_TESTIDS } from './ContactPersons'
 
 const MOBILE_ICON_BUTTON_CLASSNAME =
-  'flex h-10 w-10 items-center justify-center rounded-full bg-primary-black/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+  'flex h-11 w-11 items-center justify-center rounded-full bg-primary-black/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
 const MOBILE_ICON_CLASSNAME = 'text-primary-yellow h-5 w-5'
 
 export const MobileEmptyContactPersons: React.FC = () => {
@@ -16,7 +16,7 @@ export const MobileEmptyContactPersons: React.FC = () => {
           <div>
             <strong>{GENERAL_CONTACT.name}</strong>
           </div>
-          <address className="flex gap-2 not-italic">
+          <address className="flex gap-3 not-italic">
             <a
               href={`mailto:${GENERAL_CONTACT.email}`}
               aria-label={`Email ${GENERAL_CONTACT.name}`}
@@ -52,7 +52,7 @@ export const MobileContactPersons: React.FC<MobileContactPersonsProps> = ({ empl
               <strong>{emp.name}</strong>
               <div className="text-sm text-gray-600">{emp.title}</div>
             </div>
-            <address className="flex gap-2 not-italic">
+            <address className="flex gap-3 not-italic">
               <a href={`mailto:${emp.email}`} aria-label={`Email ${emp.name}`} className={MOBILE_ICON_BUTTON_CLASSNAME}>
                 <Mail className={MOBILE_ICON_CLASSNAME} aria-hidden="true" />
               </a>
