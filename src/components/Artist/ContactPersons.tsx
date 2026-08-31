@@ -1,6 +1,6 @@
 import { GENERAL_CONTACT } from '@/constants/contact'
 import type { Employee } from '@/payload-types'
-import { Mail, Phone } from 'lucide-react'
+import { Mail, Phone, Smartphone } from 'lucide-react'
 import React from 'react'
 
 export type ContactPersonsProps = {
@@ -11,6 +11,9 @@ export const CONTACT_PERSONS_TESTIDS = {
   desktop: 'contact-persons-desktop',
   mobile: 'contact-persons-mobile',
 } as const
+
+const MOBILE_ICON_BUTTON_CLASSNAME =
+  'rounded-full border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
 
 const REQUIRED_FIELDS: (keyof Employee)[] = ['name', 'title', 'email', 'phone', 'mobile']
 
@@ -64,19 +67,51 @@ const MobileEmptyContactPersons: React.FC = () => {
             <a
               href={`mailto:${GENERAL_CONTACT.email}`}
               aria-label={`Email ${GENERAL_CONTACT.name}`}
-              className="rounded-full border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className={MOBILE_ICON_BUTTON_CLASSNAME}
             >
               <Mail className="h-[18px] w-[18px]" aria-hidden="true" />
             </a>
             <a
               href={`tel:${GENERAL_CONTACT.phone}`}
               aria-label={`Phone ${GENERAL_CONTACT.name}`}
-              className="rounded-full border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className={MOBILE_ICON_BUTTON_CLASSNAME}
             >
               <Phone className="h-[18px] w-[18px]" aria-hidden="true" />
             </a>
           </address>
         </li>
+      </ul>
+    </section>
+  )
+}
+
+export type MobileContactPersonsProps = {
+  employees: Employee[]
+}
+
+export const MobileContactPersons: React.FC<MobileContactPersonsProps> = ({ employees }) => {
+  return (
+    <section className="md:hidden" data-testid={CONTACT_PERSONS_TESTIDS.mobile}>
+      <ul className="flex flex-col gap-4">
+        {employees.map((emp) => (
+          <li key={emp.id} className="flex items-center justify-between gap-3">
+            <div>
+              <strong>{emp.name}</strong>
+              <div className="text-sm text-gray-600">{emp.title}</div>
+            </div>
+            <address className="flex gap-2 not-italic">
+              <a href={`mailto:${emp.email}`} aria-label={`Email ${emp.name}`} className={MOBILE_ICON_BUTTON_CLASSNAME}>
+                <Mail className="h-[18px] w-[18px]" aria-hidden="true" />
+              </a>
+              <a href={`tel:${emp.phone}`} aria-label={`Phone ${emp.name}`} className={MOBILE_ICON_BUTTON_CLASSNAME}>
+                <Phone className="h-[18px] w-[18px]" aria-hidden="true" />
+              </a>
+              <a href={`tel:${emp.mobile}`} aria-label={`Mobile ${emp.name}`} className={MOBILE_ICON_BUTTON_CLASSNAME}>
+                <Smartphone className="h-[18px] w-[18px]" aria-hidden="true" />
+              </a>
+            </address>
+          </li>
+        ))}
       </ul>
     </section>
   )
@@ -95,53 +130,56 @@ const ContactPersons: React.FC<ContactPersonsProps> = ({ employees }) => {
   }
 
   return (
-    <section className="hidden sm:text-left md:block md:text-right" data-testid={CONTACT_PERSONS_TESTIDS.desktop}>
-      <ul className="flex gap-6 md:flex-col md:gap-4">
-        {employees.map((emp) => {
-          return (
-            <li key={emp.id}>
-              {/* Contact details */}
-              <div>
+    <>
+      <section className="hidden sm:text-left md:block md:text-right" data-testid={CONTACT_PERSONS_TESTIDS.desktop}>
+        <ul className="flex gap-6 md:flex-col md:gap-4">
+          {employees.map((emp) => {
+            return (
+              <li key={emp.id}>
+                {/* Contact details */}
                 <div>
-                  <strong>{emp.name}</strong>
-                </div>
-                <div className="text-sm text-gray-600">{emp.title}</div>
+                  <div>
+                    <strong>{emp.name}</strong>
+                  </div>
+                  <div className="text-sm text-gray-600">{emp.title}</div>
 
-                <address className="not-italic">
-                  <div className="text-sm">
-                    <a
-                      href={`mailto:${emp.email}`}
-                      className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      aria-label={`Email ${emp.name}`}
-                    >
-                      {emp.email}
-                    </a>
-                  </div>
-                  <div className="text-sm">
-                    <a
-                      href={`tel:${emp.phone}`}
-                      className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      aria-label={`Phone ${emp.name}`}
-                    >
-                      {emp.phone}
-                    </a>
-                  </div>
-                  <div className="text-sm">
-                    <a
-                      href={`tel:${emp.mobile}`}
-                      className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      aria-label={`Mobile ${emp.name}`}
-                    >
-                      {emp.mobile}
-                    </a>
-                  </div>
-                </address>
-              </div>
-            </li>
-          )
-        })}
-      </ul>
-    </section>
+                  <address className="not-italic">
+                    <div className="text-sm">
+                      <a
+                        href={`mailto:${emp.email}`}
+                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        aria-label={`Email ${emp.name}`}
+                      >
+                        {emp.email}
+                      </a>
+                    </div>
+                    <div className="text-sm">
+                      <a
+                        href={`tel:${emp.phone}`}
+                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        aria-label={`Phone ${emp.name}`}
+                      >
+                        {emp.phone}
+                      </a>
+                    </div>
+                    <div className="text-sm">
+                      <a
+                        href={`tel:${emp.mobile}`}
+                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        aria-label={`Mobile ${emp.name}`}
+                      >
+                        {emp.mobile}
+                      </a>
+                    </div>
+                  </address>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+      <MobileContactPersons employees={employees} />
+    </>
   )
 }
 
