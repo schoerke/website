@@ -30,7 +30,6 @@ import {
 import { useLocale } from 'next-intl'
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { filterEmailCommands } from './emailFiltering'
-import KBarTutorial from './KBarTutorial'
 
 interface SearchProviderProps {
   children: ReactNode
@@ -137,7 +136,6 @@ const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
           </KBarAnimator>
         </KBarPositioner>
       </KBarPortal>
-      <KBarTutorial />
       {children}
     </KBarProvider>
   )
