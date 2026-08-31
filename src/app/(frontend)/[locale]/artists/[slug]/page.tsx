@@ -82,7 +82,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
             />
           </div>
         )}
-        <div className="md:w-1/4 md:space-y-6">
+        <div className="hidden sm:block md:w-1/4 md:space-y-6">
           {employees && employees.length > 0 && <ContactPersons employees={employees} />}
           <ArtistLinks
             className="hidden md:block"
