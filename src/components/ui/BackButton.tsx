@@ -2,7 +2,7 @@
 
 import { useRouter } from '@/i18n/navigation'
 import { clsx } from 'clsx'
-import { MoveLeft } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
 
 type RouterPushHref = Parameters<ReturnType<typeof useRouter>['push']>[0]
 
@@ -41,7 +41,7 @@ const BackButton: React.FC<BackButtonProps> = ({ label, className, fallbackHref 
 
   return (
     <button onClick={handleBack} className={combinedClasses} type="button">
-      <MoveLeft className="h-4 w-4" aria-hidden={true} />
+      <ChevronLeft className="h-4 w-4" aria-hidden={true} />
       <span className="after:bg-primary-yellow relative after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:after:w-full">
         {label}
       </span>

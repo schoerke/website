@@ -2,12 +2,13 @@ import ArtistTabs from '@/components/Artist/ArtistTabs'
 import ContactPersons, { MobileContactPersonsSection } from '@/components/Artist/ContactPersons'
 import ArtistLinks from '@/components/ArtistLinks'
 import ImageWithSkeleton from '@/components/ui/ImageWithSkeleton'
-import { Link } from '@/i18n/navigation'
+import SchoerkeLink from '@/components/ui/SchoerkeLink'
 import { getArtistBySlug, getArtistSlugs } from '@/services/artist'
 import { getNewsPostCountByArtist } from '@/services/post'
 import { isEmployee } from '@/utils/collection'
 import { getImageUrl, isImageObject, isValidUrl } from '@/utils/image'
 import { getConcertSeason } from '@/utils/season'
+import { ChevronLeft } from 'lucide-react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 
@@ -123,12 +124,12 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
       </div>
 
       <div className="mt-8">
-        <Link
-          href="/artists"
-          className="focus-visible:outline-primary-yellow after:bg-primary-yellow text-primary-black hover:text-primary-black/70 relative inline-flex items-center gap-2 transition duration-150 ease-in-out after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 hover:after:w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-        >
-          <span aria-hidden="true">&larr;</span> {t('backButton')}
-        </Link>
+        <SchoerkeLink href="/artists" variant="with-icon" className="font-semibold">
+          <ChevronLeft className="h-4 w-4" aria-hidden={true} />
+          <span className="after:bg-primary-yellow relative after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:after:w-full">
+            {t('backButton')}
+          </span>
+        </SchoerkeLink>
       </div>
     </div>
   )
