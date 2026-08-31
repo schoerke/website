@@ -333,7 +333,7 @@ describe('ArtistTabs', async () => {
       })
     })
 
-    it('uses native hash navigation for media while retaining path and query', async () => {
+    it('pushes a history entry for media tab changes while retaining path and query', async () => {
       const user = userEvent.setup()
       const artist = createMockArtist()
       const pushState = vi.spyOn(window.history, 'pushState')
@@ -346,7 +346,7 @@ describe('ArtistTabs', async () => {
       expect(window.location.pathname).toBe('/en/artists/test-artist')
       expect(window.location.search).toBe('?source=home')
       expect(window.location.hash).toBe('#media-images')
-      expect(pushState).not.toHaveBeenCalled()
+      expect(pushState).toHaveBeenCalledWith(null, '', '#media-images')
     })
 
     it.each([
@@ -379,7 +379,7 @@ describe('ArtistTabs', async () => {
       expect(window.location.hash).toBe('#media-images')
     })
 
-    it('uses native hash navigation for news without a manual history push', async () => {
+    it('pushes a history entry for news via history.pushState (router-tracked)', async () => {
       const user = userEvent.setup()
       const pushState = vi.spyOn(window.history, 'pushState')
       window.history.replaceState({}, '', '/en/artists/test-artist?source=home')
@@ -388,7 +388,7 @@ describe('ArtistTabs', async () => {
       await user.click(screen.getAllByText('News')[0])
 
       expect(window.location.hash).toBe('#news')
-      expect(pushState).not.toHaveBeenCalled()
+      expect(pushState).toHaveBeenCalledWith(null, '', '#news')
     })
   })
 

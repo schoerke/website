@@ -106,9 +106,12 @@ function resolveTabState(hash: string, tabs: TabId[]): { tab: TabId; mediaSectio
   return { tab: 'biography', mediaSection: 'images' }
 }
 
+// Must use history.pushState, not `window.location.hash =` — Next patches
+// pushState/replaceState to track history externally; a raw hash assignment
+// bypasses that, desyncing router.back() from another page (e.g. BackButton).
 function pushHash(hash: string): void {
   if (window.location.hash === `#${hash}`) return
-  window.location.hash = hash
+  window.history.pushState(null, '', `#${hash}`)
 }
 
 /**
