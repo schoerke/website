@@ -3,7 +3,7 @@ import { GENERAL_CONTACT } from '@/constants/contact'
 import type { Employee } from '@/payload-types'
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import ContactPersons from './ContactPersons'
+import ContactPersons, { CONTACT_PERSONS_TESTIDS } from './ContactPersons'
 
 // Mock factory for complete employee
 function createMockEmployee(overrides?: Partial<Employee>): Employee {
@@ -27,7 +27,7 @@ describe('ContactPersons', () => {
     it('renders general contact when no employees provided', () => {
       render(<ContactPersons />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
 
       const emailLink = desktop.getByRole('link', { name: /email.*künstlersekretariat/i })
@@ -42,7 +42,7 @@ describe('ContactPersons', () => {
     it('renders general contact when empty array provided', () => {
       render(<ContactPersons employees={[]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
       expect(desktop.getByRole('link', { name: /email.*künstlersekretariat/i })).toBeInTheDocument()
     })
@@ -54,7 +54,7 @@ describe('ContactPersons', () => {
       const incomplete = { ...baseEmployee, name: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
       expect(desktop.queryByText('Jane Smith')).not.toBeInTheDocument()
     })
@@ -64,7 +64,7 @@ describe('ContactPersons', () => {
       const incomplete = { ...baseEmployee, title: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
     })
 
@@ -73,7 +73,7 @@ describe('ContactPersons', () => {
       const incomplete = { ...baseEmployee, email: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
     })
 
@@ -82,7 +82,7 @@ describe('ContactPersons', () => {
       const incomplete = { ...baseEmployee, phone: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
     })
 
@@ -91,7 +91,7 @@ describe('ContactPersons', () => {
       const incomplete = { ...baseEmployee, mobile: '' }
       render(<ContactPersons employees={[incomplete]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
     })
 
@@ -102,7 +102,7 @@ describe('ContactPersons', () => {
 
       render(<ContactPersons employees={[complete, incomplete]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
       expect(desktop.queryByText('Complete Person')).not.toBeInTheDocument()
       expect(desktop.queryByText('Incomplete Person')).not.toBeInTheDocument()
@@ -114,7 +114,7 @@ describe('ContactPersons', () => {
       const employee = createMockEmployee()
       render(<ContactPersons employees={[employee]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText('Jane Smith')).toBeInTheDocument()
       expect(desktop.getByText('Artist Manager')).toBeInTheDocument()
 
@@ -138,7 +138,7 @@ describe('ContactPersons', () => {
       ]
       render(<ContactPersons employees={employees} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByText('Jane Smith')).toBeInTheDocument()
       expect(desktop.getByText('Manager')).toBeInTheDocument()
 
@@ -152,7 +152,7 @@ describe('ContactPersons', () => {
       const employees = [createMockEmployee({ id: 1 }), createMockEmployee({ id: 2 })]
       render(<ContactPersons employees={employees} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.queryByText(GENERAL_CONTACT.name)).not.toBeInTheDocument()
     })
   })
@@ -162,7 +162,7 @@ describe('ContactPersons', () => {
       const employee = createMockEmployee()
       const { container } = render(<ContactPersons employees={[employee]} />)
 
-      const desktopSection = container.querySelector('[data-testid="contact-persons-desktop"]')
+      const desktopSection = container.querySelector(`[data-testid="${CONTACT_PERSONS_TESTIDS.desktop}"]`)
       const addresses = desktopSection?.querySelectorAll('address')
       expect(addresses).toHaveLength(1)
     })
@@ -171,7 +171,7 @@ describe('ContactPersons', () => {
       const employee = createMockEmployee()
       render(<ContactPersons employees={[employee]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       expect(desktop.getByRole('link', { name: /email jane smith/i })).toBeInTheDocument()
       expect(desktop.getByRole('link', { name: /phone jane smith/i })).toBeInTheDocument()
       expect(desktop.getByRole('link', { name: /mobile jane smith/i })).toBeInTheDocument()
@@ -181,7 +181,7 @@ describe('ContactPersons', () => {
       const employee = createMockEmployee()
       render(<ContactPersons employees={[employee]} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       const links = desktop.getAllByRole('link')
       links.forEach((link) => {
         expect(link).toHaveClass('focus:ring-2')
@@ -194,7 +194,7 @@ describe('ContactPersons', () => {
       const employee = createMockEmployee()
       render(<ContactPersons employees={[employee]} />)
 
-      const section = screen.getByTestId('contact-persons-desktop')
+      const section = screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop)
       expect(section.tagName).toBe('SECTION')
     })
 
@@ -202,7 +202,7 @@ describe('ContactPersons', () => {
       const employees = [createMockEmployee({ id: 1 }), createMockEmployee({ id: 2 })]
       render(<ContactPersons employees={employees} />)
 
-      const desktop = within(screen.getByTestId('contact-persons-desktop'))
+      const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       const list = desktop.getByRole('list')
       expect(list).toBeInTheDocument()
 
@@ -214,9 +214,47 @@ describe('ContactPersons', () => {
       const employee = createMockEmployee()
       render(<ContactPersons employees={[employee]} />)
 
-      const section = screen.getByTestId('contact-persons-desktop')
+      const section = screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop)
       expect(section).toHaveClass('hidden')
       expect(section).toHaveClass('md:block')
+    })
+  })
+})
+
+describe('MobileContactPersons (rendered via ContactPersons)', () => {
+  describe('Empty state', () => {
+    it('renders general contact with Mail and Phone icon links, no mobile field', () => {
+      render(<ContactPersons />)
+
+      const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
+      expect(mobile.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
+
+      const emailLink = mobile.getByRole('link', { name: /email.*künstlersekretariat/i })
+      expect(emailLink).toHaveAttribute('href', `mailto:${GENERAL_CONTACT.email}`)
+
+      const phoneLink = mobile.getByRole('link', { name: /phone.*künstlersekretariat/i })
+      expect(phoneLink).toHaveAttribute('href', `tel:${GENERAL_CONTACT.phone}`)
+
+      // No mobile icon for general contact (no mobile field in GeneralContactInfo)
+      expect(mobile.queryByRole('link', { name: /mobile.*künstlersekretariat/i })).not.toBeInTheDocument()
+    })
+
+    it('mobile section is visible below md and hidden at md and up', () => {
+      render(<ContactPersons />)
+
+      const section = screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile)
+      expect(section).toHaveClass('md:hidden')
+    })
+
+    it('mobile icons are decorative (aria-hidden) since parent link has aria-label', () => {
+      const { container } = render(<ContactPersons />)
+
+      const mobileSection = container.querySelector(`[data-testid="${CONTACT_PERSONS_TESTIDS.mobile}"]`)
+      const icons = mobileSection?.querySelectorAll('svg')
+      expect(icons?.length).toBeGreaterThan(0)
+      icons?.forEach((icon) => {
+        expect(icon).toHaveAttribute('aria-hidden', 'true')
+      })
     })
   })
 })
