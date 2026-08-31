@@ -27,10 +27,6 @@ const RecordingDetailsDialog: React.FC<RecordingDetailsDialogProps> = ({ recordi
   const coverArtUrl = getValidImageUrl(recording.coverArt)
 
   const hasDescription = hasVisibleTextContent(recording.description ?? null)
-  const metadata = [recording.recordingLabel, recording.catalogNumber, recording.recordingYear?.toString()].filter(
-    (m): m is string => Boolean(m)
-  )
-
   const roles = recording.roles ?? []
   const roleLabels = roles.map((role) => tRoles(role))
 
@@ -85,16 +81,24 @@ const RecordingDetailsDialog: React.FC<RecordingDetailsDialogProps> = ({ recordi
             </div>
 
             <div className="space-y-6">
+              {(recording.recordingLabel || recording.catalogNumber || recording.recordingYear) && (
+                <div>
+                  {recording.recordingLabel && (
+                    <p className="text-lg text-gray-600">{recording.recordingLabel}</p>
+                  )}
+                  {recording.catalogNumber && (
+                    <p className="mt-1 text-sm text-gray-600">{recording.catalogNumber}</p>
+                  )}
+                  {recording.recordingYear && (
+                    <p className="mt-1 text-sm text-gray-600">{recording.recordingYear}</p>
+                  )}
+                </div>
+              )}
+
               {roleLabels.length > 0 && (
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.08em] text-gray-500">{t('roles')}</p>
                   <p className="mt-1 text-sm text-gray-600">{joinItems(roleLabels)}</p>
-                </div>
-              )}
-
-              {metadata.length > 0 && (
-                <div>
-                  <p className="mt-1 text-sm text-gray-600">{joinItems(metadata)}</p>
                 </div>
               )}
             </div>
