@@ -5,7 +5,8 @@ import React from 'react'
 import { CONTACT_PERSONS_TESTIDS } from './ContactPersons'
 
 const MOBILE_ICON_BUTTON_CLASSNAME =
-  'rounded-full border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+  'flex h-10 w-10 items-center justify-center rounded-full bg-primary-black/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+const MOBILE_ICON_CLASSNAME = 'text-primary-yellow h-5 w-5'
 
 export const MobileEmptyContactPersons: React.FC = () => {
   return (
@@ -21,14 +22,14 @@ export const MobileEmptyContactPersons: React.FC = () => {
               aria-label={`Email ${GENERAL_CONTACT.name}`}
               className={MOBILE_ICON_BUTTON_CLASSNAME}
             >
-              <Mail className="h-[18px] w-[18px]" aria-hidden="true" />
+              <Mail className={MOBILE_ICON_CLASSNAME} aria-hidden="true" />
             </a>
             <a
               href={`tel:${GENERAL_CONTACT.phone}`}
               aria-label={`Phone ${GENERAL_CONTACT.name}`}
               className={MOBILE_ICON_BUTTON_CLASSNAME}
             >
-              <Phone className="h-[18px] w-[18px]" aria-hidden="true" />
+              <Phone className={MOBILE_ICON_CLASSNAME} aria-hidden="true" />
             </a>
           </address>
         </li>
@@ -53,13 +54,13 @@ export const MobileContactPersons: React.FC<MobileContactPersonsProps> = ({ empl
             </div>
             <address className="flex gap-2 not-italic">
               <a href={`mailto:${emp.email}`} aria-label={`Email ${emp.name}`} className={MOBILE_ICON_BUTTON_CLASSNAME}>
-                <Mail className="h-[18px] w-[18px]" aria-hidden="true" />
+                <Mail className={MOBILE_ICON_CLASSNAME} aria-hidden="true" />
               </a>
               <a href={`tel:${emp.phone}`} aria-label={`Phone ${emp.name}`} className={MOBILE_ICON_BUTTON_CLASSNAME}>
-                <Phone className="h-[18px] w-[18px]" aria-hidden="true" />
+                <Phone className={MOBILE_ICON_CLASSNAME} aria-hidden="true" />
               </a>
               <a href={`tel:${emp.mobile}`} aria-label={`Mobile ${emp.name}`} className={MOBILE_ICON_BUTTON_CLASSNAME}>
-                <Smartphone className="h-[18px] w-[18px]" aria-hidden="true" />
+                <Smartphone className={MOBILE_ICON_CLASSNAME} aria-hidden="true" />
               </a>
             </address>
           </li>
