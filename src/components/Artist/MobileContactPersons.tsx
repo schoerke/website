@@ -11,7 +11,7 @@ const MOBILE_ICON_CLASSNAME = 'text-primary-yellow h-5 w-5'
 export const MobileEmptyContactPersons: React.FC = () => {
   return (
     <section className="sm:hidden" data-testid={CONTACT_PERSONS_TESTIDS.mobile}>
-      <ul className="grid grid-cols-2 gap-x-3 gap-y-4">
+      <ul className="flex flex-col gap-4">
         <li className="flex flex-col gap-2">
           <div>
             <strong>{GENERAL_CONTACT.name}</strong>
@@ -45,7 +45,7 @@ export type MobileContactPersonsProps = {
 export const MobileContactPersons: React.FC<MobileContactPersonsProps> = ({ employees }) => {
   return (
     <section className="sm:hidden" data-testid={CONTACT_PERSONS_TESTIDS.mobile}>
-      <ul className="grid grid-cols-2 gap-x-3 gap-y-4">
+      <ul className="flex flex-col gap-4">
         {employees.map((emp) => (
           <li key={emp.id} className="flex flex-col gap-2">
             <div>
