@@ -3,7 +3,7 @@ import { GENERAL_CONTACT } from '@/constants/contact'
 import type { Employee } from '@/payload-types'
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import ContactPersons, { CONTACT_PERSONS_TESTIDS } from './ContactPersons'
+import ContactPersons, { CONTACT_PERSONS_TESTIDS, MobileContactPersonsSection } from './ContactPersons'
 
 // Mock factory for complete employee
 function createMockEmployee(overrides?: Partial<Employee>): Employee {
@@ -221,10 +221,10 @@ describe('ContactPersons', () => {
   })
 })
 
-describe('MobileContactPersons (rendered via ContactPersons)', () => {
+describe('MobileContactPersonsSection', () => {
   describe('Empty state', () => {
     it('renders general contact with Mail and Phone icon links, no mobile field', () => {
-      render(<ContactPersons />)
+      render(<MobileContactPersonsSection />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
       expect(mobile.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
@@ -240,14 +240,14 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
     })
 
     it('mobile section is visible below sm and hidden at sm and up', () => {
-      render(<ContactPersons />)
+      render(<MobileContactPersonsSection />)
 
       const section = screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile)
       expect(section).toHaveClass('sm:hidden')
     })
 
     it('mobile icons are decorative (aria-hidden) since parent link has aria-label', () => {
-      const { container } = render(<ContactPersons />)
+      const { container } = render(<MobileContactPersonsSection />)
 
       const mobileSection = container.querySelector(`[data-testid="${CONTACT_PERSONS_TESTIDS.mobile}"]`)
       const icons = mobileSection?.querySelectorAll('svg')
@@ -261,7 +261,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
   describe('Complete employee rendering', () => {
     it('renders single employee with icon links for email, phone, mobile', () => {
       const employee = createMockEmployee()
-      render(<ContactPersons employees={[employee]} />)
+      render(<MobileContactPersonsSection employees={[employee]} />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
 
@@ -283,7 +283,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
         createMockEmployee({ id: 1, name: 'Jane Smith', title: 'Manager' }),
         createMockEmployee({ id: 2, name: 'John Doe', title: 'Assistant', email: 'john@example.com' }),
       ]
-      render(<ContactPersons employees={employees} />)
+      render(<MobileContactPersonsSection employees={employees} />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
 
@@ -296,7 +296,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
 
     it('uses semantic address element per employee', () => {
       const employee = createMockEmployee()
-      const { container } = render(<ContactPersons employees={[employee]} />)
+      const { container } = render(<MobileContactPersonsSection employees={[employee]} />)
 
       const mobileSection = container.querySelector(`[data-testid="${CONTACT_PERSONS_TESTIDS.mobile}"]`)
       const addresses = mobileSection?.querySelectorAll('address')
@@ -305,7 +305,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
 
     it('uses list for multiple employees', () => {
       const employees = [createMockEmployee({ id: 1 }), createMockEmployee({ id: 2 })]
-      render(<ContactPersons employees={employees} />)
+      render(<MobileContactPersonsSection employees={employees} />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
       const list = mobile.getByRole('list')
@@ -317,7 +317,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
 
     it('has focus styles on all mobile links', () => {
       const employee = createMockEmployee()
-      render(<ContactPersons employees={[employee]} />)
+      render(<MobileContactPersonsSection employees={[employee]} />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
       const links = mobile.getAllByRole('link')
@@ -331,7 +331,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
     it('renders general contact when employee missing name', () => {
       const baseEmployee = createMockEmployee()
       const incomplete = { ...baseEmployee, name: '' }
-      render(<ContactPersons employees={[incomplete]} />)
+      render(<MobileContactPersonsSection employees={[incomplete]} />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
       expect(mobile.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
@@ -341,7 +341,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
     it('renders general contact when employee missing title', () => {
       const baseEmployee = createMockEmployee()
       const incomplete = { ...baseEmployee, title: '' }
-      render(<ContactPersons employees={[incomplete]} />)
+      render(<MobileContactPersonsSection employees={[incomplete]} />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
       expect(mobile.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
@@ -350,7 +350,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
     it('renders general contact when employee missing email', () => {
       const baseEmployee = createMockEmployee()
       const incomplete = { ...baseEmployee, email: '' }
-      render(<ContactPersons employees={[incomplete]} />)
+      render(<MobileContactPersonsSection employees={[incomplete]} />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
       expect(mobile.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
@@ -359,7 +359,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
     it('renders general contact when employee missing phone', () => {
       const baseEmployee = createMockEmployee()
       const incomplete = { ...baseEmployee, phone: '' }
-      render(<ContactPersons employees={[incomplete]} />)
+      render(<MobileContactPersonsSection employees={[incomplete]} />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
       expect(mobile.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
@@ -368,7 +368,7 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
     it('renders general contact when employee missing mobile', () => {
       const baseEmployee = createMockEmployee()
       const incomplete = { ...baseEmployee, mobile: '' }
-      render(<ContactPersons employees={[incomplete]} />)
+      render(<MobileContactPersonsSection employees={[incomplete]} />)
 
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))
       expect(mobile.getByText(GENERAL_CONTACT.name)).toBeInTheDocument()
@@ -381,7 +381,12 @@ describe('MobileContactPersons (rendered via ContactPersons)', () => {
         createMockEmployee({ id: 1, name: 'Jane Smith' }),
         createMockEmployee({ id: 2, name: 'John Doe', email: 'john@example.com' }),
       ]
-      render(<ContactPersons employees={employees} />)
+      render(
+        <>
+          <ContactPersons employees={employees} />
+          <MobileContactPersonsSection employees={employees} />
+        </>
+      )
 
       const desktop = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.desktop))
       const mobile = within(screen.getByTestId(CONTACT_PERSONS_TESTIDS.mobile))

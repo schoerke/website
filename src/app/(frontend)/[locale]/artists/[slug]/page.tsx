@@ -1,5 +1,5 @@
 import ArtistTabs from '@/components/Artist/ArtistTabs'
-import ContactPersons from '@/components/Artist/ContactPersons'
+import ContactPersons, { MobileContactPersonsSection } from '@/components/Artist/ContactPersons'
 import ArtistLinks from '@/components/ArtistLinks'
 import ImageWithSkeleton from '@/components/ui/ImageWithSkeleton'
 import { Link } from '@/i18n/navigation'
@@ -100,6 +100,13 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
 
       {/* Artist Tabs - Biography, Repertoire, Discography, Video, News, Projects, Concert Dates */}
       <ArtistTabs artist={artist} locale={locale} hasNews={hasNews} hasProjects={hasProjects} season={season} />
+
+      {/* Contact persons on mobile: shown below tabs (always visible regardless of active tab), above links/downloads */}
+      {employees && employees.length > 0 && (
+        <div className="mt-8 border-t border-gray-200 pt-8 sm:hidden">
+          <MobileContactPersonsSection employees={employees} />
+        </div>
+      )}
 
       {/* Show ArtistLinks below tabs on small screens */}
       <div className="mt-8 border-t border-gray-200 pt-8 md:hidden">

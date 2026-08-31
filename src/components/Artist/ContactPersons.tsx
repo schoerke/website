@@ -18,6 +18,10 @@ function hasAllFields(employee: Employee): boolean {
   return REQUIRED_FIELDS.every((field) => Boolean(employee && employee[field]))
 }
 
+function hasIncompleteEmployee(employees: Employee[]): boolean {
+  return employees.some((emp) => !hasAllFields(emp))
+}
+
 const EmptyContactPersons: React.FC = () => {
   return (
     <section className="hidden sm:block sm:text-left md:text-right" data-testid={CONTACT_PERSONS_TESTIDS.desktop}>
@@ -53,69 +57,67 @@ const EmptyContactPersons: React.FC = () => {
 }
 
 const ContactPersons: React.FC<ContactPersonsProps> = ({ employees }) => {
-  const showGeneral = !employees || employees.length === 0 || employees.some((emp) => !hasAllFields(emp))
-
-  if (showGeneral) {
-    return (
-      <>
-        <EmptyContactPersons />
-        <MobileEmptyContactPersons />
-      </>
-    )
+  if (!employees || employees.length === 0 || hasIncompleteEmployee(employees)) {
+    return <EmptyContactPersons />
   }
 
   return (
-    <>
-      <section className="hidden sm:block sm:text-left md:text-right" data-testid={CONTACT_PERSONS_TESTIDS.desktop}>
-        <ul className="flex gap-6 md:flex-col md:gap-4">
-          {employees.map((emp) => {
-            return (
-              <li key={emp.id}>
-                {/* Contact details */}
+    <section className="hidden sm:block sm:text-left md:text-right" data-testid={CONTACT_PERSONS_TESTIDS.desktop}>
+      <ul className="flex gap-6 md:flex-col md:gap-4">
+        {employees.map((emp) => {
+          return (
+            <li key={emp.id}>
+              {/* Contact details */}
+              <div>
                 <div>
-                  <div>
-                    <strong>{emp.name}</strong>
-                  </div>
-                  <div className="text-sm text-gray-600">{emp.title}</div>
-
-                  <address className="not-italic">
-                    <div className="text-sm">
-                      <a
-                        href={`mailto:${emp.email}`}
-                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        aria-label={`Email ${emp.name}`}
-                      >
-                        {emp.email}
-                      </a>
-                    </div>
-                    <div className="text-sm">
-                      <a
-                        href={`tel:${emp.phone}`}
-                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        aria-label={`Phone ${emp.name}`}
-                      >
-                        {emp.phone}
-                      </a>
-                    </div>
-                    <div className="text-sm">
-                      <a
-                        href={`tel:${emp.mobile}`}
-                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        aria-label={`Mobile ${emp.name}`}
-                      >
-                        {emp.mobile}
-                      </a>
-                    </div>
-                  </address>
+                  <strong>{emp.name}</strong>
                 </div>
-              </li>
-            )
-          })}
-        </ul>
-      </section>
-      <MobileContactPersons employees={employees} />
-    </>
+                <div className="text-sm text-gray-600">{emp.title}</div>
+
+                <address className="not-italic">
+                  <div className="text-sm">
+                    <a
+                      href={`mailto:${emp.email}`}
+                      className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      aria-label={`Email ${emp.name}`}
+                    >
+                      {emp.email}
+                    </a>
+                  </div>
+                  <div className="text-sm">
+                    <a
+                      href={`tel:${emp.phone}`}
+                      className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      aria-label={`Phone ${emp.name}`}
+                    >
+                      {emp.phone}
+                    </a>
+                  </div>
+                  <div className="text-sm">
+                    <a
+                      href={`tel:${emp.mobile}`}
+                      className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      aria-label={`Mobile ${emp.name}`}
+                    >
+                      {emp.mobile}
+                    </a>
+                  </div>
+                </address>
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
   )
+}
+
+export const MobileContactPersonsSection: React.FC<ContactPersonsProps> = ({ employees }) => {
+  if (!employees || employees.length === 0 || hasIncompleteEmployee(employees)) {
+    return <MobileEmptyContactPersons />
+  }
+
+  return <MobileContactPersons employees={employees} />
 }
 
 export default ContactPersons
