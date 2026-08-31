@@ -133,7 +133,7 @@ describe('ImageSlide', () => {
       render(<ImageSlide image={mockImage} isActive={true} />)
       const text = screen.getByText('Test Banner')
       expect(text).toHaveClass('font-playfair')
-      expect(text).toHaveClass('italic')
+      expect(text).not.toHaveClass('italic')
     })
   })
 

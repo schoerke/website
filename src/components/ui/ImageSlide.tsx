@@ -53,7 +53,7 @@ const ImageSlide: React.FC<ImageSlideProps> = ({ image, isActive, loading = 'laz
       {image.bannerText && (
         <div data-testid="image-slide-banner" className="absolute inset-0 flex items-end rounded-lg bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4">
           <div>
-            <p className="font-playfair text-2xl font-bold italic text-white drop-shadow">{image.bannerText}</p>
+            <p className="font-playfair text-2xl font-bold text-white drop-shadow">{image.bannerText}</p>
             {image.instruments && (
               <p className="text-primary-yellow mt-0.5 text-sm drop-shadow">{image.instruments}</p>
             )}
