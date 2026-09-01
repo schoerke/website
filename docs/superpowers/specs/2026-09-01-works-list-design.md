@@ -242,7 +242,7 @@ New component: `src/components/blocks/WorksList.tsx`, following the existing `Ev
 component pattern. Uses Tailwind utility classes directly (matching `VideoEmbed.tsx`'s convention,
 rather than a separate stylesheet).
 
-Design validated via a temporary prototype route (`src/app/(frontend)/concert-program-prototype/`, not
+Design validated via a temporary prototype route (`src/app/(frontend)/works-list-prototype/`, not
 part of this feature — deleted once ported) covering ~12 rendering scenarios plus a repertoire-style
 example. Key decisions from that process:
 
