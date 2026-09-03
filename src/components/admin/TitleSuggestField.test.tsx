@@ -57,4 +57,21 @@ describe('TitleSuggestField', () => {
       resolveGermanTitles?.(new Response(JSON.stringify({ docs: [] })))
     })
   })
+
+  it('keeps the field-type class so Payload applies standard field spacing', () => {
+    vi.mocked(useDocumentInfo).mockReturnValue({ id: undefined } as ReturnType<typeof useDocumentInfo>)
+    vi.mocked(useField).mockReturnValue({ value: '' } as ReturnType<typeof useField>)
+    vi.mocked(useLocale).mockReturnValue({ code: 'en' } as ReturnType<typeof useLocale>)
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise<Response>(() => {}))
+    )
+
+    const { container } = render(<TitleSuggestField {...fieldProps} />)
+
+    // `.render-fields > .field-type` is Payload's own direct-child spacing selector
+    // (@payloadcms/ui/dist/forms/RenderFields/index.scss). Without the `field-type` class here,
+    // this wrapper breaks that selector and the title field loses its margin below.
+    expect(container.firstElementChild).toHaveClass('field-type')
+  })
 })
