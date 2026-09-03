@@ -1,0 +1,58 @@
+.event-dates-conversion-drawer {
+  display: grid;
+  gap: 1rem;
+}
+
+.event-dates-conversion-drawer__event-card {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  padding: 1rem;
+}
+
+.event-dates-conversion-drawer__event-title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.event-dates-conversion-drawer__source {
+  color: var(--theme-elevation-500);
+  font-size: 0.875rem;
+  margin: 0.25rem 0 1rem;
+}
+
+.event-dates-conversion-drawer__fields {
+  display: grid;
+  gap: 1rem;
+}
+
+.event-dates-conversion-drawer__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.event-dates-conversion-drawer__error {
+  color: var(--theme-error-500);
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+}
+
+.event-dates-conversion-drawer__footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .event-dates-conversion-drawer__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-dates-conversion-drawer__footer {
+    justify-content: stretch;
+  }
+
+  .event-dates-conversion-drawer__footer .btn {
+    flex: 1;
+  }
+}

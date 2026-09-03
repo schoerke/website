@@ -5,6 +5,11 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   plugins: [react()],
   test: {
+    server: {
+      deps: {
+        inline: ['@payloadcms/richtext-lexical', '@payloadcms/ui', 'react-image-crop'],
+      },
+    },
     environment: 'node', // Use node for service tests, component tests can override
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
