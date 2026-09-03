@@ -28,6 +28,7 @@ import { default as default_07d760e4d5170ea133b7fcd55176aa01 } from '../../../co
 import { TextStateFeatureClient as TextStateFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { EventDatesConversionFeatureClient as EventDatesConversionFeatureClient_19bf984f6a7f12dee318147ef0ef76cf } from '@/features/eventDatesConverter/feature.client'
+import { PostContentWarningFeatureClient as PostContentWarningFeatureClient_32ebada504ffc3e6e58f865f0cf4979e } from '@/features/postContentWarning/feature.client'
 import { default as default_6edb6c26bdf6dae05ff64f2682f96ea3 } from '../../../components/admin/CreditField'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
@@ -71,6 +72,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#TextStateFeatureClient": TextStateFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/features/eventDatesConverter/feature.client#EventDatesConversionFeatureClient": EventDatesConversionFeatureClient_19bf984f6a7f12dee318147ef0ef76cf,
+  "@/features/postContentWarning/feature.client#PostContentWarningFeatureClient": PostContentWarningFeatureClient_32ebada504ffc3e6e58f865f0cf4979e,
   "/components/admin/CreditField#default": default_6edb6c26bdf6dae05ff64f2682f96ea3,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,

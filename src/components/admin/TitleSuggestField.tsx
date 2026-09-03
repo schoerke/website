@@ -118,7 +118,10 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
 
   return (
     <div
-      className="title-suggest"
+      // `field-type` mirrors Payload's own field wrapper class so this stays a direct child of
+      // `.render-fields` (the CSS spacing rule is `.render-fields > .field-type`). Without it,
+      // this wrapper breaks that selector and Payload renders zero margin below the title field.
+      className="field-type title-suggest"
       onBlur={() => setFocused(false)}
       onFocus={() => setFocused(true)}
       style={{ position: 'relative' }}

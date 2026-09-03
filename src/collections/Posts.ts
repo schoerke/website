@@ -1,4 +1,6 @@
 import type { CollectionConfig } from 'payload'
+import { richText } from 'payload/shared'
+import type { RichTextFieldValidation } from 'payload/shared'
 
 import { postTextState } from '@/data/postTextState'
 
@@ -16,11 +18,104 @@ import { blockDuplicateSlug } from '@/collections/hooks/blockDuplicateSlug'
 import { blockDuplicateTitle } from '@/collections/hooks/blockDuplicateTitle'
 import { categoryOptions } from '@/data/options'
 import { EventDatesConversionFeature } from '@/features/eventDatesConverter/feature.server'
+import { PostContentWarningFeature } from '@/features/postContentWarning/feature.server'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { extractLexicalText } from '@/utils/search/extractLexicalText'
 import { createSlugHook } from '@/utils/slug'
 import { generatePostPreviewPath } from '@/utils/preview/url'
 import { resolveDefaultCreatedBy } from '@/utils/posts/resolveDefaultCreatedBy'
+import { postContentMessages, validatePostContent } from '@/validators/postContent'
+
+interface LexicalEditorState {
+  root: {
+    children: unknown[]
+  }
+}
+
+interface ValidatingRichTextEditor {
+  validate: (
+    value: object | null | undefined,
+    options: Parameters<RichTextFieldValidation>[1]
+  ) => Promise<string | true> | string | true
+}
+
+function hasRootChildren(value: unknown): value is LexicalEditorState {
+  if (typeof value !== 'object' || value === null || !('root' in value)) return false
+  const { root } = value
+  return typeof root === 'object' && root !== null && 'children' in root && Array.isArray(root.children)
+}
+
+function isCanonicalEmptyRichText(value: unknown): boolean {
+  if (!hasRootChildren(value) || value.root.children.length !== 1) return false
+
+  const [firstChild] = value.root.children
+  if (
+    typeof firstChild !== 'object' ||
+    firstChild === null ||
+    !('type' in firstChild) ||
+    firstChild.type !== 'paragraph' ||
+    !('children' in firstChild) ||
+    !Array.isArray(firstChild.children)
+  ) {
+    return false
+  }
+
+  return firstChild.children.every(
+    (paragraphChild) =>
+      typeof paragraphChild === 'object' &&
+      paragraphChild !== null &&
+      'type' in paragraphChild &&
+      paragraphChild.type === 'text' &&
+      'text' in paragraphChild &&
+      typeof paragraphChild.text === 'string' &&
+      paragraphChild.text.length === 0
+  )
+}
+
+function hasEditorValidator(editor: unknown): editor is ValidatingRichTextEditor {
+  return typeof editor === 'object' && editor !== null && 'validate' in editor && typeof editor.validate === 'function'
+}
+
+/**
+ * Bypasses content validation only for draft saves, scoped to this field. See
+ * docs/superpowers/specs/2026-09-03-post-content-validation-design.md ("Known Limitation") for
+ * the accepted version-restore edge case: Payload's restoreVersion passes the historical
+ * version's own `_status`, not the restore action's target status.
+ */
+function isDraftSave(data: unknown): boolean {
+  return typeof data === 'object' && data !== null && '_status' in data && data._status === 'draft'
+}
+
+export const validatePublishedPostContent: RichTextFieldValidation = async (value, options) => {
+  if (isDraftSave(options.data)) return true
+
+  const locale = options.req?.locale === 'de' ? 'de' : 'en'
+  const messages = postContentMessages[locale]
+
+  if (
+    value === null ||
+    value === undefined ||
+    (hasRootChildren(value) && value.root.children.length === 0) ||
+    isCanonicalEmptyRichText(value)
+  ) {
+    return await richText(value, options)
+  }
+
+  const structureResult = validatePostContent(value)
+  if (structureResult === 'malformed') return messages.malformed
+
+  if (!hasEditorValidator(options.editor)) {
+    // Should be unreachable: Posts.content always configures a lexicalEditor, which always
+    // supplies a `validate` function. Logged (not thrown) so a future Payload/config change that
+    // breaks this assumption is diagnosable instead of silently returning a generic content error.
+    console.error('validatePublishedPostContent: options.editor has no validate function', options.editor)
+    return messages.malformed
+  }
+  const lexicalResult = await options.editor.validate(value, options)
+  if (lexicalResult !== true) return lexicalResult
+
+  return structureResult === true ? true : messages[structureResult]
+}
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -130,6 +225,7 @@ export const Posts: CollectionConfig = {
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
+          PostContentWarningFeature(),
           EventDatesConversionFeature(),
           BlocksFeature({
             blocks: [VideoEmbed, AudioEmbed, EventDates],
@@ -139,6 +235,7 @@ export const Posts: CollectionConfig = {
           }),
         ],
       }),
+      validate: validatePublishedPostContent,
     },
     {
       name: 'categories',
