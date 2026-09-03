@@ -34,8 +34,13 @@ vi.mock('@payloadcms/ui', () => ({
   TextInput: ({
     Error: _error,
     label,
+    showError: _showError,
     ...props
-  }: React.InputHTMLAttributes<HTMLInputElement> & { Error?: React.ReactNode; label: string }) => (
+  }: React.InputHTMLAttributes<HTMLInputElement> & {
+    Error?: React.ReactNode
+    label: string
+    showError?: boolean
+  }) => (
     <label>
       {label}
       <input {...props} />
