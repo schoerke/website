@@ -10,7 +10,7 @@ import { getValidImageUrl, isImageObject } from '@/utils/image'
 import { UserRound } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { startTransition, useEffect, useState } from 'react'
 
 interface ArtistMasonryGridProps {
   artists: Artist[]
@@ -111,8 +111,10 @@ const ArtistMasonryGrid: React.FC<ArtistMasonryGridProps> = ({ artists }) => {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    setDisplayed(shuffleArray(artists))
-    setReady(true)
+    startTransition(() => {
+      setDisplayed(shuffleArray(artists))
+      setReady(true)
+    })
   }, [artists])
 
   return (

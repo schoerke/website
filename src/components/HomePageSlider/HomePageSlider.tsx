@@ -28,7 +28,7 @@ const FADE_DURATION_MS = 800
 const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000 }) => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [progress, setProgress] = useState(0)
-  const startTimeRef = useRef<number>(performance.now())
+  const startTimeRef = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
   const pausedRef = useRef(false)
   const pauseStartRef = useRef<number | null>(null)
@@ -53,7 +53,7 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
         return
       }
 
-      const elapsed = accumulatedRef.current + (now - startTimeRef.current)
+      const elapsed = accumulatedRef.current + (now - (startTimeRef.current ?? now))
       const pct = Math.min(elapsed / interval, 1)
       setProgress(pct)
 

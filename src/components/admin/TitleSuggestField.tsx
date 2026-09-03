@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  TextField,
-  useDocumentInfo,
-  useField,
-  useFormProcessing,
-  useFormSubmitted,
-  useLocale,
-} from '@payloadcms/ui'
+import { TextField, useDocumentInfo, useField, useFormProcessing, useFormSubmitted, useLocale } from '@payloadcms/ui'
 import type { TextFieldClientProps } from 'payload'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -21,6 +14,11 @@ import { filterTitleSuggestions, type TitleSuggestion } from '@/utils/posts/titl
  * authoritative safety net.
  */
 const titleCache = new Map<string, TitleSuggestion[]>()
+
+interface TitlesState {
+  locale: string
+  titles: TitleSuggestion[]
+}
 
 const FETCH_URL = (locale: string): string => {
   const params = new URLSearchParams({ limit: '0', depth: '0', sort: 'title', locale })
@@ -38,9 +36,9 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
   const submitted = useFormSubmitted()
   const { value: fieldValue } = useField<{ value?: unknown }>({ path: props.path })
 
-  const [titles, setTitles] = useState<TitleSuggestion[]>(() => titleCache.get(locale) ?? [])
+  const [titlesState, setTitlesState] = useState<TitlesState>({ locale, titles: [] })
   const [focused, setFocused] = useState(false)
-  const [dismissed, setDismissed] = useState(false)
+  const [dismissedValue, setDismissedValue] = useState<string | null>(null)
   const lastProcessingRef = useRef(processing)
 
   const value = typeof fieldValue === 'string' ? fieldValue : ''
@@ -52,14 +50,12 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
   const loadTitles = useCallback((targetLocale: string, force = false): (() => void) => {
     const cached = force ? undefined : titleCache.get(targetLocale)
     if (cached) {
-      setTitles(cached)
       return () => {}
     }
 
     let cancelled = false
     const controller = new AbortController()
 
-    setTitles([])
     fetch(FETCH_URL(targetLocale), { signal: controller.signal })
       .then(async (res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -69,7 +65,7 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
         if (cancelled) return
         const docs = json.docs ?? []
         titleCache.set(targetLocale, docs)
-        setTitles(docs)
+        setTitlesState({ locale: targetLocale, titles: docs })
       })
       .catch((err) => {
         // Unavailable (network, permissions, abort): suggestions silently off for the session.
@@ -82,12 +78,18 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
     }
   }, [])
 
-  useEffect(() => loadTitles(locale), [locale, loadTitles])
+  useEffect(() => {
+    const cached = titleCache.get(locale)
+    if (cached) return
 
-  const suggestions = useMemo(
-    () => filterTitleSuggestions(value, titles, documentId),
-    [value, titles, documentId]
-  )
+    return loadTitles(locale)
+  }, [locale, loadTitles])
+
+  const suggestions = useMemo(() => {
+    const cachedTitles = titleCache.get(locale)
+    const availableTitles = cachedTitles ?? (titlesState.locale === locale ? titlesState.titles : [])
+    return filterTitleSuggestions(value, availableTitles, documentId)
+  }, [value, titlesState, documentId, locale])
 
   // On a COMPLETED save (processing true→false) that did not fail (submitted is
   // false only on success — Payload sets it true on validation/HTTP errors),
@@ -100,20 +102,19 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
     lastProcessingRef.current = processing
   }, [processing, submitted, value, locale, loadTitles])
 
-  const showDropdown = focused && !dismissed && suggestions.length > 0
-
-  useEffect(() => {
-    setDismissed(false)
-  }, [value])
+  const isDismissed = dismissedValue === value
+  const showDropdown = focused && !isDismissed && suggestions.length > 0
 
   useEffect(() => {
     if (!showDropdown) return
     const handler = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') setDismissed(true)
+      if (e.key === 'Escape') {
+        setDismissedValue(value)
+      }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [showDropdown])
+  }, [showDropdown, value])
 
   return (
     <div
@@ -149,7 +150,9 @@ const TitleSuggestField: React.FC<TitleSuggestFieldProps> = (props) => {
             >
               <span style={{ color: 'var(--theme-text)' }}>{s.title}</span>
               {s.categories && s.categories.length > 0 && (
-                <span style={{ color: 'var(--theme-elevation-500)', marginLeft: '8px' }}>{s.categories.join(', ')}</span>
+                <span style={{ color: 'var(--theme-elevation-500)', marginLeft: '8px' }}>
+                  {s.categories.join(', ')}
+                </span>
               )}
             </li>
           ))}
