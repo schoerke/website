@@ -159,7 +159,7 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, instruments }) => {
             interval={6000}
             showArrows={false}
             showDots
-            eagerLoadCount={2}
+            eagerLoadCount={3}
           />
         </div>
       )}

@@ -22,8 +22,9 @@ interface SliderImage {
 }
 
 vi.mock('@/components/ui/ImageSlider', () => ({
-  default: ({ images }: { images: SliderImage[] }) => (
+  default: ({ images, eagerLoadCount }: { images: SliderImage[]; eagerLoadCount?: number }) => (
     <div data-testid="image-slider">
+      <span data-testid="slider-eager-load-count">{eagerLoadCount}</span>
       {images.map((img, i) => (
         <div key={i} data-testid="slider-image">
           {img.alt}
@@ -392,6 +393,24 @@ describe('ArtistGrid', () => {
 
       // Now slider should show the pianist
       expect(screen.getByTestId('image-slider')).toBeInTheDocument()
+    })
+
+    it('eager-loads the first three slider images', async () => {
+      const user = userEvent.setup()
+      const artists = [
+        createMockArtist({ id: 1, name: 'Violinist', instrument: ['violin'] }),
+        createMockArtist({ id: 2, name: 'Pianist', instrument: ['piano'] }),
+      ]
+
+      render(
+        <NextIntlTestProvider>
+          <ArtistGrid artists={artists} instruments={['violin', 'piano']} />
+        </NextIntlTestProvider>
+      )
+
+      await user.click(screen.getByTestId('filter-violin'))
+
+      expect(screen.getByTestId('slider-eager-load-count')).toHaveTextContent('3')
     })
 
     it('hides slider when all artists are shown in grid', () => {
