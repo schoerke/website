@@ -15,6 +15,7 @@ import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
 import { blockDuplicateSlug } from '@/collections/hooks/blockDuplicateSlug'
 import { blockDuplicateTitle } from '@/collections/hooks/blockDuplicateTitle'
 import { categoryOptions } from '@/data/options'
+import { EventDatesConversionFeature } from '@/features/eventDatesConverter/feature.server'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { extractLexicalText } from '@/utils/search/extractLexicalText'
 import { createSlugHook } from '@/utils/slug'
@@ -129,6 +130,7 @@ export const Posts: CollectionConfig = {
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
+          EventDatesConversionFeature(),
           BlocksFeature({
             blocks: [VideoEmbed, AudioEmbed, EventDates],
           }),

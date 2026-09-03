@@ -31,7 +31,7 @@ const EventDates: React.FC<EventDatesProps> = ({ events, locale = 'de' }) => {
   return (
     <p>
       {events.map((event, index) => {
-        const text = [formatEventDate(event.date, locale), event.location].filter(Boolean).join(', ')
+        const text = [formatEventDate(event.date, locale), event.location].filter(Boolean).join(' - ')
         const safeUrl = event.url ? sanitizeUrl(event.url) : ''
         const isSafeLink = text && safeUrl && safeUrl !== '#' && !safeUrl.startsWith('//')
         const line = isSafeLink ? (

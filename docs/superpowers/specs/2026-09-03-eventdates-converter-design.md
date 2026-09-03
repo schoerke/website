@@ -11,8 +11,8 @@ existing `eventDates` block. Editors review and correct parsed rows before sourc
 ## Scope
 
 - Posts `content` rich text editor only.
-- Source selection must fully cover consecutive paragraph nodes, or consecutive full lines within
-  one paragraph separated by Lexical linebreak nodes (Shift+Enter).
+- Source selection must fully cover consecutive paragraph nodes, or every line in one paragraph
+  separated by Lexical linebreak nodes (Shift+Enter).
 - List items are excluded. A block node cannot replace list-item children without splitting their
   enclosing list, which is out of scope for v1.
 - Existing `EventDates` block schema and frontend renderer remain unchanged.
@@ -20,10 +20,9 @@ existing `eventDates` block. Editors review and correct parsed rows before sourc
 
 ## Editor Flow
 
-1. Editor selects consecutive event-date paragraphs or consecutive full Shift+Enter lines inside
-   one paragraph.
-2. `Convert to Event Dates` toolbar action is enabled for an eligible selection.
-3. Action reads each selected node's visible text and link URL.
+1. Editor selects consecutive event-date paragraphs or all Shift+Enter lines inside one paragraph.
+2. Floating inline toolbar exposes a gear-icon `Formatting utilities` dropdown for any non-empty range selection.
+3. `Convert to Event Dates` validates selected nodes, then reads each selected node's visible text and link URL.
 4. A review drawer displays source text, parsed date, location, URL, and row status.
 5. Editor corrects parsed values as needed.
 6. On confirmation, all reviewed rows replace their source nodes with a single `eventDates` block.
@@ -40,8 +39,10 @@ nodes.
 
 Paired Payload feature registered only in `Posts.content`: a `createServerFeature` provider with a
 stable feature key serializes configuration, while an import-map-safe `createClientFeature` provider
-supplies the toolbar action and editor plugin. It declares `dependenciesPriority: ['blocks']` to
-depend on `BlocksFeature`, validates the selection, extracts source nodes, opens the review drawer,
+supplies the toolbar action and editor plugin. Payload 3.88 reverses priority-dependency traversal,
+so `dependenciesPriority: ['blocks']` resolves in the wrong order. Register the converter immediately
+before `BlocksFeature`; the public sorter then resolves `blocks` first. The converter validates the selection,
+extracts source nodes, opens the review drawer,
 and performs the final Lexical transaction. Generate the Payload import map after adding any
 project-local client component reference.
 
@@ -78,10 +79,10 @@ feature, but never writes Lexical state itself.
 
 ## Selection And Replacement
 
-- List, mixed-node, non-consecutive, nested-list, decorator-node, and partial-inline selections
-  are rejected with clear action feedback. Full linebreak-separated selections in one paragraph are
-  supported; any other linebreak placement is rejected. A valid range starts at the first text node
-  offset zero and ends at the last text node end, in either selection direction.
+- List, mixed-node, non-consecutive, nested-list, decorator-node, partial-inline, and partial
+  linebreak-paragraph selections are rejected with clear action feedback. All lines in one
+  linebreak-separated paragraph are supported. A valid range starts at the first text node offset
+  zero and ends at the last text node end, in either selection direction.
 - Each source line permits text nodes and exactly one direct custom `LinkNode`; it rejects auto
   links, nested links, decorators, and other inline node types. Text is concatenated in document
   order, retaining no source formatting in the structured block.
@@ -99,7 +100,7 @@ feature, but never writes Lexical state itself.
 
 ## Error Handling
 
-- Ineligible selections do not open the drawer.
+- Ineligible selections show action feedback and do not open the drawer.
 - Parser failures remain visible per source row and never discard content.
 - Drawer validation prevents insertion unless every row has a valid canonical date, non-empty
   trimmed location, and optional trimmed valid HTTP(S) URL without username or password.
@@ -122,6 +123,8 @@ feature, but never writes Lexical state itself.
 - Editor-to-form integration test: editor mutation serializes `fields.events` to Payload form
   state. Save/reload test: Payload validates and renders emitted block data, asserting
   `{ type: 'block', version: 2, fields: { id, blockType, blockName, events } }`.
+- History integration mounts Payload's proxied `LexicalHistoryPlugin`, executes conversion, then asserts that
+  `UNDO_COMMAND` restores exact source JSON and `REDO_COMMAND` restores exact block JSON.
 
 ## Verification
 

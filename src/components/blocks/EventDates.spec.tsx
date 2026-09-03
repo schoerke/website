@@ -5,8 +5,8 @@ import EventDates, { formatEventDate } from './EventDates'
 
 const withUrl = {
   id: 'row-1',
-  date: '2026-07-04T00:00:00.000Z',
-  location: 'Yamagata',
+  date: '2026-07-17T00:00:00.000Z',
+  location: 'Event Location',
   url: 'https://yamagataterrsa.or.jp/concerts/20260704/',
 }
 
@@ -58,7 +58,7 @@ describe('EventDates', () => {
 
   it('renders a linked line in German by default', () => {
     render(<EventDates events={[withUrl]} />)
-    const link = screen.getByRole('link', { name: '4. Juli 2026, Yamagata' })
+    const link = screen.getByRole('link', { name: '17. Juli 2026 - Event Location' })
     expect(link.getAttribute('href')).toBe('https://yamagataterrsa.or.jp/concerts/20260704/')
     expect(link.getAttribute('target')).toBe('_blank')
     expect(link.getAttribute('rel')).toBe('noopener noreferrer')
@@ -66,34 +66,34 @@ describe('EventDates', () => {
 
   it('renders a linked line in English when locale is en', () => {
     render(<EventDates events={[withUrl]} locale="en" />)
-    expect(screen.getByRole('link', { name: 'July 4, 2026, Yamagata' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'July 17, 2026 - Event Location' })).toBeInTheDocument()
   })
 
   it('renders plain text when url is absent', () => {
     render(<EventDates events={[withoutUrl]} />)
-    expect(screen.getByText('5. Juli 2026, Fukushima')).toBeInTheDocument()
+    expect(screen.getByText('5. Juli 2026 - Fukushima')).toBeInTheDocument()
     expect(screen.queryByRole('link')).toBeNull()
   })
 
   it('renders plain text for an unsafe url', () => {
     render(<EventDates events={[{ ...withoutUrl, url: 'javascript:alert(1)' }]} />)
-    expect(screen.getByText('5. Juli 2026, Fukushima')).toBeInTheDocument()
+    expect(screen.getByText('5. Juli 2026 - Fukushima')).toBeInTheDocument()
     expect(screen.queryByRole('link')).toBeNull()
   })
 
   it('renders a link for a whitespace-padded url', () => {
     render(<EventDates events={[{ ...withoutUrl, url: ' https://example.com ' }]} />)
-    expect(screen.getByRole('link', { name: '5. Juli 2026, Fukushima' }).getAttribute('href')).toBe(
+    expect(screen.getByRole('link', { name: '5. Juli 2026 - Fukushima' }).getAttribute('href')).toBe(
       'https://example.com'
     )
   })
 
   it('renders multiple events in order separated by line breaks', () => {
     const { container } = render(<EventDates events={[withUrl, withoutUrl]} />)
-    expect(screen.getByRole('link', { name: '4. Juli 2026, Yamagata' })).toBeInTheDocument()
-    expect(screen.getByText('5. Juli 2026, Fukushima')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '17. Juli 2026 - Event Location' })).toBeInTheDocument()
+    expect(screen.getByText('5. Juli 2026 - Fukushima')).toBeInTheDocument()
     expect(container.querySelector('br')).not.toBeNull()
-    expect(container.textContent).toBe('4. Juli 2026, Yamagata5. Juli 2026, Fukushima')
+    expect(container.textContent).toBe('17. Juli 2026 - Event Location5. Juli 2026 - Fukushima')
   })
 
   it('does not render 1970 or a leading comma when date is null', () => {
@@ -112,7 +112,7 @@ describe('EventDates', () => {
   it('renders a row without an id', () => {
     const { date, location, url } = withUrl
     const { container } = render(<EventDates events={[{ date, location, url }]} />)
-    expect(screen.getByRole('link', { name: '4. Juli 2026, Yamagata' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '17. Juli 2026 - Event Location' })).toBeInTheDocument()
     expect(container.querySelector('a')).not.toBeNull()
   })
 })
