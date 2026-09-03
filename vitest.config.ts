@@ -4,6 +4,11 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [react()],
+  // Suppresses Vite's own warn-level logging only (e.g. the harmless "Sourcemap ... points to a
+  // source file outside its package" noise from @payloadcms/ui's published sourcemaps referencing
+  // nested @faceless-ui paths). Does not affect vitest test output, assertion failures, or our own
+  // console.error/warn calls in application code.
+  logLevel: 'error',
   test: {
     server: {
       deps: {
