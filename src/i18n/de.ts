@@ -103,7 +103,6 @@ const de = {
         },
         discography: {
           details: 'Mehr Details',
-          roles: 'Mitwirkung',
           listenOnSpotify: 'Auf Spotify anhören',
           listenOnAppleMusic: 'Auf Apple Music anhören',
           listenOnSpotifyFor: '{title} auf Spotify anhören',

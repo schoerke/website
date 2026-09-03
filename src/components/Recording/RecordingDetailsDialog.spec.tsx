@@ -33,7 +33,6 @@ const messages = {
       artist: {
         discography: {
           details: 'More details',
-          roles: 'Roles',
           listenOnSpotify: 'Listen on Spotify',
           listenOnAppleMusic: 'Listen on Apple Music',
           listenOnSpotifyFor: 'Listen to {title} on Spotify',
@@ -88,16 +87,11 @@ describe('RecordingDetailsDialog', () => {
     expect(screen.getByText('Beethoven - Violin Concerto')).toBeInTheDocument()
   })
 
-  it('renders roles via the recordingRoles translation namespace', () => {
+  it('does not render recording roles', () => {
     renderDialog(createMockRecording({ roles: ['soloist', 'conductor'] }))
-    expect(screen.getByText('Soloist')).toBeInTheDocument()
-    expect(screen.getByText('Conductor')).toBeInTheDocument()
-    expect(screen.getByText('Roles')).toBeInTheDocument()
-  })
-
-  it('omits the roles overline label when roles is empty', () => {
-    renderDialog(createMockRecording({ roles: [] }))
     expect(screen.queryByText('Roles')).not.toBeInTheDocument()
+    expect(screen.queryByText('Soloist')).not.toBeInTheDocument()
+    expect(screen.queryByText('Conductor')).not.toBeInTheDocument()
   })
 
   it('renders metadata (year, label, catalog)', () => {

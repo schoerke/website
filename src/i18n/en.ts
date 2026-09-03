@@ -100,7 +100,6 @@ const en = {
         },
         discography: {
           details: 'More details',
-          roles: 'Roles',
           listenOnSpotify: 'Listen on Spotify',
           listenOnAppleMusic: 'Listen on Apple Music',
           listenOnSpotifyFor: 'Listen to {title} on Spotify',
