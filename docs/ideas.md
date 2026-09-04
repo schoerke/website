@@ -27,22 +27,28 @@
 
 - global navigation on mobile/desktop
 
-### BiographyFooter
-
-- replaces the existing biography footer text with structured artist fields
-
 ## UI: Blocks (v2)
 
-### DatesList — ✅ Implemented 2026-08-28
-
-- displays a list of upcoming concerts with date and location
-- → `eventDates` block: `src/blocks/EventDates.ts` + `src/components/blocks/EventDates.tsx`
-- spec: `docs/superpowers/specs/2026-08-28-eventdates-block-design.md`
-
-### ConcertProgram
+### WorksList
 
 - displays the program for a concert, including composers, works, performers, and program pauses
 - should also support optional program title
+- **TODO (user will apply later):** WorksList prototype (`src/app/(frontend)/works-list-prototype/page.tsx`, branch
+  `feat/works-list`) — add brand-yellow rule before the block's optional title, matching the PerformersList
+  prototype's title treatment (yellow `bg-primary-yellow h-0.5 w-6` bar + semibold/bold heading). Change is
+  already applied and stashed: `git stash list` → "works-list-prototype yellow title bar (apply later)" on
+  `feat/works-list`. Pop it there (`git stash pop`), keep the edit, review at `/works-list-prototype`.
+
+### PerformersList
+
+- displays a list of performers for a concert, including names and instruments
+- should also support optional title
+
+## UI: Utils
+
+- "Format Text" formats text for display in the UI, including line breaks, links, and other formatting options
+- "Convert to WorksList" converts a block of text into a work object, extracting relevant information such as composer, title, and opus number
+- "Convert to PerformersList" converts a block of text into a performer object, extracting relevant information such as name and instrument
 
 ## Idea: Sentry Error Monitoring
 
