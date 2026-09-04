@@ -5,9 +5,12 @@ import ImageWithSkeleton from '@/components/ui/ImageWithSkeleton'
 import SchoerkeLink from '@/components/ui/SchoerkeLink'
 import { getArtistBySlug, getArtistSlugs } from '@/services/artist'
 import { getNewsPostCountByArtist } from '@/services/post'
+import { getRecordingCountByArtist, getRecordingVersionByArtist } from '@/services/recording'
 import { isEmployee } from '@/utils/collection'
-import { getImageUrl, isImageObject, isValidUrl } from '@/utils/image'
+import { getImageUrl, getValidImageUrl, isImageObject, isValidUrl } from '@/utils/image'
+import { hasVisibleTextContent } from '@/utils/lexical'
 import { getConcertSeason } from '@/utils/season'
+import { getVideoEmbedData } from '@/utils/videoEmbed'
 import { ChevronLeft } from 'lucide-react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
@@ -35,8 +38,20 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
 
   if (!artist) return notFound()
 
-  const newsCount = await getNewsPostCountByArtist(artist.id, locale as 'de' | 'en')
+  const [newsCount, recordingCount, recordingsVersion] = await Promise.all([
+    getNewsPostCountByArtist(artist.id, locale as 'de' | 'en'),
+    getRecordingCountByArtist(artist.id, locale as 'de' | 'en'),
+    getRecordingVersionByArtist(artist.id, locale as 'de' | 'en'),
+  ])
 
+  const hasBiography = hasVisibleTextContent(artist.biography)
+  const hasRepertoire = (artist.repertoire ?? []).some(
+    (item) => typeof item === 'object' && item !== null && hasVisibleTextContent(item.content)
+  )
+  const hasImages = (artist.galleryImages ?? []).some((item) => getValidImageUrl(item.image) !== null)
+  const hasVideos = (artist.videoLinks ?? []).some(
+    (video) => Boolean(video.embedCode) || getVideoEmbedData(video.url ?? '') !== null
+  )
   const hasNews = newsCount > 0
   const hasProjects = (artist.projects ?? []).some((p) => typeof p === 'object' && p !== null)
   const season = getConcertSeason(new Date())
@@ -100,7 +115,20 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
       </div>
 
       {/* Artist Tabs - Biography, Repertoire, Discography, Video, News, Projects, Concert Dates */}
-      <ArtistTabs artist={artist} locale={locale} hasNews={hasNews} hasProjects={hasProjects} season={season} />
+      <ArtistTabs
+        artist={artist}
+        locale={locale}
+        hasBiography={hasBiography}
+        hasRepertoire={hasRepertoire}
+        hasRecordings={recordingCount > 0}
+        recordingsVersion={recordingsVersion}
+        recordingsCount={recordingCount}
+        hasImages={hasImages}
+        hasVideos={hasVideos}
+        hasNews={hasNews}
+        hasProjects={hasProjects}
+        season={season}
+      />
 
       {/* Contact persons on mobile: shown below tabs (always visible regardless of active tab), above links/downloads */}
       {employees && employees.length > 0 && (

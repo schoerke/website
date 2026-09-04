@@ -124,16 +124,26 @@ interface MediaTabProps {
   videos: Artist['videoLinks']
   emptyMessage: string
   section: MediaSection
+  hasImages: boolean
+  hasVideos: boolean
   onSectionChange?: (section: MediaSection) => void
 }
 
 // Controlled component: the active section lives in the parent (ArtistTabs) so
 // back/forward navigation (popstate) can sync it without a local copy desyncing.
-export const MediaTab: React.FC<MediaTabProps> = ({ images, videos, emptyMessage, section, onSectionChange }) => {
+export const MediaTab: React.FC<MediaTabProps> = ({
+  images,
+  videos,
+  emptyMessage,
+  section,
+  hasImages,
+  hasVideos,
+  onSectionChange,
+}) => {
   const t = useTranslations('custom.pages.artist')
 
   const handleSectionChange = (value: string) => {
-    if (value === 'images' || value === 'videos') {
+    if ((value === 'images' && hasImages) || (value === 'videos' && hasVideos)) {
       onSectionChange?.(value)
     }
   }
@@ -147,20 +157,24 @@ export const MediaTab: React.FC<MediaTabProps> = ({ images, videos, emptyMessage
         className="mb-6 flex flex-wrap justify-start gap-2"
         aria-label="Select media type"
       >
-        <ToggleGroupItem
-          value="images"
-          aria-label={t('media.images')}
-          className="rounded-none border-b-2 border-transparent data-[state=on]:border-primary-yellow data-[state=on]:bg-transparent"
-        >
-          {t('media.images')}
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="videos"
-          aria-label={t('media.videos')}
-          className="rounded-none border-b-2 border-transparent data-[state=on]:border-primary-yellow data-[state=on]:bg-transparent"
-        >
-          {t('media.videos')}
-        </ToggleGroupItem>
+        {hasImages && (
+          <ToggleGroupItem
+            value="images"
+            aria-label={t('media.images')}
+            className="rounded-none border-b-2 border-transparent data-[state=on]:border-primary-yellow data-[state=on]:bg-transparent"
+          >
+            {t('media.images')}
+          </ToggleGroupItem>
+        )}
+        {hasVideos && (
+          <ToggleGroupItem
+            value="videos"
+            aria-label={t('media.videos')}
+            className="rounded-none border-b-2 border-transparent data-[state=on]:border-primary-yellow data-[state=on]:bg-transparent"
+          >
+            {t('media.videos')}
+          </ToggleGroupItem>
+        )}
       </ToggleGroup>
 
       {section === 'images' && <ImageGallery images={images || []} emptyMessage={emptyMessage} />}

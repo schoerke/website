@@ -5,6 +5,7 @@ import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
 import { validateURL } from '@/validators/fields'
+import { revalidateRecordingOnChange, revalidateRecordingOnDelete } from './hooks/revalidateRecording'
 
 export const Recordings: CollectionConfig = {
   slug: 'recordings',
@@ -201,6 +202,10 @@ export const Recordings: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [revalidateRecordingOnChange],
+    afterDelete: [revalidateRecordingOnDelete],
+  },
   versions: {
     drafts: {
       autosave: false,

@@ -107,6 +107,56 @@ export const getRecordingsByArtist = async (artistId: string, locale?: LocaleCod
 }
 
 /**
+ * Returns the count of published recordings associated with a specific artist.
+ * Useful for determining whether to show the Discography tab on the artist detail page.
+ *
+ * @param artistId - The artist's numeric ID
+ * @param locale - Optional locale code ('de' or 'en'). Defaults to 'de'
+ * @returns A promise resolving to the count of matching recordings
+ *
+ * @example
+ * const count = await getRecordingCountByArtist(42, 'en')
+ * const hasRecordings = count > 0
+ */
+export const getRecordingCountByArtist = async (artistId: number, locale?: 'de' | 'en'): Promise<number> => {
+  const payload = await getPayload({ config })
+  const result = await payload.count({
+    collection: 'recordings',
+    where: {
+      artists: { contains: artistId.toString() },
+      _status: { equals: 'published' },
+    },
+    locale: locale || 'de',
+  })
+  return result.totalDocs
+}
+
+/**
+ * Returns the newest update timestamp among an artist's published recordings.
+ * Used as a lightweight cache revision for the discography tab.
+ *
+ * @param artistId - The artist's numeric ID
+ * @param locale - Optional locale code ('de' or 'en'). Defaults to 'de'
+ * @returns The newest recording update timestamp, or null when none exist
+ */
+export const getRecordingVersionByArtist = async (artistId: number, locale?: 'de' | 'en'): Promise<string | null> => {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'recordings',
+    where: {
+      artists: { contains: artistId.toString() },
+      _status: { equals: 'published' },
+    },
+    locale: locale || 'de',
+    sort: '-updatedAt',
+    limit: 1,
+    select: { updatedAt: true },
+  })
+
+  return result.docs[0]?.updatedAt ?? null
+}
+
+/**
  * Retrieves a single published recording by its unique ID.
  * Uses depth: 2 to populate all relationships (artists, cover art, etc.).
  *

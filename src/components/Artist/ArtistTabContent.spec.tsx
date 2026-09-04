@@ -25,7 +25,15 @@ vi.mock('@/components/ui/PayloadRichText', () => ({
 }))
 
 vi.mock('./BiographyFooter', () => ({
-  default: ({ season, quoteSource, image }: { season: string; quoteSource?: string | null; image?: Artist['image'] }) => (
+  default: ({
+    season,
+    quoteSource,
+    image,
+  }: {
+    season: string
+    quoteSource?: string | null
+    image?: Artist['image']
+  }) => (
     <div data-testid="biography-footer">
       {season} | {quoteSource || 'No source'} | {image ? 'Has image' : 'No image'}
     </div>
@@ -176,11 +184,14 @@ describe('ArtistTabContent', () => {
       expect(screen.getByTestId('biography-footer')).toHaveTextContent('2026/2027 | Interview | Has image')
     })
 
-    it.each([null, (() => {
-      const content = createMockBiography()
-      content.root.children = []
-      return content
-    })()])('returns null without visible biography text', (content) => {
+    it.each([
+      null,
+      (() => {
+        const content = createMockBiography()
+        content.root.children = []
+        return content
+      })(),
+    ])('returns null without visible biography text', (content) => {
       const { container } = render(<BiographyTab content={content} season="2026/2027" />)
 
       expect(container).toBeEmptyDOMElement()
@@ -279,19 +290,39 @@ describe('ArtistTabContent', () => {
           videos={mockVideos}
           emptyMessage="No media"
           section={section}
+          hasImages
+          hasVideos
           onSectionChange={setSection}
         />
       )
     }
 
     it('should default to images sub-section', () => {
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" section="images" />)
+      render(
+        <MediaTab
+          images={mockImages}
+          videos={mockVideos}
+          emptyMessage="No media"
+          section="images"
+          hasImages
+          hasVideos
+        />
+      )
       expect(screen.getByTestId('image-gallery')).toBeInTheDocument()
       expect(screen.queryByTestId('video-accordion')).not.toBeInTheDocument()
     })
 
     it('should show video accordion when section is videos', () => {
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" section="videos" />)
+      render(
+        <MediaTab
+          images={mockImages}
+          videos={mockVideos}
+          emptyMessage="No media"
+          section="videos"
+          hasImages
+          hasVideos
+        />
+      )
       expect(screen.getByTestId('video-accordion')).toBeInTheDocument()
       expect(screen.queryByTestId('image-gallery')).not.toBeInTheDocument()
     })
@@ -313,6 +344,8 @@ describe('ArtistTabContent', () => {
           videos={mockVideos}
           emptyMessage="No media"
           section="videos"
+          hasImages
+          hasVideos
           onSectionChange={onSectionChange}
         />
       )
@@ -329,6 +362,8 @@ describe('ArtistTabContent', () => {
           videos={mockVideos}
           emptyMessage="No media"
           section="images"
+          hasImages
+          hasVideos
           onSectionChange={onSectionChange}
         />
       )
@@ -336,13 +371,47 @@ describe('ArtistTabContent', () => {
       expect(onSectionChange).toHaveBeenCalledWith('videos')
     })
 
+    it('hides unavailable media selectors', () => {
+      render(
+        <MediaTab
+          images={[]}
+          videos={mockVideos}
+          emptyMessage="No media"
+          section="videos"
+          hasImages={false}
+          hasVideos={true}
+        />
+      )
+
+      expect(screen.queryByRole('radio', { name: 'Images' })).not.toBeInTheDocument()
+      expect(screen.getByRole('radio', { name: 'Videos' })).toBeInTheDocument()
+    })
+
     it('should show empty message when no images and on images section', () => {
-      render(<MediaTab images={[]} videos={[]} emptyMessage="No media available" section="images" />)
+      render(
+        <MediaTab
+          images={[]}
+          videos={[]}
+          emptyMessage="No media available"
+          section="images"
+          hasImages={false}
+          hasVideos={false}
+        />
+      )
       expect(screen.getByText('No media available')).toBeInTheDocument()
     })
 
     it('styles section toggles as underline subtabs matching Repertoire', () => {
-      render(<MediaTab images={mockImages} videos={mockVideos} emptyMessage="No media" section="images" />)
+      render(
+        <MediaTab
+          images={mockImages}
+          videos={mockVideos}
+          emptyMessage="No media"
+          section="images"
+          hasImages
+          hasVideos
+        />
+      )
 
       const imagesButton = screen.getByRole('radio', { name: 'Images' })
       const videosButton = screen.getByRole('radio', { name: 'Videos' })
