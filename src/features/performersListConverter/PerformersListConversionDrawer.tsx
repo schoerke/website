@@ -97,7 +97,7 @@ const DrawerForm: React.FC<DrawerFormProps> = ({ close, onCancel, onConfirm, sou
   const [draft, setDraft] = React.useState<DraftItem[]>(() => createDraft(sources))
   const [linkAcknowledged, setLinkAcknowledged] = React.useState(false)
   const [deletionAcknowledged, setDeletionAcknowledged] = React.useState(false)
-  const [focusTarget, setFocusTarget] = React.useState<FocusTarget>()
+  const focusTargetRef = React.useRef<FocusTarget | undefined>(undefined)
   const fallbackFocusRef = React.useRef<HTMLDivElement>(null)
   const result = toConvertedItems(draft)
   const validationErrors = getValidationErrors(draft)
@@ -111,6 +111,7 @@ const DrawerForm: React.FC<DrawerFormProps> = ({ close, onCancel, onConfirm, sou
     (!deletedCount || deletionAcknowledged)
 
   React.useEffect(() => {
+    const focusTarget = focusTargetRef.current
     if (!focusTarget) return
     if (focusTarget.kind === 'heading') fallbackFocusRef.current?.focus()
     if (focusTarget.kind === 'name') {
@@ -118,8 +119,8 @@ const DrawerForm: React.FC<DrawerFormProps> = ({ close, onCancel, onConfirm, sou
       const performerName = document.getElementById(`field-performers-${focusTarget.sourceId}-name`)
       ;(groupName ?? performerName)?.focus()
     }
-    setFocusTarget(undefined)
-  }, [draft, focusTarget])
+    focusTargetRef.current = undefined
+  }, [draft])
 
   const mutate = (mutation: (current: DraftItem[]) => DraftItem[]): void => setDraft(mutation)
 
@@ -131,11 +132,9 @@ const DrawerForm: React.FC<DrawerFormProps> = ({ close, onCancel, onConfirm, sou
     if (memberGroup) {
       const memberIndex = memberGroup.members.findIndex((member) => member.sourceId === sourceId)
       const focusMember = memberGroup.members[memberIndex + 1] ?? memberGroup.members[memberIndex - 1]
-      setFocusTarget(
-        focusMember
-          ? { kind: 'name', sourceId: focusMember.sourceId }
-          : { kind: 'name', sourceId: memberGroup.sourceId }
-      )
+      focusTargetRef.current = focusMember
+        ? { kind: 'name', sourceId: focusMember.sourceId }
+        : { kind: 'name', sourceId: memberGroup.sourceId }
       setDraft(deleteDraftItem(draft, sourceId))
       return
     }
@@ -147,7 +146,7 @@ const DrawerForm: React.FC<DrawerFormProps> = ({ close, onCancel, onConfirm, sou
       deleted?.type === 'ensembleGroup'
         ? (draft[oldIndex + 1] ?? draft[oldIndex - 1] ?? deleted.members[0])
         : (next[oldIndex] ?? next[oldIndex - 1])
-    setFocusTarget(target ? { kind: 'name', sourceId: target.sourceId } : { kind: 'heading' })
+    focusTargetRef.current = target ? { kind: 'name', sourceId: target.sourceId } : { kind: 'heading' }
     setDraft(next)
   }
 

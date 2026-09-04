@@ -4,7 +4,13 @@ export type ParsedPerformersListLine =
   | { type: 'invalid'; reason: string }
 
 export function normalizeDisplayText(value: string): string {
-  return value.replace(/[\u0000-\u001F\u007F-\u009F]/g, '').trim()
+  return Array.from(value)
+    .filter((character) => {
+      const code = character.codePointAt(0) ?? 0
+      return code >= 0x20 && (code < 0x7f || code > 0x9f)
+    })
+    .join('')
+    .trim()
 }
 
 export function parsePerformersListLine(value: string): ParsedPerformersListLine {
