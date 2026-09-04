@@ -24,7 +24,12 @@ const harness = vi.hoisted(() => ({
 }))
 
 vi.mock('@payloadcms/ui', () => ({
-  Button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+  Button: ({
+    buttonStyle: _buttonStyle,
+    children,
+    round: _round,
+    ...props
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & { buttonStyle?: string; round?: boolean }) => (
     <button {...props}>{children}</button>
   ),
   Drawer: ({ children }: { children: React.ReactNode }) => <section>{children}</section>,
@@ -47,7 +52,16 @@ vi.mock('@payloadcms/ui', () => ({
     ),
     ButtonGroup: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   },
-  TextInput: ({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) => (
+  TextInput: ({
+    Error: _error,
+    label,
+    showError: _showError,
+    ...props
+  }: React.InputHTMLAttributes<HTMLInputElement> & {
+    Error?: React.ReactNode
+    label: string
+    showError?: boolean
+  }) => (
     <label>
       {label}
       <input {...props} />
@@ -237,7 +251,9 @@ describe('replacePerformersListSources', () => {
     )
     act(() => feature.toolbarInline.groups[0].items[0].onSelect({ editor }))
     await waitFor(() => expect(harness.openModal).toHaveBeenCalled())
-    screen.getByRole('button', { name: 'Convert' }).click()
+    act(() => {
+      screen.getByRole('button', { name: 'Convert' }).click()
+    })
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Umwandlung fehlgeschlagen. Bitte erneut versuchen.')
   })
