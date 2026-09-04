@@ -1,7 +1,13 @@
 import { createMockPaginatedDocs, createMockRecording } from '@/tests/utils/payloadMocks'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getAllRecordings, getRecordingById, getRecordingsByArtist } from './recording'
+import {
+  getAllRecordings,
+  getRecordingById,
+  getRecordingCountByArtist,
+  getRecordingVersionByArtist,
+  getRecordingsByArtist,
+} from './recording'
 
 // Mock getPayload at the module level
 vi.mock('payload', async (importOriginal) => {
@@ -146,6 +152,69 @@ describe('Recording Service', () => {
         })
       )
       expect(vi.mocked(mockPayload.find).mock.calls[0][0]).not.toHaveProperty('populate')
+    })
+  })
+
+  describe('getRecordingCountByArtist', () => {
+    it('should return the count of published recordings for an artist', async () => {
+      mockPayload.count = vi.fn().mockResolvedValue({ totalDocs: 5 })
+
+      const result = await getRecordingCountByArtist(42, 'en')
+
+      expect(result).toBe(5)
+      expect(mockPayload.count).toHaveBeenCalledWith({
+        collection: 'recordings',
+        where: {
+          artists: { contains: '42' },
+          _status: { equals: 'published' },
+        },
+        locale: 'en',
+      })
+    })
+
+    it('should return 0 when no published recordings exist for the artist', async () => {
+      mockPayload.count = vi.fn().mockResolvedValue({ totalDocs: 0 })
+
+      const result = await getRecordingCountByArtist(99, 'de')
+
+      expect(result).toBe(0)
+    })
+
+    it('should use default locale de when not specified', async () => {
+      mockPayload.count = vi.fn().mockResolvedValue({ totalDocs: 3 })
+
+      await getRecordingCountByArtist(1)
+
+      expect(mockPayload.count).toHaveBeenCalledWith(expect.objectContaining({ locale: 'de' }))
+    })
+  })
+
+  describe('getRecordingVersionByArtist', () => {
+    it('returns the newest published recording update for the artist', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(
+        createMockPaginatedDocs([createMockRecording({ updatedAt: '2026-09-04T12:00:00.000Z' })])
+      )
+
+      const result = await getRecordingVersionByArtist(42, 'en')
+
+      expect(result).toBe('2026-09-04T12:00:00.000Z')
+      expect(mockPayload.find).toHaveBeenCalledWith({
+        collection: 'recordings',
+        where: {
+          artists: { contains: '42' },
+          _status: { equals: 'published' },
+        },
+        locale: 'en',
+        sort: '-updatedAt',
+        limit: 1,
+        select: { updatedAt: true },
+      })
+    })
+
+    it('returns null when the artist has no published recordings', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await expect(getRecordingVersionByArtist(42)).resolves.toBeNull()
     })
   })
 

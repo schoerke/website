@@ -4,7 +4,24 @@ import { NextIntlTestProvider } from '@/tests/utils/NextIntlProvider'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import ArtistTabs from './ArtistTabs'
+import ArtistTabsComponent from './ArtistTabs'
+
+const availableTabs = {
+  hasBiography: true,
+  hasRepertoire: true,
+  hasRecordings: true,
+  hasImages: true,
+  hasVideos: true,
+  hasNews: true,
+  hasProjects: true,
+  recordingsCount: 1,
+}
+
+type ArtistTabsProps = React.ComponentProps<typeof ArtistTabsComponent>
+
+const ArtistTabs: React.FC<Partial<ArtistTabsProps> & Pick<ArtistTabsProps, 'artist' | 'locale'>> = (props) => (
+  <ArtistTabsComponent {...availableTabs} {...props} />
+)
 
 // Radix Select relies on pointer-capture / scrollIntoView APIs that
 // happy-dom doesn't implement — stub them so the mobile dropdown can open
@@ -81,20 +98,52 @@ vi.mock('./ArtistTabContent', () => ({
     emptyMessage: string
   }) => (
     <div data-testid="repertoire-tab">
-      {loading ? 'Loading...' : repertoires.length > 0 ? `${repertoires.length} repertoires` : emptyMessage}
+      {loading ? (
+        'Loading...'
+      ) : repertoires.length > 0 ? (
+        <>
+          <span>{repertoires.length} repertoires</span>
+          {repertoires.map((repertoire) => (
+            <span key={repertoire.id}>{repertoire.title}</span>
+          ))}
+        </>
+      ) : (
+        emptyMessage
+      )}
     </div>
   ),
   RecordingsTab: ({
     recordings,
     loading,
     emptyMessage,
+    availableRoles,
+    selectedRole,
+    onRoleFilterChange,
   }: {
     recordings: Recording[]
     loading: boolean
     emptyMessage: string
+    availableRoles: string[]
+    selectedRole: string | null
+    onRoleFilterChange: (role: string | null) => void
   }) => (
     <div data-testid="recordings-tab">
-      {loading ? 'Loading...' : recordings.length > 0 ? `${recordings.length} recordings` : emptyMessage}
+      {loading ? (
+        'Loading...'
+      ) : recordings.length > 0 ? (
+        <>
+          <span>{recordings.length} recordings</span>
+          <span>{recordings.map((recording) => recording.title).join(', ')}</span>
+          <span data-testid="selected-recording-role">{selectedRole ?? 'all'}</span>
+          {availableRoles.map((role) => (
+            <button key={role} onClick={() => onRoleFilterChange(role)}>
+              Filter {role}
+            </button>
+          ))}
+        </>
+      ) : (
+        emptyMessage
+      )}
     </div>
   ),
   MediaTab: ({
@@ -643,13 +692,226 @@ describe('ArtistTabs', async () => {
       expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
       expect(screen.getByText('1 recordings')).toBeInTheDocument()
     })
+
+    it('refetches active discography when recordings version changes', async () => {
+      const user = userEvent.setup()
+      const artist = createMockArtist()
+      vi.mocked(fetchRecordingsByArtist).mockResolvedValue({
+        docs: [createMockRecording()],
+        totalDocs: 1,
+        limit: 10,
+        totalPages: 1,
+        page: 1,
+        pagingCounter: 1,
+        hasPrevPage: false,
+        hasNextPage: false,
+        prevPage: null,
+        nextPage: null,
+      })
+
+      const { rerender } = renderWithIntl(
+        <ArtistTabs artist={artist} locale="en" hasNews hasProjects recordingsVersion="2026-09-04T12:00:00.000Z" />
+      )
+      await user.click(screen.getAllByText('Discography')[0])
+      await waitFor(() => expect(fetchRecordingsByArtist).toHaveBeenCalledTimes(1))
+
+      rerender(
+        <NextIntlTestProvider messages={testMessages} locale="en">
+          <ArtistTabs artist={artist} locale="en" hasNews hasProjects recordingsVersion="2026-09-04T12:30:00.000Z" />
+        </NextIntlTestProvider>
+      )
+
+      await waitFor(() => expect(fetchRecordingsByArtist).toHaveBeenCalledTimes(2))
+    })
+
+    it('refetches and replaces recordings when count changes with the same version', async () => {
+      const user = userEvent.setup()
+      const artist = createMockArtist()
+      vi.mocked(fetchRecordingsByArtist)
+        .mockResolvedValueOnce({
+          docs: [createMockRecording({ id: 1, title: 'Older recording' })],
+          totalDocs: 1,
+          limit: 10,
+          totalPages: 1,
+          page: 1,
+          pagingCounter: 1,
+          hasPrevPage: false,
+          hasNextPage: false,
+          prevPage: null,
+          nextPage: null,
+        })
+        .mockResolvedValueOnce({
+          docs: [],
+          totalDocs: 0,
+          limit: 10,
+          totalPages: 0,
+          page: 1,
+          pagingCounter: 1,
+          hasPrevPage: false,
+          hasNextPage: false,
+          prevPage: null,
+          nextPage: null,
+        })
+
+      const { rerender } = renderWithIntl(
+        <ArtistTabs
+          artist={artist}
+          locale="en"
+          hasNews
+          hasProjects
+          recordingsVersion="2026-09-04T12:00:00.000Z"
+          recordingsCount={1}
+        />
+      )
+      await user.click(screen.getAllByText('Discography')[0])
+      await screen.findByText('Older recording')
+
+      rerender(
+        <NextIntlTestProvider messages={testMessages} locale="en">
+          <ArtistTabs
+            artist={artist}
+            locale="en"
+            hasNews
+            hasProjects
+            recordingsVersion="2026-09-04T12:00:00.000Z"
+            recordingsCount={0}
+          />
+        </NextIntlTestProvider>
+      )
+
+      await waitFor(() => expect(fetchRecordingsByArtist).toHaveBeenCalledTimes(2))
+      await waitFor(() => expect(screen.queryByText('Older recording')).not.toBeInTheDocument())
+      expect(screen.getByText('No recordings available')).toBeInTheDocument()
+    })
+
+    it('clears an unavailable role after a refreshed recordings result', async () => {
+      const user = userEvent.setup()
+      const artist = createMockArtist()
+      vi.mocked(fetchRecordingsByArtist)
+        .mockResolvedValueOnce({
+          docs: [
+            createMockRecording({ id: 1, title: 'Conductor recording', roles: ['conductor'] }),
+            createMockRecording({ id: 2, title: 'Soloist recording', roles: ['soloist'] }),
+          ],
+          totalDocs: 2,
+          limit: 10,
+          totalPages: 1,
+          page: 1,
+          pagingCounter: 1,
+          hasPrevPage: false,
+          hasNextPage: false,
+          prevPage: null,
+          nextPage: null,
+        })
+        .mockResolvedValueOnce({
+          docs: [createMockRecording({ id: 2, title: 'Soloist recording', roles: ['soloist'] })],
+          totalDocs: 1,
+          limit: 10,
+          totalPages: 1,
+          page: 1,
+          pagingCounter: 1,
+          hasPrevPage: false,
+          hasNextPage: false,
+          prevPage: null,
+          nextPage: null,
+        })
+
+      const { rerender } = renderWithIntl(
+        <ArtistTabs
+          artist={artist}
+          locale="en"
+          hasNews
+          hasProjects
+          recordingsVersion="2026-09-04T12:00:00.000Z"
+          recordingsCount={2}
+        />
+      )
+      await user.click(screen.getAllByText('Discography')[0])
+      await screen.findByText('Conductor recording, Soloist recording')
+      await user.click(screen.getByRole('button', { name: 'Filter conductor' }))
+      expect(screen.getByTestId('selected-recording-role')).toHaveTextContent('conductor')
+      expect(screen.getByText('Conductor recording')).toBeInTheDocument()
+
+      rerender(
+        <NextIntlTestProvider messages={testMessages} locale="en">
+          <ArtistTabs
+            artist={artist}
+            locale="en"
+            hasNews
+            hasProjects
+            recordingsVersion="2026-09-04T12:00:00.000Z"
+            recordingsCount={1}
+          />
+        </NextIntlTestProvider>
+      )
+
+      await waitFor(() => expect(fetchRecordingsByArtist).toHaveBeenCalledTimes(2))
+      await waitFor(() => expect(screen.getByTestId('selected-recording-role')).toHaveTextContent('all'))
+      expect(screen.getByText('Soloist recording')).toBeInTheDocument()
+    })
   })
 
   describe('Repertoire tab', () => {
+    it('forwards only repertoires with visible content', () => {
+      window.location.hash = '#repertoire'
+      const artist = createMockArtist({
+        repertoire: [
+          createMockRepertoire({ id: 1, title: 'Empty repertoire' }),
+          createMockRepertoire({
+            id: 2,
+            title: 'Visible repertoire',
+            content: {
+              root: {
+                type: 'root',
+                children: [{ type: 'text', text: 'Visible content', version: 1 }],
+                direction: null,
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          }),
+        ],
+      })
+
+      renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews hasProjects />)
+
+      expect(screen.getByTestId('repertoire-tab')).toHaveTextContent('1 repertoires')
+      expect(screen.getByTestId('repertoire-tab')).toHaveTextContent('Visible repertoire')
+      expect(screen.getByTestId('repertoire-tab')).not.toHaveTextContent('Empty repertoire')
+    })
+
     it('should render repertoire sections from artist prop', async () => {
       const user = userEvent.setup()
       const artist = createMockArtist({
-        repertoire: [createMockRepertoire({ id: 1 }), createMockRepertoire({ id: 2 })],
+        repertoire: [
+          createMockRepertoire({
+            id: 1,
+            content: {
+              root: {
+                type: 'root',
+                children: [{ type: 'text', text: 'First repertoire', version: 1 }],
+                direction: null,
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          }),
+          createMockRepertoire({
+            id: 2,
+            content: {
+              root: {
+                type: 'root',
+                children: [{ type: 'text', text: 'Second repertoire', version: 1 }],
+                direction: null,
+                format: '',
+                indent: 0,
+                version: 1,
+              },
+            },
+          }),
+        ],
       })
 
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={true} hasProjects={true} />)
@@ -721,13 +983,12 @@ describe('ArtistTabs', async () => {
       expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
     })
 
-    it('uses biography for the incomplete media hash', () => {
+    it('uses populated media section for the incomplete media hash', () => {
       window.location.hash = '#media'
 
       renderWithIntl(<ArtistTabs artist={createMockArtist()} locale="en" hasNews hasProjects />)
 
-      expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
-      expect(screen.queryByTestId('media-tab')).not.toBeInTheDocument()
+      expect(screen.getByTestId('media-tab')).toBeInTheDocument()
     })
 
     it('should initialize media tab to videos section from #media-videos hash', () => {
@@ -954,6 +1215,22 @@ describe('ArtistTabs', async () => {
       await waitFor(() => expect(screen.getByTestId('biography-tab')).toBeInTheDocument())
     })
 
+    it('never renders a panel for a tab that became unavailable', () => {
+      window.location.hash = '#news'
+      const { rerender } = renderWithIntl(<ArtistTabs artist={createMockArtist()} locale="en" hasNews hasProjects />)
+
+      expect(screen.getByTestId('newsfeed-news')).toBeInTheDocument()
+
+      rerender(
+        <NextIntlTestProvider messages={testMessages} locale="en">
+          <ArtistTabs artist={createMockArtist()} locale="en" hasNews={false} hasProjects />
+        </NextIntlTestProvider>
+      )
+
+      expect(screen.queryByTestId('newsfeed-news')).not.toBeInTheDocument()
+      expect(screen.getByTestId('biography-tab')).toBeInTheDocument()
+    })
+
     it('uses the URL hash when present', () => {
       window.history.replaceState({}, '', '/de/artists/test-artist')
       window.location.hash = '#repertoire'
@@ -996,6 +1273,71 @@ describe('ArtistTabs', async () => {
   })
 
   describe('Conditional tab visibility', () => {
+    it.each([
+      ['Biography', 'hasBiography'],
+      ['Repertoire', 'hasRepertoire'],
+      ['Discography', 'hasRecordings'],
+    ] as const)('hides %s when %s is false', (label, flag) => {
+      renderWithIntl(<ArtistTabs artist={createMockArtist()} locale="en" hasNews hasProjects {...{ [flag]: false }} />)
+
+      expect(screen.queryByRole('tab', { name: label })).not.toBeInTheDocument()
+    })
+
+    it('hides Media when images and videos are unavailable', () => {
+      renderWithIntl(
+        <ArtistTabs artist={createMockArtist()} locale="en" hasNews hasProjects hasImages={false} hasVideos={false} />
+      )
+
+      expect(screen.queryByRole('tab', { name: 'Media' })).not.toBeInTheDocument()
+    })
+
+    it('renders nothing when no tabs are available', () => {
+      renderWithIntl(
+        <ArtistTabs
+          artist={createMockArtist()}
+          locale="en"
+          hasBiography={false}
+          hasRepertoire={false}
+          hasRecordings={false}
+          hasImages={false}
+          hasVideos={false}
+          hasNews={false}
+          hasProjects={false}
+        />
+      )
+
+      expect(screen.queryByRole('tablist')).not.toBeInTheDocument()
+      expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
+      expect(screen.queryByRole('tabpanel')).not.toBeInTheDocument()
+    })
+
+    it('falls back to first available tab while preserving unavailable hash', async () => {
+      window.location.hash = '#discography'
+      renderWithIntl(
+        <ArtistTabs
+          artist={createMockArtist()}
+          locale="en"
+          hasBiography={false}
+          hasRepertoire={false}
+          hasRecordings={false}
+          hasImages={false}
+          hasVideos={false}
+          hasNews={false}
+          hasProjects
+        />
+      )
+
+      await waitFor(() => expect(screen.getByTestId('projects-tab')).toBeInTheDocument())
+      expect(window.location.hash).toBe('#discography')
+    })
+
+    it('uses populated media subsection when hash requests unavailable subsection', async () => {
+      window.location.hash = '#media-images'
+      renderWithIntl(<ArtistTabs artist={createMockArtist()} locale="en" hasNews hasProjects hasImages={false} />)
+
+      await waitFor(() => expect(screen.getByText('1 videos')).toBeInTheDocument())
+    })
+
     it('should hide News tab when hasNews is false', () => {
       const artist = createMockArtist()
       renderWithIntl(<ArtistTabs artist={artist} locale="en" hasNews={false} hasProjects={true} />)
