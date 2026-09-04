@@ -1,15 +1,13 @@
 import type { CollectionConfig } from 'payload'
 import { richText } from 'payload/shared'
 import type { RichTextFieldValidation } from 'payload/shared'
-
-import { postTextState } from '@/data/postTextState'
-
 import { BlocksFeature, TextStateFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { AudioEmbed } from '@/blocks/AudioEmbed'
 import { EventDates } from '@/blocks/EventDates'
+import { PerformersList } from '@/blocks/PerformersList'
 import { VideoEmbed } from '@/blocks/VideoEmbed'
 import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '@/collections/hooks/revalidateHomePage'
 import { revalidatePostOnChange, revalidatePostOnDelete } from '@/collections/hooks/revalidatePost'
@@ -17,13 +15,15 @@ import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
 import { blockDuplicateSlug } from '@/collections/hooks/blockDuplicateSlug'
 import { blockDuplicateTitle } from '@/collections/hooks/blockDuplicateTitle'
 import { categoryOptions } from '@/data/options'
+import { postTextState } from '@/data/postTextState'
 import { EventDatesConversionFeature } from '@/features/eventDatesConverter/feature.server'
+import { PerformersListConversionFeature } from '@/features/performersListConverter/feature.server'
 import { PostContentWarningFeature } from '@/features/postContentWarning/feature.server'
 import { normalizeText } from '@/utils/search/normalizeText'
 import { extractLexicalText } from '@/utils/search/extractLexicalText'
 import { createSlugHook } from '@/utils/slug'
-import { generatePostPreviewPath } from '@/utils/preview/url'
 import { resolveDefaultCreatedBy } from '@/utils/posts/resolveDefaultCreatedBy'
+import { generatePostPreviewPath } from '@/utils/preview/url'
 import { postContentMessages, validatePostContent } from '@/validators/postContent'
 
 interface LexicalEditorState {
@@ -227,8 +227,9 @@ export const Posts: CollectionConfig = {
           ...defaultFeatures,
           PostContentWarningFeature(),
           EventDatesConversionFeature(),
+          PerformersListConversionFeature(),
           BlocksFeature({
-            blocks: [VideoEmbed, AudioEmbed, EventDates],
+            blocks: [VideoEmbed, AudioEmbed, EventDates, PerformersList],
           }),
           TextStateFeature({
             state: postTextState,

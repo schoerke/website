@@ -1,10 +1,40 @@
 // @vitest-environment node
 
 import { describe, expect, it, vi } from 'vitest'
+import {
+  sortFeaturesForOptimalLoading,
+  type BlocksFeatureProps,
+  type LexicalEditorProps,
+} from '@payloadcms/richtext-lexical'
+
+const { blocksFeatureCalls, editorFeatureCalls } = vi.hoisted(() => ({
+  blocksFeatureCalls: [] as BlocksFeatureProps[],
+  editorFeatureCalls: [] as unknown[][],
+}))
+
+vi.mock('@payloadcms/richtext-lexical', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@payloadcms/richtext-lexical')>()
+
+  return {
+    ...actual,
+    BlocksFeature: (props: BlocksFeatureProps) => {
+      blocksFeatureCalls.push(props)
+      return actual.BlocksFeature(props)
+    },
+    lexicalEditor: (args?: LexicalEditorProps) => {
+      if (typeof args?.features === 'function') {
+        editorFeatureCalls.push(args.features({ defaultFeatures: [], rootFeatures: [] }))
+      }
+      return actual.lexicalEditor(args)
+    },
+  }
+})
 
 // Test the normalizedContent hook logic directly (extracted for testability)
 import { extractLexicalText } from '@/utils/search/extractLexicalText'
 import { normalizeText } from '@/utils/search/normalizeText'
+import { EventDatesConversionFeature } from '@/features/eventDatesConverter/feature.server'
+import { PerformersListConversionFeature } from '@/features/performersListConverter/feature.server'
 
 import { Posts, validatePublishedPostContent } from './Posts'
 
@@ -133,6 +163,27 @@ function isEmptyRichText(value: unknown): boolean {
 }
 
 describe('Posts content validation', () => {
+  it('registers PerformersList in its block editor feature', () => {
+    expect(blocksFeatureCalls).toContainEqual({
+      blocks: expect.arrayContaining([expect.objectContaining({ slug: 'performersList' })]),
+    })
+  })
+
+  it('loads blocks before both converter clients in actual Posts feature output', () => {
+    const configured = editorFeatureCalls.at(-1) ?? []
+    const sorted = sortFeaturesForOptimalLoading(configured as Parameters<typeof sortFeaturesForOptimalLoading>[0]).map(
+      (feature) => feature.key
+    )
+
+    expect(configured).toContainEqual(EventDatesConversionFeature())
+    expect(configured).toContainEqual(PerformersListConversionFeature())
+    expect(sorted.indexOf('blocks')).toBeLessThan(sorted.indexOf('eventDatesConversion'))
+    expect(sorted.indexOf('blocks')).toBeLessThan(sorted.indexOf('performersListConversion'))
+    expect(blocksFeatureCalls).toContainEqual({
+      blocks: expect.arrayContaining([expect.objectContaining({ slug: 'performersList' })]),
+    })
+  })
+
   it('keeps standard field validation enabled when saving drafts', () => {
     const drafts = Posts.versions && typeof Posts.versions === 'object' ? Posts.versions.drafts : undefined
 

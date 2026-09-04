@@ -13,8 +13,8 @@ describe('EventDatesConversionFeature ordering', () => {
     expect(feature).toMatchObject({
       feature: {
         i18n: {
-          de: { convert: 'In Termine umwandeln' },
-          en: { convert: 'Convert to Event Dates' },
+          de: { convert: 'Convert to EventDates' },
+          en: { convert: 'Convert to EventDates' },
         },
       },
       key: 'eventDatesConversion',

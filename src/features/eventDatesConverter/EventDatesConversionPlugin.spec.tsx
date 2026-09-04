@@ -325,9 +325,9 @@ describe('EventDatesConversionPlugin', () => {
     }) => string
     expect(
       toolbarLabel({
-        i18n: { t: (key) => (key === 'lexical:eventDatesConversion:convert' ? 'Convert to Event Dates' : key) },
+        i18n: { t: (key) => (key === 'lexical:eventDatesConversion:convert' ? 'Convert to EventDates' : key) },
       })
-    ).toBe('Convert to Event Dates')
+    ).toBe('Convert to EventDates')
     expect(
       toolbarLabel({
         i18n: { t: (key) => (key === 'lexical:eventDatesConversion:convert' ? 'In Termine umwandeln' : key) },

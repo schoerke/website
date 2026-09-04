@@ -29,12 +29,12 @@ const OPEN_EVENT_DATES_CONVERSION_COMMAND = createCommand<void>('OPEN_EVENT_DATE
 
 const messages = {
   de: {
-    conversionLabel: 'In Termine umwandeln',
+    conversionLabel: 'Convert to EventDates',
     selectionChanged: 'Auswahl wurde geaendert',
     selectionComplete: 'Vollstaendige Absatzinhalte auswaehlen',
   },
   en: {
-    conversionLabel: 'Convert to Event Dates',
+    conversionLabel: 'Convert to EventDates',
     selectionChanged: 'Selection changed',
     selectionComplete: 'Select complete paragraph contents',
   },

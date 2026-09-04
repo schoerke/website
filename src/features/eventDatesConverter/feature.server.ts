@@ -6,10 +6,10 @@ export const EventDatesConversionFeature = createServerFeature({
     ClientFeature: '@/features/eventDatesConverter/feature.client#EventDatesConversionFeatureClient',
     i18n: {
       de: {
-        convert: 'In Termine umwandeln',
+        convert: 'Convert to EventDates',
       },
       en: {
-        convert: 'Convert to Event Dates',
+        convert: 'Convert to EventDates',
       },
     },
   },
