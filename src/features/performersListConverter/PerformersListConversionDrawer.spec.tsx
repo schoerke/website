@@ -11,8 +11,9 @@ vi.mock('@payloadcms/ui', () => ({
   Button: ({
     buttonStyle: _buttonStyle,
     children,
+    round: _round,
     ...props
-  }: React.ButtonHTMLAttributes<HTMLButtonElement> & { buttonStyle?: string }) => (
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & { buttonStyle?: string; round?: boolean }) => (
     <button {...props}>{children}</button>
   ),
   Drawer: ({ children, slug, title }: { children: React.ReactNode; slug: string; title?: string }) =>
