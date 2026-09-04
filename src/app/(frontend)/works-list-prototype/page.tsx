@@ -361,7 +361,10 @@ const WorksListPrototypePage: React.FC = () => {
 
       <section>
         <h2 className="mb-6 text-base font-semibold">4. Block&rsquo;s optional title field</h2>
-        <p className="mb-2 text-lg font-bold">Season Opening Gala</p>
+        <div className="mb-2 flex items-center gap-3">
+          <span aria-hidden="true" className="bg-primary-yellow h-0.5 w-6 shrink-0" />
+          <h3 className="text-primary-black text-lg font-bold">Season Opening Gala</h3>
+        </div>
         <ProgramGrid items={scenarioA} />
       </section>
 
@@ -374,7 +377,10 @@ const WorksListPrototypePage: React.FC = () => {
         <h2 className="mb-6 text-base font-semibold">
           6. hideComposerName (builds on #4 + #5 — title already names the composer)
         </h2>
-        <p className="mb-2 text-lg font-bold">An Evening of Brahms</p>
+        <div className="mb-2 flex items-center gap-3">
+          <span aria-hidden="true" className="bg-primary-yellow h-0.5 w-6 shrink-0" />
+          <h3 className="text-primary-black text-lg font-bold">An Evening of Brahms</h3>
+        </div>
         <ProgramGrid items={scenarioE} />
       </section>
 
@@ -400,7 +406,10 @@ const WorksListPrototypePage: React.FC = () => {
 
       <section>
         <h2 className="mb-6 text-base font-semibold">10. Mixed hidden/shown composers in one program (edge case)</h2>
-        <p className="mb-2 text-lg font-bold">An Evening of Brahms — with a Guest Encore</p>
+        <div className="mb-2 flex items-center gap-3">
+          <span aria-hidden="true" className="bg-primary-yellow h-0.5 w-6 shrink-0" />
+          <h3 className="text-primary-black text-lg font-bold">An Evening of Brahms — with a Guest Encore</h3>
+        </div>
         <ProgramGrid items={scenarioG} />
       </section>
 
