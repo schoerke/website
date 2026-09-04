@@ -1,7 +1,3 @@
-import { syncArtistRepertoire, syncArtistRepertoireOnDelete } from '@/collections/hooks/syncArtistRepertoire'
-import { revalidateRepertoireOnChange, revalidateRepertoireOnDelete } from '@/collections/hooks/revalidateRepertoire'
-import { AudioEmbed } from '@/blocks/AudioEmbed'
-import { VideoEmbed } from '@/blocks/VideoEmbed'
 import {
   BlocksFeature,
   BoldFeature,
@@ -15,6 +11,12 @@ import {
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 import type { CollectionConfig } from 'payload'
+
+import { AudioEmbed } from '@/blocks/AudioEmbed'
+import { PerformersList } from '@/blocks/PerformersList'
+import { VideoEmbed } from '@/blocks/VideoEmbed'
+import { revalidateRepertoireOnChange, revalidateRepertoireOnDelete } from '@/collections/hooks/revalidateRepertoire'
+import { syncArtistRepertoire, syncArtistRepertoireOnDelete } from '@/collections/hooks/syncArtistRepertoire'
 
 export const Repertoire: CollectionConfig = {
   slug: 'repertoire',
@@ -105,8 +107,8 @@ export const Repertoire: CollectionConfig = {
       },
       admin: {
         description: {
-          en: 'List of works in this repertoire section (text, video/audio embeds; links are not supported)',
-          de: 'Liste der Werke in diesem Repertoire-Abschnitt (Text, Video-/Audio-Einbettungen; Links werden nicht unterstützt)',
+          en: 'List of works in this repertoire section (text, video/audio embeds, performer lists; links are not supported)',
+          de: 'Liste der Werke in diesem Repertoire-Abschnitt (Text, Video-/Audio-Einbettungen, Mitwirkendenlisten; Links werden nicht unterstützt)',
         },
       },
       // Configure Lexical editor to exclude LinkFeature
@@ -126,7 +128,7 @@ export const Repertoire: CollectionConfig = {
           InlineToolbarFeature(),
           // Audio/video embed blocks (same as posts)
           BlocksFeature({
-            blocks: [VideoEmbed, AudioEmbed],
+            blocks: [VideoEmbed, AudioEmbed, PerformersList],
           }),
           // LinkFeature is intentionally excluded
         ],

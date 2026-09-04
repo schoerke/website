@@ -8,12 +8,14 @@ import type { SerializedEditorState, SerializedLexicalNode } from '@payloadcms/r
 import { LinkJSXConverter, RichText } from '@payloadcms/richtext-lexical/react'
 import React from 'react'
 
-import VideoEmbed from '@/components/blocks/VideoEmbed'
-import AudioEmbed from '@/components/blocks/AudioEmbed'
-import EventDates from '@/components/blocks/EventDates'
-import type { VideoEmbedBlockFields } from '@/blocks/VideoEmbed'
 import type { AudioEmbedBlockFields } from '@/blocks/AudioEmbed'
 import type { EventDatesBlockFields } from '@/blocks/EventDates'
+import type { PerformersListBlockFields } from '@/blocks/PerformersList'
+import type { VideoEmbedBlockFields } from '@/blocks/VideoEmbed'
+import AudioEmbed from '@/components/blocks/AudioEmbed'
+import EventDates from '@/components/blocks/EventDates'
+import PerformersList from '@/components/blocks/PerformersList'
+import VideoEmbed from '@/components/blocks/VideoEmbed'
 import { resolveTextStateStyle } from '@/data/postTextState'
 import { appendImageVersion } from '@/utils/image'
 
@@ -181,6 +183,9 @@ const PayloadRichText: React.FC<PayloadRichTextProps> = ({ content, className, l
           },
           eventDates: ({ node }: { node: SerializedLexicalNode & { fields: EventDatesBlockFields } }) => {
             return <EventDates events={node.fields.events} locale={locale as 'de' | 'en'} />
+          },
+          performersList: ({ node }: { node: SerializedLexicalNode & { fields: PerformersListBlockFields } }) => {
+            return <PerformersList {...node.fields} />
           },
         },
         upload: (args) => versionedUploadJSXConverter(args),
