@@ -1,4 +1,9 @@
-import { createMockArtist, createMockPaginatedDocs, createMockRepertoire } from '@/tests/utils/payloadMocks'
+import {
+  createMockArtist,
+  createMockPaginatedDocs,
+  createMockPost,
+  createMockRepertoire,
+} from '@/tests/utils/payloadMocks'
 import type { Payload } from 'payload'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getArtistBySlug, getArtistListData, getArtistSlugs } from './artist'
@@ -65,7 +70,7 @@ describe('Artist Service', () => {
       images: IMAGES_POPULATE,
       employees: { name: true, title: true, email: true, phone: true, mobile: true },
       repertoire: { title: true, content: true },
-      posts: { title: true, slug: true, image: true, content: true },
+      posts: { title: true, slug: true, image: true, content: true, _status: true },
       documents: { filename: true, url: true, updatedAt: true },
     }
 
@@ -96,6 +101,26 @@ describe('Artist Service', () => {
       const result = await getArtistBySlug('test-artist')
 
       expect(result).toEqual(mockArtist)
+    })
+
+    it('should exclude draft projects from populated artist data', async () => {
+      const publishedProject = createMockPost({ id: 10, _status: 'published' })
+      const draftProject = createMockPost({ id: 20, _status: 'draft' })
+      const mockArtist = createMockArtist({ projects: [publishedProject, draftProject] })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockArtist]))
+
+      const result = await getArtistBySlug('test-artist')
+
+      expect(result?.projects).toEqual([publishedProject])
+    })
+
+    it('should return no projects when every populated project is a draft', async () => {
+      const mockArtist = createMockArtist({ projects: [createMockPost({ id: 20, _status: 'draft' })] })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockArtist]))
+
+      const result = await getArtistBySlug('test-artist')
+
+      expect(result?.projects).toEqual([])
     })
 
     it('should retain an English quote source when fetching English', async () => {

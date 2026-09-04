@@ -1,4 +1,4 @@
-import type { Artist } from '@/payload-types'
+import type { Artist, Post } from '@/payload-types'
 import config from '@/payload.config'
 import { getPayload } from 'payload'
 
@@ -80,12 +80,20 @@ export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
       },
       employees: { name: true, title: true, email: true, phone: true, mobile: true },
       repertoire: { title: true, content: true },
-      posts: { title: true, slug: true, image: true, content: true },
+      posts: { title: true, slug: true, image: true, content: true, _status: true },
       documents: { filename: true, url: true, updatedAt: true },
     },
   })
 
-  return result.docs[0] as Artist | undefined
+  const artist = result.docs[0] as Artist | undefined
+  if (!artist) return undefined
+
+  return {
+    ...artist,
+    projects: artist.projects?.filter(
+      (project): project is Post => typeof project === 'object' && project !== null && project._status === 'published'
+    ),
+  }
 }
 
 /**
