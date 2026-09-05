@@ -34,6 +34,7 @@ import { default as default_aefae5cd3f1ea9eb585ae22d6246a4df } from '../../../bl
 import { PerformersListConversionFeatureClient as PerformersListConversionFeatureClient_cecacd8c3805ce2b5fb1bc5c17c8926a } from '@/features/performersListConverter/feature.client'
 import { EventDatesConversionFeatureClient as EventDatesConversionFeatureClient_19bf984f6a7f12dee318147ef0ef76cf } from '@/features/eventDatesConverter/feature.client'
 import { PostContentWarningFeatureClient as PostContentWarningFeatureClient_32ebada504ffc3e6e58f865f0cf4979e } from '@/features/postContentWarning/feature.client'
+import { RecordingDescriptionWarningFeatureClient as RecordingDescriptionWarningFeatureClient_cf3ec0c25851dbe5987b53c9b34d8937 } from '@/features/recordingDescriptionWarning/feature.client'
 import { default as default_6edb6c26bdf6dae05ff64f2682f96ea3 } from '../../../components/admin/CreditField'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
@@ -83,6 +84,7 @@ export const importMap = {
   "@/features/performersListConverter/feature.client#PerformersListConversionFeatureClient": PerformersListConversionFeatureClient_cecacd8c3805ce2b5fb1bc5c17c8926a,
   "@/features/eventDatesConverter/feature.client#EventDatesConversionFeatureClient": EventDatesConversionFeatureClient_19bf984f6a7f12dee318147ef0ef76cf,
   "@/features/postContentWarning/feature.client#PostContentWarningFeatureClient": PostContentWarningFeatureClient_32ebada504ffc3e6e58f865f0cf4979e,
+  "@/features/recordingDescriptionWarning/feature.client#RecordingDescriptionWarningFeatureClient": RecordingDescriptionWarningFeatureClient_cf3ec0c25851dbe5987b53c9b34d8937,
   "/components/admin/CreditField#default": default_6edb6c26bdf6dae05ff64f2682f96ea3,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,

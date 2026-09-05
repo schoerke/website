@@ -1,5 +1,9 @@
 export type PostContentValidationError = 'malformed' | 'leadingBlock' | 'emptyFirstLine' | 'emptyTrailingParagraph'
 
+// NOTE: keep the error union, message shape, and node-scan guards in sync with
+// `src/validators/recordingDescription.ts` (recordings bans media nodes anywhere, so its union is a
+// subset without `leadingBlock`). Posts allow blocks after text; recordings reject all media nodes.
+
 /**
  * Single source of truth for DE/EN post-content validation copy. Shared between the live admin
  * warning banner (feature.client.tsx) and the server publish validator (Posts.ts) so wording
