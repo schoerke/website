@@ -27,6 +27,10 @@ import { default as default_f8e66ecb468639438f18e69f965bad83 } from '../../../co
 import { default as default_07d760e4d5170ea133b7fcd55176aa01 } from '../../../components/admin/TitleSuggestField'
 import { TextStateFeatureClient as TextStateFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { default as default_f84def3fdf482b2ee8b51d05e819a81d } from '../../../blocks/components/EventDateRowLabel'
+import { default as default_2132a8800544cc7b11357c6e463ad978 } from '../../../blocks/components/PerformerRowLabel'
+import { default as default_95000335cf3814742f3a6c3d45d7ba14 } from '../../../blocks/components/EnsembleMemberRowLabel'
+import { default as default_aefae5cd3f1ea9eb585ae22d6246a4df } from '../../../blocks/components/EnsembleGroupRowLabel'
 import { PerformersListConversionFeatureClient as PerformersListConversionFeatureClient_cecacd8c3805ce2b5fb1bc5c17c8926a } from '@/features/performersListConverter/feature.client'
 import { EventDatesConversionFeatureClient as EventDatesConversionFeatureClient_19bf984f6a7f12dee318147ef0ef76cf } from '@/features/eventDatesConverter/feature.client'
 import { PostContentWarningFeatureClient as PostContentWarningFeatureClient_32ebada504ffc3e6e58f865f0cf4979e } from '@/features/postContentWarning/feature.client'
@@ -72,6 +76,10 @@ export const importMap = {
   "/components/admin/TitleSuggestField#default": default_07d760e4d5170ea133b7fcd55176aa01,
   "@payloadcms/richtext-lexical/client#TextStateFeatureClient": TextStateFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "./blocks/components/EventDateRowLabel#default": default_f84def3fdf482b2ee8b51d05e819a81d,
+  "./blocks/components/PerformerRowLabel#default": default_2132a8800544cc7b11357c6e463ad978,
+  "./blocks/components/EnsembleMemberRowLabel#default": default_95000335cf3814742f3a6c3d45d7ba14,
+  "./blocks/components/EnsembleGroupRowLabel#default": default_aefae5cd3f1ea9eb585ae22d6246a4df,
   "@/features/performersListConverter/feature.client#PerformersListConversionFeatureClient": PerformersListConversionFeatureClient_cecacd8c3805ce2b5fb1bc5c17c8926a,
   "@/features/eventDatesConverter/feature.client#EventDatesConversionFeatureClient": EventDatesConversionFeatureClient_19bf984f6a7f12dee318147ef0ef76cf,
   "@/features/postContentWarning/feature.client#PostContentWarningFeatureClient": PostContentWarningFeatureClient_32ebada504ffc3e6e58f865f0cf4979e,

@@ -111,8 +111,8 @@ describe('PerformersList', () => {
 
     expect(PerformersList.slug).toBe('performersList')
     expect(PerformersList.labels).toEqual({
-      singular: { en: 'PerformersList', de: 'PerformersList' },
-      plural: { en: 'PerformersLists', de: 'PerformersLists' },
+      singular: { en: 'Performers List', de: 'Künstlerliste' },
+      plural: { en: 'Performers Lists', de: 'Künstlerlisten' },
     })
     expect(PerformersList.admin?.disableBlockName).toBe(true)
     expect(items.required).toBe(true)
@@ -120,5 +120,32 @@ describe('PerformersList', () => {
     expect(members.type).toBe('array')
     expect(members.required).toBe(true)
     expect(members.minRows).toBe(1)
+  })
+
+  it('uses editor-facing performer labels', () => {
+    const title = getTextField(getField(PerformersList.fields, 'title'))
+    const items = getBlocksField(getField(PerformersList.fields, 'items'))
+
+    expect(PerformersList.labels).toEqual({
+      singular: { en: 'Performers List', de: 'Künstlerliste' },
+      plural: { en: 'Performers Lists', de: 'Künstlerlisten' },
+    })
+    expect(title.label).toEqual({ en: 'Title (optional)', de: 'Titel (optional)' })
+    expect(items.label).toEqual({ en: 'Performers', de: 'Mitwirkende' })
+    expect(items.labels).toEqual({
+      singular: { en: 'Performer or Ensemble Group', de: 'Künstler:in oder Ensemble' },
+      plural: { en: 'Performers', de: 'Mitwirkende' },
+    })
+    const performer = getBlock(items.blocks, 'performer')
+    const ensembleGroup = getBlock(items.blocks, 'ensembleGroup')
+    const members = getArrayField(getField(ensembleGroup.fields, 'members'))
+
+    expect(items.labels).toEqual({
+      singular: { en: 'Performer or Ensemble Group', de: 'Künstler:in oder Ensemble' },
+      plural: { en: 'Performers', de: 'Mitwirkende' },
+    })
+    expect(performer.admin?.components?.Label).toBe('./blocks/components/PerformerRowLabel')
+    expect(ensembleGroup.admin?.components?.Label).toBe('./blocks/components/EnsembleGroupRowLabel')
+    expect(members.admin?.components?.RowLabel).toBe('./blocks/components/EnsembleMemberRowLabel')
   })
 })

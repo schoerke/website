@@ -53,6 +53,11 @@ export const EventDates: Block = {
         singular: { en: 'Event', de: 'Veranstaltung' },
         plural: { en: 'Events', de: 'Veranstaltungen' },
       },
+      admin: {
+        components: {
+          RowLabel: './blocks/components/EventDateRowLabel',
+        },
+      },
       fields: [
         {
           name: 'date',

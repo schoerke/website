@@ -31,8 +31,8 @@ export const validateRequiredText: TextFieldValidation = (value, args) => {
 export const PerformersList: Block = {
   slug: 'performersList',
   labels: {
-    singular: { en: 'PerformersList', de: 'PerformersList' },
-    plural: { en: 'PerformersLists', de: 'PerformersLists' },
+    singular: { en: 'Performers List', de: 'Künstlerliste' },
+    plural: { en: 'Performers Lists', de: 'Künstlerlisten' },
   },
   admin: {
     disableBlockName: true,
@@ -42,16 +42,17 @@ export const PerformersList: Block = {
       name: 'title',
       type: 'text',
       required: false,
-      label: { en: 'Title', de: 'Titel' },
+      label: { en: 'Title (optional)', de: 'Titel (optional)' },
     },
     {
       name: 'items',
       type: 'blocks',
       required: true,
       minRows: 1,
+      label: { en: 'Performers', de: 'Mitwirkende' },
       labels: {
-        singular: { en: 'Item', de: 'Element' },
-        plural: { en: 'Items', de: 'Elemente' },
+        singular: { en: 'Performer or Ensemble Group', de: 'Künstler:in oder Ensemble' },
+        plural: { en: 'Performers', de: 'Mitwirkende' },
       },
       blocks: [
         {
@@ -59,6 +60,11 @@ export const PerformersList: Block = {
           labels: {
             singular: { en: 'Performer', de: 'Mitwirkende:r' },
             plural: { en: 'Performers', de: 'Mitwirkende' },
+          },
+          admin: {
+            components: {
+              Label: './blocks/components/PerformerRowLabel',
+            },
           },
           fields: [
             {
@@ -82,6 +88,11 @@ export const PerformersList: Block = {
             singular: { en: 'Ensemble Group', de: 'Ensemble' },
             plural: { en: 'Ensemble Groups', de: 'Ensembles' },
           },
+          admin: {
+            components: {
+              Label: './blocks/components/EnsembleGroupRowLabel',
+            },
+          },
           fields: [
             {
               name: 'groupName',
@@ -98,6 +109,11 @@ export const PerformersList: Block = {
               labels: {
                 singular: { en: 'Member', de: 'Mitglied' },
                 plural: { en: 'Members', de: 'Mitglieder' },
+              },
+              admin: {
+                components: {
+                  RowLabel: './blocks/components/EnsembleMemberRowLabel',
+                },
               },
               fields: [
                 {
