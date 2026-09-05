@@ -1,5 +1,43 @@
 # Ideas for Future Features
 
+## SEO Roadmap
+
+These workstreams share URL, locale, and canonical-host rules. Create linked specs before implementation; technical
+metadata is first and later specs must reference it.
+
+### Technical Metadata
+
+- page-level canonical URLs, `hreflang` alternates, unique localized titles and descriptions
+- dynamic metadata for artist, news, and project detail pages
+- Open Graph and Twitter card metadata with image fallbacks
+- `noindex, nofollow` metadata for draft preview pages
+- validate localized-content gaps: omit an alternate URL when target locale has no canonical page
+- reference: existing `src/app/robots.ts`, `src/app/sitemap.ts`, `src/utils/siteUrl.ts`
+
+### Structured Data
+
+- reference Technical Metadata spec for canonical URLs and locale mapping
+- site-wide `Organization` or `ProfessionalService` JSON-LD based only on visible business details
+- artist `Person` or `MusicGroup` JSON-LD; decide schema by artist type
+- news `NewsArticle` JSON-LD only when posts meet Google News content requirements
+- test JSON-LD shape and ensure structured data matches rendered content
+
+### Discovery Assets And Webmaster Tools
+
+- reference Technical Metadata spec for metadata/image requirements and canonical host
+- favicon, Apple touch icon, and web manifest
+- submit canonical `/sitemap.xml` to Google Search Console and Bing Webmaster Tools
+- document ownership verification, sitemap monitoring, crawl/index coverage review
+
+### SEO Performance And Content Audit
+
+- reference Technical Metadata and Structured Data specs
+- deployed PageSpeed and Search Console Core Web Vitals audit; prioritize LCP images, font loading, and client JS
+- audit one H1 per page, descriptive image alt text, headings, internal links, and thin/duplicate localized content
+- measure sitemap generation duration, URL count, output bytes, query failures, and cache invalidation/rebuild behavior
+- consider sitemap sharding only at 40,000 URLs, 40 MB uncompressed XML, or measured regeneration cost/latency
+- consider a category relationship index only after a production-snapshot query plan proves it necessary; requires separate DB migration approval
+
 ## Idea: Scheduled Publishing (v2)
 
 - allow content creators to schedule posts, events, and media for future publication
