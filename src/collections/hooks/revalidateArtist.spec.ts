@@ -40,6 +40,8 @@ describe('revalidateArtist hooks', () => {
       expect(revalidatePath).toHaveBeenCalledWith('/en/artists')
       expect(revalidatePath).toHaveBeenCalledWith('/de')
       expect(revalidatePath).toHaveBeenCalledWith('/en')
+      expect(revalidatePath).toHaveBeenCalledWith('/sitemap.xml')
+      expect(vi.mocked(revalidatePath).mock.calls.filter(([path]) => path === '/sitemap.xml')).toHaveLength(1)
     })
 
     it('revalidates artist detail pages for both locales', () => {
@@ -84,6 +86,8 @@ describe('revalidateArtist hooks', () => {
       expect(revalidatePath).toHaveBeenCalledWith('/en/artists')
       expect(revalidatePath).toHaveBeenCalledWith('/de')
       expect(revalidatePath).toHaveBeenCalledWith('/en')
+      expect(revalidatePath).toHaveBeenCalledWith('/sitemap.xml')
+      expect(vi.mocked(revalidatePath).mock.calls.filter(([path]) => path === '/sitemap.xml')).toHaveLength(1)
       expect(revalidatePath).toHaveBeenCalledWith('/de/artists/test-artist')
       expect(revalidatePath).toHaveBeenCalledWith('/en/artists/test-artist')
     })

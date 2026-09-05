@@ -53,6 +53,9 @@ describe('revalidatePost hooks', () => {
 
       expect(revalidatePath).toHaveBeenCalledWith('/de/news/mein-artikel')
       expect(revalidatePath).toHaveBeenCalledWith('/en/news/my-article')
+      expect(revalidatePath).toHaveBeenCalledTimes(5)
+      expect(revalidatePath).toHaveBeenCalledWith('/sitemap.xml')
+      expect(vi.mocked(revalidatePath).mock.calls.filter(([path]) => path === '/sitemap.xml')).toHaveLength(1)
       // Must NOT use route group hybrid paths
       const calls = vi.mocked(revalidatePath).mock.calls.map(([p]) => p)
       expect(calls.every((p) => !p.includes('(frontend)'))).toBe(true)
@@ -108,6 +111,7 @@ describe('revalidatePost hooks', () => {
 
       expect(revalidatePath).toHaveBeenCalledWith('/de/news')
       expect(revalidatePath).toHaveBeenCalledWith('/en/news')
+      expect(vi.mocked(revalidatePath).mock.calls.filter(([path]) => path === '/sitemap.xml')).toHaveLength(1)
     })
 
     it('revalidates when transitioning from published to draft (unpublish)', async () => {
@@ -119,6 +123,17 @@ describe('revalidatePost hooks', () => {
 
       expect(revalidatePath).toHaveBeenCalledWith('/de/news')
       expect(revalidatePath).toHaveBeenCalledWith('/en/news')
+      expect(vi.mocked(revalidatePath).mock.calls.filter(([path]) => path === '/sitemap.xml')).toHaveLength(1)
+    })
+
+    it('revalidates sitemap once when updating a published post', async () => {
+      const req = createMockReq()
+      const doc = createMockPost({ _status: 'published', categories: ['news'] })
+      const previousDoc = createMockPost({ _status: 'published', categories: ['news'] })
+
+      await revalidatePostOnChange(asChangeArgs({ doc, previousDoc, req }))
+
+      expect(vi.mocked(revalidatePath).mock.calls.filter(([path]) => path === '/sitemap.xml')).toHaveLength(1)
     })
 
     it('unions current and previous categories on category change', async () => {
@@ -172,6 +187,9 @@ describe('revalidatePost hooks', () => {
 
       expect(revalidatePath).toHaveBeenCalledWith('/de/news/my-post')
       expect(revalidatePath).toHaveBeenCalledWith('/en/news/my-post')
+      expect(revalidatePath).toHaveBeenCalledTimes(5)
+      expect(revalidatePath).toHaveBeenCalledWith('/sitemap.xml')
+      expect(vi.mocked(revalidatePath).mock.calls.filter(([path]) => path === '/sitemap.xml')).toHaveLength(1)
     })
 
     it('revalidates list pages on delete', async () => {

@@ -17,6 +17,7 @@ function revalidateArtistListAndHome(): void {
   for (const path of [...ARTIST_LIST_PAGES, ...HOME_PAGES]) {
     revalidatePath(path)
   }
+  revalidatePath('/sitemap.xml')
 }
 
 /**

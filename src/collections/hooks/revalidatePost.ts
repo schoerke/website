@@ -111,6 +111,9 @@ export const revalidatePostOnChange: CollectionAfterChangeHook<Post> = async ({ 
   const currentCategories = doc.categories ?? []
   const previousCategories = previousDoc?.categories ?? []
   const allCategories = [...new Set([...currentCategories, ...previousCategories])]
+  if (!allCategories.some((category) => CATEGORY_PATHS[category])) return doc
+
+  revalidatePath('/sitemap.xml')
 
   await revalidatePostPaths(doc.id, allCategories, req)
 
@@ -134,6 +137,8 @@ export const revalidatePostOnDelete: CollectionAfterDeleteHook<Post> = async ({ 
   const categories = doc.categories ?? []
   const relevantCategories = categories.filter((c) => CATEGORY_PATHS[c])
   if (relevantCategories.length === 0) return doc
+
+  revalidatePath('/sitemap.xml')
 
   // Revalidate list pages
   revalidatePostListPages(relevantCategories)
