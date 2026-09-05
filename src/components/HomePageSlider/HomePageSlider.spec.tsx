@@ -44,9 +44,19 @@ vi.mock('@/i18n/navigation', () => ({
   ),
 }))
 
+vi.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const map: Record<string, string> = {
+      'news.title': 'News',
+      'projects.title': 'Projekte',
+    }
+    return map[key] ?? key
+  },
+}))
+
 const slides: HomePageSlide[] = [
-  { src: '/img1.jpg', alt: 'Slide 1', title: 'News One', destination: { type: 'internal', href: '/news/one' } },
-  { src: '/img2.jpg', alt: 'Slide 2', title: 'News Two', destination: { type: 'internal', href: '/news/two' } },
+  { src: '/img1.jpg', title: 'News One', destination: { type: 'internal', href: '/news/one' } },
+  { src: '/img2.jpg', title: 'News Two', destination: { type: 'internal', href: '/news/two' } },
 ]
 
 describe('HomePageSlider skeleton', () => {
