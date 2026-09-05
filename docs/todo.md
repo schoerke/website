@@ -22,6 +22,7 @@
 ### Data-fetching performance audit — progress (2026-08-27)
 
 Completed (see git log: `perf:`/`fix(revalidate):`/`style(ui):` commits):
+
 - Homepage: slider posts slimmed, artist grid images slimmed, logo lookups `React.cache()`d (4→2/request)
 - Artist detail: `getArtistBySlug` collapsed to ONE depth-2 query (was 3), route now SSG via `generateStaticParams` (49 artists × 2 locales), news/recordings tabs slimmed
 - Revalidation: artist pages purged on employee/project/repertoire/document changes (gated the static conversion)
@@ -63,6 +64,11 @@ Completed (see git log: `perf:`/`fix(revalidate):`/`style(ui):` commits):
 
 ## Monitoring & Auditing
 
+- [ ] **Audit and clean orphaned Vercel Blob images**
+  - Local `dev.db` audit found 443 Blob objects (341.55 MiB) with pathnames absent from local Image records.
+  - Blob store is shared with production. These are candidates only; compare against production data before deleting anything.
+  - Investigate failed direct client uploads and define a safe scheduled cleanup process.
+
 - [ ] Setup [Sentry Plugin](https://payloadcms.com/docs/plugins/sentry)
 - db monitoring?
 - SEO auditing?
@@ -84,3 +90,5 @@ Completed (see git log: `perf:`/`fix(revalidate):`/`style(ui):` commits):
 
 - [ ] Add SEO meta tags to artist detail page
 - [ ] Update documentation for new components and features
+
+# Orphaned Vercel Blob images audit/cleanup - Local `dev.db` audit found 443 Blob objects (341.55 MiB) whose pathnames are absent from local Image records. Shared Blob store means these are candidates only; compare against production snapshot before deleting. Investigate direct client-upload failure orphans and a safe scheduled cleanup process
