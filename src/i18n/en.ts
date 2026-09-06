@@ -118,7 +118,6 @@ const en = {
         },
         artistLinks: {
           heading: 'Links & Downloads',
-          homepage: 'Homepage',
           downloads: {
             biography: 'Biography PDF',
             gallery: 'Photo Gallery ZIP',

@@ -121,7 +121,6 @@ const de = {
         },
         artistLinks: {
           heading: 'Links & Downloads',
-          homepage: 'Homepage',
           downloads: {
             biography: 'Biografie PDF',
             gallery: 'Fotogalerie ZIP',

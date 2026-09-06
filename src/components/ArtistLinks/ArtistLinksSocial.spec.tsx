@@ -23,10 +23,10 @@ const testMessages = {
             visitHomepage: 'Visit artist homepage',
             calendar: 'View concert dates',
             facebook: 'Visit Facebook profile',
-            twitter: 'Visit X (Twitter) profile',
+            twitter: 'Visit Twitter/X profile',
             instagram: 'Visit Instagram profile',
             youtube: 'Visit YouTube channel',
-            spotify: 'Visit Spotify profile',
+            spotify: 'Listen on Spotify',
           },
         },
       },
@@ -158,10 +158,10 @@ describe('ArtistLinksSocial', () => {
       )
 
       expect(screen.getByRole('link', { name: 'Visit Facebook profile' })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Visit X (Twitter) profile' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Visit Twitter/X profile' })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Visit Instagram profile' })).toBeInTheDocument()
       expect(screen.queryByRole('link', { name: 'Visit YouTube channel' })).not.toBeInTheDocument()
-      expect(screen.queryByRole('link', { name: 'Visit Spotify profile' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('link', { name: 'Listen on Spotify' })).not.toBeInTheDocument()
     })
 
     it('renders all social media icons when all URLs exist', () => {
@@ -178,10 +178,10 @@ describe('ArtistLinksSocial', () => {
       )
 
       expect(screen.getByRole('link', { name: 'Visit Facebook profile' })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Visit X (Twitter) profile' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Visit Twitter/X profile' })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Visit Instagram profile' })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Visit YouTube channel' })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Visit Spotify profile' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Listen on Spotify' })).toBeInTheDocument()
     })
 
     it('links have correct URLs', () => {
@@ -201,7 +201,7 @@ describe('ArtistLinksSocial', () => {
         'href',
         'https://facebook.com/test-artist'
       )
-      expect(screen.getByRole('link', { name: 'Visit X (Twitter) profile' })).toHaveAttribute(
+      expect(screen.getByRole('link', { name: 'Visit Twitter/X profile' })).toHaveAttribute(
         'href',
         'https://twitter.com/test_artist'
       )
@@ -213,7 +213,7 @@ describe('ArtistLinksSocial', () => {
         'href',
         'https://youtube.com/@testartist'
       )
-      expect(screen.getByRole('link', { name: 'Visit Spotify profile' })).toHaveAttribute(
+      expect(screen.getByRole('link', { name: 'Listen on Spotify' })).toHaveAttribute(
         'href',
         'https://open.spotify.com/artist/abc123'
       )
@@ -247,7 +247,7 @@ describe('ArtistLinksSocial', () => {
       )
 
       expect(screen.getByRole('tooltip', { name: 'Visit Facebook profile' })).toBeInTheDocument()
-      expect(screen.getByRole('tooltip', { name: 'Visit X (Twitter) profile' })).toBeInTheDocument()
+      expect(screen.getByRole('tooltip', { name: 'Visit Twitter/X profile' })).toBeInTheDocument()
     })
 
     it('shows a focus outline and tooltip when a social icon receives keyboard focus', () => {
@@ -260,6 +260,20 @@ describe('ArtistLinksSocial', () => {
       expect(screen.getByRole('link', { name: 'Visit Facebook profile' })).toHaveClass('focus-visible:outline')
       expect(screen.getByRole('tooltip', { name: 'Visit Facebook profile' })).toHaveClass(
         'group-focus-visible:opacity-100'
+      )
+    })
+
+    it('anchors tooltips within the right viewport edge', () => {
+      render(
+        <NextIntlTestProvider messages={testMessages}>
+          <ArtistLinksSocial facebookURL="https://facebook.com/artist" />
+        </NextIntlTestProvider>
+      )
+
+      expect(screen.getByRole('tooltip', { name: 'Visit Facebook profile' })).toHaveClass(
+        'right-0',
+        'w-max',
+        'max-w-[calc(100vw-2rem)]'
       )
     })
   })

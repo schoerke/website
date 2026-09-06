@@ -129,11 +129,11 @@ const ArtistLinksSocial: React.FC<ArtistLinksSocialProps> = ({
               )}
               <span
                 role="tooltip"
-                className="pointer-events-none absolute -top-9 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-primary-black px-2.5 py-1 text-xs font-medium text-primary-white opacity-0 shadow-sm transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 md:block"
+                className="pointer-events-none invisible absolute -top-9 right-0 z-10 hidden w-max max-w-[calc(100vw-2rem)] rounded-md bg-primary-black px-2.5 py-1 text-right text-xs font-medium text-primary-white opacity-0 shadow-sm transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 md:block"
               >
                 {label}
               </span>
-              <span className="absolute -top-9 left-1/2 z-0 hidden h-0 w-0 -translate-x-1/2 border-x-4 border-t-4 border-x-transparent border-t-primary-black opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 md:block" />
+              <span className="pointer-events-none invisible absolute -top-9 right-0 z-0 hidden h-0 w-0 border-x-4 border-t-4 border-x-transparent border-t-primary-black opacity-0 transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 md:block" />
             </a>
           ))}
         </div>

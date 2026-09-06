@@ -45,7 +45,7 @@ const ArtistLinks: React.FC<ArtistLinksProps> = ({
   }
 
   return (
-    <section className={`border-t border-gray-200 pt-6 sm:text-left md:text-right ${className || ''}`}>
+    <section className={`md:mt-12 sm:text-left md:text-right ${className || ''}`}>
       <SectionHeading size="small" className="mb-4 md:justify-end">
         {t('heading')}
       </SectionHeading>
