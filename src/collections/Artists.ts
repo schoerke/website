@@ -4,8 +4,93 @@ import { revalidateArtistOnChange, revalidateArtistOnDelete } from '@/collection
 import { createSlugHook } from '@/utils/slug'
 import { validateURL, validateVideoURL } from '@/validators/fields'
 import { validateVideoEmbedCode } from '@/validators/videoFields'
+import { PerformersList } from '@/blocks/PerformersList'
+import { ArtistBiographyWarningFeature } from '@/features/artistBiographyWarning/feature.server'
+import { PerformersListConversionFeature } from '@/features/performersListConverter/feature.server'
+import { artistBiographyMessages, validateArtistBiography } from '@/validators/artistBiography'
+import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import type { TFunction } from '@payloadcms/translations'
 import type { CollectionConfig } from 'payload'
+import { richText } from 'payload/shared'
+import type { RichTextFieldValidation } from 'payload/shared'
+
+interface LexicalEditorState {
+  root: {
+    children: unknown[]
+  }
+}
+
+interface ValidatingRichTextEditor {
+  validate: (
+    value: object | null | undefined,
+    options: Parameters<RichTextFieldValidation>[1]
+  ) => Promise<string | true> | string | true
+}
+
+function hasRootChildren(value: unknown): value is LexicalEditorState {
+  if (typeof value !== 'object' || value === null || !('root' in value)) return false
+  const { root } = value
+  return typeof root === 'object' && root !== null && 'children' in root && Array.isArray(root.children)
+}
+
+function isCanonicalEmptyRichText(value: unknown): boolean {
+  if (!hasRootChildren(value) || value.root.children.length !== 1) return false
+
+  const [firstChild] = value.root.children
+  if (
+    typeof firstChild !== 'object' ||
+    firstChild === null ||
+    !('type' in firstChild) ||
+    firstChild.type !== 'paragraph' ||
+    !('children' in firstChild) ||
+    !Array.isArray(firstChild.children)
+  ) {
+    return false
+  }
+
+  return firstChild.children.every(
+    (paragraphChild) =>
+      typeof paragraphChild === 'object' &&
+      paragraphChild !== null &&
+      'type' in paragraphChild &&
+      paragraphChild.type === 'text' &&
+      'text' in paragraphChild &&
+      typeof paragraphChild.text === 'string' &&
+      paragraphChild.text.length === 0
+  )
+}
+
+function hasEditorValidator(editor: unknown): editor is ValidatingRichTextEditor {
+  return typeof editor === 'object' && editor !== null && 'validate' in editor && typeof editor.validate === 'function'
+}
+
+export const validatePublishedArtistBiography: RichTextFieldValidation = async (value, options) => {
+  const locale = options.req?.locale === 'de' ? 'de' : 'en'
+  const messages = artistBiographyMessages[locale]
+
+  if (
+    value === null ||
+    value === undefined ||
+    // Defensive: Payload types the value as object, but some API clients/restore payloads send ''
+    (value as unknown) === '' ||
+    (hasRootChildren(value) && value.root.children.length === 0) ||
+    isCanonicalEmptyRichText(value)
+  ) {
+    return await richText(value, options)
+  }
+
+  const structureResult = validateArtistBiography(value)
+  if (structureResult === 'malformed') return messages.malformed
+
+  if (!hasEditorValidator(options.editor)) {
+    console.error('validatePublishedArtistBiography: options.editor has no validate function', options.editor)
+    return messages.malformed
+  }
+  const lexicalResult = await options.editor.validate(value, options)
+  if (lexicalResult !== true) return lexicalResult
+
+  return structureResult === true ? true : messages[structureResult]
+}
 
 export const Artists: CollectionConfig = {
   slug: 'artists',
@@ -160,6 +245,25 @@ export const Artists: CollectionConfig = {
                 de: 'Biographie',
                 en: 'Biography',
               },
+              admin: {
+                description: {
+                  en: 'Artist biography. No images or embedded media allowed. A Performers List block may be inserted.',
+                  de: 'Biographie des Künstlers. Keine Bilder oder eingebetteten Medien erlaubt. Ein Künstlerlisten-Block kann eingefügt werden.',
+                },
+              },
+              editor: lexicalEditor({
+                features: ({ defaultFeatures }) => [
+                  // Artist biography bans media (see admin description): strip the upload and
+                  // relationship insert features so the toolbar can't add images/media.
+                  ...defaultFeatures.filter((feature) => feature.key !== 'upload' && feature.key !== 'relationship'),
+                  BlocksFeature({
+                    blocks: [PerformersList],
+                  }),
+                  PerformersListConversionFeature(),
+                  ArtistBiographyWarningFeature(),
+                ],
+              }),
+              validate: validatePublishedArtistBiography,
             },
           ],
         },

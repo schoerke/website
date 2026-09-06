@@ -197,6 +197,9 @@ export interface Artist {
   contactPersons?: (number | Employee)[] | null;
   quote?: string | null;
   quoteSource?: string | null;
+  /**
+   * Artist biography. No images or embedded media allowed. A Performers List block may be inserted.
+   */
   biography: {
     root: {
       type: string;
