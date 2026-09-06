@@ -43,8 +43,11 @@ describe('SectionHeading', () => {
 
     const heading = screen.getByRole('heading', { level: 2, name: 'Links & Downloads' })
     expect(heading).toHaveClass('text-xs')
+  })
 
+  it('renders a shorter rule for small size', () => {
     const { container } = render(<SectionHeading size="small">Links & Downloads</SectionHeading>)
+
     const rule = container.querySelector('span[aria-hidden="true"]')
     expect(rule).toHaveClass('w-6')
   })
