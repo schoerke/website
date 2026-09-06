@@ -99,6 +99,15 @@ describe('PerformersList', () => {
     expect(member).toHaveClass('!m-0', '!p-0')
   })
 
+  it('does not force a fixed font size so it inherits surrounding prose text', () => {
+    const { container } = render(
+      <PerformersList items={[{ id: 'performer-1', blockType: 'performer', name: 'Tianwa Yang' }]} />
+    )
+
+    expect(container.firstChild).toHaveClass('leading-snug')
+    expect(container.firstChild).not.toHaveClass('text-sm')
+  })
+
   it('does not render a nested list when a valid group has no valid members', () => {
     render(
       <PerformersList

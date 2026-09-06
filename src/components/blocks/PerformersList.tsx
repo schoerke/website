@@ -94,7 +94,7 @@ const PerformersList: React.FC<PerformersListProps> = ({ title, items }) => {
   if (validItems.length === 0) return null
 
   return (
-    <div className="text-sm leading-snug">
+    <div className="leading-snug">
       {titleText ? (
         <div className="mb-2 flex items-center gap-3">
           <span aria-hidden="true" className="bg-primary-yellow h-0.5 w-6 shrink-0" />
