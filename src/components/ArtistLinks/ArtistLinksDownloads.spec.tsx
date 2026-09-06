@@ -12,7 +12,6 @@ const testMessages = {
       artist: {
         artistLinks: {
           downloads: {
-            heading: 'Downloads',
             biography: 'Biography PDF',
             gallery: 'Photo Gallery',
           },
@@ -20,6 +19,28 @@ const testMessages = {
       },
     },
   },
+}
+
+const biographyDoc: Document = {
+  id: 1,
+  title: 'Biography PDF',
+  filename: 'biography.pdf',
+  mimeType: 'application/pdf',
+  filesize: 1024,
+  url: '/media/biography.pdf',
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01',
+}
+
+const galleryDoc: Document = {
+  id: 2,
+  title: 'Photo Gallery',
+  filename: 'gallery.zip',
+  mimeType: 'application/zip',
+  filesize: 2048,
+  url: '/media/gallery.zip',
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01',
 }
 
 describe('ArtistLinksDownloads', () => {
@@ -64,24 +85,12 @@ describe('ArtistLinksDownloads', () => {
   })
 
   it('renders only biography link when only biographyPdf exists', () => {
-    const biographyDoc: Document = {
-      id: 1,
-      title: 'Biography PDF',
-      filename: 'biography.pdf',
-      mimeType: 'application/pdf',
-      filesize: 1024,
-      url: '/media/biography.pdf',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01',
-    }
-
     render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPdf: biographyDoc, galleryZIP: null }} />
       </NextIntlTestProvider>
     )
 
-    expect(screen.getByText('Downloads')).toBeInTheDocument()
     const biographyLink = screen.getByRole('link', { name: /Biography PDF/i })
     expect(biographyLink).toBeInTheDocument()
     expect(biographyLink).toHaveAttribute('href', '/media/biography.pdf')
@@ -91,24 +100,12 @@ describe('ArtistLinksDownloads', () => {
   })
 
   it('renders only gallery link when only galleryZIP exists', () => {
-    const galleryDoc: Document = {
-      id: 2,
-      title: 'Photo Gallery',
-      filename: 'gallery.zip',
-      mimeType: 'application/zip',
-      filesize: 2048,
-      url: '/media/gallery.zip',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01',
-    }
-
     render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPdf: null, galleryZIP: galleryDoc }} />
       </NextIntlTestProvider>
     )
 
-    expect(screen.getByText('Downloads')).toBeInTheDocument()
     const galleryLink = screen.getByRole('link', { name: /Photo Gallery/i })
     expect(galleryLink).toBeInTheDocument()
     expect(galleryLink).toHaveAttribute('href', '/media/gallery.zip')
@@ -118,65 +115,29 @@ describe('ArtistLinksDownloads', () => {
   })
 
   it('renders both links when both downloads exist', () => {
-    const biographyDoc: Document = {
-      id: 1,
-      title: 'Biography PDF',
-      filename: 'biography.pdf',
-      mimeType: 'application/pdf',
-      filesize: 1024,
-      url: '/media/biography.pdf',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01',
-    }
-
-    const galleryDoc: Document = {
-      id: 2,
-      title: 'Photo Gallery',
-      filename: 'gallery.zip',
-      mimeType: 'application/zip',
-      filesize: 2048,
-      url: '/media/gallery.zip',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01',
-    }
-
     render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPdf: biographyDoc, galleryZIP: galleryDoc }} />
       </NextIntlTestProvider>
     )
 
-    expect(screen.getByText('Downloads')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Biography PDF/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Photo Gallery/i })).toBeInTheDocument()
   })
 
   it('links have correct URLs', () => {
-    const biographyDoc: Document = {
-      id: 1,
-      title: 'Artist Biography',
-      filename: 'artist-bio.pdf',
-      mimeType: 'application/pdf',
-      filesize: 1024,
+    const bioDoc: Document = {
+      ...biographyDoc,
       url: '/downloads/artist-biography.pdf',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01',
     }
-
-    const galleryDoc: Document = {
-      id: 2,
-      title: 'Artist Photo Gallery',
-      filename: 'photos.zip',
-      mimeType: 'application/zip',
-      filesize: 2048,
+    const galDoc: Document = {
+      ...galleryDoc,
       url: '/downloads/photo-gallery.zip',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01',
     }
 
     render(
       <NextIntlTestProvider messages={testMessages}>
-        <ArtistLinksDownloads downloads={{ biographyPdf: biographyDoc, galleryZIP: galleryDoc }} />
+        <ArtistLinksDownloads downloads={{ biographyPdf: bioDoc, galleryZIP: galDoc }} />
       </NextIntlTestProvider>
     )
 
@@ -188,28 +149,6 @@ describe('ArtistLinksDownloads', () => {
   })
 
   it('all links open in new tab with security attributes', () => {
-    const biographyDoc: Document = {
-      id: 1,
-      title: 'Biography PDF',
-      filename: 'biography.pdf',
-      mimeType: 'application/pdf',
-      filesize: 1024,
-      url: '/media/biography.pdf',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01',
-    }
-
-    const galleryDoc: Document = {
-      id: 2,
-      title: 'Photo Gallery',
-      filename: 'gallery.zip',
-      mimeType: 'application/zip',
-      filesize: 2048,
-      url: '/media/gallery.zip',
-      createdAt: '2024-01-01',
-      updatedAt: '2024-01-01',
-    }
-
     render(
       <NextIntlTestProvider messages={testMessages}>
         <ArtistLinksDownloads downloads={{ biographyPdf: biographyDoc, galleryZIP: galleryDoc }} />
@@ -220,6 +159,7 @@ describe('ArtistLinksDownloads', () => {
     links.forEach((link) => {
       expect(link).toHaveAttribute('target', '_blank')
       expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      expect(link).toHaveClass('focus-visible:outline')
     })
   })
 

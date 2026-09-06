@@ -91,44 +91,49 @@ const ArtistLinksSocial: React.FC<ArtistLinksSocialProps> = ({
 
   return (
     <div>
-      <h3 className="text-primary-black mb-2 text-sm font-semibold uppercase tracking-wider">{t('links')}</h3>
-
       {/* Homepage link */}
       {homepageURL && (
-        <div className="mb-2">
+        <div className="mb-4">
           <SchoerkeLink
             href={homepageURL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-1 text-sm"
+            className="group inline-flex items-center gap-1 text-sm font-medium"
             variant="with-icon"
             aria-label={t('ariaLabels.visitHomepage')}
           >
-            <span className="after:bg-primary-yellow relative after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:after:w-full">
+            <span className="after:bg-primary-yellow relative after:absolute after:-bottom-1 after:left-1/2 after:h-px after:w-0 after:origin-center after:-translate-x-1/2 after:transition-all after:duration-300 group-hover:after:w-full">
               {formatDomain(homepageURL)}
             </span>
-            <ExternalLink className="h-3 w-3" aria-hidden="true" />
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
           </SchoerkeLink>
         </div>
       )}
 
       {/* Social media icons */}
       {socialLinks.length > 0 && (
-        <div className="flex flex-wrap gap-3 md:justify-end">
+        <div className="flex flex-wrap gap-2.5 md:justify-end">
           {socialLinks.map(({ url, icon: Icon, label, platform, lucide }) => (
             <a
               key={platform}
               href={url!}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary-black hover:text-primary-black/70 focus-visible:outline-primary-yellow transition duration-150 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+              className="group relative text-primary-black/70 transition duration-150 ease-in-out hover:text-primary-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-yellow"
               aria-label={label}
             >
               {lucide ? (
-                <Icon className="h-6 w-6" aria-hidden={true} />
+                <Icon className="h-5 w-5" aria-hidden={true} />
               ) : (
-                <Icon width={24} height={24} aria-hidden={true} />
+                <Icon width={20} height={20} aria-hidden={true} />
               )}
+              <span
+                role="tooltip"
+                className="pointer-events-none absolute -top-9 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-primary-black px-2.5 py-1 text-xs font-medium text-primary-white opacity-0 shadow-sm transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 md:block"
+              >
+                {label}
+              </span>
+              <span className="absolute -top-9 left-1/2 z-0 hidden h-0 w-0 -translate-x-1/2 border-x-4 border-t-4 border-x-transparent border-t-primary-black opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 md:block" />
             </a>
           ))}
         </div>

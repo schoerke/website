@@ -27,43 +27,32 @@ const ArtistLinksDownloads: React.FC<ArtistLinksDownloadsProps> = ({ downloads }
   const biographyURL = getDocumentURL(downloads.biographyPdf)
   const galleryURL = getDocumentURL(downloads.galleryZIP)
 
+  const downloadItems = [
+    { id: 'biography', url: biographyURL, label: t('biography'), icon: FileText },
+    { id: 'gallery', url: galleryURL, label: t('gallery'), icon: FileArchive },
+  ].filter((item) => Boolean(item.url))
+
   // Return null if no download URLs exist
-  if (!biographyURL && !galleryURL) {
+  if (downloadItems.length === 0) {
     return null
   }
 
   return (
-    <div>
-      <h3 className="text-primary-black mb-2 text-sm font-semibold uppercase tracking-wider">{t('heading')}</h3>
-      <ul className="space-y-2">
-        {biographyURL && (
-          <li>
-            <a
-              href={biographyURL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary-black hover:text-primary-black/70 focus-visible:outline-primary-yellow group inline-flex items-center gap-2 transition duration-150 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-            >
-              <FileText className="h-4 w-4" aria-hidden={true} />
-              <span>{t('biography')}</span>
-            </a>
-          </li>
-        )}
-        {galleryURL && (
-          <li>
-            <a
-              href={galleryURL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary-black hover:text-primary-black/70 focus-visible:outline-primary-yellow group inline-flex items-center gap-2 transition duration-150 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-            >
-              <FileArchive className="h-4 w-4" aria-hidden={true} />
-              <span>{t('gallery')}</span>
-            </a>
-          </li>
-        )}
-      </ul>
-    </div>
+    <ul className="mt-6 space-y-1 md:text-right">
+      {downloadItems.map(({ id, url, label, icon: Icon }) => (
+        <li key={id} className="md:flex md:justify-end">
+          <a
+            href={url!}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="focus-visible:outline-primary-yellow inline-flex items-center gap-2.5 text-sm text-primary-black/80 transition duration-150 ease-in-out hover:text-primary-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+          >
+            <Icon className="h-5 w-5 shrink-0" aria-hidden={true} />
+            <span className="md:order-first">{label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   )
 }
 

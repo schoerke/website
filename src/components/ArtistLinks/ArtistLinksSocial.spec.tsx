@@ -19,7 +19,6 @@ const testMessages = {
     pages: {
       artist: {
         artistLinks: {
-          links: 'Links',
           ariaLabels: {
             visitHomepage: 'Visit artist homepage',
             calendar: 'View concert dates',
@@ -97,16 +96,6 @@ describe('ArtistLinksSocial', () => {
       )
 
       expect(screen.getByText('artist-website.com')).toBeInTheDocument()
-    })
-
-    it('renders "Links" header when homepage exists', () => {
-      render(
-        <NextIntlTestProvider messages={testMessages}>
-          <ArtistLinksSocial homepageURL="https://example.com" />
-        </NextIntlTestProvider>
-      )
-
-      expect(screen.getByText('Links')).toBeInTheDocument()
     })
 
     it('renders homepage without social links', () => {
@@ -250,14 +239,28 @@ describe('ArtistLinksSocial', () => {
       })
     })
 
-    it('renders "Links" header when social links exist', () => {
+    it('renders tooltips for social icons', () => {
+      render(
+        <NextIntlTestProvider messages={testMessages}>
+          <ArtistLinksSocial facebookURL="https://facebook.com/artist" twitterURL="https://twitter.com/artist" />
+        </NextIntlTestProvider>
+      )
+
+      expect(screen.getByRole('tooltip', { name: 'Visit Facebook profile' })).toBeInTheDocument()
+      expect(screen.getByRole('tooltip', { name: 'Visit X (Twitter) profile' })).toBeInTheDocument()
+    })
+
+    it('shows a focus outline and tooltip when a social icon receives keyboard focus', () => {
       render(
         <NextIntlTestProvider messages={testMessages}>
           <ArtistLinksSocial facebookURL="https://facebook.com/artist" />
         </NextIntlTestProvider>
       )
 
-      expect(screen.getByText('Links')).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Visit Facebook profile' })).toHaveClass('focus-visible:outline')
+      expect(screen.getByRole('tooltip', { name: 'Visit Facebook profile' })).toHaveClass(
+        'group-focus-visible:opacity-100'
+      )
     })
   })
 

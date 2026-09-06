@@ -120,10 +120,9 @@ const de = {
           button: 'Kalender ansehen',
         },
         artistLinks: {
-          links: 'Links',
+          heading: 'Links & Downloads',
           homepage: 'Homepage',
           downloads: {
-            heading: 'Downloads',
             biography: 'Biografie PDF',
             gallery: 'Fotogalerie ZIP',
           },

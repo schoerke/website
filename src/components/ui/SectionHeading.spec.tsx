@@ -37,4 +37,15 @@ describe('SectionHeading', () => {
     const wrapper = container.firstChild as HTMLElement
     expect(wrapper).toHaveClass('flex', 'items-center', 'gap-3')
   })
+
+  it('renders smaller text and rule for small size', () => {
+    render(<SectionHeading size="small">Links & Downloads</SectionHeading>)
+
+    const heading = screen.getByRole('heading', { level: 2, name: 'Links & Downloads' })
+    expect(heading).toHaveClass('text-xs')
+
+    const { container } = render(<SectionHeading size="small">Links & Downloads</SectionHeading>)
+    const rule = container.querySelector('span[aria-hidden="true"]')
+    expect(rule).toHaveClass('w-6')
+  })
 })

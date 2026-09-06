@@ -138,7 +138,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
       )}
 
       {/* Show ArtistLinks below tabs on small screens */}
-      <div className="mt-8 border-t border-gray-200 pt-8 md:hidden">
+      <div className="mt-8 md:hidden">
         <ArtistLinks
           homepageURL={homepageURL}
           externalCalendarURL={externalCalendarURL}

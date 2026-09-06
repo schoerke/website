@@ -117,10 +117,9 @@ const en = {
           button: 'View Calendar',
         },
         artistLinks: {
-          links: 'Links',
+          heading: 'Links & Downloads',
           homepage: 'Homepage',
           downloads: {
-            heading: 'Downloads',
             biography: 'Biography PDF',
             gallery: 'Photo Gallery ZIP',
           },
