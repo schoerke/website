@@ -38,7 +38,7 @@ const HomePageSidebar = async ({ locale }: HomePageSidebarProps) => {
         </p>
       </address>
 
-      <nav aria-label="Sidebar navigation" className="mt-4 w-full">
+      <nav aria-label="Sidebar navigation" className="w-full">
         <hr className="ml-auto mb-4 w-24 border-gray-200" />
         <ul className="flex flex-col gap-3 text-base font-bold">
           {navLinks.map((link) => (
