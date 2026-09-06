@@ -2,8 +2,8 @@
  * @vitest-environment happy-dom
  */
 
-import { render, fireEvent } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { act, render, fireEvent } from '@testing-library/react'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import HomePageSlider, { type HomePageSlide } from './HomePageSlider'
 
 vi.mock('next/image', () => ({
@@ -103,5 +103,104 @@ describe('HomePageSlider destinations', () => {
     const { getByRole } = render(<HomePageSlider slides={destinationSlides} />)
 
     expect(getByRole('link', { name: 'News One' })).toHaveAttribute('href', '/news/news-one')
+  })
+})
+
+describe('HomePageSlider autoplay', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['performance', 'requestAnimationFrame', 'cancelAnimationFrame'] })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  function activeSlideHref(): string | null {
+    const links = Array.from(document.querySelectorAll('a'))
+    const active = links.find((l) => l.getAttribute('aria-hidden') === 'false')
+    return active ? active.getAttribute('href') : null
+  }
+
+  function progressWidth(): number {
+    const bar = document.querySelector('[style*="width"]') as HTMLElement | null
+    return parseFloat(bar?.style.width ?? '0') || 0
+  }
+
+  it('advances to the next slide after the interval', () => {
+    render(<HomePageSlider slides={slides} interval={9000} />)
+    expect(activeSlideHref()).toBe('/news/one')
+
+    // Advance past a full interval + one rAF frame: the fake rAF timestamp lags the clock slightly
+    act(() => vi.advanceTimersByTime(9500))
+    expect(activeSlideHref()).toBe('/news/two')
+  })
+
+  it('animates the progress bar to 100% before advancing', () => {
+    render(<HomePageSlider slides={slides} interval={9000} />)
+    expect(progressWidth()).toBe(0)
+
+    act(() => vi.advanceTimersByTime(4500))
+    expect(progressWidth()).toBeGreaterThan(48)
+    expect(progressWidth()).toBeLessThan(52)
+
+    // After a full interval (+frame) it wraps: progress resets and the slide advances
+    act(() => vi.advanceTimersByTime(5000))
+    expect(progressWidth()).toBe(0)
+    expect(activeSlideHref()).toBe('/news/two')
+  })
+
+  it('does not auto-advance a single slide', () => {
+    const single = [slides[0]]
+    render(<HomePageSlider slides={single} interval={9000} />)
+
+    act(() => vi.advanceTimersByTime(9000 * 3))
+    expect(activeSlideHref()).toBe('/news/one')
+  })
+
+  it('pauses while hovering and resumes from the accumulated position', () => {
+    const { container } = render(<HomePageSlider slides={slides} interval={9000} />)
+
+    act(() => vi.advanceTimersByTime(3000))
+    fireEvent.mouseEnter(container.firstChild as HTMLElement)
+    act(() => vi.advanceTimersByTime(9000))
+    // Hover pause: no advance, no progress change
+    expect(activeSlideHref()).toBe('/news/one')
+    expect(progressWidth()).toBeGreaterThan(31)
+    expect(progressWidth()).toBeLessThan(35)
+
+    fireEvent.mouseLeave(container.firstChild as HTMLElement)
+    act(() => vi.advanceTimersByTime(6000))
+    expect(activeSlideHref()).toBe('/news/two')
+  })
+
+  it('pauses while focused (keyboard) and resumes after blur', () => {
+    const { container } = render(<HomePageSlider slides={slides} interval={9000} />)
+
+    act(() => vi.advanceTimersByTime(3000))
+    fireEvent.focus(container.firstChild as HTMLElement)
+    act(() => vi.advanceTimersByTime(9000))
+    expect(activeSlideHref()).toBe('/news/one')
+
+    fireEvent.blur(container.firstChild as HTMLElement)
+    act(() => vi.advanceTimersByTime(6000))
+    expect(activeSlideHref()).toBe('/news/two')
+  })
+
+  it('stops autoplay for the session after a dot click', () => {
+    const { getByRole } = render(<HomePageSlider slides={slides} interval={9000} />)
+
+    fireEvent.click(getByRole('button', { name: 'Go to slide 2' }))
+    expect(activeSlideHref()).toBe('/news/two')
+
+    act(() => vi.advanceTimersByTime(9000 * 3))
+    expect(activeSlideHref()).toBe('/news/two')
+  })
+
+  it('stops autoplay for the session after activating a slide link', () => {
+    const { getByRole } = render(<HomePageSlider slides={slides} interval={9000} />)
+
+    fireEvent.click(getByRole('link', { name: 'News One' }))
+    act(() => vi.advanceTimersByTime(9000 * 3))
+    expect(activeSlideHref()).toBe('/news/one')
   })
 })

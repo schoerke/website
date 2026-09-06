@@ -35,6 +35,7 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
   const pausedRef = useRef(false)
   const pauseStartRef = useRef<number | null>(null)
   const accumulatedRef = useRef(0)
+  const stoppedRef = useRef(false)
   const firstImage = useImageLoad()
   const t = useTranslations('custom.pages')
 
@@ -46,13 +47,35 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
     pauseStartRef.current = null
   }, [])
 
+  // Manual interaction (dot tap or slide-link activation) stops autoplay for the component's
+  // mount lifetime (App Router remounts on navigation). Restores most of WCAG 2.2.2 pause intent
+  // for touch users who can't hover to pause.
+  // NOTE (known residual gap): autoplay still runs for prefers-reduced-motion users who never
+  // interact. The earlier `matchMedia('(prefers-reduced-motion: reduce)')` guard was removed
+  // because iOS ships Reduce Motion off and a client reported a static slider; a desktop-only
+  // compromise would be `(reduce) and (hover: hover)` → stop autoplay.
+  const stopAutoPlay = useCallback(() => {
+    stoppedRef.current = true
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
+    rafRef.current = null
+    setProgress(0)
+  }, [])
+
+  const handleDotClick = useCallback(
+    (index: number) => {
+      stopAutoPlay()
+      goTo(index)
+    },
+    [goTo, stopAutoPlay]
+  )
+
   // Animate the progress bar and auto-advance
   useEffect(() => {
     if (slides.length <= 1) return
-    // Respect prefers-reduced-motion — no auto-advance, dots still navigate
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (stoppedRef.current) return
 
     const tick = (now: number) => {
+      if (stoppedRef.current) return
       if (pausedRef.current) {
         rafRef.current = requestAnimationFrame(tick)
         return
@@ -132,6 +155,7 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
             }
             href={slide.destination.href as Parameters<typeof Link>['0']['href']}
             className="absolute inset-0 block focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-yellow"
+            onClick={stopAutoPlay}
             aria-label={slide.category ? `${t(`${slide.category}.title`)}: ${slide.title}` : slide.title}
             aria-hidden={!isActive}
             tabIndex={isActive ? 0 : -1}
@@ -196,7 +220,7 @@ const HomePageSlider: React.FC<HomePageSliderProps> = ({ slides, interval = 9000
           {slides.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => goTo(idx)}
+              onClick={() => handleDotClick(idx)}
               aria-label={`Go to slide ${idx + 1}`}
               aria-current={idx === activeIndex ? 'true' : 'false'}
               className={`h-2 w-2 rounded-full transition-colors ${
