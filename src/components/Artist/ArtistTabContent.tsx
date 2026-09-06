@@ -18,6 +18,7 @@ import ImageGallery from './ImageGallery'
 import BiographyFooter from './BiographyFooter'
 import type { MediaSection } from './types'
 import VideoAccordion from './VideoAccordion'
+import FeaturedQuote from './FeaturedQuote'
 
 // Biography Tab
 interface BiographyTabProps {
@@ -33,11 +34,7 @@ export const BiographyTab: React.FC<BiographyTabProps> = ({ content, quote, seas
 
   return (
     <div className="bio-prose prose max-w-none">
-      {quote && (
-        <blockquote className="border-primary-yellow mb-6 border-l-4 pl-6 font-playfair not-italic text-xl text-gray-700 md:max-w-[75%]">
-          {quote}
-        </blockquote>
-      )}
+      {quote && <FeaturedQuote quote={quote} />}
       <PayloadRichText content={content} />
       <BiographyFooter season={season ?? ''} quoteSource={quoteSource} image={image} />
     </div>
