@@ -64,6 +64,18 @@ describe('validatePostContent', () => {
     expect(validatePostContent(content(paragraph('Text'), paragraph('\n  ')))).toBe('emptyTrailingParagraph')
   })
 
+  it('rejects an empty middle paragraph', () => {
+    expect(validatePostContent(content(paragraph('A'), paragraph('  '), paragraph('B')))).toBe('emptyMiddleParagraph')
+  })
+
+  it('accepts a block in the middle between non-empty paragraphs', () => {
+    expect(
+      validatePostContent(
+        content(paragraph('A'), { type: 'block', fields: { blockType: 'videoEmbed' } }, paragraph('B'))
+      )
+    ).toBe(true)
+  })
+
   it('uses recursively nested descendant text for the final paragraph', () => {
     expect(
       validatePostContent(
@@ -187,6 +199,20 @@ describe('validatePostContentErrors', () => {
       validatePostContentErrors(content(paragraph('Opening'), { type: 'block', fields: { blockType: 'videoEmbed' } }))
     ).toEqual([])
   })
+
+  it('returns emptyMiddleParagraph alone when only a middle paragraph is empty', () => {
+    expect(validatePostContentErrors(content(paragraph('A'), paragraph('  '), paragraph('B')))).toEqual([
+      'emptyMiddleParagraph',
+    ])
+  })
+
+  it('returns emptyMiddleParagraph alongside leading and trailing errors', () => {
+    expect(validatePostContentErrors(content(paragraph('  '), paragraph('  '), paragraph('  ')))).toEqual([
+      'emptyFirstLine',
+      'emptyTrailingParagraph',
+      'emptyMiddleParagraph',
+    ])
+  })
 })
 
 describe('postContentMessages', () => {
@@ -195,6 +221,7 @@ describe('postContentMessages', () => {
     'leadingBlock',
     'emptyFirstLine',
     'emptyTrailingParagraph',
+    'emptyMiddleParagraph',
   ]
 
   it('defines German and English text for every error ID', () => {

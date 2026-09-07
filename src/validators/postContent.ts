@@ -1,4 +1,9 @@
-export type PostContentValidationError = 'malformed' | 'leadingBlock' | 'emptyFirstLine' | 'emptyTrailingParagraph'
+export type PostContentValidationError =
+  | 'malformed'
+  | 'leadingBlock'
+  | 'emptyFirstLine'
+  | 'emptyTrailingParagraph'
+  | 'emptyMiddleParagraph'
 
 // NOTE: keep the error union, message shape, and node-scan guards in sync with
 // `src/validators/recordingDescription.ts` (recordings bans media nodes anywhere, so its union is a
@@ -15,12 +20,14 @@ export const postContentMessages: Record<'de' | 'en', Record<PostContentValidati
     leadingBlock: 'Der Beitrag muss mit Text beginnen, nicht mit einem Einbettungsblock.',
     emptyFirstLine: 'Bitte mit einem Satz beginnen, der als Beitrags-Kurztext geeignet ist.',
     emptyTrailingParagraph: 'Leere Zeilen am Ende entfernen.',
+    emptyMiddleParagraph: 'Leere Zeilen zwischen Absätzen entfernen.',
   },
   en: {
     malformed: 'Post content is invalid.',
     leadingBlock: 'Start the post with text, not an embed block.',
     emptyFirstLine: "Start with text usable as the post's blurb.",
     emptyTrailingParagraph: 'Remove any empty lines at the end.',
+    emptyMiddleParagraph: 'Remove any empty lines between paragraphs.',
   },
 }
 
@@ -123,6 +130,16 @@ export function validatePostContentErrors(value: unknown): PostContentValidation
 
   if (last.type === 'paragraph' && !hasText(last)) {
     errors.push('emptyTrailingParagraph')
+  }
+
+  // Any empty paragraph strictly between the first and last node is an unwanted
+  // empty line. The FormatContent util removes these.
+  for (let i = 1; i < children.length - 1; i++) {
+    const child = children[i]
+    if (isNode(child) && child.type === 'paragraph' && !hasText(child)) {
+      errors.push('emptyMiddleParagraph')
+      break
+    }
   }
 
   return errors
