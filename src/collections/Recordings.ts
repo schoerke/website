@@ -97,10 +97,7 @@ export const validatePublishedRecordingDescription: RichTextFieldValidation = as
     // always supplies a `validate` function. Logged (not thrown) so a future Payload/config
     // change that breaks this assumption is diagnosable instead of silently returning a generic
     // content error.
-    console.error(
-      'validatePublishedRecordingDescription: options.editor has no validate function',
-      options.editor
-    )
+    console.error('validatePublishedRecordingDescription: options.editor has no validate function', options.editor)
     return messages.malformed
   }
   const lexicalResult = await options.editor.validate(value, options)
