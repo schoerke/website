@@ -2,6 +2,7 @@
 
 import { useLocale, useModal } from '@payloadcms/ui'
 import { $createBlockNode, createClientFeature, useEditorConfigContext } from '@payloadcms/richtext-lexical/client'
+import type { ToolbarGroup } from '@payloadcms/richtext-lexical'
 import {
   $getNodeByKey,
   $isRangeSelection,
@@ -183,25 +184,28 @@ const PerformersListConversionPlugin: React.FC = () => {
   )
 }
 
+const performersListConversionToolbarGroup: ToolbarGroup = {
+  ChildComponent: PerformersListConversionGroupIcon,
+  items: [
+    {
+      ChildComponent: PerformersListConversionItemIcon,
+      isActive: () => false,
+      isEnabled: ({ selection }) => hasRangeSelection(selection),
+      key: 'performersListConversion',
+      label: ({ i18n }) => i18n.t('lexical:performersListConversion:convert'),
+      onSelect: ({ editor }) => editor.dispatchCommand(OPEN_PERFORMERS_LIST_CONVERSION_COMMAND, undefined),
+    },
+  ],
+  key: 'formattingUtilities',
+  type: 'dropdown',
+}
+
 export const PerformersListConversionFeatureClient = createClientFeature({
   plugins: [{ Component: PerformersListConversionPlugin, position: 'normal' }],
+  toolbarFixed: {
+    groups: [performersListConversionToolbarGroup],
+  },
   toolbarInline: {
-    groups: [
-      {
-        ChildComponent: PerformersListConversionGroupIcon,
-        items: [
-          {
-            ChildComponent: PerformersListConversionItemIcon,
-            isActive: () => false,
-            isEnabled: ({ selection }) => hasRangeSelection(selection),
-            key: 'performersListConversion',
-            label: ({ i18n }) => i18n.t('lexical:performersListConversion:convert'),
-            onSelect: ({ editor }) => editor.dispatchCommand(OPEN_PERFORMERS_LIST_CONVERSION_COMMAND, undefined),
-          },
-        ],
-        key: 'formattingUtilities',
-        type: 'dropdown',
-      },
-    ],
+    groups: [performersListConversionToolbarGroup],
   },
 })

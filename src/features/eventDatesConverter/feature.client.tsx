@@ -2,6 +2,7 @@
 
 import { useLocale, useModal } from '@payloadcms/ui'
 import { $createBlockNode, createClientFeature, useEditorConfigContext } from '@payloadcms/richtext-lexical/client'
+import type { ToolbarGroup } from '@payloadcms/richtext-lexical'
 import {
   $getNodeByKey,
   COMMAND_PRIORITY_EDITOR,
@@ -188,25 +189,28 @@ const EventDatesConversionPlugin: React.FC = () => {
   )
 }
 
+const eventDatesConversionToolbarGroup: ToolbarGroup = {
+  ChildComponent: EventDatesConversionGroupIcon,
+  items: [
+    {
+      ChildComponent: EventDatesConversionItemIcon,
+      isActive: () => false,
+      isEnabled: ({ selection }) => hasRangeSelection(selection),
+      key: 'eventDatesConversion',
+      label: ({ i18n }) => i18n.t('lexical:eventDatesConversion:convert'),
+      onSelect: ({ editor }) => editor.dispatchCommand(OPEN_EVENT_DATES_CONVERSION_COMMAND, undefined),
+    },
+  ],
+  key: 'formattingUtilities',
+  type: 'dropdown',
+}
+
 export const EventDatesConversionFeatureClient = createClientFeature({
   plugins: [{ Component: EventDatesConversionPlugin, position: 'normal' }],
+  toolbarFixed: {
+    groups: [eventDatesConversionToolbarGroup],
+  },
   toolbarInline: {
-    groups: [
-      {
-        ChildComponent: EventDatesConversionGroupIcon,
-        items: [
-          {
-            ChildComponent: EventDatesConversionItemIcon,
-            isActive: () => false,
-            isEnabled: ({ selection }) => hasRangeSelection(selection),
-            key: 'eventDatesConversion',
-            label: ({ i18n }) => i18n.t('lexical:eventDatesConversion:convert'),
-            onSelect: ({ editor }) => editor.dispatchCommand(OPEN_EVENT_DATES_CONVERSION_COMMAND, undefined),
-          },
-        ],
-        key: 'formattingUtilities',
-        type: 'dropdown',
-      },
-    ],
+    groups: [eventDatesConversionToolbarGroup],
   },
 })
