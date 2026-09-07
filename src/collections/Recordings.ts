@@ -7,6 +7,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RECORDING_ROLES } from '@/constants/recordingOptions'
+import { AlignmentFeature } from '@/features/alignment/feature.server'
 import { RecordingDescriptionWarningFeature } from '@/features/recordingDescriptionWarning/feature.server'
 import { validateURL } from '@/validators/fields'
 import { recordingDescriptionMessages, validateRecordingDescription } from '@/validators/recordingDescription'
@@ -167,7 +168,14 @@ export const Recordings: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           // Recordings description bans media (see admin description): strip the upload and
           // relationship insert features so the toolbar can't add images/media to a description.
-          ...defaultFeatures.filter((feature) => feature.key !== 'upload' && feature.key !== 'relationship'),
+          ...defaultFeatures.filter(
+            (feature) =>
+              feature.key !== 'upload' &&
+              feature.key !== 'relationship' &&
+              feature.key !== 'inlineCode' &&
+              feature.key !== 'align'
+          ),
+          AlignmentFeature(),
           RecordingDescriptionWarningFeature(),
         ],
       }),

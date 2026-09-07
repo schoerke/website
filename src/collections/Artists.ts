@@ -9,6 +9,7 @@ import { ArtistBiographyWarningFeature } from '@/features/artistBiographyWarning
 import { PerformersListConversionFeature } from '@/features/performersListConverter/feature.server'
 import { artistBiographyMessages, validateArtistBiography } from '@/validators/artistBiography'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import { AlignmentFeature } from '@/features/alignment/feature.server'
 import type { TFunction } from '@payloadcms/translations'
 import type { CollectionConfig } from 'payload'
 import { richText } from 'payload/shared'
@@ -255,7 +256,14 @@ export const Artists: CollectionConfig = {
                 features: ({ defaultFeatures }) => [
                   // Artist biography bans media (see admin description): strip the upload and
                   // relationship insert features so the toolbar can't add images/media.
-                  ...defaultFeatures.filter((feature) => feature.key !== 'upload' && feature.key !== 'relationship'),
+                  ...defaultFeatures.filter(
+                    (feature) =>
+                      feature.key !== 'upload' &&
+                      feature.key !== 'relationship' &&
+                      feature.key !== 'inlineCode' &&
+                      feature.key !== 'align'
+                  ),
+                  AlignmentFeature(),
                   BlocksFeature({
                     blocks: [PerformersList],
                   }),

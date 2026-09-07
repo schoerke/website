@@ -9,6 +9,7 @@ import { AudioEmbed } from '@/blocks/AudioEmbed'
 import { EventDates } from '@/blocks/EventDates'
 import { PerformersList } from '@/blocks/PerformersList'
 import { VideoEmbed } from '@/blocks/VideoEmbed'
+import { AlignmentFeature } from '@/features/alignment/feature.server'
 import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '@/collections/hooks/revalidateHomePage'
 import { revalidatePostOnChange, revalidatePostOnDelete } from '@/collections/hooks/revalidatePost'
 import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
@@ -224,7 +225,8 @@ export const Posts: CollectionConfig = {
       required: true,
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [
-          ...defaultFeatures,
+          ...defaultFeatures.filter((feature) => feature.key !== 'inlineCode' && feature.key !== 'align'),
+          AlignmentFeature(),
           PostContentWarningFeature(),
           EventDatesConversionFeature(),
           PerformersListConversionFeature(),
