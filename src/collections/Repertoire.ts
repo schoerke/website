@@ -15,6 +15,7 @@ import type { CollectionConfig } from 'payload'
 import { AudioEmbed } from '@/blocks/AudioEmbed'
 import { PerformersList } from '@/blocks/PerformersList'
 import { VideoEmbed } from '@/blocks/VideoEmbed'
+import { PerformersListConversionFeature } from '@/features/performersListConverter/feature.server'
 import { revalidateRepertoireOnChange, revalidateRepertoireOnDelete } from '@/collections/hooks/revalidateRepertoire'
 import { syncArtistRepertoire, syncArtistRepertoireOnDelete } from '@/collections/hooks/syncArtistRepertoire'
 
@@ -126,6 +127,8 @@ export const Repertoire: CollectionConfig = {
           UnorderedListFeature(),
           // Inline toolbar for text selection
           InlineToolbarFeature(),
+          // Convert selected text into a PerformersList block
+          PerformersListConversionFeature(),
           // Audio/video embed blocks (same as posts)
           BlocksFeature({
             blocks: [VideoEmbed, AudioEmbed, PerformersList],
