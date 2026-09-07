@@ -8,16 +8,15 @@ import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { default as default_2132a8800544cc7b11357c6e463ad978 } from '../../../blocks/components/PerformerRowLabel'
 import { default as default_95000335cf3814742f3a6c3d45d7ba14 } from '../../../blocks/components/EnsembleMemberRowLabel'
 import { default as default_aefae5cd3f1ea9eb585ae22d6246a4df } from '../../../blocks/components/EnsembleGroupRowLabel'
+import { AlignmentFeatureClient as AlignmentFeatureClient_f6b04950b634b0a5df0ae0a7ce74a2f7 } from '@/features/alignment/feature.client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { SubscriptFeatureClient as SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { SuperscriptFeatureClient as SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { InlineCodeFeatureClient as InlineCodeFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ParagraphFeatureClient as ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { AlignFeatureClient as AlignFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { IndentFeatureClient as IndentFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UnorderedListFeatureClient as UnorderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { OrderedListFeatureClient as OrderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -30,11 +29,15 @@ import { default as default_5d7df25549d17ac254463835bb20df74 } from '../../../co
 import { default as default_f8e66ecb468639438f18e69f965bad83 } from '../../../collections/components/GalleryImageRowLabel'
 import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { AlignFeatureClient as AlignFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { InlineCodeFeatureClient as InlineCodeFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_07d760e4d5170ea133b7fcd55176aa01 } from '../../../components/admin/TitleSuggestField'
 import { TextStateFeatureClient as TextStateFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_f84def3fdf482b2ee8b51d05e819a81d } from '../../../blocks/components/EventDateRowLabel'
 import { EventDatesConversionFeatureClient as EventDatesConversionFeatureClient_19bf984f6a7f12dee318147ef0ef76cf } from '@/features/eventDatesConverter/feature.client'
 import { PostContentWarningFeatureClient as PostContentWarningFeatureClient_32ebada504ffc3e6e58f865f0cf4979e } from '@/features/postContentWarning/feature.client'
+import { FormatContentFeatureClient as FormatContentFeatureClient_5193d8dd5b5ad3d9cd43e606418c8158 } from '@/features/formatContent/feature.client'
+import { default as default_a5706216f25079cc2578ec81f642b36e } from '../../../components/admin/FormatDocumentButton'
 import { RecordingDescriptionWarningFeatureClient as RecordingDescriptionWarningFeatureClient_cf3ec0c25851dbe5987b53c9b34d8937 } from '@/features/recordingDescriptionWarning/feature.client'
 import { default as default_6edb6c26bdf6dae05ff64f2682f96ea3 } from '../../../components/admin/CreditField'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
@@ -59,16 +62,15 @@ export const importMap = {
   "./blocks/components/PerformerRowLabel#default": default_2132a8800544cc7b11357c6e463ad978,
   "./blocks/components/EnsembleMemberRowLabel#default": default_95000335cf3814742f3a6c3d45d7ba14,
   "./blocks/components/EnsembleGroupRowLabel#default": default_aefae5cd3f1ea9eb585ae22d6246a4df,
+  "@/features/alignment/feature.client#AlignmentFeatureClient": AlignmentFeatureClient_f6b04950b634b0a5df0ae0a7ce74a2f7,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#StrikethroughFeatureClient": StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#SubscriptFeatureClient": SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#SuperscriptFeatureClient": SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#InlineCodeFeatureClient": InlineCodeFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ParagraphFeatureClient": ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#HeadingFeatureClient": HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#AlignFeatureClient": AlignFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#IndentFeatureClient": IndentFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#UnorderedListFeatureClient": UnorderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#OrderedListFeatureClient": OrderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
@@ -81,11 +83,15 @@ export const importMap = {
   "./collections/components/GalleryImageRowLabel#default": default_f8e66ecb468639438f18e69f965bad83,
   "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#RelationshipFeatureClient": RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#AlignFeatureClient": AlignFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#InlineCodeFeatureClient": InlineCodeFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/TitleSuggestField#default": default_07d760e4d5170ea133b7fcd55176aa01,
   "@payloadcms/richtext-lexical/client#TextStateFeatureClient": TextStateFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "./blocks/components/EventDateRowLabel#default": default_f84def3fdf482b2ee8b51d05e819a81d,
   "@/features/eventDatesConverter/feature.client#EventDatesConversionFeatureClient": EventDatesConversionFeatureClient_19bf984f6a7f12dee318147ef0ef76cf,
   "@/features/postContentWarning/feature.client#PostContentWarningFeatureClient": PostContentWarningFeatureClient_32ebada504ffc3e6e58f865f0cf4979e,
+  "@/features/formatContent/feature.client#FormatContentFeatureClient": FormatContentFeatureClient_5193d8dd5b5ad3d9cd43e606418c8158,
+  "/components/admin/FormatDocumentButton#default": default_a5706216f25079cc2578ec81f642b36e,
   "@/features/recordingDescriptionWarning/feature.client#RecordingDescriptionWarningFeatureClient": RecordingDescriptionWarningFeatureClient_cf3ec0c25851dbe5987b53c9b34d8937,
   "/components/admin/CreditField#default": default_6edb6c26bdf6dae05ff64f2682f96ea3,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
