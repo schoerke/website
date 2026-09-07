@@ -18,6 +18,7 @@ import { blockDuplicateTitle } from '@/collections/hooks/blockDuplicateTitle'
 import { categoryOptions } from '@/data/options'
 import { postTextState } from '@/data/postTextState'
 import { EventDatesConversionFeature } from '@/features/eventDatesConverter/feature.server'
+import { FormatContentFeature } from '@/features/formatContent/feature.server'
 import { PerformersListConversionFeature } from '@/features/performersListConverter/feature.server'
 import { PostContentWarningFeature } from '@/features/postContentWarning/feature.server'
 import { normalizeText } from '@/utils/search/normalizeText'
@@ -135,6 +136,11 @@ export const Posts: CollectionConfig = {
       url: ({ data, req }) => generatePostPreviewPath({ data, req, collection: 'posts' }) ?? null,
     },
     preview: (data, { req }) => generatePostPreviewPath({ data, req, collection: 'posts' }) ?? null,
+    components: {
+      edit: {
+        beforeDocumentControls: ['/components/admin/FormatDocumentButton'],
+      },
+    },
   },
   fields: [
     {
@@ -227,6 +233,7 @@ export const Posts: CollectionConfig = {
         features: ({ defaultFeatures }) => [
           ...defaultFeatures.filter((feature) => feature.key !== 'inlineCode' && feature.key !== 'align'),
           AlignmentFeature(),
+          FormatContentFeature(),
           PostContentWarningFeature(),
           EventDatesConversionFeature(),
           PerformersListConversionFeature(),
