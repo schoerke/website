@@ -238,7 +238,7 @@ export const Posts: CollectionConfig = {
           EventDatesConversionFeature(),
           PerformersListConversionFeature(),
           BlocksFeature({
-            blocks: [VideoEmbed, AudioEmbed, EventDates, PerformersList],
+            blocks: [AudioEmbed, VideoEmbed, EventDates, PerformersList],
           }),
           TextStateFeature({
             state: postTextState,
