@@ -96,7 +96,7 @@
     "@vitest/coverage-v8": "^4.1.11",
     "@vitest/ui": "^4.1.11",
     "dotenv": "^17.4.2",
-    "happy-dom": "^20.12.2",
+    "happy-dom": "^20.14.0",
     "oxfmt": "^0.66.0",
     "oxlint": "^1.81.0",
     "postcss": "^8.5.28",
