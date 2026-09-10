@@ -36,7 +36,7 @@
     "dump:recordings": "pnpm dump recordings"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1124.0",
+    "@aws-sdk/client-s3": "^3.1127.0",
     "@icons-pack/react-simple-icons": "^13.15.1",
     "@libsql/client": "^0.17.4",
     "@payloadcms/db-sqlite": "3.88.0",
