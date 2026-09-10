@@ -22,7 +22,7 @@ jobs:
     # bumped from 15 to give margin for CLI-startup/auth latency variance.
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Turso CLI
         run: curl -sSfL https://get.tur.so/install.sh | bash
