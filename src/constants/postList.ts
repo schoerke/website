@@ -2,8 +2,9 @@ import type { PopulateType, SelectType } from 'payload'
 
 /**
  * Slim field selection for post LIST views (news/projects pages, artist news tab).
- * Lists render only title, image, preview, date, and category path — NOT the full
- * rich-text content/embed payload or populated artists/createdBy.
+ * Lists render only title, image, preview, published date (with createdAt fallback),
+ * and category path — NOT the full rich-text content/embed payload or populated
+ * artists/createdBy.
  *
  * Client-safe: only imports Payload types (no server APIs).
  */
@@ -13,6 +14,7 @@ export const POST_LIST_SELECT: SelectType = {
   image: true,
   content: true,
   categories: true,
+  publishedDate: true,
   createdAt: true,
 }
 

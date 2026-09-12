@@ -204,7 +204,7 @@ describe('Post Service', () => {
         limit: 100,
         locale: 'de',
         depth: 1,
-        sort: '-createdAt',
+        sort: ['-publishedDate', '-createdAt'],
       })
     })
 
@@ -223,7 +223,7 @@ describe('Post Service', () => {
         limit: 100,
         locale: 'de',
         depth: 1,
-        sort: '-createdAt',
+        sort: ['-publishedDate', '-createdAt'],
       })
     })
 
@@ -241,7 +241,7 @@ describe('Post Service', () => {
         limit: 100,
         locale: 'de',
         depth: 1,
-        sort: '-createdAt',
+        sort: ['-publishedDate', '-createdAt'],
       })
     })
 
@@ -259,7 +259,7 @@ describe('Post Service', () => {
         limit: 100,
         locale: 'de',
         depth: 1,
-        sort: '-createdAt',
+        sort: ['-publishedDate', '-createdAt'],
       })
     })
 
@@ -278,7 +278,7 @@ describe('Post Service', () => {
         limit: 100,
         locale: 'de',
         depth: 1,
-        sort: '-createdAt',
+        sort: ['-publishedDate', '-createdAt'],
       })
     })
 
@@ -317,18 +317,18 @@ describe('Post Service', () => {
         limit: 100,
         locale: 'de',
         depth: 1,
-        sort: '-createdAt',
+        sort: ['-publishedDate', '-createdAt'],
       })
     })
 
-    it('should sort by createdAt descending', async () => {
+    it('should sort by publishedDate with createdAt tie-breaker', async () => {
       vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getFilteredPosts({})
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
-          sort: '-createdAt',
+          sort: ['-publishedDate', '-createdAt'],
         })
       )
     })
@@ -520,14 +520,14 @@ describe('Post Service', () => {
       )
     })
 
-    it('should sort by createdAt descending', async () => {
+    it('should sort by publishedDate with createdAt tie-breaker', async () => {
       vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
 
       await getPaginatedPosts({ category: 'news' })
 
       expect(mockPayload.find).toHaveBeenCalledWith(
         expect.objectContaining({
-          sort: '-createdAt',
+          sort: ['-publishedDate', '-createdAt'],
         })
       )
     })
@@ -661,6 +661,7 @@ describe('Post Service', () => {
         image: true,
         content: true,
         categories: true,
+        publishedDate: true,
         createdAt: true,
       })
     })

@@ -292,7 +292,7 @@ export const getFilteredPosts = async (options: {
     where,
     limit: options.limit || 100,
     locale: options.locale || 'de',
-    sort: '-createdAt', // Most recent first
+    sort: ['-publishedDate', '-createdAt'], // Most recent by published date, createdAt as tie-breaker
     depth: 1, // Populate image and other relationships
     ...(options.select ? { select: options.select } : {}),
     ...(options.populate ? { populate: options.populate } : {}),
@@ -387,7 +387,7 @@ export const getPaginatedPosts = async (options: {
     page: options.page || 1,
     limit: options.limit || 25,
     locale: options.locale || 'de',
-    sort: '-createdAt', // Most recent first
+    sort: ['-publishedDate', '-createdAt'], // Most recent by published date, createdAt as tie-breaker
     depth: 1, // Populate image and other relationships
     ...(options.select ? { select: options.select } : {}),
     ...(options.populate ? { populate: options.populate } : {}),
