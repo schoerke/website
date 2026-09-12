@@ -33,7 +33,8 @@
     "dump": "tsx scripts/db/dumpCollection.ts",
     "dump:artists": "pnpm dump artists",
     "dump:employees": "pnpm dump employees",
-    "dump:recordings": "pnpm dump recordings"
+    "dump:recordings": "pnpm dump recordings",
+    "scan:secrets": "tsx scripts/secret-scan.ts --full"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1128.0",

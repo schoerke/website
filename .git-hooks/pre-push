@@ -1,15 +1,4 @@
 #!/bin/sh
 set -e
-
-echo "Running pre-push checks..."
-
-echo "\n▶ Lint"
-pnpm lint
-
-echo "\n▶ Typecheck"
-pnpm typecheck
-
-echo "\n▶ Tests"
-pnpm test
-
-echo "\nAll checks passed."
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+exec pnpm exec tsx scripts/pre-push.ts
