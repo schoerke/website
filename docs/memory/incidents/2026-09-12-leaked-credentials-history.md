@@ -21,7 +21,7 @@ recoverable by anyone with repo access.
 
 ## Impact
 
-Credentials existed in the repo's remote history since 2025-11-26. If still valid at the time of exposure, they
+Credentials existed in the repo's remote history since 2025-11-27. If still valid at the time of exposure, they
 must be treated as compromised. The pre-push hook is unaffected (it scans pushed refs only; repo is clean at HEAD).
 
 ## Actions Taken / Pending

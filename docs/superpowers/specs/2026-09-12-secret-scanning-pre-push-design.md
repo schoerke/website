@@ -79,8 +79,8 @@ Exported functions (pure, unit-testable, side-effect-free at import):
     ref (`git rev-list <local sha> --not --remotes`).
   - If the remote sha is not in the local object DB (diverged remote since
     last fetch), `merge-base` fails → fall back to the `--not --remotes` new
-    branch path; if that also fails, warn + continue (fail-open on
-    environment errors, consistent with missing-binary behavior).
+    branch path. If the range still cannot be verified, the scan for that ref
+    BLOCKS the push (fail-closed — unverifiable coverage is not trusted).
   - Empty range (no new commits) → the ref contributes no range and its
     invocation is skipped entirely. Never rely on gitleaks' exit code to
     detect an empty range — gitleaks can exit 0 having scanned nothing.
