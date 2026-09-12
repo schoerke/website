@@ -27,8 +27,12 @@ must be treated as compromised. The pre-push hook is unaffected (it scans pushed
 ## Actions Taken / Pending
 
 - **Rotation (user action, outside repo):**
-  - AWS: deactivate/delete access key `AKIA••••••••••••••MNK5T` in IAM; rotate the secret; verify nothing depends on it.
+  - AWS: access key `AKIA••••••••••••••MNK5T` (account `622264482405`, recovered from the key ID) was already
+    **inactive**; it was the user's only access key and had no replacement — the AWS S3 setup was retired in the
+    R2/Vercel Blob migration. **Deleted 2026-09-12.** No live AWS exposure.
   - Vercel: rotate the leaked JWTs/tokens in account/project settings.
+  - **Still open:** Cloudflare R2 access key + secret, Turso `DATABASE_AUTH_TOKEN`, `PAYLOAD_SECRET` from the
+    same `.env.vercel` dump — verify each is rotated or no longer used.
 - **Documentation:** this incident file.
 - **Prevention now active:** pre-push hook scans every push for secrets (`.git-hooks/pre-push` →
   `scripts/pre-push.ts`); `pnpm scan:secrets` available for periodic full-history reconciliation.
