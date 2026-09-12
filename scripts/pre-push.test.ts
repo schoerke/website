@@ -2,7 +2,7 @@
 
 import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { runAll } from './pre-push'
 
@@ -25,11 +25,18 @@ const REF_LINE =
 
 beforeEach(() => {
   vi.resetAllMocks()
+  vi.spyOn(console, 'log').mockImplementation(() => {})
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
+  vi.spyOn(console, 'error').mockImplementation(() => {})
   mockExec.mockImplementation((cmd, args) => {
     if (args?.[0] === 'merge-base') return 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
     if (args?.[0] === 'rev-list') return '3'
     return ''
   })
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 describe('runAll', () => {
@@ -53,10 +60,8 @@ describe('runAll', () => {
       return { status: 0 } as never
     })
     mockExists.mockReturnValue(false)
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     expect(runAll(REF_LINE)).toBe(0)
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('gitleaks not installed'))
-    warn.mockRestore()
+    expect(vi.mocked(console.warn)).toHaveBeenCalledWith(expect.stringContaining('gitleaks not installed'))
   })
 
   it('blocks the push when the secret scan finds a leak and skips lint', () => {

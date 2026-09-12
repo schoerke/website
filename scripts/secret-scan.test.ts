@@ -2,7 +2,7 @@
 
 import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   buildScanArgs,
@@ -31,6 +31,13 @@ const mockExists = vi.mocked(existsSync)
 
 beforeEach(() => {
   vi.resetAllMocks()
+  vi.spyOn(console, 'log').mockImplementation(() => {})
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
+  vi.spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 describe('parsePushRefs', () => {
@@ -238,22 +245,18 @@ describe('scanPushedRefs', () => {
   })
 
   it('returns 0 with a warning when there are no refs', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     expect(scanPushedRefs([])).toBe(0)
-    expect(warn).toHaveBeenCalledWith('No refs to scan')
-    warn.mockRestore()
+    expect(vi.mocked(console.warn)).toHaveBeenCalledWith('No refs to scan')
   })
 
   it('returns 0 with a warning when gitleaks is missing', () => {
     mockSpawn.mockReturnValue({ status: 1, stdout: '', stderr: '' } as never)
     mockExists.mockReturnValue(false)
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const refs = parsePushRefs(
       'refs/heads/main aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa refs/heads/main bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n'
     )
     expect(scanPushedRefs(refs)).toBe(0)
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('gitleaks not installed'))
-    warn.mockRestore()
+    expect(vi.mocked(console.warn)).toHaveBeenCalledWith(expect.stringContaining('gitleaks not installed'))
   })
 
   it('reports a clean scan per ref', () => {
@@ -267,13 +270,11 @@ describe('scanPushedRefs', () => {
       if (args?.[0] === 'rev-list') return '3'
       return ''
     })
-    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const refs = parsePushRefs(
       'refs/heads/main aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa refs/heads/main bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n'
     )
     expect(scanPushedRefs(refs)).toBe(0)
-    expect(log).toHaveBeenCalledWith('  No secrets found in refs/heads/main (3 commits scanned).')
-    log.mockRestore()
+    expect(vi.mocked(console.log)).toHaveBeenCalledWith('  No secrets found in refs/heads/main (3 commits scanned).')
   })
 })
 
@@ -291,10 +292,8 @@ describe('main', () => {
       if (cmd === 'gitleaks') return { status: 0, stdout: '', stderr: '5 commits scanned.\n' } as never
       return { status: 0 } as never
     })
-    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     expect(main(['--full'])).toBe(0)
-    expect(log).toHaveBeenCalledWith('  No secrets found (5 commits scanned).')
-    log.mockRestore()
+    expect(vi.mocked(console.log)).toHaveBeenCalledWith('  No secrets found (5 commits scanned).')
   })
 
   it('returns 1 when the full scan finds a leak', () => {
@@ -320,10 +319,8 @@ describe('main', () => {
       if (cmd === 'gitleaks') return { status: 1, stdout: '', stderr: 'Leak found\n' } as never
       return { status: 0 } as never
     })
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     expect(main(['--push'])).toBe(1)
-    expect(error).toHaveBeenCalledWith(expect.stringContaining('Leak found'))
-    error.mockRestore()
+    expect(vi.mocked(console.error)).toHaveBeenCalledWith(expect.stringContaining('Leak found'))
   })
 
   it('returns 1 when the push range cannot be verified', () => {
