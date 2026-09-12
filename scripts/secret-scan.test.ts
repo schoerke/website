@@ -255,6 +255,26 @@ describe('scanPushedRefs', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('gitleaks not installed'))
     warn.mockRestore()
   })
+
+  it('reports a clean scan per ref', () => {
+    mockSpawn.mockImplementation((cmd, _args) => {
+      if (cmd === 'sh') return { status: 0, stdout: 'gitleaks\n', stderr: '' } as never
+      if (cmd === 'gitleaks') return { status: 0, stdout: '', stderr: '3 commits scanned.\n' } as never
+      return { status: 0 } as never
+    })
+    mockExec.mockImplementation((cmd, args) => {
+      if (args?.[0] === 'merge-base') return 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+      if (args?.[0] === 'rev-list') return '3'
+      return ''
+    })
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const refs = parsePushRefs(
+      'refs/heads/main aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa refs/heads/main bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n'
+    )
+    expect(scanPushedRefs(refs)).toBe(0)
+    expect(log).toHaveBeenCalledWith('  No secrets found in refs/heads/main (3 commits scanned).')
+    log.mockRestore()
+  })
 })
 
 describe('main', () => {
@@ -265,13 +285,16 @@ describe('main', () => {
     expect(code).toBe(0)
   })
 
-  it('returns 0 for a clean full scan', () => {
+  it('returns 0 for a clean full scan and reports the commit count', () => {
     mockSpawn.mockImplementation((cmd, _args) => {
       if (cmd === 'sh') return { status: 0, stdout: 'gitleaks\n', stderr: '' } as never
       if (cmd === 'gitleaks') return { status: 0, stdout: '', stderr: '5 commits scanned.\n' } as never
       return { status: 0 } as never
     })
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     expect(main(['--full'])).toBe(0)
+    expect(log).toHaveBeenCalledWith('  No secrets found (5 commits scanned).')
+    log.mockRestore()
   })
 
   it('returns 1 when the full scan finds a leak', () => {

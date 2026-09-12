@@ -185,6 +185,9 @@ export function scanPushedRefs(refs: PushRef[]): number {
       console.error(`Secret scan found potential leaks in ${range.ref.localRef}. Push blocked.`)
       return 1
     }
+    if (result.scannedCommits > 0) {
+      console.log(`  No secrets found in ${range.ref.localRef} (${result.scannedCommits} commits scanned).`)
+    }
   }
   return 0
 }
@@ -213,6 +216,9 @@ export function main(argv: string[]): number {
       if (result.output) console.error(result.output)
       console.error('Secret scan found potential leaks')
       return 1
+    }
+    if (result.scannedCommits > 0) {
+      console.log(`  No secrets found (${result.scannedCommits} commits scanned).`)
     }
     return 0
   }

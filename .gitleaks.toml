@@ -1,3 +1,11 @@
 [extend]
 useDefault = true
 # Reactive allowlist: add [[allowlists]] entries only for verified false positives.
+
+# Known-dead credentials in the historical .env.vercel commit 1147357 — every value in it was rotated or
+# deleted 2026-09-12 (AWS key deleted, R2/Turso/PAYLOAD rotated, OIDC auto-rotated). See
+# docs/memory/incidents/2026-09-12-leaked-credentials-history.md. Scoped to that commit only (all rules):
+# any NEW occurrence of these credential types anywhere else is still flagged.
+[[allowlists]]
+description = "Rotated credentials in historical .env.vercel commit 1147357 (verified dead 2026-09-12)"
+commits = ["1147357d07b80a66eb37a6b93431ee69337dad44"]
