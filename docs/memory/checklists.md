@@ -77,8 +77,10 @@ was created — verify at the end (§ step 9).
 # 1. STOP dev server (must be stopped before replacing dev.db — split-brain otherwise)
 
 # 2. PRESERVE MCP keys BEFORE the swap — DO NOT SKIP
-#    (prod backup has NO payload_mcp_api_keys table — it is dev-only tooling)
-#    .schema captures table + its 3 indexes; .dump|grep '^INSERT' captures escaped, order-exact rows:
+#    (prod backup MAY have an EMPTY payload_mcp_api_keys table — a dev-mode schema push once created
+#    it on prod. Keys are dev-only; snapshot rows are normally 0. .schema captures table + its 3
+#    indexes; .dump|grep '^INSERT' captures escaped, order-exact rows. If the table already exists
+#    in the fresh snapshot, skip the .schema restore (table present) and only apply the INSERTs.)
 sqlite3 dev.db ".schema payload_mcp_api_keys" > /tmp/mcp-schema.sql
 sqlite3 dev.db ".dump payload_mcp_api_keys" | grep '^INSERT' > /tmp/mcp-inserts.sql
 
