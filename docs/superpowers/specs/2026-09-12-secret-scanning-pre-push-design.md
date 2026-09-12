@@ -133,19 +133,22 @@ both hook and `pnpm scan:secrets`):
 ```toml
 [extend]
 useDefault = true
-
-[[allowlist]]
-description = "Known-safe content"
-regexes = [
-  # test fixtures, placeholder/example keys in docs
-]
+# Reactive allowlist: add [[allowlists]] entries only for verified false positives.
 ```
 
-Allowlist entries added on first false-positive report. `.env` and real
-credentials are never committed, so gitleaks only ever scans committed content.
-Note the allowlist is itself a manipulation vector (a dev could whitelist a
-real secret) — keep it minimal, review additions; the full-history scan uses
-the same allowlist so it is not fully independent.
+Shipped minimal (verified on gitleaks 8.30.1): gitleaks 8.25+ renamed the
+allowlist section to `[[allowlists]]` and **rejects an empty `regexes = []`**
+(validation error). The plan's original `[[allowlist]]` block was invalid —
+add real `[[allowlists]]` entries only when a false positive is reported.
+`.env` and real credentials are never committed, so gitleaks only ever scans
+committed content. Note the allowlist is itself a manipulation vector (a dev
+could whitelist a real secret) — keep it minimal, review additions; the
+full-history scan uses the same allowlist so it is not fully independent.
+
+Live smoke-test learning (gitleaks 8.30.1): default AWS rule allowlists keys
+ending in `EXAMPLE` (test keys like `AKIAIOSFODNN7EXAMPLE` pass silently);
+slack tokens (`xoxb-...`) are reliably flagged. When hand-crafting smoke-test
+secrets, use a format gitleaks actually flags.
 
 ### `package.json`
 
@@ -175,7 +178,9 @@ Add script:
   messages.
 - `spawnSync` failures wrapped; gitleaks exit code honored (nonzero → block).
 - Missing local remote sha → fallback `--not --remotes` scan; if that fails,
-  warn + continue.
+  the push is BLOCKED (fail-closed). This overrides the earlier fail-open
+  intent ("warn + continue") — an unverifiable range means the push's secret
+  coverage cannot be confirmed, so it is safer to block than to proceed.
 - Orchestrator stops at first failing check and exits with that step's code.
 
 ## Testing (vitest)
@@ -214,5 +219,5 @@ pass while running nothing.
   strict-clean, no `any`.
 - gitleaks is a global Homebrew binary, unpinned: default rules drift between
   releases and a previously-clean allowlist may flag after an upgrade. Run
-  `pnpm scan:secrets` as the periodic reconciliation check; record the tested
-  gitleaks version here once installed.
+  `pnpm scan:secrets` as the periodic reconciliation check. Tested against
+  gitleaks 8.30.1 (installed at `/opt/homebrew/bin/gitleaks`).

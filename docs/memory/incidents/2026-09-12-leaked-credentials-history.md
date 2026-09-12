@@ -7,7 +7,7 @@ scan (`pnpm scan:secrets`) surfaced the leak.
 
 ## What Happened
 
-`.env.vercel` — containing live cloud credentials — was committed at `1147357` (2025-11-26). The file was removed
+`.env.vercel` — containing live cloud credentials — was committed at `1147357` (2025-11-27). The file was removed
 from version control at `8f246b4` and is absent at HEAD, but the secrets persist in git history and remain
 recoverable by anyone with repo access.
 
@@ -42,3 +42,4 @@ must be treated as compromised. The pre-push hook is unaffected (it scans pushed
   before `git add -f` or any force-add.
 - Run `pnpm scan:secrets` after major merges as a periodic reconciliation check.
 - Add `[[allowlists]]` entries to `.gitleaks.toml` only for verified false positives, never for real findings.
+- `git push --no-verify` bypasses the pre-push hook entirely — the hook is a deterrent, not a control.

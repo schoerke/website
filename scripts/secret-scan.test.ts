@@ -171,8 +171,10 @@ describe('gitleaksAvailable', () => {
 
 describe('runScan', () => {
   it('reports a leak when gitleaks exits nonzero', () => {
-    mockSpawn.mockReturnValue({ status: 1, stdout: '', stderr: '' } as never)
-    expect(runScan(['git']).leaksFound).toBe(true)
+    mockSpawn.mockReturnValue({ status: 1, stdout: '', stderr: 'Leak found\n' } as never)
+    const result = runScan(['git'])
+    expect(result.leaksFound).toBe(true)
+    expect(result.output).toContain('Leak found')
   })
 
   it('fails closed when gitleaks reports 0 commits scanned', () => {
@@ -184,6 +186,7 @@ describe('runScan', () => {
     const result = runScan(['git'])
     expect(result.scannedCommits).toBe(0)
     expect(result.leaksFound).toBe(true)
+    expect(result.output).toContain('0 commits scanned')
   })
 
   it('passes when gitleaks scans commits and exits 0', () => {
@@ -195,6 +198,7 @@ describe('runScan', () => {
     const result = runScan(['git'])
     expect(result.scannedCommits).toBe(5)
     expect(result.leaksFound).toBe(false)
+    expect(result.output).toContain('5 commits scanned')
   })
 
   it('parses the scanned count from stdout as well as stderr', () => {
@@ -203,7 +207,9 @@ describe('runScan', () => {
       stdout: 'INFO 0000-00-00 3 commits scanned.\n',
       stderr: '',
     } as never)
-    expect(runScan(['git']).scannedCommits).toBe(3)
+    const result = runScan(['git'])
+    expect(result.scannedCommits).toBe(3)
+    expect(result.output).toContain('3 commits scanned')
   })
 
   it('fails closed when the scanned count is indeterminate', () => {
@@ -211,6 +217,7 @@ describe('runScan', () => {
     const result = runScan(['git'])
     expect(result.scannedCommits).toBe(-1)
     expect(result.leaksFound).toBe(true)
+    expect(result.output).toBe('')
   })
 })
 
@@ -290,7 +297,10 @@ describe('main', () => {
       if (cmd === 'gitleaks') return { status: 1, stdout: '', stderr: 'Leak found\n' } as never
       return { status: 0 } as never
     })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     expect(main(['--push'])).toBe(1)
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('Leak found'))
+    error.mockRestore()
   })
 
   it('returns 1 when the push range cannot be verified', () => {

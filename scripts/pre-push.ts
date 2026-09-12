@@ -39,6 +39,12 @@ export function runAll(stdin: string): number {
 
 const entry = process.argv[1]
 if (entry && import.meta.url === pathToFileURL(entry).href) {
-  const stdin = readFileSync(0, 'utf8')
-  process.exitCode = runAll(stdin)
+  try {
+    const stdin = readFileSync(0, 'utf8')
+    process.exitCode = runAll(stdin)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`Pre-push check failed: ${message}`)
+    process.exitCode = 1
+  }
 }

@@ -17,6 +17,7 @@ export interface PushRange {
 export interface ScanResult {
   leaksFound: boolean
   scannedCommits: number
+  output: string
 }
 
 export type ScanMode = 'push' | 'full'
@@ -112,15 +113,18 @@ export function gitleaksAvailable(): boolean {
  * scan that silently did nothing (gitleaks issue #2129, #1450), and an
  * indeterminate count (no "commits scanned" line at all) is treated as a
  * failure too, so a scan whose coverage cannot be verified never passes.
+ * Captured stdout+stderr is returned in `output` so callers can surface the
+ * gitleaks findings (file/line/rule) to the developer on failure.
  */
 export function runScan(args: string[]): ScanResult {
   const result = spawnSync('gitleaks', args, { encoding: 'utf8' })
   const stdout = result.stdout ?? ''
   const stderr = result.stderr ?? ''
-  const scannedMatch = `${stdout}\n${stderr}`.match(/(\d+) commits scanned/)
+  const output = `${stdout}\n${stderr}`.trim()
+  const scannedMatch = output.match(/(\d+) commits scanned/)
   const scannedCommits = scannedMatch ? Number.parseInt(scannedMatch[1], 10) : -1
   const leaksFound = result.status !== 0 || scannedCommits === 0 || scannedCommits === -1
-  return { leaksFound, scannedCommits }
+  return { leaksFound, scannedCommits, output }
 }
 
 /**
@@ -155,6 +159,7 @@ export function scanPushedRefs(refs: PushRef[]): number {
     console.log(`\n▶ Secret scan (${range.ref.localRef})`)
     const result = runScan(buildScanArgs('push', range))
     if (result.leaksFound) {
+      if (result.output) console.error(result.output)
       console.error(`Secret scan found potential leaks in ${range.ref.localRef}. Push blocked.`)
       return 1
     }
@@ -183,6 +188,7 @@ export function main(argv: string[]): number {
   if (mode === '--full') {
     const result = runScan(buildScanArgs('full'))
     if (result.leaksFound) {
+      if (result.output) console.error(result.output)
       console.error('Secret scan found potential leaks')
       return 1
     }
@@ -194,5 +200,11 @@ export function main(argv: string[]): number {
 
 const entry = process.argv[1]
 if (entry && import.meta.url === pathToFileURL(entry).href) {
-  process.exitCode = main(process.argv.slice(2))
+  try {
+    process.exitCode = main(process.argv.slice(2))
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`Secret scan failed: ${message}`)
+    process.exitCode = 1
+  }
 }

@@ -85,6 +85,10 @@ describe('runAll', () => {
     expect(mockSpawn.mock.calls.some(([cmd]) => cmd === 'gitleaks')).toBe(false)
   })
 
+  it('propagates malformed stdin (caught by the CLI entry)', () => {
+    expect(() => runAll('only-two-tokens\n')).toThrow(/Malformed pre-push ref line/)
+  })
+
   it('returns the failing check exit code and stops', () => {
     mockSpawn.mockImplementation((cmd, args) => {
       if (cmd === 'sh') return { status: 1, stdout: '', stderr: '' } as never
