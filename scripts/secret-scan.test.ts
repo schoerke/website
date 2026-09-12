@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { execFileSync, spawnSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -204,6 +204,13 @@ describe('runScan', () => {
     } as never)
     expect(runScan(['git']).scannedCommits).toBe(3)
   })
+
+  it('fails closed when the scanned count is indeterminate', () => {
+    mockSpawn.mockReturnValue({ status: 0, stdout: '', stderr: '' } as never)
+    const result = runScan(['git'])
+    expect(result.scannedCommits).toBe(-1)
+    expect(result.leaksFound).toBe(true)
+  })
 })
 
 describe('main', () => {
@@ -232,10 +239,9 @@ describe('main', () => {
     expect(main(['--full'])).toBe(1)
   })
 
-  it('returns 1 when the push scan finds a leak', async () => {
+  it('returns 1 when the push scan finds a leak', () => {
     const stdin =
       'refs/heads/main aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa refs/heads/main bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n'
-    const { readFileSync } = await import('node:fs')
     vi.mocked(readFileSync).mockReturnValue(stdin)
     mockExec.mockImplementation((cmd, args) => {
       if (args?.[0] === 'merge-base') return 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
@@ -250,8 +256,21 @@ describe('main', () => {
     expect(main(['--push'])).toBe(1)
   })
 
-  it('returns 0 with a warning when --push has no refs', async () => {
-    const { readFileSync } = await import('node:fs')
+  it('returns 1 when the push range cannot be verified', () => {
+    const stdin =
+      'refs/heads/main aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa refs/heads/main bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n'
+    vi.mocked(readFileSync).mockReturnValue(stdin)
+    mockExec.mockImplementation(() => {
+      throw new Error('boom')
+    })
+    mockSpawn.mockImplementation((cmd, _args) => {
+      if (cmd === 'sh') return { status: 0, stdout: 'gitleaks\n', stderr: '' } as never
+      return { status: 0 } as never
+    })
+    expect(main(['--push'])).toBe(1)
+  })
+
+  it('returns 0 with a warning when --push has no refs', () => {
     vi.mocked(readFileSync).mockReturnValue('')
     mockSpawn.mockImplementation((cmd, _args) => {
       if (cmd === 'sh') return { status: 0, stdout: 'gitleaks\n', stderr: '' } as never

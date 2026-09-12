@@ -109,8 +109,9 @@ export function gitleaksAvailable(): boolean {
 
 /**
  * Run a gitleaks scan. Fail closed: exit code 0 with "0 commits scanned" is a
- * scan that silently did nothing (gitleaks issue #2129, #1450) and is treated
- * as a leak so an empty scan can never pass.
+ * scan that silently did nothing (gitleaks issue #2129, #1450), and an
+ * indeterminate count (no "commits scanned" line at all) is treated as a
+ * failure too, so a scan whose coverage cannot be verified never passes.
  */
 export function runScan(args: string[]): ScanResult {
   const result = spawnSync('gitleaks', args, { encoding: 'utf8' })
@@ -118,7 +119,7 @@ export function runScan(args: string[]): ScanResult {
   const stderr = result.stderr ?? ''
   const scannedMatch = `${stdout}\n${stderr}`.match(/(\d+) commits scanned/)
   const scannedCommits = scannedMatch ? Number.parseInt(scannedMatch[1], 10) : -1
-  const leaksFound = result.status !== 0 || scannedCommits === 0
+  const leaksFound = result.status !== 0 || scannedCommits === 0 || scannedCommits === -1
   return { leaksFound, scannedCommits }
 }
 
@@ -144,7 +145,14 @@ export function main(argv: string[]): number {
       return 0
     }
     for (const range of computePushRanges(refs)) {
-      if (verifyRange(range) === 0) continue
+      let commitCount: number
+      try {
+        commitCount = verifyRange(range)
+      } catch (err) {
+        console.error(`Could not verify range for ${range.ref.localRef}: ${err}`)
+        return 1
+      }
+      if (commitCount === 0) continue
       const result = runScan(buildScanArgs('push', range))
       if (result.leaksFound) {
         console.error(`Secret scan found potential leaks in ${range.ref.localRef}`)
