@@ -294,6 +294,26 @@ export const Posts: CollectionConfig = {
       },
     },
     {
+      name: 'publishedDate',
+      type: 'date',
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: {
+          de: 'Datum überschreiben (nur in der Vergangenheit). Standard: Erstellungsdatum.',
+          en: 'Override the post date (only dates in the past). Defaults to date created.',
+        },
+      },
+      label: {
+        de: 'Erscheinungsdatum',
+        en: 'Publication Date',
+      },
+      validate: validatePublishedDate,
+      hooks: {
+        beforeChange: [setPublishedDate],
+      },
+    },
+    {
       name: 'createdBy',
       label: {
         de: 'Erstellt von',
@@ -316,26 +336,6 @@ export const Posts: CollectionConfig = {
             return resolveDefaultCreatedBy({ req })
           },
         ],
-      },
-    },
-    {
-      name: 'publishedDate',
-      type: 'date',
-      index: true,
-      admin: {
-        position: 'sidebar',
-        description: {
-          de: 'Datum überschreiben (nur in der Vergangenheit). Standard: Erstellungsdatum.',
-          en: 'Override the shown date (past dates only). Defaults to creation date.',
-        },
-      },
-      label: {
-        de: 'Erscheinungsdatum',
-        en: 'Publication date',
-      },
-      validate: validatePublishedDate,
-      hooks: {
-        beforeChange: [setPublishedDate],
       },
     },
   ],
