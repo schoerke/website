@@ -94,10 +94,17 @@ describe('PostPreviewClient', () => {
     expect(props.backButtonLabel).toBe('Go back')
     expect(props.relatedArtistLabel).toBe('Related Artist')
     expect(props.relatedArtistsLabel).toBe('Related Artists')
-    expect(props.createdAt).toBe('2026-01-01T00:00:00.000Z')
+    expect(props.displayDate).toBe('2026-01-01T00:00:00.000Z')
     expect(props.content).toEqual({})
     expect(props.imageUrl).toBe('/draft-image.jpg')
     expect(props.relatedArtists).toHaveLength(2)
+  })
+
+  it('resolves publishedDate over createdAt when both are present', () => {
+    liveData = { ...baseLiveData, publishedDate: '2025-05-05T00:00:00.000Z' }
+    render(<PostPreviewClient {...baseProps} />)
+    const props = mockPostDetailContent.mock.calls[0][0] as Record<string, unknown>
+    expect(props.displayDate).toBe('2025-05-05T00:00:00.000Z')
   })
 
   it('drops unpopulated ID-only relations', () => {

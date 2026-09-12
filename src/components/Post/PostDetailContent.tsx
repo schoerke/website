@@ -9,7 +9,7 @@ import { ChevronLeft } from 'lucide-react'
 interface PostDetailContentProps {
   title: string
   content: Post['content']
-  createdAt: string
+  displayDate: string
   imageUrl: string | null
   focalX?: number | null
   focalY?: number | null
@@ -30,7 +30,7 @@ interface PostDetailContentProps {
 const PostDetailContent: React.FC<PostDetailContentProps> = ({
   title,
   content,
-  createdAt,
+  displayDate,
   imageUrl,
   focalX,
   focalY,
@@ -59,7 +59,7 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
 
           {showDate && (
             <div className="flex items-center gap-4 text-sm text-gray-600">
-              <time dateTime={createdAt}>{formatDate(createdAt, locale)}</time>
+              <time dateTime={displayDate}>{formatDate(displayDate, locale)}</time>
             </div>
           )}
         </header>

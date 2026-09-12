@@ -41,7 +41,7 @@ const PostPreviewClient: React.FC<PostPreviewClientProps> = ({
     <PostDetailContent
       title={data.title}
       content={data.content}
-      createdAt={data.createdAt}
+      displayDate={data.publishedDate ?? data.createdAt}
       imageUrl={getValidImageUrl(data.image)}
       focalX={typeof data.image === 'object' && data.image !== null ? data.image.focalX : undefined}
       focalY={typeof data.image === 'object' && data.image !== null ? data.image.focalY : undefined}

@@ -47,13 +47,13 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.projects' })
 
-  const { title, content, createdAt, image, artists } = post
+  const { title, content, createdAt, publishedDate, image, artists } = post
 
   return (
     <PostDetailContent
       title={title}
       content={content}
-      createdAt={createdAt}
+      displayDate={publishedDate ?? createdAt}
       imageUrl={getValidImageUrl(image)}
       focalX={typeof image === 'object' && image !== null ? image.focalX : undefined}
       focalY={typeof image === 'object' && image !== null ? image.focalY : undefined}

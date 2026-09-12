@@ -87,11 +87,33 @@ describe('NewsFeedList', () => {
 
     renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" category="news" showDate={true} />)
 
-    // Check that a date is rendered (exact format depends on locale)
-    // The formatDate function in NewsFeedList uses 'en' locale
-    // Date appears twice: once in desktop view, once in mobile view
+    // Locale comes from useLocale() via the test provider (en)
     const dates = screen.getAllByText('January 15, 2024')
     expect(dates.length).toBeGreaterThan(0)
+  })
+
+  it('renders publishedDate when set', () => {
+    const post = createMockPost({
+      title: 'Backdated Post',
+      createdAt: '2024-01-15T10:00:00.000Z',
+      publishedDate: '2023-06-01T00:00:00.000Z',
+    })
+
+    renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" category="news" showDate={true} />)
+
+    expect(screen.getAllByText('June 1, 2023').length).toBeGreaterThan(0)
+  })
+
+  it('falls back to createdAt when publishedDate is absent', () => {
+    const post = createMockPost({
+      title: 'No Override Post',
+      createdAt: '2024-01-15T10:00:00.000Z',
+      publishedDate: null,
+    })
+
+    renderWithIntl(<NewsFeedList posts={[post]} emptyMessage="No posts" category="news" showDate={true} />)
+
+    expect(screen.getAllByText('January 15, 2024').length).toBeGreaterThan(0)
   })
 
   it('should render multiple posts in correct order', () => {

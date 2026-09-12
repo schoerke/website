@@ -121,12 +121,7 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
             {/* Content column */}
             <Link href={postPath as Parameters<typeof Link>['0']['href']} className="flex gap-4 sm:gap-6">
               {/* Image - always on the left */}
-              <NewsFeedItemImage
-                src={imageUrl}
-                alt={post.title}
-                focalX={img?.focalX}
-                focalY={img?.focalY}
-              />
+              <NewsFeedItemImage src={imageUrl} alt={post.title} focalX={img?.focalX} focalY={img?.focalY} />
 
               {/* Text content */}
               <div className="flex min-w-0 flex-1 flex-col justify-center">
@@ -138,7 +133,9 @@ const NewsFeedList: React.FC<NewsFeedListProps> = ({ posts, emptyMessage, catego
                 )}
                 <div className="flex items-center gap-3 text-xs text-gray-500 sm:text-sm">
                   {showDate && (
-                    <time dateTime={new Date(post.createdAt).toISOString()}>{formatDate(post.createdAt, locale)}</time>
+                    <time dateTime={new Date(post.publishedDate || post.createdAt).toISOString()}>
+                      {formatDate(post.publishedDate || post.createdAt, locale)}
+                    </time>
                   )}
                   <span
                     aria-hidden="true"

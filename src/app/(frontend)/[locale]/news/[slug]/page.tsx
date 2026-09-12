@@ -47,13 +47,13 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.news' })
 
-  const { title, content, createdAt, image, artists } = post
+  const { title, content, createdAt, publishedDate, image, artists } = post
 
   return (
     <PostDetailContent
       title={title}
       content={content}
-      createdAt={createdAt}
+      displayDate={publishedDate ?? createdAt}
       imageUrl={getValidImageUrl(image)}
       focalX={typeof image === 'object' && image !== null ? image.focalX : undefined}
       focalY={typeof image === 'object' && image !== null ? image.focalY : undefined}

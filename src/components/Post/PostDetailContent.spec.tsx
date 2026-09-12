@@ -39,7 +39,7 @@ const baseProps = {
       version: 1,
     },
   } as Post['content'],
-  createdAt: '2024-06-15T00:00:00.000Z',
+  displayDate: '2024-06-15T00:00:00.000Z',
   imageUrl: null,
   locale: 'en' as const,
   relatedArtists: [],
