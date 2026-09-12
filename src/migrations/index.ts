@@ -6,6 +6,7 @@ import * as migration_20260825_195406_remove_autosave_columns from './20260825_1
 import * as migration_20260825_211420_add_guides_collection from './20260825_211420_add_guides_collection'
 import * as migration_20260827_173327_add_video_links_embed_code from './20260827_173327_add_video_links_embed_code'
 import * as migration_20260828_210415_add_artist_quote_source from './20260828_210415_add_artist_quote_source'
+import * as migration_20260912_191733_add_post_published_date from './20260912_191733_add_post_published_date'
 
 export const migrations = [
   {
@@ -47,5 +48,10 @@ export const migrations = [
     up: migration_20260828_210415_add_artist_quote_source.up,
     down: migration_20260828_210415_add_artist_quote_source.down,
     name: '20260828_210415_add_artist_quote_source',
+  },
+  {
+    up: migration_20260912_191733_add_post_published_date.up,
+    down: migration_20260912_191733_add_post_published_date.down,
+    name: '20260912_191733_add_post_published_date',
   },
 ]
