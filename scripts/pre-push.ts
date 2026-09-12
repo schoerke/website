@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 
-import { buildScanArgs, computePushRanges, gitleaksAvailable, parsePushRefs, runScan, verifyRange } from './secret-scan'
+import { parsePushRefs, scanPushedRefs } from './secret-scan'
 
 interface Check {
   label: string
@@ -22,24 +22,15 @@ const CHECKS: Check[] = [
  * code; stops at the first failing check.
  */
 export function runAll(stdin: string): number {
-  const refs = parsePushRefs(stdin)
-  const ranges = computePushRanges(refs)
-  for (const range of ranges) {
-    if (verifyRange(range) === 0) continue
-    console.log(`\n▶ Secret scan (${range.ref.localRef})`)
-    if (!gitleaksAvailable()) {
-      console.warn('gitleaks not installed — skipping secret scan (brew install gitleaks)')
-      break
-    }
-    const result = runScan(buildScanArgs('push', range))
-    if (result.leaksFound) {
-      console.error(`\nSecret scan found potential leaks in ${range.ref.localRef}. Push blocked.`)
-      return 1
-    }
-  }
+  const scanCode = scanPushedRefs(parsePushRefs(stdin))
+  if (scanCode !== 0) return scanCode
   for (const check of CHECKS) {
     console.log(`\n▶ ${check.label}`)
-    const result = spawnSync(check.cmd, check.args, { stdio: 'inherit' })
+    const result = spawnSync(check.cmd, check.args, { stdio: ['ignore', 'inherit', 'inherit'] })
+    if (result.error) {
+      console.error(`Failed to run ${check.label}: ${result.error.message}`)
+      return 1
+    }
     if (result.status !== 0) return result.status ?? 1
   }
   console.log('\nAll checks passed.')

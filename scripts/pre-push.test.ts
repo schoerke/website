@@ -77,11 +77,10 @@ describe('runAll', () => {
       return ''
     })
     mockSpawn.mockImplementation((cmd, _args) => {
-      if (cmd === 'sh') return { status: 1, stdout: '', stderr: '' } as never
+      if (cmd === 'sh') return { status: 0, stdout: 'gitleaks\n', stderr: '' } as never
       if (cmd === 'pnpm') return { status: 0 } as never
       return { status: 0 } as never
     })
-    mockExists.mockReturnValue(false)
     expect(runAll(REF_LINE)).toBe(0)
     expect(mockSpawn.mock.calls.some(([cmd]) => cmd === 'gitleaks')).toBe(false)
   })

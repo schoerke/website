@@ -123,6 +123,45 @@ export function runScan(args: string[]): ScanResult {
   return { leaksFound, scannedCommits }
 }
 
+/**
+ * Scan the ranges for a set of pushed refs. Warns and returns 0 when gitleaks
+ * is missing or there are no refs. Returns 1 (after a clear message) when a
+ * range can't be verified or a leak is found.
+ *
+ * @example
+ * // git pre-push hook stdin
+ * const code = scanPushedRefs(parsePushRefs(readFileSync(0, 'utf8')))
+ *
+ * @see parsePushRefs
+ * @see computePushRanges
+ */
+export function scanPushedRefs(refs: PushRef[]): number {
+  if (refs.length === 0) {
+    console.warn('No refs to scan')
+    return 0
+  }
+  if (!gitleaksAvailable()) {
+    console.warn('gitleaks not installed — skipping secret scan (brew install gitleaks)')
+    return 0
+  }
+  for (const range of computePushRanges(refs)) {
+    try {
+      if (verifyRange(range) === 0) continue
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.error(`Could not verify range for ${range.ref.localRef}: ${message}`)
+      return 1
+    }
+    console.log(`\n▶ Secret scan (${range.ref.localRef})`)
+    const result = runScan(buildScanArgs('push', range))
+    if (result.leaksFound) {
+      console.error(`Secret scan found potential leaks in ${range.ref.localRef}. Push blocked.`)
+      return 1
+    }
+  }
+  return 0
+}
+
 function runGit(args: string[]): string {
   return execFileSync('git', args, { encoding: 'utf8' }).trim()
 }
@@ -139,27 +178,7 @@ export function main(argv: string[]): number {
   }
   if (mode === '--push') {
     const stdin = readFileSync(0, 'utf8')
-    const refs = parsePushRefs(stdin)
-    if (refs.length === 0) {
-      console.warn('No refs to scan')
-      return 0
-    }
-    for (const range of computePushRanges(refs)) {
-      let commitCount: number
-      try {
-        commitCount = verifyRange(range)
-      } catch (err) {
-        console.error(`Could not verify range for ${range.ref.localRef}: ${err}`)
-        return 1
-      }
-      if (commitCount === 0) continue
-      const result = runScan(buildScanArgs('push', range))
-      if (result.leaksFound) {
-        console.error(`Secret scan found potential leaks in ${range.ref.localRef}`)
-        return 1
-      }
-    }
-    return 0
+    return scanPushedRefs(parsePushRefs(stdin))
   }
   if (mode === '--full') {
     const result = runScan(buildScanArgs('full'))

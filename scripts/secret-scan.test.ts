@@ -11,6 +11,7 @@ import {
   main,
   parsePushRefs,
   runScan,
+  scanPushedRefs,
   verifyRange,
 } from './secret-scan'
 
@@ -210,6 +211,42 @@ describe('runScan', () => {
     const result = runScan(['git'])
     expect(result.scannedCommits).toBe(-1)
     expect(result.leaksFound).toBe(true)
+  })
+})
+
+describe('scanPushedRefs', () => {
+  it('returns 1 when a range cannot be verified', () => {
+    mockSpawn.mockImplementation((cmd, _args) => {
+      if (cmd === 'sh') return { status: 0, stdout: 'gitleaks\n', stderr: '' } as never
+      return { status: 0 } as never
+    })
+    mockExec.mockImplementation((cmd, args) => {
+      if (args?.[0] === 'merge-base') return 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+      throw new Error('fatal: bad object')
+    })
+    const refs = parsePushRefs(
+      'refs/heads/main aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa refs/heads/main bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n'
+    )
+    expect(scanPushedRefs(refs)).toBe(1)
+  })
+
+  it('returns 0 with a warning when there are no refs', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    expect(scanPushedRefs([])).toBe(0)
+    expect(warn).toHaveBeenCalledWith('No refs to scan')
+    warn.mockRestore()
+  })
+
+  it('returns 0 with a warning when gitleaks is missing', () => {
+    mockSpawn.mockReturnValue({ status: 1, stdout: '', stderr: '' } as never)
+    mockExists.mockReturnValue(false)
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const refs = parsePushRefs(
+      'refs/heads/main aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa refs/heads/main bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n'
+    )
+    expect(scanPushedRefs(refs)).toBe(0)
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('gitleaks not installed'))
+    warn.mockRestore()
   })
 })
 
