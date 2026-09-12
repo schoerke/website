@@ -35,11 +35,14 @@ must be treated as compromised. The pre-push hook is unaffected (it scans pushed
 - **Not done:** history scrub. If full purge desired, rewrite history with `git filter-repo`/BFG to remove
   `.env.vercel` from all commits, then force-push with team coordination. Do NOT allowlist the leaked commits —
   allowlisting hides real secrets.
+- **Open (pending):** `pnpm scan:secrets` (full-history scan) will continue to exit 1 with 7 findings until the
+  `.env.vercel` commit is scrubbed from history. Key rotation already handles the live access; the history scrub
+  is a separate pending decision.
 
 ## Lessons
 
-- Never commit `.env*` files. `.env*` and `.env.vercel` are gitignored now (`.gitignore` line 32, 73) — verify
-  before `git add -f` or any force-add.
+- Never commit `.env*` files. `.env*.local` (`.gitignore` line 32), `.env.vercel` (line 73), and the `.env*`
+  catch-all (line 87) are gitignored now — verify before `git add -f` or any force-add.
 - Run `pnpm scan:secrets` after major merges as a periodic reconciliation check.
 - Add `[[allowlists]]` entries to `.gitleaks.toml` only for verified false positives, never for real findings.
 - `git push --no-verify` bypasses the pre-push hook entirely — the hook is a deterrent, not a control.

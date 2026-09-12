@@ -43,6 +43,7 @@
 
 | Date | File | Summary |
 | ---- | ---- | ------- |
+| 2026-09-12 | `docs/memory/incidents/2026-09-12-leaked-credentials-history.md` | Leaked credentials in git history (.env.vercel) |
 | 2026-08-15 | `docs/memory/incidents/2026-08-15-prod-half-migrated.md` | Prod DB half-migrated via preview build; CASCADE FK lost; restore chaos |
 | 2026-08-24 | `docs/memory/incidents/2026-08-24-posts-desync-slug-incident.md` | Post 215 invisible: live/version desync + slug collision; 247 locale-commit failure |
 | pre-2026-08 | `docs/memory/incidents/historical-pre-2026-08.md` | Token gen, FK errors, remote DB modify, Blob bandwidth, projects ordering |
@@ -62,5 +63,5 @@
 | §9, §10 | `docs/memory/gotchas.md` |
 | §11 | `docs/memory/data-operations.md` |
 | §13.1–§13.6 | `docs/memory/libraries.md` |
-| §14 | `docs/memory/incidents/` (3 files) |
+| §14 | `docs/memory/incidents/` (4 files) |
 | §15 | `docs/memory/environments.md` |

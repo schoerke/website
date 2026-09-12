@@ -4,6 +4,19 @@ import { pathToFileURL } from 'node:url'
 
 import { parsePushRefs, scanPushedRefs } from './secret-scan'
 
+/**
+ * git pre-push hook orchestrator: secret scan of pushed refs, then
+ * lint → typecheck → tests. Exits nonzero on the first failing check and
+ * blocks the push.
+ *
+ * @example
+ * // invoked by .git-hooks/pre-push; git feeds pre-push refs via stdin
+ * pnpm exec tsx scripts/pre-push.ts
+ *
+ * No environment variables required.
+ *
+ * @see scripts/secret-scan.ts
+ */
 interface Check {
   label: string
   cmd: string

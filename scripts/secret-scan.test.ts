@@ -138,11 +138,11 @@ describe('verifyRange', () => {
 describe('buildScanArgs', () => {
   it('builds --log-opts base..head for push mode', () => {
     const args = buildScanArgs('push', { ref: {} as never, logOpts: 'base..head' })
-    expect(args).toEqual(['git', '--log-opts', 'base..head', '--redact'])
+    expect(args).toEqual(['git', '-v', '--log-opts', 'base..head', '--redact'])
   })
 
   it('builds --all --full-history for full mode', () => {
-    expect(buildScanArgs('full')).toEqual(['git', '--log-opts', '--all --full-history', '--redact'])
+    expect(buildScanArgs('full')).toEqual(['git', '-v', '--log-opts', '--all --full-history', '--redact'])
   })
 
   it('throws in push mode without a range', () => {

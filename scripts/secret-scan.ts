@@ -2,6 +2,26 @@ import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 
+/**
+ * gitleaks secret scanning library + CLI used by the git pre-push hook.
+ *
+ * Library: build gitleaks args, run scans fail-closed, compute push ranges.
+ * CLI: `--push` reads pre-push refs from stdin and blocks the push on leaks;
+ * `--full` scans all history.
+ *
+ * @example
+ * // pre-push hook stdin (see scripts/pre-push.ts)
+ * pnpm exec tsx scripts/secret-scan.ts --push
+ *
+ * @example
+ * // full-history scan (all refs)
+ * pnpm scan:secrets
+ * tsx scripts/secret-scan.ts --full
+ *
+ * No environment variables required.
+ *
+ * @see scripts/pre-push.ts
+ */
 export interface PushRef {
   localRef: string
   localSha: string
@@ -91,11 +111,13 @@ export function verifyRange(range: PushRange): number {
 /**
  * Build the gitleaks arguments for a scan mode. The `git` subcommand takes
  * ranges via `--log-opts` (the v8-era `--from`/`--to` flags were removed).
+ * `-v` prints per-finding details (file/line/rule/sha) with secret values
+ * redacted; without it gitleaks only prints a summary banner on findings.
  */
 export function buildScanArgs(mode: ScanMode, range?: PushRange): string[] {
-  if (mode === 'full') return ['git', '--log-opts', '--all --full-history', '--redact']
+  if (mode === 'full') return ['git', '-v', '--log-opts', '--all --full-history', '--redact']
   if (!range) throw new Error('push mode requires a PushRange')
-  return ['git', '--log-opts', range.logOpts, '--redact']
+  return ['git', '-v', '--log-opts', range.logOpts, '--redact']
 }
 
 /**
