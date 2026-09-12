@@ -386,13 +386,13 @@ export interface Post {
   artists?: (number | Artist)[] | null;
   image?: (number | null) | Image;
   /**
+   * Override the post date (only dates in the past). Defaults to date created.
+   */
+  publishedDate?: string | null;
+  /**
    * Auto-set when logged in as an employee.
    */
   createdBy: number | Employee;
-  /**
-   * Override the shown date (past dates only). Defaults to creation date.
-   */
-  publishedDate?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -910,8 +910,8 @@ export interface PostsSelect<T extends boolean = true> {
   categories?: T;
   artists?: T;
   image?: T;
-  createdBy?: T;
   publishedDate?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
