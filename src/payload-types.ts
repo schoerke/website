@@ -389,6 +389,10 @@ export interface Post {
    * Auto-set when logged in as an employee.
    */
   createdBy: number | Employee;
+  /**
+   * Override the shown date (past dates only). Defaults to creation date.
+   */
+  publishedDate?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -907,6 +911,7 @@ export interface PostsSelect<T extends boolean = true> {
   artists?: T;
   image?: T;
   createdBy?: T;
+  publishedDate?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

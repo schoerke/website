@@ -12,6 +12,7 @@ import { VideoEmbed } from '@/blocks/VideoEmbed'
 import { AlignmentFeature } from '@/features/alignment/feature.server'
 import { revalidateHomePageOnPostChange, revalidateHomePageOnPostDelete } from '@/collections/hooks/revalidateHomePage'
 import { revalidatePostOnChange, revalidatePostOnDelete } from '@/collections/hooks/revalidatePost'
+import { setPublishedDate } from '@/collections/hooks/setPublishedDate'
 import { syncArtistProjects } from '@/collections/hooks/syncArtistProjects'
 import { blockDuplicateSlug } from '@/collections/hooks/blockDuplicateSlug'
 import { blockDuplicateTitle } from '@/collections/hooks/blockDuplicateTitle'
@@ -27,6 +28,7 @@ import { createSlugHook } from '@/utils/slug'
 import { resolveDefaultCreatedBy } from '@/utils/posts/resolveDefaultCreatedBy'
 import { generatePostPreviewPath } from '@/utils/preview/url'
 import { postContentMessages, validatePostContent } from '@/validators/postContent'
+import { validatePublishedDate } from '@/validators/publishedDate'
 
 interface LexicalEditorState {
   root: {
@@ -128,10 +130,12 @@ export const Posts: CollectionConfig = {
     update: authenticated,
   },
   defaultPopulate: {},
+  defaultSort: '-publishedDate',
   admin: {
     group: 'Content Management',
     useAsTitle: 'title',
     listSearchableFields: ['title', 'normalizedTitle', 'artists.name'],
+    defaultColumns: ['title', 'categories', 'artists', 'publishedDate', '_status', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) => generatePostPreviewPath({ data, req, collection: 'posts' }) ?? null,
     },
@@ -312,6 +316,26 @@ export const Posts: CollectionConfig = {
             return resolveDefaultCreatedBy({ req })
           },
         ],
+      },
+    },
+    {
+      name: 'publishedDate',
+      type: 'date',
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: {
+          de: 'Datum überschreiben (nur in der Vergangenheit). Standard: Erstellungsdatum.',
+          en: 'Override the shown date (past dates only). Defaults to creation date.',
+        },
+      },
+      label: {
+        de: 'Erscheinungsdatum',
+        en: 'Publication date',
+      },
+      validate: validatePublishedDate,
+      hooks: {
+        beforeChange: [setPublishedDate],
       },
     },
   ],

@@ -31,10 +31,11 @@ vi.mock('@payloadcms/richtext-lexical', async (importOriginal) => {
 })
 
 // Test the normalizedContent hook logic directly (extracted for testability)
-import { extractLexicalText } from '@/utils/search/extractLexicalText'
-import { normalizeText } from '@/utils/search/normalizeText'
+import { setPublishedDate } from '@/collections/hooks/setPublishedDate'
 import { EventDatesConversionFeature } from '@/features/eventDatesConverter/feature.server'
 import { PerformersListConversionFeature } from '@/features/performersListConverter/feature.server'
+import { extractLexicalText } from '@/utils/search/extractLexicalText'
+import { normalizeText } from '@/utils/search/normalizeText'
 
 import { Posts, validatePublishedPostContent } from './Posts'
 
@@ -349,6 +350,30 @@ function runNormalizedContentHook(siblingData: { content?: unknown }): string {
     ? normalizeText(extractLexicalText(siblingData.content as Parameters<typeof extractLexicalText>[0]))
     : ''
 }
+
+describe('Posts publishedDate field', () => {
+  it('configures a publishedDate date field with validation and defaulting hook', () => {
+    const field = Posts.fields?.find((candidate) => 'name' in candidate && candidate.name === 'publishedDate')
+
+    expect(field).toBeDefined()
+    if (!field || !('type' in field) || field.type !== 'date') {
+      throw new Error('publishedDate field missing or not typed as date')
+    }
+
+    expect(field.type).toBe('date')
+    expect(field.index).toBe(true)
+    expect(typeof field.validate).toBe('function')
+    expect(field.hooks).toBeDefined()
+    expect(field.hooks?.beforeChange).toHaveLength(1)
+    expect(field.hooks?.beforeChange?.[0]).toBe(setPublishedDate)
+  })
+
+  it('sorts and lists the admin view by publishedDate to match the live site', () => {
+    expect(Posts.defaultSort).toBe('-publishedDate')
+    expect(Posts.admin?.defaultColumns ?? []).toContain('publishedDate')
+    expect(Posts.admin?.defaultColumns ?? []).toContain('_status')
+  })
+})
 
 describe('normalizedContent hook', () => {
   it('returns empty string when content is undefined', () => {
