@@ -96,7 +96,23 @@ describe('ImageLightbox', () => {
 
     const dialog = screen.getByRole('dialog')
     expect(dialog).toHaveClass('h-[80vh]')
-    const slideImage = screen.getByTestId('lightbox-slide-image')
+    const slideImage = screen.getAllByTestId('lightbox-slide-image')[0]
     expect(slideImage).toHaveClass('flex-1', 'min-h-0')
+  })
+
+  it('keeps the Embla viewport separate from the slide track', () => {
+    const images: GalleryImage[] = [
+      { id: '1', image: createMockImage({ url: 'https://example.com/gallery-1.jpg', alt: 'Gallery photo' }) },
+      { id: '2', image: createMockImage({ url: 'https://example.com/gallery-2.jpg', alt: 'Gallery photo 2' }) },
+    ]
+
+    renderLightbox(images)
+
+    const slideImage = screen.getAllByTestId('lightbox-slide-image')[0]
+    const viewport = slideImage.parentElement?.parentElement?.parentElement
+    expect(viewport).toHaveClass('overflow-hidden')
+    expect(viewport?.firstElementChild).toHaveClass('flex', 'h-full')
+    expect(screen.getByText('Gallery photo')).toBeInTheDocument()
+    expect(screen.getByText('Gallery photo 2')).toBeInTheDocument()
   })
 })

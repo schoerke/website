@@ -35,6 +35,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, idx, onOpen }) => {
 
   return (
     <button
+      type="button"
       className="group mb-1 block w-full cursor-pointer break-inside-avoid overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
       onClick={() => onOpen(idx)}
       aria-label={`Open image: ${alt}`}

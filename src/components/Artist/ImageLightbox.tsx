@@ -80,7 +80,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="flex h-[80vh] max-w-5xl flex-col items-center border-0 bg-black p-4 text-white">
         <DialogTitle className="sr-only">{t('media.galleryTitle')}</DialogTitle>
-        <div className="flex min-h-0 w-full flex-1 overflow-hidden" ref={emblaRef}>
+        <div className="min-h-0 w-full flex-1 overflow-hidden" ref={emblaRef}>
           <div className="flex h-full">
             {images.map((item, idx) => {
               const imageObj = typeof item.image === 'object' ? (item.image as PayloadImage) : null
@@ -103,6 +103,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
         {images.length > 1 && (
           <div className="mt-4 flex w-full justify-between">
             <button
+              type="button"
               onClick={scrollPrev}
               aria-label={t('media.previousImage')}
               className="rounded bg-white/10 px-4 py-2 hover:bg-white/20"
@@ -110,6 +111,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex, ope
               &#8592;
             </button>
             <button
+              type="button"
               onClick={scrollNext}
               aria-label={t('media.nextImage')}
               className="rounded bg-white/10 px-4 py-2 hover:bg-white/20"
