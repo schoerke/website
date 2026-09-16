@@ -20,9 +20,16 @@ interface MasonryGridItemProps {
   artist: Artist
   translatedInstruments: string
   hoverDisabled: boolean
+  /**
+   * Marks the first items as high-priority so they start fetching immediately
+   * instead of waiting for lazy-load. Grid is column-major (CSS multi-column),
+   * so the first N items stack in the first column — this gives the fastest
+   * path to visible content, not the literal top row across columns.
+   */
+  priority?: boolean
 }
 
-const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedInstruments, hoverDisabled }) => {
+const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedInstruments, hoverDisabled, priority }) => {
   const { loaded, error, ref, onLoad, onError } = useImageLoad()
   const image = isImageObject(artist.image) ? (artist.image as PayloadImage) : null
   const imageUrl = getValidImageUrl(artist.image)
@@ -73,6 +80,7 @@ const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedIns
             className={`${imageClasses} ${loaded ? 'opacity-100' : 'opacity-0 transition-opacity'}`}
             style={{ aspectRatio, objectPosition: `${focalX}% ${focalY}%` }}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
             ref={ref}
             onLoad={onLoad}
             onError={onError}
@@ -122,7 +130,7 @@ const ArtistMasonryGrid: React.FC<ArtistMasonryGridProps> = ({ artists }) => {
       className="columns-1 gap-1 sm:columns-2 lg:columns-3"
       style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.15s ease-in' }}
     >
-      {displayed.map((artist) => {
+      {displayed.map((artist, idx) => {
         const translatedInstruments =
           artist.instrument?.map((inst) => t(inst as Parameters<typeof t>[0])).join(', ') ?? ''
 
@@ -132,6 +140,7 @@ const ArtistMasonryGrid: React.FC<ArtistMasonryGridProps> = ({ artists }) => {
             artist={artist}
             translatedInstruments={translatedInstruments}
             hoverDisabled={hoverDisabled}
+            priority={idx < 3}
           />
         )
       })}
