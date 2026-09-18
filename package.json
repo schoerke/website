@@ -34,7 +34,9 @@
     "dump:artists": "pnpm dump artists",
     "dump:employees": "pnpm dump employees",
     "dump:recordings": "pnpm dump recordings",
-    "scan:secrets": "tsx scripts/secret-scan.ts --full"
+    "scan:secrets": "tsx scripts/secret-scan.ts --full",
+    "seo:redirects": "tsx scripts/seo/buildLegacyRedirects.ts",
+    "seo:vercel": "tsx scripts/seo/buildVercelJson.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1134.0",
