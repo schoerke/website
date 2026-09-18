@@ -7,12 +7,27 @@ allowBuilds:
   esbuild: true
   sharp: true
 
+minimumReleaseAgeExclude:
+  - '@payloadcms/db-sqlite@3.90.0'
+  - '@payloadcms/drizzle@3.90.0'
+  - '@payloadcms/email-nodemailer@3.90.0'
+  - '@payloadcms/email-resend@3.90.0'
+  - '@payloadcms/graphql@3.90.0'
+  - '@payloadcms/live-preview-react@3.90.0'
+  - '@payloadcms/live-preview@3.90.0'
+  - '@payloadcms/next@3.90.0'
+  - '@payloadcms/payload-cloud@3.90.0'
+  - '@payloadcms/plugin-cloud-storage@3.90.0'
+  - '@payloadcms/plugin-mcp@3.90.0'
+  - '@payloadcms/plugin-search@3.90.0'
+  - '@payloadcms/richtext-lexical@3.90.0'
+  - '@payloadcms/storage-s3@3.90.0'
+  - '@payloadcms/storage-vercel-blob@3.90.0'
+  - '@payloadcms/translations@3.90.0'
+  - '@payloadcms/ui@3.90.0'
+  - payload@3.90.0
+
 overrides:
   dompurify: ^3.4.13
   esbuild: ^0.28.1
-  fast-uri: ^3.1.6
-  hono@<4.13.5: 4.13.5
   js-cookie: ^3.0.7
-  js-yaml@<4.3.2: 4.3.2
-  nodemailer@<9.1.1: 9.1.1
-  qs: ^6.16.0

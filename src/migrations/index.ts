@@ -7,6 +7,7 @@ import * as migration_20260825_211420_add_guides_collection from './20260825_211
 import * as migration_20260827_173327_add_video_links_embed_code from './20260827_173327_add_video_links_embed_code'
 import * as migration_20260828_210415_add_artist_quote_source from './20260828_210415_add_artist_quote_source'
 import * as migration_20260912_191733_add_post_published_date from './20260912_191733_add_post_published_date'
+import * as migration_20260918_181626_add_reset_password_requested_at from './20260918_181626_add_reset_password_requested_at'
 
 export const migrations = [
   {
@@ -53,5 +54,10 @@ export const migrations = [
     up: migration_20260912_191733_add_post_published_date.up,
     down: migration_20260912_191733_add_post_published_date.down,
     name: '20260912_191733_add_post_published_date',
+  },
+  {
+    up: migration_20260918_181626_add_reset_password_requested_at.up,
+    down: migration_20260918_181626_add_reset_password_requested_at.down,
+    name: '20260918_181626_add_reset_password_requested_at',
   },
 ]
