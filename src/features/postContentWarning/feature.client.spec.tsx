@@ -78,4 +78,83 @@ describe('PostContentWarningFeatureClient', () => {
     view.unmount()
     expect(field).not.toHaveClass('post-content-warning')
   })
+
+  it('shows the advisory message when only the trailing date/URL condition is true', async () => {
+    const field = document.createElement('div')
+    field.className = 'field-type rich-text-lexical'
+    field.append(harness.root)
+    document.body.append(field)
+    const advisoryOnlyContent = {
+      root: {
+        children: [
+          { type: 'paragraph', children: [{ type: 'text', text: 'Opening' }] },
+          {
+            type: 'paragraph',
+            children: [
+              { type: 'text', text: '4. Juli 2026, Yamagata' },
+              { type: 'link', children: [{ type: 'text', text: 'Tickets' }] },
+            ],
+          },
+        ],
+      },
+    }
+    harness.editor = {
+      getEditorState: () => ({ toJSON: () => advisoryOnlyContent }),
+      getRootElement: () => harness.root,
+      registerUpdateListener: (listener) => {
+        harness.listener = listener
+        return () => {
+          harness.listener = undefined
+        }
+      },
+    }
+    const feature = PostContentWarningFeatureClient as unknown as { plugins: [{ Component: React.FC }] }
+    const Plugin = feature.plugins[0].Component
+    render(<Plugin />)
+
+    const alert = screen.getByRole('alert')
+    expect(alert).toHaveTextContent('Bitte den EventDates-Block für einheitliche Darstellung verwenden.')
+    expect(screen.getAllByRole('listitem')).toHaveLength(1)
+    expect(field).toHaveClass('post-content-warning')
+  })
+
+  it('shows a structural error and the advisory message together', async () => {
+    const field = document.createElement('div')
+    field.className = 'field-type rich-text-lexical'
+    field.append(harness.root)
+    document.body.append(field)
+    const bothContent = {
+      root: {
+        children: [
+          { type: 'block' },
+          {
+            type: 'paragraph',
+            children: [
+              { type: 'text', text: '4. Juli 2026, Yamagata' },
+              { type: 'link', children: [{ type: 'text', text: 'Tickets' }] },
+            ],
+          },
+        ],
+      },
+    }
+    harness.editor = {
+      getEditorState: () => ({ toJSON: () => bothContent }),
+      getRootElement: () => harness.root,
+      registerUpdateListener: (listener) => {
+        harness.listener = listener
+        return () => {
+          harness.listener = undefined
+        }
+      },
+    }
+    const feature = PostContentWarningFeatureClient as unknown as { plugins: [{ Component: React.FC }] }
+    const Plugin = feature.plugins[0].Component
+    render(<Plugin />)
+
+    const alert = screen.getByRole('alert')
+    expect(alert).toHaveTextContent('Der Beitrag muss mit Text beginnen, nicht mit einem Einbettungsblock.')
+    expect(alert).toHaveTextContent('Bitte den EventDates-Block für einheitliche Darstellung verwenden.')
+    expect(screen.getAllByRole('listitem')).toHaveLength(2)
+    expect(field).toHaveClass('post-content-warning')
+  })
 })

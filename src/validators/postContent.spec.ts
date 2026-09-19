@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { postContentMessages, validatePostContent, validatePostContentErrors } from './postContent'
+import {
+  hasTrailingDateUrl,
+  postContentAdvisoryMessages,
+  postContentMessages,
+  validatePostContent,
+  validatePostContentErrors,
+} from './postContent'
 
 const paragraph = (text: string) => ({ type: 'paragraph', children: [{ type: 'text', text }] })
 const content = (...children: unknown[]) => ({ root: { children } })
@@ -229,5 +235,231 @@ describe('postContentMessages', () => {
       expect(postContentMessages.en[id]).toBeTruthy()
       expect(postContentMessages.de[id]).toBeTruthy()
     }
+  })
+})
+
+describe('hasTrailingDateUrl', () => {
+  it('returns false for missing, empty, or malformed editor state', () => {
+    expect(hasTrailingDateUrl(undefined)).toBe(false)
+    expect(hasTrailingDateUrl(null)).toBe(false)
+    expect(hasTrailingDateUrl({})).toBe(false)
+    expect(hasTrailingDateUrl({ root: null })).toBe(false)
+    expect(hasTrailingDateUrl({ root: { children: [] } })).toBe(false)
+    expect(hasTrailingDateUrl({ root: { children: 'bad' } })).toBe(false)
+  })
+
+  it('returns true for a final paragraph with a link and a numeric DE date', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(
+          paragraph('Opening'),
+          {
+            type: 'paragraph',
+            children: [
+              { type: 'text', text: 'Save the date: ' },
+              { type: 'link', children: [{ type: 'text', text: '04.07.2026' }] },
+            ],
+          }
+        )
+      )
+    ).toBe(true)
+  })
+
+  it('returns true for a final paragraph with a link and an ISO date', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(paragraph('Opening'), {
+          type: 'paragraph',
+          children: [
+            { type: 'text', text: '2026-07-04, Yamagata' },
+            { type: 'link', children: [{ type: 'text', text: 'Tickets' }] },
+          ],
+        })
+      )
+    ).toBe(true)
+  })
+
+  it('returns true for a final paragraph with a link and a written DE date', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(paragraph('Opening'), {
+          type: 'paragraph',
+          children: [
+            { type: 'text', text: '4. Juli 2026, Yamagata' },
+            { type: 'link', children: [{ type: 'text', text: 'Tickets' }] },
+          ],
+        })
+      )
+    ).toBe(true)
+  })
+
+  it('returns true for a final paragraph with a link and a written EN date', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(paragraph('Opening'), {
+          type: 'paragraph',
+          children: [
+            { type: 'text', text: 'July 4, 2026, Yamagata' },
+            { type: 'link', children: [{ type: 'text', text: 'Tickets' }] },
+          ],
+        })
+      )
+    ).toBe(true)
+  })
+
+  it('returns true for an EN date with an ordinal day suffix wrapped entirely in a link', () => {
+    // Regression: real post content (post 269, EN locale) uses "August 25th 2026, Salzburg" as
+    // the entire text of a single link node. The ordinal suffix must not defeat the date match.
+    expect(
+      hasTrailingDateUrl(
+        content(paragraph('Opening'), {
+          type: 'paragraph',
+          children: [
+            {
+              type: 'link',
+              children: [{ type: 'text', text: 'August 25th 2026, Salzburg' }],
+            },
+          ],
+        })
+      )
+    ).toBe(true)
+  })
+
+  it('returns true for an autolink node instead of a link node', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(paragraph('Opening'), {
+          type: 'paragraph',
+          children: [
+            { type: 'text', text: '4. Juli 2026' },
+            { type: 'autolink', children: [{ type: 'text', text: 'https://example.com' }] },
+          ],
+        })
+      )
+    ).toBe(true)
+  })
+
+  it('joins text in document order even when a link sits between date fragments', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(paragraph('Opening'), {
+          type: 'paragraph',
+          children: [
+            { type: 'text', text: '4. ' },
+            { type: 'link', children: [{ type: 'text', text: 'Juli' }] },
+            { type: 'text', text: ' 2026' },
+          ],
+        })
+      )
+    ).toBe(true)
+  })
+
+  it('returns false when there is a date but no link', () => {
+    expect(hasTrailingDateUrl(content(paragraph('Opening'), paragraph('4. Juli 2026, Yamagata')))).toBe(false)
+  })
+
+  it('returns false when there is a link but no date', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(paragraph('Opening'), {
+          type: 'paragraph',
+          children: [{ type: 'link', children: [{ type: 'text', text: 'Tickets' }] }],
+        })
+      )
+    ).toBe(false)
+  })
+
+  it('returns false when the last node is not a paragraph (EventDates block already used)', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(paragraph('Opening'), {
+          type: 'block',
+          fields: { blockType: 'eventDates', events: [{ date: '2026-07-04', location: 'Yamagata' }] },
+        })
+      )
+    ).toBe(false)
+  })
+
+  it('returns false when a date/link paragraph is followed by a trailing EventDates block', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(
+          paragraph('Opening'),
+          {
+            type: 'paragraph',
+            children: [
+              { type: 'text', text: '4. Juli 2026' },
+              { type: 'link', children: [{ type: 'text', text: 'Tickets' }] },
+            ],
+          },
+          { type: 'block', fields: { blockType: 'eventDates' } }
+        )
+      )
+    ).toBe(false)
+  })
+
+  it('returns false when the date/link paragraph is followed by an empty trailing paragraph', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(
+          paragraph('Opening'),
+          {
+            type: 'paragraph',
+            children: [
+              { type: 'text', text: '4. Juli 2026' },
+              { type: 'link', children: [{ type: 'text', text: 'Tickets' }] },
+            ],
+          },
+          paragraph('  ')
+        )
+      )
+    ).toBe(false)
+  })
+
+  it('returns false when the date/link paragraph is followed by non-empty closing prose (Known Limitation)', () => {
+    expect(
+      hasTrailingDateUrl(
+        content(
+          paragraph('Opening'),
+          {
+            type: 'paragraph',
+            children: [
+              { type: 'text', text: '4. Juli 2026' },
+              { type: 'link', children: [{ type: 'text', text: 'Tickets' }] },
+            ],
+          },
+          paragraph('Wir freuen uns auf Sie.')
+        )
+      )
+    ).toBe(false)
+  })
+
+  it('returns false without hanging on a self-referential last node', () => {
+    const node: { type: string; children: unknown[] } = { type: 'link', children: [] }
+    node.children.push(node)
+
+    expect(hasTrailingDateUrl(content(paragraph('Opening'), { type: 'paragraph', children: [node] }))).toBe(false)
+  })
+
+  it('returns false without hanging on excessively deep last-node content', () => {
+    let node: unknown = { type: 'text', text: '4. Juli 2026' }
+    for (let depth = 0; depth < 100_001; depth += 1) {
+      node = { type: 'link', children: [node] }
+    }
+
+    expect(hasTrailingDateUrl(content(paragraph('Opening'), { type: 'paragraph', children: [node] }))).toBe(false)
+  })
+
+  it('returns false without hanging on an excessively wide (flat) last-node child array', () => {
+    const children = Array.from({ length: 100_001 }, () => ({ type: 'text', text: '' }))
+
+    expect(hasTrailingDateUrl(content(paragraph('Opening'), { type: 'paragraph', children }))).toBe(false)
+  })
+})
+
+describe('postContentAdvisoryMessages', () => {
+  it('defines German and English text', () => {
+    expect(postContentAdvisoryMessages.de).toBeTruthy()
+    expect(postContentAdvisoryMessages.en).toBeTruthy()
   })
 })
