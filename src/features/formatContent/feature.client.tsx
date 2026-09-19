@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  $createParagraphNode,
   $getRoot,
   $isLineBreakNode,
   $isParagraphNode,
@@ -9,6 +10,7 @@ import {
   COMMAND_PRIORITY_EDITOR,
   createCommand,
   type LexicalNode,
+  type ParagraphNode,
 } from '@payloadcms/richtext-lexical/lexical'
 import { useLexicalComposerContext } from '@payloadcms/richtext-lexical/lexical/react/LexicalComposerContext'
 import { createClientFeature, slashMenuBasicGroupWithItems } from '@payloadcms/richtext-lexical/client'
@@ -45,6 +47,59 @@ function isRemoveableEmptyParagraph(node: LexicalNode): boolean {
   )
 }
 
+/**
+ * Live-node mirror of `splitParagraphsAtLinebreaks` in `formatContent.ts`. Splits every top-level
+ * paragraph containing a direct-child `LineBreakNode` into multiple sibling paragraphs — one per
+ * line — discarding the linebreak nodes. Only direct children are inspected; a linebreak nested
+ * inside a link or other inline span is left untouched.
+ *
+ * Mutates `root` directly. Must run to completion before `root.getChildren()` is read again for
+ * the empty-paragraph-removal step in `formatDocument`, since that step's "never delete
+ * everything" guard depends on the post-split paragraph count.
+ */
+export function splitParagraphsAtLinebreaksLive(root: ReturnType<typeof $getRoot>): void {
+  for (const topLevelChild of root.getChildren()) {
+    if (!$isParagraphNode(topLevelChild)) continue
+
+    const children = topLevelChild.getChildren()
+    if (!children.some($isLineBreakNode)) continue
+
+    // Start with one segment already present; each linebreak encountered below opens a new one.
+    const segments: LexicalNode[][] = [[]]
+    for (const child of children) {
+      if ($isLineBreakNode(child)) {
+        segments.push([])
+      } else {
+        segments[segments.length - 1].push(child)
+      }
+    }
+
+    const newParagraphs = segments.map((segmentChildren) => {
+      const newParagraph: ParagraphNode = $createParagraphNode()
+      newParagraph.setFormat(topLevelChild.getFormatType())
+      newParagraph.setIndent(topLevelChild.getIndent())
+      newParagraph.setDirection(topLevelChild.getDirection())
+      newParagraph.setTextFormat(topLevelChild.getTextFormat())
+      newParagraph.setTextStyle(topLevelChild.getTextStyle())
+      for (const segmentChild of segmentChildren) {
+        newParagraph.append(segmentChild)
+      }
+      return newParagraph
+    })
+
+    // Insert each new paragraph after the previously-inserted one (starting from the original),
+    // preserving segment order. Inserting all of them after `topLevelChild` directly would reverse
+    // the order.
+    let previous: LexicalNode = topLevelChild
+    for (const newParagraph of newParagraphs) {
+      previous.insertAfter(newParagraph)
+      previous = newParagraph
+    }
+
+    topLevelChild.remove()
+  }
+}
+
 const FormatContentPlugin: React.FC = () => {
   const [editor] = useLexicalComposerContext()
 
@@ -52,6 +107,7 @@ const FormatContentPlugin: React.FC = () => {
     const formatDocument = (): boolean => {
       editor.update(() => {
         const root = $getRoot()
+        splitParagraphsAtLinebreaksLive(root)
         const children = root.getChildren()
         const toRemove = children.filter(isRemoveableEmptyParagraph)
         // Never reduce the document to zero children (content is required).
