@@ -1,5 +1,17 @@
 # Domain Cutover Runbook — ks-schoerke.de → Vercel
 
+> **STATUS: CUTOVER COMPLETE (2026-09-19).** `ks-schoerke.de` is live on Vercel. This document is
+> kept as the historical/reference runbook — see
+> `docs/superpowers/plans/2026-09-18-domain-cutover.md`'s "Completion Report" for the full
+> after-action summary (real values used, deviations, verification results, follow-ups).
+>
+> **Live values actually used** (for any future rollback/reference — differ from the "Phase 1"
+> plan below in this doc, see inline notes there): apex `A → 216.150.1.1`, `www` `CNAME →
+> d4d6cef618391723.vercel-dns-017.com`, `en` `A → 76.76.21.21` (deliberately kept on the legacy
+> value — `en` has its own live `MX` records, incompatible with a `CNAME`). All `AAAA` records
+> deleted, none replaced. Rollback values (pre-cutover) unchanged from below: apex/`www`/`en` all
+> `A → 217.160.0.184`, `AAAA → 2001:8d8:100f:f000:0:0:0:2bb`.
+
 Companion to `docs/superpowers/specs/2026-09-15-domain-cutover-design.md` and
 `docs/superpowers/plans/2026-09-18-domain-cutover.md`.
 Corrections vs. the spec: DNS flip happens BEFORE the env change (C1); explicit 301s (C3/C4);
@@ -56,48 +68,65 @@ records handled explicitly (C5, not addressed by the original spec).
 
 ## Safety rails
 
-- Touch ONLY apex `A`/`AAAA`, `www` `A`/`AAAA`/`CNAME`, `en` `A`/`AAAA`/`CNAME` at IONOS. NEVER edit MX/SPF/DKIM/`MS=`.
+- Touch ONLY apex `A`/`AAAA`, `www` `A`/`AAAA`, `en` `A`/`AAAA` at IONOS. NEVER edit MX/SPF/DKIM/`MS=`.
 - **Never touch** (confirmed present, out of scope): `mail.*` (own `MX → kundenserver.de`, `autodiscover.mail`, `ftp.mail`, `www.mail` — a live separate IONOS mailbox), `ftp`, `journal` (undocumented — ask before WordPress retirement), `_domainconnect`, `mailjet._domainkey`, `notifications`/`send.notifications` (Resend + its SES bounce handling), `autodiscover`, `enterpriseenrollment`, `enterpriseregistration`, `lyncdiscover`, `sip`, `_sipfederationtls._tcp`, `_sip._tls`.
 - Do not add CAA records. Do not move nameservers.
-- IONOS: delete the old `A`/`AAAA` before adding the `CNAME` (conflict error otherwise).
+- IONOS: delete the old `A` before adding the new one (same-type conflict error otherwise).
 - All DNS edits are done by the user directly in the IONOS dashboard — the agent has no IONOS
   access. Vercel/env changes are agent-executable but gated on explicit approval per step.
 
-## Phase 0 — Pre-flight (no user-visible risk)
+## Phase 0 — Pre-flight (no user-visible risk) — ✅ DONE 2026-09-18/19
 
 1. `pnpm seo:vercel && pnpm vitest run src/config/vercelRedirects.spec.ts` — redirects green.
 2. `vercel.json` legacy redirects committed + deployed to production (safe: inert until a request
    arrives with a host header pointing at Vercel, which can't happen before DNS changes).
-3. Add all three domains in the Vercel project: `ks-schoerke.de`, `www.ks-schoerke.de`, `en.ks-schoerke.de`.
-4. Copy the dashboard card values (apex `A`, `www`/`en` `CNAME`, `_vercel` TXT per domain, and any
-   published `AAAA` value). Do not use memorized IPs.
-5. Add `_vercel.<domain>` TXT records at IONOS; confirm each domain shows Verified in Vercel.
-6. Set `ks-schoerke.de` as the Production Domain.
+3. **Done (2026-09-18):** all three domains added to the `website` project via
+   `vercel domains add <domain> website --scope eva-wagners-projects`. Confirmed attached
+   (`vercel domains inspect ks-schoerke.de` lists `Projects: website → en.ks-schoerke.de,
+   www.ks-schoerke.de, ks-schoerke.de`).
+4. **Real card values (verified, not assumed):** all three domains want a plain `A` record to
+   `76.76.21.21` — apex, `www`, AND `en` alike. No `CNAME` needed for the subdomains (the original
+   spec assumed CNAME for `www`/`en` — that was wrong; Vercel's own recommendation for this project
+   is `A` for all three). No `_vercel` TXT ownership-verification record was required in this flow
+   either (the spec assumed one; none appeared). Values may differ if Vercel's recommendation
+   changes before cutover — re-run `vercel domains inspect <domain> --scope eva-wagners-projects`
+   to confirm before flipping.
+5. ~~Add `_vercel.<domain>` TXT records~~ — not required (see step 4).
+6. Set `ks-schoerke.de` as the Production Domain (in Vercel dashboard → website project → Settings
+   → Domains).
 7. Confirm Deployment Protection is OFF for Production (public site must not gate behind SSO).
 8. R2 CORS — done (see "Confirmed preconditions" above).
-9. Check whether Vercel publishes an `AAAA`/IPv6 value for the apex domain card. If yes, note it
-   for Phase 1 step 0. If no (common on custom domains today), plan to delete the apex/`www`/`en`
-   `AAAA` records at cutover — IPv6 clients fall back to IPv4 (Happy Eyeballs); leaving the old
-   `AAAA` in place would silently keep serving WordPress to IPv6 clients.
+9. Vercel gave no `AAAA`/IPv6 value for any of the three domains (only the `A` record above) — plan
+   to delete the apex/`www`/`en` `AAAA` records at cutover. IPv6 clients fall back to IPv4 (Happy
+   Eyeballs); leaving the old `AAAA` in place would silently keep serving WordPress to IPv6 clients.
 10. Export the IONOS DNS zone (captures current `AAAA` values for rollback). Lower apex `A`/`AAAA`
     and `www` TTL to 300s; wait ≥ the previous TTL (often 24h).
-11. Probe the Vercel edge before the flip (replace `<card-ip>`):
+11. Probe the Vercel edge before the flip:
     ```bash
-    curl -I --resolve ks-schoerke.de:443:<card-ip> https://ks-schoerke.de/
-    curl -I --resolve www.ks-schoerke.de:443:<card-ip> https://www.ks-schoerke.de/
-    curl -I --resolve en.ks-schoerke.de:443:<card-ip> https://en.ks-schoerke.de/artists
+    curl -I --resolve ks-schoerke.de:443:76.76.21.21 https://ks-schoerke.de/
+    curl -I --resolve www.ks-schoerke.de:443:76.76.21.21 https://www.ks-schoerke.de/
+    curl -I --resolve en.ks-schoerke.de:443:76.76.21.21 https://en.ks-schoerke.de/artists
     ```
     Expected: apex 3xx → `/de`; www single 301 → apex; en single 301 → `https://ks-schoerke.de/en/artists`. If en double-hops, fix redirects before flipping.
+    **Blocked as of 2026-09-18 20:32–20:56 UTC:** Vercel platform incident "Elevated Errors
+    Triggering Deployments" (Builds/Build & Deploy = Partial Outage per vercel-status.com) — the
+    redirect code from this branch is merged + pushed to `main` but has NOT yet deployed to
+    production. Re-run this probe once a deployment actually completes.
 12. Verify a document upload from a preview deploy still works after the CORS change (regression
     check — confirms the CORS update didn't break the existing `vercel.app`/`localhost` origins).
 
-## Phase 1 — Cutover (low-traffic German evening)
+## Phase 1 — Cutover (low-traffic German evening) — ✅ DONE 2026-09-19
 
-0. Delete the legacy `AAAA` records on apex, `www`, and `en` (or replace with Vercel's card AAAA
-   value if one exists — Phase 0 step 9). Do this together with step 1.
-1. Flip apex `A` → card value AND `www` (delete `A`, add `CNAME` → card value) TOGETHER.
+**Actual final values differ from the generic guidance below** — see the status banner at the top
+of this doc. Apex ended up on a different `A` value (`216.150.1.1`) than originally issued
+(`76.76.21.21`), `www` ended up on a `CNAME`, and `en` was deliberately kept on the original `A`
+value due to its own `MX` records. Steps below are preserved as written/planned.
+
+0. Delete the legacy `AAAA` records on apex, `www`, and `en` (Vercel published none to replace them
+   with — see Phase 0 step 9). Do this together with step 1.
+1. Flip apex `A` → `76.76.21.21` AND `www` `A` → `76.76.21.21` TOGETHER (delete old `A` first).
 2. Wait for Vercel domains to show Valid; Let's Encrypt issues once DNS points at Vercel (allow minutes).
-3. Flip `en`: delete `A`, add `CNAME` → card value.
+3. Flip `en`: delete old `A`, add `A` → `76.76.21.21`.
 4. Verify certificates + redirects:
     ```bash
     curl -I https://ks-schoerke.de/                       # 3xx -> /de then 200
@@ -107,7 +136,7 @@ records handled explicitly (C5, not addressed by the original spec).
     dig +short AAAA ks-schoerke.de                        # empty, or Vercel's published value — never the old 2001:8d8:...
     ```
 
-## Phase 2 — Set public env, then redeploy (C1)
+## Phase 2 — Set public env, then redeploy (C1) — ✅ DONE 2026-09-19
 
 Only AFTER DNS + certs are confirmed:
 
@@ -120,19 +149,23 @@ Only AFTER DNS + certs are confirmed:
    - Payload live preview from the apex admin.
    - `/en`, `sitemap.xml`, `robots.txt`, admin login, an image, and a document upload/download (the R2 CORS path).
 
-## Phase 3 — Verification
+## Phase 3 — Verification — ✅ DONE 2026-09-19
+
+All items confirmed: HTTPS + redirects on all 3 domains, mail records intact, admin login,
+password-reset email delivery (landed in spam, unrelated to cutover), document upload/delete
+round-trip via R2, live preview. See the plan's Completion Report for full detail.
 
 ```bash
 dig +short A ks-schoerke.de
-dig +short CNAME www.ks-schoerke.de
-dig +short CNAME en.ks-schoerke.de
+dig +short A www.ks-schoerke.de
+dig +short A en.ks-schoerke.de
 dig +short MX ks-schoerke.de
 dig +short TXT ks-schoerke.de
 dig +short TXT notifications.ks-schoerke.de
 dig +short TXT resend._domainkey.notifications.ks-schoerke.de
 curl -sI https://ks-schoerke.de/ | grep -i strict-transport-security
 ```
-Expected: apex = card IP; `www`/`en` = card CNAME; MX/SPF/`MS=`/Resend intact; HSTS header noted (see below).
+Expected: apex/`www`/`en` all resolve `76.76.21.21`; MX/SPF/`MS=`/Resend intact; HSTS header noted (see below).
 
 Mail: inbound test to `info@ks-schoerke.de`; outbound Resend test (password reset) to an external inbox.
 Search Console: add `ks-schoerke.de`, submit `sitemap.xml`.

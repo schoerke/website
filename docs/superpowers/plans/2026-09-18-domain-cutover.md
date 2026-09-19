@@ -1,5 +1,55 @@
 # Domain Cutover Implementation Plan
 
+> **STATUS: COMPLETE (2026-09-19).** `ks-schoerke.de` is live on Vercel. See "Completion Report"
+> below for what actually happened, real values used, and follow-ups. Everything below the report
+> is the original plan, preserved as executed (a few real-world deviations are noted inline where
+> they occurred).
+
+## Completion Report (2026-09-19)
+
+**Cutover executed successfully.** Apex, `www`, and `en` all serve the new Next.js site over HTTPS.
+Mail (M365, Resend, and the separate `mail`/`en` mailboxes) verified untouched throughout.
+
+### Real DNS values used (differ from the plan's assumptions — see below)
+
+| Hostname | Final record | Note |
+| -------- | ------------ | ---- |
+| `@` (apex) | `A → 216.150.1.1` | Started as `A → 76.76.21.21` (Vercel's initial card value), then upgraded to Vercel's newer-generation IP per their own dashboard recommendation ("expanding our IP range") |
+| `www` | `CNAME → d4d6cef618391723.vercel-dns-017.com` | Started as `A → 76.76.21.21`, upgraded to the CNAME Vercel recommended |
+| `en` | `A → 76.76.21.21` | **Deliberately NOT upgraded to the recommended CNAME.** `en` has its own live `MX` records (`mx00`/`mx01.kundenserver.de`) for a separate mailbox — a `CNAME` cannot coexist with any other record type (including `MX`) on the same hostname per DNS rules, so switching would have silently deleted that mail routing. Caught via IONOS's own pre-save warning ("Der Service wird deaktiviert... MX en mx01/mx00.kundenserver.de"), not by anything in this plan — **this plan did not originally know `en` had its own MX records.** |
+
+**AAAA records:** deleted on all three (apex/`www`/`en`) as planned — no replacement, Vercel publishes no IPv6 for this project. Confirmed via `curl --resolve` that IPv6 removal doesn't break anything (Happy Eyeballs fallback).
+
+### Deviations from the original spec/plan assumptions
+
+1. **Card values were plain `A` records, not `CNAME`, for `www`/`en` initially.** The original spec (`2026-09-15-domain-cutover-design.md`) assumed `www`/`en` would need `CNAME`. Vercel's actual dashboard gave `A → 76.76.21.21` for all three domains when first added — no `CNAME`, no `_vercel` TXT ownership-verification record either. The CNAME option only appeared later as an optional upgrade recommendation.
+2. **`en`'s own `MX` records were previously undocumented.** Neither the original spec's DNS table nor this plan's audit caught that `en.ks-schoerke.de` has a live separate mailbox. Found only because IONOS's UI refused to silently apply a conflicting CNAME and explicitly listed the MX records it would delete.
+3. **A Vercel platform incident** ("Elevated Errors Triggering Deployments" / "Deployment stuck in initializing state", 2026-09-18 ~20:32–22:14 UTC) delayed the code deployment to production by roughly 2 hours after merging to `main`. Resolved on Vercel's end; no action was needed beyond waiting and eventually confirming via `vercel-status.com`.
+4. **No GitHub↔Vercel auto-deploy on the first `main` push** turned out to be the platform incident above, not a broken integration — a real empty-commit test plus checking Vercel's status page distinguished the two. Worth remembering: an unexplained "push did nothing" is worth checking `vercel-status.com` before assuming local misconfiguration.
+5. **`www` does not canonically redirect to the apex domain**, despite `vercelRedirects.ts`'s `hostRedirects` rule for it. Confirmed reproducible (not a caching artifact) both before and after the CNAME upgrade — appears to be Vercel's own native handling of a registered apex+`www` domain pair overriding the custom `vercel.json` redirect. Both domains serve correct content directly; this is a duplicate-content SEO nitpick, not a functional break. **Unresolved, follow-up item.**
+6. **The `wp-sitemap-posts-post-2.xml` WordPress sub-sitemap was down** for the entire session (~1000 legacy URLs uncounted in the generated redirect map). The generator degrades gracefully (logs a warning, continues) rather than crashing — this robustness fix was added mid-session after the crash was observed. Re-run `pnpm seo:redirects` once WordPress's sitemap recovers.
+7. **In-content legacy links** (posts 258 and 47, flagged by the original code-reviewer audit) were fixed manually by the user directly in the production admin before this plan's Task 4 (the automated fixer script) ran — confirmed via a read-only prod check, so Task 4 was dropped entirely, no script needed.
+
+### Verification performed (all confirmed working)
+
+- HTTPS on all 3 domains, correct redirects (`/de` on apex, `/en` on `en`)
+- Legacy WordPress redirects live in production (specific-match and catch-all both confirmed with real requests)
+- Admin login
+- Password reset email delivery (landed in spam — unrelated pre-existing spam-filter behavior, not a cutover regression)
+- Document upload → confirmed present in R2 bucket `schoerke-website` → confirmed removed after deletion
+- Live preview
+
+### Outstanding follow-ups (not urgent, no live impact)
+
+- Keep WordPress live 1–2 weeks before retiring hosting
+- Investigate the `www`→apex non-canonicalization (deviation #5)
+- Re-run `pnpm seo:redirects` once WordPress's sitemap is fully back (deviation #6)
+- Ask what the undocumented `journal` A record (`93.241.69.212`) is, and confirm actual usage of the `mail.*` and `en`'s own mailbox before ever touching either, before WordPress retirement
+- Consider DMARC (`p=none`) and CAA records as separate hardening tasks
+- Consolidate `NEXT_PUBLIC_SITE_URL`/`NEXT_PUBLIC_SERVER_URL` (pre-existing code smell)
+
+---
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
 > **Project policy override (AGENTS.md):** NEVER commit or push without explicit user approval. Every commit step below is gated on the user saying "commit". Do not run `git push` at all.
