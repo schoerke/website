@@ -74,7 +74,7 @@ export const Repertoire: CollectionConfig = {
           de: 'Künstler, die dieses Repertoire aufführen. Kann für Duos/Ensembles mit mehreren Künstlern verknüpft werden.',
         },
       },
-      validate: async (value, { req }) => {
+      validate: async (value, { req, id }) => {
         if (!Array.isArray(value)) return true
         for (const item of value) {
           const artistId =
@@ -90,7 +90,23 @@ export const Repertoire: CollectionConfig = {
             select: { name: true, repertoire: true },
             depth: 0,
           })
-          if (result?.repertoire && Array.isArray(result.repertoire) && result.repertoire.length >= 5) {
+          if (!result?.repertoire || !Array.isArray(result.repertoire)) continue
+          // Exclude this repertoire doc itself from the count: editing (e.g. renaming) one of an
+          // artist's existing 5 lists must not count the doc-being-saved as an additional list.
+          // Note: at depth: 0, Payload's findByID returns plain IDs for `repertoire`, not
+          // populated objects. The object-shape branch below is defensive only (untested), in
+          // case the depth/select behavior ever changes.
+          const existingRepertoireIds = result.repertoire
+            .map((entry) =>
+              typeof entry === 'number' || typeof entry === 'string'
+                ? Number(entry)
+                : typeof entry === 'object' && entry !== null
+                  ? Number((entry as { id: number | string }).id)
+                  : NaN
+            )
+            .filter((entryId) => !Number.isNaN(entryId) && (id === undefined || entryId !== Number(id)))
+
+          if (existingRepertoireIds.length >= 5) {
             return `"${result.name}" already has 5 repertoire lists. Remove a list before adding more.`
           }
         }
