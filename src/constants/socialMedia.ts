@@ -15,13 +15,13 @@ import { SiFacebook, SiInstagram, SiYoutube } from '@icons-pack/react-simple-ico
 export const SOCIAL_MEDIA_LINKS = [
   {
     platform: 'youtube',
-    url: 'https://youtube.com/@kuenstlersekretariatschoerke',
+    url: 'https://www.youtube.com/@kunstlersekretariatschoerk2468',
     Icon: SiYoutube,
     ariaKey: 'visitYouTube',
   },
   {
     platform: 'facebook',
-    url: 'https://facebook.com/kuenstlersekretariat.schoerke',
+    url: 'https://www.facebook.com/ksschoerke/',
     Icon: SiFacebook,
     ariaKey: 'visitFacebook',
   },
