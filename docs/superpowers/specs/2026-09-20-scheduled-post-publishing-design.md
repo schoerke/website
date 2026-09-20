@@ -73,40 +73,60 @@ export const publishScheduledDrafts: TaskConfig = {
   slug: 'publish-scheduled-drafts',
   handler: async ({ req }) => {
     const now = new Date()
-    
-    // Find all posts with scheduled publish dates in the past
-    const posts = await req.payload.find({
-      collection: 'posts',
-      where: { _status: { equals: 'draft' } },
-      depth: 0,
-    })
-    
     let publishedCount = 0
+    let errorCount = 0
     
-    for (const post of posts.docs) {
-      // Get version history; find latest draft
-      const versions = await req.payload.findVersions({
+    try {
+      // Find all posts with draft versions
+      const posts = await req.payload.find({
         collection: 'posts',
-        where: { parent: { equals: post.id } },
+        where: { _status: { equals: 'draft' } },
+        depth: 0,
+        limit: 1000,
       })
       
-      const latestDraft = versions.docs
-        .filter(v => v._status === 'draft' && v.publishedAt)
-        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0]
-      
-      if (latestDraft && new Date(latestDraft.publishedAt) <= now) {
-        // Publish: transition to published state
-        await req.payload.update({
-          collection: 'posts',
-          id: post.id,
-          data: { _status: 'published' },
-          // Hooks run automatically; no need to skip
-        })
-        publishedCount++
+      for (const post of posts.docs) {
+        try {
+          // Get version history; find latest draft with publishedAt
+          const versions = await req.payload.db.findVersions({
+            collection: 'posts',
+            where: { parent: { equals: post.id } },
+            sort: '-updatedAt', // Latest first
+            req, // Pass request context for access control
+            limit: 100,
+          })
+          
+          const latestDraft = versions.find(
+            v => v._status === 'draft' && v.publishedAt && new Date(v.publishedAt) <= now
+          )
+          
+          if (latestDraft) {
+            // Publish: transition to published state
+            await req.payload.update({
+              collection: 'posts',
+              id: post.id,
+              data: { _status: 'published' },
+              overrideAccess: true, // Job runs as system, needs access override
+            })
+            publishedCount++
+          }
+        } catch (error) {
+          console.error(`Failed to publish post ${post.id}:`, error)
+          errorCount++
+          // Continue to next post; don't halt job
+        }
       }
+    } catch (error) {
+      console.error('publishScheduledDrafts job failed:', error)
     }
     
-    return { output: { publishedCount } }
+    return {
+      output: {
+        publishedCount,
+        errorCount,
+        timestamp: new Date().toISOString(),
+      }
+    }
   },
 }
 ```
@@ -116,7 +136,7 @@ Add to `payload.config.ts`:
 - Import the task
 - Register task in `jobs.tasks` array
 - Configure `autoRun` to execute job every minute
-- Payload's internal job runner handles queuing and execution
+- Payload's internal job runner handles queuing and execution (native, no external dependencies)
 
 **Configuration:**
 ```typescript
@@ -131,6 +151,8 @@ jobs: {
   ],
 }
 ```
+
+**Note:** No external cron service or platform-specific config needed. Payload's `autoRun` is platform-agnostic (works on Vercel, Railway, self-hosted, local dev, etc.)
 
 #### 3. Database Schema
 Payload migrations will auto-generate when `schedulePublish: true` is added:
@@ -201,29 +223,28 @@ When editor creates multiple draft versions of the same post with different sche
 
 ## Known Limitations & Assumptions
 
+### Payload API Details (Verify During Migration)
+- Field name `publishedAt` assumed; verify after running `pnpm payload migrate:create`
+- `req.payload.db.findVersions()` is the correct API; may change in Payload future versions
+
 ### Admin Permissions
 - **Assumption:** All editors with post-create permission can also schedule posts
 - **Future refinement:** Add access control if only admins should schedule (e.g., `access.update` hook)
 
 ### Multi-Draft Scheduling Behavior
 - **Fact:** Payload stores `publishedAt` on each version independently
-- **Implementation:** Job queries `WHERE _status='draft' AND publishedAt <= now`, then publishes latest only
+- **Implementation:** Job queries latest draft with `sort: '-updatedAt'`, publishes if `publishedAt <= now`
 - **Testing:** Verify multi-version scenario (edit v1, save v2 with new schedule, advance time → only v2 publishes)
 
 ### Admin Calendar/List View
-- **Status:** Payload may auto-add "Scheduled" badge or column in Posts list; unknown until implementation
+- **Status:** Payload may auto-add "Scheduled" badge or column in Posts list view; unknown until implementation
 - **Phase 1:** Test what Payload provides; document findings
 - **Phase 2:** If insufficient, build custom calendar widget (separate spec)
-
-### Job Runner Reliability
-- **Status:** Payload's autoRun is reliable on Next.js servers; on Vercel it runs as part of the deployment
-- **No external cron needed:** autoRun is built-in, not dependent on Vercel Cron Functions
-- **Monitoring:** Check Payload admin UI → Jobs tab for job execution history and errors
 
 ### Phase 1 Scope
 - Publish scheduling only (no unpublish, no notifications, no calendar)
 - Single-post-per-edit workflow (no bulk scheduling)
-- Basic error logging (advanced retry logic deferred to Phase 2)
+- Basic error logging in job handler (advanced retry logic deferred to Phase 2)
 
 ## Testing Strategy
 
