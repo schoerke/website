@@ -3,6 +3,7 @@
 import { Link } from '@/i18n/navigation'
 import type { Artist, Image as PayloadImage } from '@/payload-types'
 import ImageSkeleton from '@/components/ui/ImageSkeleton'
+import { ARTIST_FEATURED_IMAGE_QUALITY, ARTIST_FEATURED_IMAGE_SIZES } from '@/constants/artistImage'
 import { useDisableHoverOnScroll } from '@/hooks/useDisableHoverOnScroll'
 import { useImageLoad } from '@/hooks/useImageLoad'
 import { shuffleArray } from '@/utils/array'
@@ -20,16 +21,9 @@ interface MasonryGridItemProps {
   artist: Artist
   translatedInstruments: string
   hoverDisabled: boolean
-  /**
-   * Marks the first items as high-priority so they start fetching immediately
-   * instead of waiting for lazy-load. Grid is column-major (CSS multi-column),
-   * so the first N items stack in the first column — this gives the fastest
-   * path to visible content, not the literal top row across columns.
-   */
-  priority?: boolean
 }
 
-const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedInstruments, hoverDisabled, priority }) => {
+const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedInstruments, hoverDisabled }) => {
   const { loaded, error, ref, onLoad, onError } = useImageLoad()
   const image = isImageObject(artist.image) ? (artist.image as PayloadImage) : null
   const imageUrl = getValidImageUrl(artist.image)
@@ -37,6 +31,15 @@ const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedIns
   const focalX = image?.focalX ?? 50
   const focalY = image?.focalY ?? 50
   const aspectRatio = image?.width && image?.height ? `${image.width} / ${image.height}` : '3 / 4'
+  // Set once the user shows intent to visit this artist (hover/touch — deliberately not `focus`:
+  // a keyboard user tabbing quickly through many cards would otherwise trigger a full hero-image
+  // fetch for every card tabbed past, not just the one they intend to visit), so we start
+  // preloading the exact image variant their detail page will request — matching the same
+  // src/sizes/quality as the featured image there produces a byte-identical cache entry, making
+  // the transition feel instant. Not preloaded upfront for every card to avoid over-fetching
+  // full hero-size images for artists the user may never click.
+  const [intentToVisit, setIntentToVisit] = useState(false)
+  const markIntentToVisit = () => setIntentToVisit(true)
 
   const showPlaceholder = !hasRealImage || error
 
@@ -80,7 +83,6 @@ const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedIns
             className={`${imageClasses} ${loaded ? 'opacity-100' : 'opacity-0 transition-opacity'}`}
             style={{ aspectRatio, objectPosition: `${focalX}% ${focalY}%` }}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            priority={priority}
             ref={ref}
             onLoad={onLoad}
             onError={onError}
@@ -101,13 +103,33 @@ const MasonryGridItem: React.FC<MasonryGridItemProps> = ({ artist, translatedIns
 
   if (!artist.slug) return <div className="mb-1 break-inside-avoid">{content}</div>
 
+  // No `hash: 'biography'` here on purpose: ArtistTabs already defaults to the biography tab
+  // (or the artist's first available tab) when the URL has no matching hash, so the hash added
+  // nothing functionally — but a hash with no matching `id` on the target page makes Next.js
+  // treat the scroll intent as "already handled" and skip its normal scroll-to-top behavior,
+  // leaving the user at their old scroll offset from the homepage instead of landing at the top.
   return (
     <Link
-      href={{ pathname: '/artists/[slug]', params: { slug: artist.slug }, hash: 'biography' }}
+      href={{ pathname: '/artists/[slug]', params: { slug: artist.slug } }}
       className="mb-1 block break-inside-avoid"
       aria-label={translatedInstruments ? `${artist.name}, ${translatedInstruments}` : artist.name}
+      onMouseEnter={markIntentToVisit}
+      onTouchStart={markIntentToVisit}
     >
       {content}
+      {intentToVisit && imageUrl && (
+        <Image
+          src={imageUrl}
+          alt=""
+          aria-hidden="true"
+          width={1}
+          height={1}
+          sizes={ARTIST_FEATURED_IMAGE_SIZES}
+          quality={ARTIST_FEATURED_IMAGE_QUALITY}
+          priority
+          className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0"
+        />
+      )}
     </Link>
   )
 }
@@ -130,7 +152,7 @@ const ArtistMasonryGrid: React.FC<ArtistMasonryGridProps> = ({ artists }) => {
       className="columns-1 gap-1 sm:columns-2 lg:columns-3"
       style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.15s ease-in' }}
     >
-      {displayed.map((artist, idx) => {
+      {displayed.map((artist) => {
         const translatedInstruments =
           artist.instrument?.map((inst) => t(inst as Parameters<typeof t>[0])).join(', ') ?? ''
 
@@ -140,7 +162,6 @@ const ArtistMasonryGrid: React.FC<ArtistMasonryGridProps> = ({ artists }) => {
             artist={artist}
             translatedInstruments={translatedInstruments}
             hoverDisabled={hoverDisabled}
-            priority={idx < 3}
           />
         )
       })}

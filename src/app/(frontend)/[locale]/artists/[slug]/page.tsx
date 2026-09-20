@@ -3,6 +3,7 @@ import ContactPersons, { MobileContactPersonsSection } from '@/components/Artist
 import ArtistLinks from '@/components/ArtistLinks'
 import ImageWithSkeleton from '@/components/ui/ImageWithSkeleton'
 import SchoerkeLink from '@/components/ui/SchoerkeLink'
+import { ARTIST_FEATURED_IMAGE_QUALITY, ARTIST_FEATURED_IMAGE_SIZES } from '@/constants/artistImage'
 import { getArtistBySlug, getArtistSlugs } from '@/services/artist'
 import { getNewsPostCountByArtist } from '@/services/post'
 import { getRecordingCountByArtist, getRecordingVersionByArtist } from '@/services/recording'
@@ -87,9 +88,9 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
               src={imageUrl}
               alt={name}
               className="rounded-lg"
-              sizes="(min-width: 1024px) min(75vw, 912px), (min-width: 768px) 75vw, 100vw"
+              sizes={ARTIST_FEATURED_IMAGE_SIZES}
               priority
-              quality={80}
+              quality={ARTIST_FEATURED_IMAGE_QUALITY}
               objectPosition={
                 typeof image === 'object' && image !== null && image.focalX != null && image.focalY != null
                   ? `${image.focalX}% ${image.focalY}%`

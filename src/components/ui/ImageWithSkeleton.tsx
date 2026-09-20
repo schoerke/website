@@ -28,7 +28,7 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
   quality,
   onError: onErrorProp,
 }) => {
-  const { loaded, error, ref, onLoad, onError } = useImageLoad()
+  const { loaded, error, wasCached, ref, onLoad, onError } = useImageLoad()
 
   const handleError = useCallback(() => {
     onError()
@@ -47,7 +47,9 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({
           fill
           priority={priority}
           quality={quality}
-          className={`object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          // Already-cached images (e.g. preloaded ahead of navigation) skip the fade-in
+          // transition entirely so they appear instantly instead of still animating in.
+          className={`object-cover ${wasCached ? 'opacity-100' : `transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}`}
           style={objectPosition ? { objectPosition } : undefined}
           ref={ref}
           onLoad={onLoad}

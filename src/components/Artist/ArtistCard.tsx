@@ -2,6 +2,7 @@
 
 import { Link } from '@/i18n/navigation'
 import type { Image as PayloadImage } from '@/payload-types'
+import { ARTIST_FEATURED_IMAGE_QUALITY, ARTIST_FEATURED_IMAGE_SIZES } from '@/constants/artistImage'
 import { getValidImageUrl, isImageObject } from '@/utils/image'
 import { UserRound } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -67,6 +68,17 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug, 
   // Translate instruments
   const translatedInstruments = instrument?.map((inst) => t(inst as Parameters<typeof t>[0])).join(', ') ?? ''
 
+  // Set once the user shows intent to visit this artist (hover/touch — deliberately not `focus`:
+  // a keyboard user tabbing quickly through many cards would otherwise trigger a full hero-image
+  // fetch for every card tabbed past, not just the one they intend to visit), so we start
+  // preloading the exact image variant their detail page will request — matching the same
+  // src/sizes/quality as the featured image there (and the homepage's ArtistMasonryGrid, which
+  // uses the same shared constants) produces a byte-identical cache entry, making the transition
+  // feel instant regardless of which page the user hovered the artist from first.
+  const [intentToVisit, setIntentToVisit] = useState(false)
+  const markIntentToVisit = () => setIntentToVisit(true)
+  const imageUrl = getValidImageUrl(image)
+
   const scrimClasses = hoverDisabled
     ? 'absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4 transition-colors duration-300'
     : 'absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4 transition-colors duration-300 group-hover:from-black/85 group-hover:via-black/40'
@@ -81,10 +93,32 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ name, instrument, image, slug, 
     </div>
   )
 
+  // No `hash: 'biography'` here on purpose: ArtistTabs already defaults to the biography tab
+  // (or the artist's first available tab) with no hash, so the hash added nothing functionally
+  // — but it made Next.js skip its normal scroll-to-top behavior on navigation, since a hash with
+  // no matching `id` on the target page is treated as an "already handled" scroll intent.
   return slug ? (
-    <Link href={{ pathname: '/artists/[slug]', params: { slug }, hash: 'biography' }} className={cardClasses}>
+    <Link
+      href={{ pathname: '/artists/[slug]', params: { slug } }}
+      className={cardClasses}
+      onMouseEnter={markIntentToVisit}
+      onTouchStart={markIntentToVisit}
+    >
       <ArtistCardImage image={image} name={name} />
       {overlay}
+      {intentToVisit && imageUrl && (
+        <Image
+          src={imageUrl}
+          alt=""
+          aria-hidden="true"
+          width={1}
+          height={1}
+          sizes={ARTIST_FEATURED_IMAGE_SIZES}
+          quality={ARTIST_FEATURED_IMAGE_QUALITY}
+          priority
+          className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0"
+        />
+      )}
     </Link>
   ) : (
     <div className={cardClasses}>

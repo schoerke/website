@@ -92,7 +92,10 @@ const PostDetailContent: React.FC<PostDetailContentProps> = ({
             <ul className="flex flex-wrap justify-end gap-3">
               {relatedArtists.map((artist) => (
                 <li key={artist.id}>
-                  <SchoerkeLink href={`/artists/${artist.slug}#biography`} variant="with-icon" className="text-sm">
+                  {/* No `#biography` hash: ArtistTabs already defaults to biography without one,
+                      and a hash with no matching id on the target page makes Next.js skip
+                      scroll-to-top on navigation. */}
+                  <SchoerkeLink href={`/artists/${artist.slug}`} variant="with-icon" className="text-sm">
                     {artist.name}
                   </SchoerkeLink>
                 </li>

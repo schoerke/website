@@ -85,4 +85,37 @@ describe('ImageWithSkeleton', () => {
 
     expect(onError).toHaveBeenCalledTimes(1)
   })
+
+  describe('already-cached images', () => {
+    it('fades in over 500ms for a genuine network load (onLoad event)', () => {
+      render(<ImageWithSkeleton src="/wiesbaden.jpg" alt="Wiesbaden" />)
+
+      fireEvent.load(screen.getByAltText('Wiesbaden'))
+
+      const img = screen.getByAltText('Wiesbaden')
+      expect(img).toHaveClass('transition-opacity', 'duration-500', 'opacity-100')
+    })
+
+    it('skips the fade-in transition entirely when the image is already cached at mount', () => {
+      // Simulate the browser reporting the image as already-complete synchronously when the ref
+      // callback fires (as happens for a genuinely cached image) — see useImageLoad's `ref`.
+      const completeDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'complete')
+      const naturalWidthDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'naturalWidth')
+      Object.defineProperty(HTMLImageElement.prototype, 'complete', { configurable: true, get: () => true })
+      Object.defineProperty(HTMLImageElement.prototype, 'naturalWidth', { configurable: true, get: () => 42 })
+
+      try {
+        render(<ImageWithSkeleton src="/wiesbaden.jpg" alt="Wiesbaden" />)
+
+        const img = screen.getByAltText('Wiesbaden')
+        expect(img).toHaveClass('opacity-100')
+        expect(img).not.toHaveClass('transition-opacity')
+        expect(img).not.toHaveClass('duration-500')
+      } finally {
+        if (completeDescriptor) Object.defineProperty(HTMLImageElement.prototype, 'complete', completeDescriptor)
+        if (naturalWidthDescriptor)
+          Object.defineProperty(HTMLImageElement.prototype, 'naturalWidth', naturalWidthDescriptor)
+      }
+    })
+  })
 })

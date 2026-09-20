@@ -32,10 +32,24 @@ interface LinkHref {
 }
 
 vi.mock('@/i18n/navigation', () => ({
-  Link: ({ href, children, className }: { href: string | LinkHref; children: React.ReactNode; className?: string }) => (
+  Link: ({
+    href,
+    children,
+    className,
+    onMouseEnter,
+    onTouchStart,
+  }: {
+    href: string | LinkHref
+    children: React.ReactNode
+    className?: string
+    onMouseEnter?: () => void
+    onTouchStart?: () => void
+  }) => (
     <a
       href={typeof href === 'string' ? href : `/artists/${href.params?.slug}${href.hash ? `#${href.hash}` : ''}`}
       className={className}
+      onMouseEnter={onMouseEnter}
+      onTouchStart={onTouchStart}
     >
       {children}
     </a>
@@ -123,7 +137,7 @@ describe('ArtistCard', () => {
       renderWithIntl(<ArtistCard {...defaultProps} />)
       const link = screen.getByRole('link')
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/artists/john-doe#biography')
+      expect(link).toHaveAttribute('href', '/artists/john-doe')
     })
 
     it('should render as div when slug is not provided', () => {
@@ -250,6 +264,42 @@ describe('ArtistCard', () => {
 
       const name = screen.getByText('John Doe')
       expect(name).toHaveTextContent('John Doe')
+    })
+  })
+
+  describe('Detail page image preload (hover/touch intent)', () => {
+    it('does not preload the detail page image before the user shows intent to visit', () => {
+      renderWithIntl(<ArtistCard {...defaultProps} image={createMockImage()} slug="john-doe" />)
+
+      expect(screen.getAllByTestId('artist-image')).toHaveLength(1)
+    })
+
+    it('preloads the detail page image once the user hovers the card', () => {
+      renderWithIntl(<ArtistCard {...defaultProps} image={createMockImage()} slug="john-doe" />)
+
+      fireEvent.mouseEnter(screen.getByRole('link'))
+
+      const images = screen.getAllByTestId('artist-image')
+      expect(images).toHaveLength(2)
+      // Same src as the visible thumbnail — this is the exact same source image the artist's
+      // detail page (and the homepage's ArtistMasonryGrid, sharing the same constants) will
+      // request, so hovering this artist anywhere warms the cache for all of them.
+      expect(images[1]).toHaveAttribute('src', 'https://example.com/artist.jpg?v=2023-01-01T00%3A00%3A00.000Z')
+    })
+
+    it('preloads the detail page image once the user touches the card', () => {
+      renderWithIntl(<ArtistCard {...defaultProps} image={createMockImage()} slug="john-doe" />)
+
+      fireEvent.touchStart(screen.getByRole('link'))
+
+      expect(screen.getAllByTestId('artist-image')).toHaveLength(2)
+    })
+
+    it('does not preload when the card has no slug (not rendered as a link)', () => {
+      const { container } = renderWithIntl(<ArtistCard {...defaultProps} image={createMockImage()} slug={undefined} />)
+
+      expect(container.querySelector('a')).not.toBeInTheDocument()
+      expect(screen.getAllByTestId('artist-image')).toHaveLength(1)
     })
   })
 })

@@ -32,7 +32,7 @@ describe('PayloadRichText internal links', () => {
       converters.internalDocToHref({
         linkNode: { fields: { doc: { relationTo: 'artists', value: { slug: 'jane-artist' } } } },
       })
-    ).toBe('/en/artists/jane-artist#biography')
+    ).toBe('/en/artists/jane-artist')
   })
 
   it('does not build an internal link from a non-string populated slug', () => {

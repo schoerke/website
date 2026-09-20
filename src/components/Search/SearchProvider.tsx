@@ -469,8 +469,10 @@ function getTypeLabel(relationTo: string, locale: 'de' | 'en'): string {
 function getDocumentPath(doc: SearchDoc): string {
   switch (doc.relationTo) {
     case 'artists':
-      // Use slug if available, otherwise fall back to ID
-      return `/artists/${doc.slug || doc.relationId}#biography`
+      // Use slug if available, otherwise fall back to ID. No `#biography` hash: ArtistTabs
+      // already defaults to biography without one, and a hash with no matching id on the target
+      // page makes Next.js skip scroll-to-top on navigation.
+      return `/artists/${doc.slug || doc.relationId}`
     case 'employees':
       return `/kontakt` // Employees are listed on the contact page
     case 'pages':

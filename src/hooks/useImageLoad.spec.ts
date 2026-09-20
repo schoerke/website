@@ -80,4 +80,42 @@ describe('useImageLoad', () => {
     expect(result.current.loaded).toBe(true)
     expect(result.current.error).toBe(false)
   })
+
+  describe('wasCached', () => {
+    it('starts false', () => {
+      const { result } = renderHook(() => useImageLoad())
+      expect(result.current.wasCached).toBe(false)
+    })
+
+    it('is set to true when the ref detects an already-complete (cached) image at mount', () => {
+      const { result } = renderHook(() => useImageLoad())
+      const fakeNode = { complete: true, naturalWidth: 42 } as HTMLImageElement
+      act(() => {
+        result.current.ref(fakeNode)
+      })
+      expect(result.current.wasCached).toBe(true)
+    })
+
+    it('stays false for an image that loads via a genuine onLoad event (real network fetch)', () => {
+      const { result } = renderHook(() => useImageLoad())
+      act(() => {
+        result.current.onLoad()
+      })
+      expect(result.current.loaded).toBe(true)
+      expect(result.current.wasCached).toBe(false)
+    })
+
+    it('stays false if the ref is called before the image is complete, then onLoad fires later', () => {
+      const { result } = renderHook(() => useImageLoad())
+      const incompleteNode = { complete: false } as HTMLImageElement
+      act(() => {
+        result.current.ref(incompleteNode)
+      })
+      act(() => {
+        result.current.onLoad()
+      })
+      expect(result.current.loaded).toBe(true)
+      expect(result.current.wasCached).toBe(false)
+    })
+  })
 })

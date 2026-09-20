@@ -29,7 +29,21 @@ vi.mock('next/image', () => ({
 }))
 
 vi.mock('@/i18n/navigation', () => ({
-  Link: ({ href, children, onClick }: { href: unknown; children: React.ReactNode; onClick?: () => void }) => (
+  Link: ({
+    href,
+    children,
+    onClick,
+    onMouseEnter,
+    onFocus,
+    onTouchStart,
+  }: {
+    href: unknown
+    children: React.ReactNode
+    onClick?: () => void
+    onMouseEnter?: () => void
+    onFocus?: () => void
+    onTouchStart?: () => void
+  }) => (
     <a
       href={
         typeof href === 'string'
@@ -39,6 +53,9 @@ vi.mock('@/i18n/navigation', () => ({
             }`
       }
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onFocus={onFocus}
+      onTouchStart={onTouchStart}
     >
       {children}
     </a>
@@ -166,10 +183,42 @@ describe('ArtistMasonryGrid', () => {
     expect(overlay).toHaveClass('group-hover:translate-y-0', 'group-hover:opacity-100')
   })
 
-  it('links artists to their biography tab', () => {
+  it('links artists to their detail page without a hash, so navigation scrolls to the top', () => {
     const artist = createMockArtist({ id: 7, slug: 'jane-artist' })
     renderGrid([artist])
 
-    expect(screen.getByRole('link', { name: /Jane Artist/ })).toHaveAttribute('href', '/artists/jane-artist#biography')
+    // No `#biography` hash: ArtistTabs already defaults to the biography tab without one, and a
+    // hash with no matching element on the target page makes Next.js skip scroll-to-top.
+    expect(screen.getByRole('link', { name: /Jane Artist/ })).toHaveAttribute('href', '/artists/jane-artist')
+  })
+
+  it('does not preload the artist detail page image before the user shows intent to visit', () => {
+    const artist = createMockArtist({ image: createMockImage({ url: 'https://example.com/jane.jpg' }) as never })
+    renderGrid([artist])
+
+    // Only the grid thumbnail itself should be present — no extra preload image yet.
+    expect(document.querySelectorAll('img')).toHaveLength(1)
+  })
+
+  it('preloads the artist detail page image once the user hovers the card', () => {
+    const artist = createMockArtist({ image: createMockImage({ url: 'https://example.com/jane.jpg' }) as never })
+    renderGrid([artist])
+
+    fireEvent.mouseEnter(screen.getByRole('link', { name: /Jane Artist/ }))
+
+    const images = document.querySelectorAll('img')
+    expect(images).toHaveLength(2)
+    // Both point at the exact same source image so the browser reuses the same cache entry
+    // the detail page's featured image will request.
+    expect(images[1]).toHaveAttribute('src', 'https://example.com/jane.jpg?v=2024-01-01T00%3A00%3A00.000Z')
+  })
+
+  it('does NOT preload on focus alone, to avoid fetching a full hero image for every card a keyboard user tabs past', () => {
+    const artist = createMockArtist({ image: createMockImage({ url: 'https://example.com/jane.jpg' }) as never })
+    renderGrid([artist])
+
+    fireEvent.focus(screen.getByRole('link', { name: /Jane Artist/ }))
+
+    expect(document.querySelectorAll('img')).toHaveLength(1)
   })
 })

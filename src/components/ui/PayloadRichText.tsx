@@ -67,7 +67,10 @@ function buildInternalHref(doc: NonNullable<LinkFields['doc']>, locale?: string)
     case 'posts':
       return slug ? `${localePart}/news/${slug}` : '#'
     case 'artists':
-      return slug ? `${localePart}/artists/${slug}#biography` : '#'
+      // No `#biography` hash: ArtistTabs already defaults to the biography tab without one, and
+      // a hash with no matching `id` on the artist detail page makes Next.js skip its normal
+      // scroll-to-top behavior on navigation.
+      return slug ? `${localePart}/artists/${slug}` : '#'
     case 'projects':
       return slug ? `${localePart}/projects/${slug}` : '#'
     default:

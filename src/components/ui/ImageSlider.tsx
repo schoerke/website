@@ -109,8 +109,11 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
               key={img.slug ?? img.alt ?? `slide-${idx}`}
             >
               {img.slug ? (
+                // No `hash: 'biography'` here on purpose: ArtistTabs already defaults to the
+                // biography tab without one, and a hash with no matching element on the target
+                // page makes Next.js skip its normal scroll-to-top behavior on navigation.
                 <Link
-                  href={{ pathname: '/artists/[slug]', params: { slug: img.slug }, hash: 'biography' }}
+                  href={{ pathname: '/artists/[slug]', params: { slug: img.slug } }}
                   tabIndex={-1}
                   aria-label={
                     img.bannerText

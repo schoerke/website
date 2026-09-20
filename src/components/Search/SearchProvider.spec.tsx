@@ -69,6 +69,6 @@ describe('SearchProvider', () => {
       action?.perform()
     })
 
-    expect(routerPush).toHaveBeenCalledWith('/artists/jane-artist#biography')
+    expect(routerPush).toHaveBeenCalledWith('/artists/jane-artist')
   })
 })

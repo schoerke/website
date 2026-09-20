@@ -107,7 +107,7 @@ describe('ImageSlider', () => {
       render(<ImageSlider images={mockImages} />)
       const links = screen.getAllByRole('link')
       expect(links).toHaveLength(3)
-      expect(links[0]).toHaveAttribute('href', '/de/artists/artist-1#biography')
+      expect(links[0]).toHaveAttribute('href', '/de/artists/artist-1')
     })
 
     it('should render images without links when not provided', () => {

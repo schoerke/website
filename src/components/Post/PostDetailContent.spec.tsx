@@ -86,6 +86,6 @@ describe('PostDetailContent', () => {
 
     const link = screen.getByRole('link', { name: 'Jane Artist' })
 
-    expect(link).toHaveAttribute('href', '/artists/jane-artist#biography')
+    expect(link).toHaveAttribute('href', '/artists/jane-artist')
   })
 })

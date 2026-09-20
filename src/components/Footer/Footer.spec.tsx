@@ -9,7 +9,62 @@
  * @vitest-environment happy-dom
  */
 import { SOCIAL_MEDIA_LINKS } from '@/constants/socialMedia'
-import { describe, expect, it } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+
+const { getImageByFilenameMock } = vi.hoisted(() => ({
+  getImageByFilenameMock: vi.fn(),
+}))
+
+vi.mock('@/services/media.server', () => ({
+  getImageByFilename: getImageByFilenameMock,
+}))
+
+vi.mock('next/image', () => ({
+  default: ({ src, alt }: { src: string; alt: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} data-testid="footer-wiesbaden-preload" />
+  ),
+}))
+
+vi.mock('@/components/Footer/FooterDecorations', () => ({ default: () => null }))
+vi.mock('@/components/Footer/FooterInfo', () => ({ default: () => null }))
+vi.mock('@/components/Footer/FooterNavigation', () => ({ default: () => null }))
+
+describe('Footer — Wiesbaden image preload', () => {
+  it('renders the hidden preload image when the lookup succeeds', async () => {
+    getImageByFilenameMock.mockResolvedValue({
+      url: 'https://example.com/wiesbaden.webp',
+      updatedAt: '2024-01-01T00:00:00.000Z',
+    })
+    const { default: Footer } = await import('@/components/Footer/Footer')
+
+    render(await Footer({ locale: 'de' }))
+
+    expect(getImageByFilenameMock).toHaveBeenCalledWith('wiesbaden.webp')
+    const preload = screen.getByTestId('footer-wiesbaden-preload')
+    expect(preload).toHaveAttribute('src', 'https://example.com/wiesbaden.webp?v=2024-01-01T00%3A00%3A00.000Z')
+  })
+
+  it('renders nothing extra when the image lookup returns null', async () => {
+    getImageByFilenameMock.mockResolvedValue(null)
+    const { default: Footer } = await import('@/components/Footer/Footer')
+
+    render(await Footer({ locale: 'de' }))
+
+    expect(screen.queryByTestId('footer-wiesbaden-preload')).not.toBeInTheDocument()
+  })
+
+  it('does not throw and renders the rest of the footer when the lookup rejects', async () => {
+    getImageByFilenameMock.mockRejectedValue(new Error('DB unavailable'))
+    const { default: Footer } = await import('@/components/Footer/Footer')
+
+    const element = await Footer({ locale: 'de' })
+    expect(() => render(element)).not.toThrow()
+    expect(screen.queryByTestId('footer-wiesbaden-preload')).not.toBeInTheDocument()
+    expect(document.querySelector('footer')).toBeInTheDocument()
+  })
+})
 
 describe('Footer Components - Structure and Configuration', () => {
   describe('Social Media Links Configuration', () => {
