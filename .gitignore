@@ -75,6 +75,9 @@ src/payload-generated-schema.ts
 # opencode
 .opencode
 
+# ProjectAtlas local tool cache/index (SQLite db + config, not shared config)
+.projectatlas/
+
 # git worktrees
 /.worktrees
 
