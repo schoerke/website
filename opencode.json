@@ -2,6 +2,21 @@
   "$schema": "https://opencode.ai/config.json",
   "instructions": ["docs/patterns/react-components.md", "docs/patterns/data-fetching.md", "docs/patterns/payload.md"],
   "mcp": {
+    "projectatlas": {
+      "type": "local",
+      "command": [
+        "/usr/local/bin/projectatlas",
+        "--require-version",
+        "0.4.5",
+        "--db",
+        "/Users/scott/code/production/schoerke/website/.projectatlas/projectatlas.db",
+        "--config",
+        "/Users/scott/code/production/schoerke/website/.projectatlas/config.toml",
+        "mcp"
+      ],
+      "cwd": "/Users/scott/code/production/schoerke/website",
+      "enabled": true
+    },
     "payload": {
       "type": "remote",
       "url": "http://localhost:3000/api/mcp",
