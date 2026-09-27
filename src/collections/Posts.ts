@@ -282,19 +282,6 @@ export const Posts: CollectionConfig = {
       },
     },
     {
-      name: 'unlisted',
-      type: 'checkbox',
-      defaultValue: false,
-      label: { de: 'Nicht gelistet', en: 'Unlisted' },
-      admin: {
-        position: 'sidebar',
-        description: {
-          en: 'Hide from news/projects listings, sitemap, and search. Still viewable via direct link.',
-          de: 'Aus News-/Projektlisten, Sitemap und Suche ausblenden. Über Direktlink weiterhin sichtbar.',
-        },
-      },
-    },
-    {
       name: 'image',
       relationTo: 'images',
       type: 'upload',
@@ -349,6 +336,19 @@ export const Posts: CollectionConfig = {
             return resolveDefaultCreatedBy({ req })
           },
         ],
+      },
+    },
+    {
+      name: 'unlisted',
+      type: 'checkbox',
+      defaultValue: false,
+      label: { de: 'Nicht gelistet', en: 'Unlisted' },
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Hide from news/projects listings, sitemap, and search. Still viewable via direct link.',
+          de: 'Aus News-/Projektlisten, Sitemap und Suche ausblenden. Über Direktlink weiterhin sichtbar.',
+        },
       },
     },
   ],
