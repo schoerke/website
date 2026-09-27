@@ -22,6 +22,10 @@ type LocaleCode = 'de' | 'en' | 'all'
  * **Ordering:** Payload populates relationship arrays in stored order (rels table `order` ASC),
  * so repertoire/projects order is preserved by the query itself — no manual re-fetch needed.
  *
+ * `unlisted` is included in the posts populate because the projects filter below depends on
+ * it — omitting it makes the unlisted filter silently no-op (same select/populate gotcha as
+ * the `filename` one referenced below, applied to a plain boolean instead of a virtual field).
+ *
  * **Performance:** one `artists.find()` (~50-100ms), slimmed payloads only.
  *
  * @see {@link docs/patterns/payload.md} for the select/populate-on-uploads `filename` gotcha
