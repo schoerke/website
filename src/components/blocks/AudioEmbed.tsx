@@ -25,6 +25,9 @@ const AudioEmbed: React.FC<AudioEmbedProps> = ({ url, embedCode, fileUrl }) => {
     // iframe documents, not a plain media element.
     return (
       <div className="my-8">
+        {/* oxlint-disable-next-line jsx-a11y/media-has-caption -- no caption/transcript source
+            exists for an externally-hosted audio file URL (e.g. a Dropbox recording); the field
+            only ever collects a raw link, not a transcript to build a <track> from. */}
         <audio controls className="w-full" src={fileUrl} aria-label="Audio player">
           <a href={fileUrl}>Download audio</a>
         </audio>
