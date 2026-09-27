@@ -140,7 +140,11 @@ describe('sitemap', () => {
             limit: 0,
             overrideAccess: false,
             select: { id: true, slug: true, updatedAt: true },
-            where: { _status: { equals: 'published' }, categories: { contains: 'news' } },
+            where: {
+              _status: { equals: 'published' },
+              unlisted: { not_equals: true },
+              categories: { contains: 'news' },
+            },
           },
           {
             collection: 'posts',
@@ -150,7 +154,11 @@ describe('sitemap', () => {
             limit: 0,
             overrideAccess: false,
             select: { id: true, slug: true, updatedAt: true },
-            where: { _status: { equals: 'published' }, categories: { contains: 'projects' } },
+            where: {
+              _status: { equals: 'published' },
+              unlisted: { not_equals: true },
+              categories: { contains: 'projects' },
+            },
           },
         ]),
       ])
