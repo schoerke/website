@@ -181,8 +181,8 @@ const PayloadRichText: React.FC<PayloadRichTextProps> = ({ content, className, l
             )
           },
           audioEmbed: ({ node }: { node: SerializedLexicalNode & { fields: AudioEmbedBlockFields } }) => {
-            const { url, embedCode } = node.fields
-            return <AudioEmbed url={url} embedCode={embedCode} />
+            const { url, embedCode, fileUrl } = node.fields
+            return <AudioEmbed url={url} embedCode={embedCode} fileUrl={fileUrl} />
           },
           eventDates: ({ node }: { node: SerializedLexicalNode & { fields: EventDatesBlockFields } }) => {
             return <EventDates events={node.fields.events} locale={locale as 'de' | 'en'} />
