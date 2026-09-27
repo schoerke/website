@@ -93,6 +93,23 @@ Fix: add `project.unlisted !== true` to `getArtistBySlug`'s existing filter, alo
 `_status` check, so unlisted posts are dropped from the artist-page projects list the same way
 unpublished ones are.
 
+### Artist "News" tab visibility bug (must fix)
+
+`getNewsPostCountByArtist` (`src/services/post.ts`) is used solely to compute `hasNews` on the
+artist detail page (`.../artists/[slug]/page.tsx`), which decides whether the "News" tab renders
+at all. It filters on `_status` and `artists`/`categories` but not `unlisted`, while the tab's
+actual content (loaded lazily via `fetchPostsByArtist` → `getFilteredPosts`, already filtered)
+does exclude unlisted posts. Net effect: if an artist's only news post is unlisted, the tab shows
+up as available but renders empty when clicked — not a data leak, but a confusing dead-end. Fix:
+add `unlisted: { not_equals: true }` to `getNewsPostCountByArtist`'s `where` clause so the count
+and the tab's actual content agree.
+
+Audit of every other `payload.find`/`payload.count` call on the `posts` collection
+(`getAllPosts`, `getAllNewsPosts`, `getAllProjectPosts`, `getAllHomepagePosts`,
+`getAllNewsPostsByArtist`, `getAllProjectPostsByArtist` in `src/services/post.ts`) confirms these
+are all dead code — deprecated, unused outside their own file and tests — so no further fix
+needed there. If any are revived later, they'll need the same `unlisted` exclusion.
+
 ### Out of scope for this change
 
 - Home page news feed / any other list already goes through `getFilteredPosts`/`getPaginatedPosts`
@@ -229,6 +246,7 @@ migration against a stale view of "current schema."
   change").
 - `artist.spec.ts` (or wherever `getArtistBySlug` is tested): unlisted project post excluded from
   `artist.projects`.
+- `post.spec.ts`: `getNewsPostCountByArtist` excludes unlisted posts from its count.
 - `sitemap.spec.ts`: unlisted post excluded from generated sitemap entries.
 - `audioFields` validator spec: `validateFileURL` accepts a valid `https:` URL, rejects
   non-`https:` schemes (`javascript:`, `data:`, `http:` if excluded), rejects malformed input,
