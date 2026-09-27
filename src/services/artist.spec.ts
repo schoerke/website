@@ -70,7 +70,7 @@ describe('Artist Service', () => {
       images: IMAGES_POPULATE,
       employees: { name: true, title: true, email: true, phone: true, mobile: true },
       repertoire: { title: true, content: true },
-      posts: { title: true, slug: true, image: true, content: true, _status: true },
+      posts: { title: true, slug: true, image: true, content: true, _status: true, unlisted: true },
       documents: { filename: true, url: true, updatedAt: true },
     }
 
@@ -121,6 +121,17 @@ describe('Artist Service', () => {
       const result = await getArtistBySlug('test-artist')
 
       expect(result?.projects).toEqual([])
+    })
+
+    it('should exclude unlisted projects from populated artist data', async () => {
+      const listedProject = createMockPost({ id: 10, _status: 'published', unlisted: false })
+      const unlistedProject = createMockPost({ id: 20, _status: 'published', unlisted: true })
+      const mockArtist = createMockArtist({ projects: [listedProject, unlistedProject] })
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([mockArtist]))
+
+      const result = await getArtistBySlug('test-artist')
+
+      expect(result?.projects).toEqual([listedProject])
     })
 
     it('should retain an English quote source when fetching English', async () => {

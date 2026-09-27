@@ -80,7 +80,7 @@ export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
       },
       employees: { name: true, title: true, email: true, phone: true, mobile: true },
       repertoire: { title: true, content: true },
-      posts: { title: true, slug: true, image: true, content: true, _status: true },
+      posts: { title: true, slug: true, image: true, content: true, _status: true, unlisted: true },
       documents: { filename: true, url: true, updatedAt: true },
     },
   })
@@ -91,7 +91,8 @@ export const getArtistBySlug = async (slug: string, locale?: LocaleCode) => {
   return {
     ...artist,
     projects: artist.projects?.filter(
-      (project): project is Post => typeof project === 'object' && project !== null && project._status === 'published'
+      (project): project is Post =>
+        typeof project === 'object' && project !== null && project._status === 'published' && project.unlisted !== true
     ),
   }
 }
