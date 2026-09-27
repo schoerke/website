@@ -98,7 +98,8 @@ export const AudioEmbed: Block = {
       validate: validateFileURL,
       hooks: {
         beforeChange: [
-          ({ value }: { value?: string }) => (typeof value === 'string' && value ? normalizeAudioFileUrl(value) : value),
+          ({ value }: { value?: string }) =>
+            typeof value === 'string' && value ? normalizeAudioFileUrl(value) : value,
         ],
       },
     },
