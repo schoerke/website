@@ -20,6 +20,19 @@ Dropbox. Two needs:
 - No changes to the search plugin — Posts are already not indexed there (only
   artists/employees/pages/repertoire are).
 
+## Accepted risk: Payload's generic REST/GraphQL API
+
+All `unlisted` filtering in this spec (`getFilteredPosts`, `getPaginatedPosts`, sitemap,
+`getArtistBySlug`) happens at the service-function query-builder level, not at Payload's `access`
+level. `authenticatedOrPublished` (the Posts `read` access) only checks `_status`, so Payload's
+generic REST (`/api/posts`) and GraphQL endpoints will still list unlisted posts to an anonymous
+caller who queries them directly — `robots.txt` disallows `/api` for crawlers, but that doesn't
+stop a direct fetch by someone who knows to look. This is accepted as out of scope: the client's
+requirement is "not listed anywhere on the site," not "cryptographically inaccessible," and
+building custom `access` logic to hide documents from generic list queries while still allowing
+individual by-slug reads is materially more complex than this feature warrants. If stronger
+guarantees are needed later, revisit with a dedicated access-control design.
+
 ## Part 1: Unlisted posts
 
 ### Field
@@ -134,7 +147,10 @@ migration, or manual DB edit). If that happens, all three `condition`s would eva
 simultaneously, leaving no way to see/clear the unwanted field in the admin UI. `validateFileURL`
 (and the existing two validators) should also enforce a hard rule beyond "empty is OK when a
 sibling is set" — reject the save if **more than one** of the three fields is non-empty, so this
-state can't be persisted in the first place.
+state can't be persisted in the first place. Each field's own error message should name the
+specific conflicting sibling (e.g. "Clear the Embed Code field first") rather than a generic
+message, since if two fields end up simultaneously set, both validators will fire independently
+and the admin needs to know which to clear.
 
 ### Dropbox auto-convert
 
@@ -197,6 +213,12 @@ Payload migration for prod per `docs/patterns/payload.md` — dev schema push (`
 sufficient/safe for the deployed database. Generate with `pnpm payload migrate:create`, review the
 generated `up()`/`down()`, and add the standard idempotency guard (`alreadyApplied()` check) since
 `build:ci` re-runs migrations on every build including previews.
+
+Note: `docs/superpowers/specs/2026-09-20-scheduled-post-publishing-design.md` also touches the
+Posts schema (adds `publishedAt` to versions) and hadn't generated its migration as of this spec's
+writing. Different columns, no real conflict, but whichever feature implements first should run
+`migrate:create` and commit that migration before the other starts, so neither generates a
+migration against a stale view of "current schema."
 
 ## Testing
 
