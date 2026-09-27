@@ -1,13 +1,14 @@
-import * as migration_20260815_125014_artist_repertoire_ordering from './20260815_125014_artist_repertoire_ordering'
-import * as migration_20260816_212049_ensure_employee_email_unique from './20260816_212049_ensure_employee_email_unique'
-import * as migration_20260819_202221_localize_artist_biography_pdf from './20260819_202221_localize_artist_biography_pdf'
-import * as migration_20260820_194949_localize_video_link_label from './20260820_194949_localize_video_link_label'
-import * as migration_20260825_195406_remove_autosave_columns from './20260825_195406_remove_autosave_columns'
-import * as migration_20260825_211420_add_guides_collection from './20260825_211420_add_guides_collection'
-import * as migration_20260827_173327_add_video_links_embed_code from './20260827_173327_add_video_links_embed_code'
-import * as migration_20260828_210415_add_artist_quote_source from './20260828_210415_add_artist_quote_source'
-import * as migration_20260912_191733_add_post_published_date from './20260912_191733_add_post_published_date'
-import * as migration_20260918_181626_add_reset_password_requested_at from './20260918_181626_add_reset_password_requested_at'
+import * as migration_20260815_125014_artist_repertoire_ordering from './20260815_125014_artist_repertoire_ordering';
+import * as migration_20260816_212049_ensure_employee_email_unique from './20260816_212049_ensure_employee_email_unique';
+import * as migration_20260819_202221_localize_artist_biography_pdf from './20260819_202221_localize_artist_biography_pdf';
+import * as migration_20260820_194949_localize_video_link_label from './20260820_194949_localize_video_link_label';
+import * as migration_20260825_195406_remove_autosave_columns from './20260825_195406_remove_autosave_columns';
+import * as migration_20260825_211420_add_guides_collection from './20260825_211420_add_guides_collection';
+import * as migration_20260827_173327_add_video_links_embed_code from './20260827_173327_add_video_links_embed_code';
+import * as migration_20260828_210415_add_artist_quote_source from './20260828_210415_add_artist_quote_source';
+import * as migration_20260912_191733_add_post_published_date from './20260912_191733_add_post_published_date';
+import * as migration_20260918_181626_add_reset_password_requested_at from './20260918_181626_add_reset_password_requested_at';
+import * as migration_20260927_100145_add_posts_unlisted_and_audio_file_url from './20260927_100145_add_posts_unlisted_and_audio_file_url';
 
 export const migrations = [
   {
@@ -60,4 +61,9 @@ export const migrations = [
     down: migration_20260918_181626_add_reset_password_requested_at.down,
     name: '20260918_181626_add_reset_password_requested_at',
   },
-]
+  {
+    up: migration_20260927_100145_add_posts_unlisted_and_audio_file_url.up,
+    down: migration_20260927_100145_add_posts_unlisted_and_audio_file_url.down,
+    name: '20260927_100145_add_posts_unlisted_and_audio_file_url'
+  },
+];
