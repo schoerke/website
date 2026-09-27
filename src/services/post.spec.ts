@@ -870,7 +870,7 @@ describe('Post Service', () => {
   })
 
   describe('getNewsPostCountByArtist', () => {
-    it('should return the count of published news posts for an artist', async () => {
+    it('should return the count of published, non-unlisted news posts for an artist', async () => {
       mockPayload.count = vi.fn().mockResolvedValue({ totalDocs: 5 })
 
       const result = await getNewsPostCountByArtist(42, 'en')
@@ -882,6 +882,7 @@ describe('Post Service', () => {
           categories: { contains: 'news' },
           artists: { equals: 42 },
           _status: { equals: 'published' },
+          unlisted: { not_equals: true },
         },
         locale: 'en',
       })

@@ -190,6 +190,7 @@ export const getNewsPostCountByArtist = async (artistId: number, locale?: 'de' |
       categories: { contains: 'news' },
       artists: { equals: artistId },
       _status: { equals: 'published' },
+      unlisted: { not_equals: true },
     },
     locale: locale || 'de',
   })
