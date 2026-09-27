@@ -385,6 +385,10 @@ export interface Post {
    * Link artists to this post.
    */
   artists?: (number | Artist)[] | null;
+  /**
+   * Hide from news/projects listings, sitemap, and search. Still viewable via direct link.
+   */
+  unlisted?: boolean | null;
   image?: (number | null) | Image;
   /**
    * Override the post date (only dates in the past). Defaults to date created.
@@ -913,6 +917,7 @@ export interface PostsSelect<T extends boolean = true> {
   content?: T;
   categories?: T;
   artists?: T;
+  unlisted?: T;
   image?: T;
   publishedDate?: T;
   createdBy?: T;

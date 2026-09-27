@@ -135,7 +135,7 @@ export const Posts: CollectionConfig = {
     group: 'Content Management',
     useAsTitle: 'title',
     listSearchableFields: ['title', 'normalizedTitle', 'artists.name'],
-    defaultColumns: ['title', 'categories', 'artists', 'publishedDate', '_status', 'updatedAt'],
+    defaultColumns: ['title', 'categories', 'unlisted', 'artists', 'publishedDate', '_status', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) => generatePostPreviewPath({ data, req, collection: 'posts' }) ?? null,
     },
@@ -278,6 +278,19 @@ export const Posts: CollectionConfig = {
         description: {
           en: 'Link artists to this post.',
           de: 'Künstler mit diesem Beitrag verknüpfen.',
+        },
+      },
+    },
+    {
+      name: 'unlisted',
+      type: 'checkbox',
+      defaultValue: false,
+      label: { de: 'Nicht gelistet', en: 'Unlisted' },
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Hide from news/projects listings, sitemap, and search. Still viewable via direct link.',
+          de: 'Aus News-/Projektlisten, Sitemap und Suche ausblenden. Über Direktlink weiterhin sichtbar.',
         },
       },
     },

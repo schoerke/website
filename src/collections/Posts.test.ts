@@ -375,6 +375,24 @@ describe('Posts publishedDate field', () => {
   })
 })
 
+describe('Posts unlisted field', () => {
+  it('configures an unlisted checkbox field defaulting to false', () => {
+    const field = Posts.fields?.find((candidate) => 'name' in candidate && candidate.name === 'unlisted')
+
+    expect(field).toBeDefined()
+    if (!field || !('type' in field) || field.type !== 'checkbox') {
+      throw new Error('unlisted field missing or not typed as checkbox')
+    }
+
+    expect(field.defaultValue).toBe(false)
+    expect(field.admin?.position).toBe('sidebar')
+  })
+
+  it('shows unlisted as an admin list column', () => {
+    expect(Posts.admin?.defaultColumns ?? []).toContain('unlisted')
+  })
+})
+
 describe('normalizedContent hook', () => {
   it('returns empty string when content is undefined', () => {
     expect(runNormalizedContentHook({})).toBe('')
