@@ -67,10 +67,26 @@ default (no code change needed there — just relying on the new default). Since
 `export const dynamicParams = false`, Next.js will render the unlisted post on-demand on first
 request instead of at build time. No other change required.
 
+### Artist "Projects" tab leak (must fix)
+
+`getArtistBySlug` (`src/services/artist.ts`) populates `artist.projects` from the denormalized
+`projects` relationship array (kept in sync by `syncArtistProjects.ts`'s `afterChange` hook on
+Posts), filtering only on `project._status === 'published'`. It does not go through
+`getFilteredPosts`/`getPaginatedPosts`, so an unlisted `projects`-category post currently would
+still render on its linked artist's public "Projects" tab (`ArtistTabs.tsx`) with title, image,
+and a direct link — defeating the whole point of "excluded from listings."
+
+Fix: add `project.unlisted !== true` to `getArtistBySlug`'s existing filter, alongside the
+`_status` check, so unlisted posts are dropped from the artist-page projects list the same way
+unpublished ones are.
+
 ### Out of scope for this change
 
 - Home page news feed / any other list already goes through `getFilteredPosts`/`getPaginatedPosts`
   — covered by the default-exclude behavior above.
+- Existing `revalidatePostOnChange` (`afterChange` hook) already revalidates the post's own page
+  and the news/projects list pages on any field change, including toggling `unlisted` — no new
+  revalidation wiring needed.
 
 ## Part 2: Direct audio file playback
 
@@ -104,8 +120,21 @@ keeping all three mutually exclusive in the UI (matches the existing two-field p
 
 `src/validators/audioFields.ts` gains `validateFileURL`: same shape as `validateAudioURL` /
 `validateEmbedCode` (empty allowed if either sibling field is set; otherwise requires at least one
-of the three) but only checks that the value is a syntactically valid URL — no extension or host
-allowlist. `AudioEmbedBlockFields` interface in `AudioEmbed.ts` gains `fileUrl?: string`.
+of the three) — checks the value is a syntactically valid URL **and** that `url.protocol ===
+'https:'** (same explicit scheme check `validateEmbedCode` already does). No extension or host
+allowlist beyond that. The scheme check matters because `new URL('javascript:...')` and
+`new URL('data:...')` both parse successfully, and this value flows straight into `<audio src>` —
+restricting to `https:` closes that off without needing a host allowlist.
+`AudioEmbedBlockFields` interface in `AudioEmbed.ts` gains `fileUrl?: string`.
+
+**Three-field data integrity:** admin `condition`s are UI-only (same class of gap as the `maxRows`
+footgun noted in `docs/patterns/payload.md`) — they hide fields but don't stop more than one of
+`url`/`embedCode`/`fileUrl` from being non-empty on the stored document (e.g. via API, a bad
+migration, or manual DB edit). If that happens, all three `condition`s would evaluate to "hide"
+simultaneously, leaving no way to see/clear the unwanted field in the admin UI. `validateFileURL`
+(and the existing two validators) should also enforce a hard rule beyond "empty is OK when a
+sibling is set" — reject the save if **more than one** of the three fields is non-empty, so this
+state can't be persisted in the first place.
 
 ### Dropbox auto-convert
 
@@ -115,14 +144,25 @@ New pure function in `src/utils/audio.ts`:
 export function normalizeAudioFileUrl(value: string): string
 ```
 
-- Recognizes `https://www.dropbox.com/...` share links.
-- Rewrites to the direct-stream form by forcing `dl=1` (replacing `dl=0` or appending `dl=1` if
-  the query param is absent), which serves the raw file instead of Dropbox's preview page.
-- Any URL that isn't a `dropbox.com` share link passes through unchanged.
+- Matches `dropbox.com` hosts (`www.dropbox.com` and bare `dropbox.com`) for both known Dropbox
+  share URL shapes: legacy `/s/.../file.ext?...&dl=0` and the current `/scl/fi/...?rlkey=...&dl=0`
+  format.
+- Uses `URL`/`URLSearchParams` to parse and rewrite the query string (not a naive string
+  `replace`), so it correctly handles: no query string at all (append `?dl=1`), other existing
+  params like `rlkey=...` (preserve them, only touch `dl`), and `dl=0` already present (set to
+  `1`).
+- Already-direct links (`dl.dropboxusercontent.com`, or any non-`dropbox.com` host) pass through
+  unchanged — the function only rewrites when the host matches `dropbox.com`/`www.dropbox.com`.
+- Defensive: if the input isn't a parseable URL at all, return it unchanged rather than throwing
+  (this function may run on values that already passed validation, but should not assume that as
+  its only caller forever).
 
 Wired in as a `beforeChange` hook on the `fileUrl` field (via `hooks.beforeChange`, following the
 existing pattern used elsewhere in this file, e.g. `normalizedTitle`), so the stored value is
-already the playable form — admins can paste a normal Dropbox share link as-is.
+already the playable form — admins can paste a normal Dropbox share link as-is. Payload's field
+lifecycle runs `beforeValidate → validate → beforeChange`, so `validateFileURL` always validates
+the raw pasted URL (before normalization), and the normalized value is only what gets persisted —
+no reordering needed, but noted here since it's not obvious from the hook name alone.
 
 ### Frontend rendering
 
@@ -145,13 +185,35 @@ No iframe, no host allowlist, no sandboxing needed — it's a native browser ele
 direct file URL. Falls back to a plain link inside the `<audio>` tag for browsers that don't
 support the element or the file's codec.
 
+A third file also needs updating: `src/components/ui/PayloadRichText.tsx`'s Lexical block
+converter (the `audioEmbed` case, ~line 183) currently destructures only `url` and `embedCode` off
+`node.fields` and passes them to `<AudioEmbed>` — it must also pass through `fileUrl`, or the new
+field will be silently dropped between the block config and the rendered component.
+
+## Migration
+
+New fields (`unlisted` checkbox on Posts, `fileUrl` text on the `AudioEmbed` block) require a
+Payload migration for prod per `docs/patterns/payload.md` — dev schema push (`ALTER TABLE`) is not
+sufficient/safe for the deployed database. Generate with `pnpm payload migrate:create`, review the
+generated `up()`/`down()`, and add the standard idempotency guard (`alreadyApplied()` check) since
+`build:ci` re-runs migrations on every build including previews.
+
 ## Testing
 
 - `Posts.test.ts`: unlisted default false; posts with `unlisted: true` excluded from
-  `getFilteredPosts`/`getPaginatedPosts` by default, included when `includeUnlisted: true`.
+  `getFilteredPosts`/`getPaginatedPosts` by default, included when `includeUnlisted: true`;
+  `getPostBySlug` explicitly still returns an unlisted post unfiltered (this is the crux of the
+  "unlisted, not private" design and should have its own assertion, not just be implied by "no
+  change").
+- `artist.spec.ts` (or wherever `getArtistBySlug` is tested): unlisted project post excluded from
+  `artist.projects`.
 - `sitemap.spec.ts`: unlisted post excluded from generated sitemap entries.
-- `audioFields` validator spec: `validateFileURL` accepts a plain URL, rejects malformed input,
-  allows empty when a sibling field is set.
-- `audio.spec.ts` (new): `normalizeAudioFileUrl` converts `dl=0` → `dl=1`, adds `dl=1` when
-  missing, leaves non-Dropbox URLs untouched.
+- `audioFields` validator spec: `validateFileURL` accepts a valid `https:` URL, rejects
+  non-`https:` schemes (`javascript:`, `data:`, `http:` if excluded), rejects malformed input,
+  allows empty when a sibling field is set, rejects a save where more than one of
+  `url`/`embedCode`/`fileUrl` is non-empty.
+- `audio.spec.ts` (new): `normalizeAudioFileUrl` — table of cases covering `/s/...?dl=0` →
+  `dl=1`, `/scl/fi/...?rlkey=abc&dl=0` → `rlkey=abc&dl=1` (params preserved), no query string →
+  `dl=1` appended, bare `dropbox.com` host, `dl.dropboxusercontent.com` and non-Dropbox URLs left
+  unchanged, malformed input returned as-is.
 - `AudioEmbed.spec.tsx`: new `fileUrl` branch renders an `<audio>` element with the given `src`.
