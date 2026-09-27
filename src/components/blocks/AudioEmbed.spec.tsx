@@ -90,4 +90,34 @@ describe('AudioEmbed', () => {
     const { container } = render(<AudioEmbed />)
     expect(container).toBeEmptyDOMElement()
   })
+
+  it('renders a native audio player for fileUrl', () => {
+    render(<AudioEmbed fileUrl="https://www.dropbox.com/s/abc123/recording.mp3?dl=1" />)
+    const audio = document.querySelector('audio')
+    expect(audio).not.toBeNull()
+    expect(audio?.getAttribute('src')).toBe('https://www.dropbox.com/s/abc123/recording.mp3?dl=1')
+    expect(audio?.hasAttribute('controls')).toBe(true)
+  })
+
+  it('renders a fallback download link inside the audio element', () => {
+    render(<AudioEmbed fileUrl="https://www.dropbox.com/s/abc123/recording.mp3?dl=1" />)
+    const link = screen.getByText('Download audio')
+    expect(link.getAttribute('href')).toBe('https://www.dropbox.com/s/abc123/recording.mp3?dl=1')
+  })
+
+  it('prefers fileUrl over url/embedCode when multiple are somehow set', () => {
+    render(
+      <AudioEmbed
+        fileUrl="https://www.dropbox.com/s/abc123/recording.mp3?dl=1"
+        url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"
+      />
+    )
+    expect(document.querySelector('audio')).not.toBeNull()
+    expect(document.querySelector('iframe')).toBeNull()
+  })
+
+  it('renders nothing when none of url, embedCode, or fileUrl is provided', () => {
+    const { container } = render(<AudioEmbed />)
+    expect(container).toBeEmptyDOMElement()
+  })
 })

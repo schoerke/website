@@ -6,13 +6,24 @@ import { isEmbedHostAllowed } from '@/utils/embeds'
 interface AudioEmbedProps {
   url?: string
   embedCode?: string
+  fileUrl?: string
 }
 
-const AudioEmbed: React.FC<AudioEmbedProps> = ({ url, embedCode }) => {
-  // Block was just inserted and neither field has been filled in yet - this
+const AudioEmbed: React.FC<AudioEmbedProps> = ({ url, embedCode, fileUrl }) => {
+  // Block was just inserted and none of the fields have been filled in yet - this
   // is expected (e.g. while editing in the live preview) and isn't an error.
-  if (!url && !embedCode) {
+  if (!url && !embedCode && !fileUrl) {
     return null
+  }
+
+  if (fileUrl) {
+    return (
+      <div className="my-8">
+        <audio controls className="w-full" src={fileUrl}>
+          <a href={fileUrl}>Download audio</a>
+        </audio>
+      </div>
+    )
   }
 
   if (embedCode) {
