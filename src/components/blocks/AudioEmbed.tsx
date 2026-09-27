@@ -17,9 +17,15 @@ const AudioEmbed: React.FC<AudioEmbedProps> = ({ url, embedCode, fileUrl }) => {
   }
 
   if (fileUrl) {
+    // No iframe, no host allowlist, no sandbox needed here: this points a native <audio>
+    // element's src directly at a file, which can't execute a src as script the way an iframe's
+    // sandboxed document could. `validateFileURL` (src/validators/audioFields.ts) already
+    // restricts this value to https: at save time, unlike the embedCode/url branches below,
+    // which re-validate host/scheme here too because their content renders as script-capable
+    // iframe documents, not a plain media element.
     return (
       <div className="my-8">
-        <audio controls className="w-full" src={fileUrl}>
+        <audio controls className="w-full" src={fileUrl} aria-label="Audio player">
           <a href={fileUrl}>Download audio</a>
         </audio>
       </div>
