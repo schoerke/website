@@ -261,6 +261,7 @@ export const getFilteredPosts = async (options: {
   limit?: number
   locale?: LocaleCode
   publishedOnly?: boolean
+  includeUnlisted?: boolean
   select?: SelectType
   populate?: PopulateType
 }) => {
@@ -271,6 +272,11 @@ export const getFilteredPosts = async (options: {
   // Filter by published status (default: true)
   if (options.publishedOnly !== false) {
     where._status = { equals: 'published' }
+  }
+
+  // Exclude unlisted posts from public listings (default: true)
+  if (options.includeUnlisted !== true) {
+    where.unlisted = { not_equals: true }
   }
 
   // Filter by category
@@ -355,6 +361,7 @@ export const getPaginatedPosts = async (options: {
   limit?: number
   locale?: LocaleCode
   publishedOnly?: boolean
+  includeUnlisted?: boolean
   select?: SelectType
   populate?: PopulateType
 }) => {
@@ -365,6 +372,11 @@ export const getPaginatedPosts = async (options: {
   // Filter by published status (default: true)
   if (options.publishedOnly !== false) {
     where._status = { equals: 'published' }
+  }
+
+  // Exclude unlisted posts from public listings (default: true)
+  if (options.includeUnlisted !== true) {
+    where.unlisted = { not_equals: true }
   }
 
   // Filter by category

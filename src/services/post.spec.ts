@@ -200,7 +200,7 @@ describe('Post Service', () => {
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
-        where: { _status: { equals: 'published' } },
+        where: { _status: { equals: 'published' }, unlisted: { not_equals: true } },
         limit: 100,
         locale: 'de',
         depth: 1,
@@ -218,6 +218,7 @@ describe('Post Service', () => {
         collection: 'posts',
         where: {
           _status: { equals: 'published' },
+          unlisted: { not_equals: true },
           categories: { contains: 'news' },
         },
         limit: 100,
@@ -236,6 +237,7 @@ describe('Post Service', () => {
         collection: 'posts',
         where: {
           _status: { equals: 'published' },
+          unlisted: { not_equals: true },
           categories: { in: ['news', 'projects'] },
         },
         limit: 100,
@@ -254,6 +256,7 @@ describe('Post Service', () => {
         collection: 'posts',
         where: {
           _status: { equals: 'published' },
+          unlisted: { not_equals: true },
           artists: { equals: '123' },
         },
         limit: 100,
@@ -272,6 +275,7 @@ describe('Post Service', () => {
         collection: 'posts',
         where: {
           _status: { equals: 'published' },
+          unlisted: { not_equals: true },
           categories: { contains: 'news' },
           artists: { equals: '123' },
         },
@@ -313,12 +317,33 @@ describe('Post Service', () => {
 
       expect(mockPayload.find).toHaveBeenCalledWith({
         collection: 'posts',
-        where: {},
+        where: { unlisted: { not_equals: true } },
         limit: 100,
         locale: 'de',
         depth: 1,
         sort: ['-publishedDate', '-createdAt'],
       })
+    })
+
+    it('should include unlisted posts when includeUnlisted is true', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ includeUnlisted: true })
+
+      const call = vi.mocked(mockPayload.find).mock.calls[0][0]
+      expect(call.where).not.toHaveProperty('unlisted')
+    })
+
+    it('should exclude unlisted posts even when publishedOnly is false', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getFilteredPosts({ publishedOnly: false, includeUnlisted: false })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ unlisted: { not_equals: true } }),
+        })
+      )
     })
 
     it('should sort by publishedDate with createdAt tie-breaker', async () => {
@@ -506,6 +531,27 @@ describe('Post Service', () => {
           }),
         })
       )
+    })
+
+    it('should exclude unlisted posts by default', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news' })
+
+      expect(mockPayload.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ unlisted: { not_equals: true } }),
+        })
+      )
+    })
+
+    it('should include unlisted posts when includeUnlisted is true', async () => {
+      vi.mocked(mockPayload.find).mockResolvedValue(createMockPaginatedDocs([]))
+
+      await getPaginatedPosts({ category: 'news', includeUnlisted: true })
+
+      const call = vi.mocked(mockPayload.find).mock.calls[0][0]
+      expect(call.where).not.toHaveProperty('unlisted')
     })
 
     it('should use specified locale', async () => {
