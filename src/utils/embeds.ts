@@ -1,4 +1,4 @@
-export const ALLOWED_EMBED_HOSTS = ['rts.ch', 'rsi.ch', 'ardmediathek.de'] as const
+export const ALLOWED_EMBED_HOSTS = ['rts.ch', 'rsi.ch', 'ardmediathek.de', 'soundcloud.com'] as const
 
 /**
  * Returns true when a field value is effectively empty (missing or whitespace-only)

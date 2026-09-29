@@ -39,6 +39,17 @@ describe('isEmbedHostAllowed', () => {
     expect(isEmbedHostAllowed('api.ardmediathek.de')).toBe(true)
   })
 
+  it('allows soundcloud.com (SoundCloud) and its player subdomain', () => {
+    expect(isEmbedHostAllowed('soundcloud.com')).toBe(true)
+    expect(isEmbedHostAllowed('w.soundcloud.com')).toBe(true)
+  })
+
+  it('rejects lookalikes of soundcloud.com', () => {
+    expect(isEmbedHostAllowed('soundcloud.com.evil.com')).toBe(false)
+    expect(isEmbedHostAllowed('not-soundcloud.com')).toBe(false)
+    expect(isEmbedHostAllowed('soundcloudapp.com')).toBe(false)
+  })
+
   it('rejects lookalikes of the new hosts', () => {
     expect(isEmbedHostAllowed('rsi-ch.com')).toBe(false)
     expect(isEmbedHostAllowed('rsi.ch.evil.com')).toBe(false)

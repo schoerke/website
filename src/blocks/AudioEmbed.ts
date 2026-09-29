@@ -17,7 +17,7 @@ export interface AudioEmbedBlockFields {
  *
  * Embeds audio within rich text content. Exactly one of the three fields should be set:
  * - url: Spotify / Apple Music native embeds
- * - embedCode: raw <iframe> snippet from allowlisted providers (e.g. RTS)
+ * - embedCode: raw <iframe> snippet from allowlisted providers (e.g. RTS, SoundCloud)
  * - fileUrl: direct link to an audio file (e.g. a Dropbox share link), played with a native
  *   HTML5 <audio> element
  */
@@ -71,8 +71,8 @@ export const AudioEmbed: Block = {
         placeholder:
           '<iframe src="https://www.rts.ch/play/embed?urn=urn:rts:audio:14033462" width="392" height="58" allowfullscreen></iframe>',
         description: {
-          en: 'Paste an <iframe> embed code from a supported provider (e.g. RTS). If the embed looks cropped or oversized on the site, edit the width/height values in the pasted code and save again.',
-          de: '<iframe>-Einbettungscode eines unterstützten Anbieters einfügen (z. B. RTS). Falls die Einbettung auf der Website abgeschnitten oder zu groß wirkt, die Werte für width/height im eingefügten Code anpassen und erneut speichern.',
+          en: 'Paste an <iframe> embed code from a supported provider (e.g. RTS, SoundCloud). If the embed looks cropped or oversized on the site, edit the width/height values in the pasted code and save again.',
+          de: '<iframe>-Einbettungscode eines unterstützten Anbieters einfügen (z. B. RTS, SoundCloud). Falls die Einbettung auf der Website abgeschnitten oder zu groß wirkt, die Werte für width/height im eingefügten Code anpassen und erneut speichern.',
         },
         condition: (_, siblingData) => !siblingData?.url && !siblingData?.fileUrl,
         rows: 4,

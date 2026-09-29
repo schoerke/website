@@ -49,6 +49,16 @@ describe('AudioEmbed', () => {
     expect(iframe.getAttribute('src')).toBe('https://www.rts.ch/play/embed?urn=urn:rts:audio:14033462')
   })
 
+  it('renders an iframe from a SoundCloud embedCode snippet', () => {
+    const code =
+      '<iframe width="100%" height="166" scrolling="no" frameborder="no" title="Recording" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/123456789&color=%23ff5500"></iframe>'
+    render(<AudioEmbed embedCode={code} />)
+    const iframe = screen.getByTitle('Recording')
+    expect(iframe.getAttribute('src')).toBe(
+      'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/123456789&color=%23ff5500'
+    )
+  })
+
   it('uses the default height when embedCode has no height', () => {
     render(<AudioEmbed embedCode='<iframe src="https://www.rts.ch/play/embed?urn=x"></iframe>' />)
     expect(screen.getByTitle('Audio player').getAttribute('height')).toBe('58')
