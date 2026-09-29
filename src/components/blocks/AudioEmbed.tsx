@@ -6,33 +6,13 @@ import { isEmbedHostAllowed } from '@/utils/embeds'
 interface AudioEmbedProps {
   url?: string
   embedCode?: string
-  fileUrl?: string
 }
 
-const AudioEmbed: React.FC<AudioEmbedProps> = ({ url, embedCode, fileUrl }) => {
-  // Block was just inserted and none of the fields have been filled in yet - this
+const AudioEmbed: React.FC<AudioEmbedProps> = ({ url, embedCode }) => {
+  // Block was just inserted and neither field has been filled in yet - this
   // is expected (e.g. while editing in the live preview) and isn't an error.
-  if (!url && !embedCode && !fileUrl) {
+  if (!url && !embedCode) {
     return null
-  }
-
-  if (fileUrl) {
-    // No iframe, no host allowlist, no sandbox needed here: this points a native <audio>
-    // element's src directly at a file, which can't execute a src as script the way an iframe's
-    // sandboxed document could. `validateFileURL` (src/validators/audioFields.ts) already
-    // restricts this value to https: at save time, unlike the embedCode/url branches below,
-    // which re-validate host/scheme here too because their content renders as script-capable
-    // iframe documents, not a plain media element.
-    return (
-      <div className="my-8">
-        {/* oxlint-disable-next-line jsx-a11y/media-has-caption -- no caption/transcript source
-            exists for an externally-hosted audio file URL (e.g. a Dropbox recording); the field
-            only ever collects a raw link, not a transcript to build a <track> from. */}
-        <audio controls className="w-full" src={fileUrl} aria-label="Audio player">
-          <a href={fileUrl}>Download audio</a>
-        </audio>
-      </div>
-    )
   }
 
   if (embedCode) {
