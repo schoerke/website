@@ -2,6 +2,16 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Superseded (2026-09-29):** Tasks 6-10 (the `fileUrl` field, Dropbox normalizer, native
+> `<audio>` rendering, and their converter wiring) were implemented as written below, then fully
+> removed — Dropbox's CDN proved unreliable on iOS Safari (mislabeled `Content-Type`, and blocks
+> mobile user-agents from the raw file entirely). Replaced by allowlisting SoundCloud's embed
+> player for the pre-existing `embedCode` field. See commits `2099ecc` and `7f84fcc`. Tasks 1-5
+> and 11-12 (the "Unlisted posts" half, plus the `posts.unlisted` migration) remain live and
+> accurate. This plan is kept as historical record for Tasks 6-10; it no longer reflects the
+> current state of `src/blocks/AudioEmbed.ts`, `src/components/blocks/AudioEmbed.tsx`,
+> `src/components/ui/PayloadRichText.tsx`, or `src/validators/audioFields.ts`.
+
 **Goal:** Let staff mark a Post "unlisted" (live but hidden from listings/sitemap/artist pages) and embed a direct audio-file URL (e.g. Dropbox) that plays with a native HTML5 `<audio>` player.
 
 **Architecture:** A new `unlisted` checkbox on the Posts collection is checked by a new `includeUnlisted` option (default `false`) added to every service function that builds a public *list* of posts, plus the two places that were bypassing those service functions (`getArtistBySlug`, `getNewsPostCountByArtist`). Direct single-post lookup (`getPostBySlug`) stays unfiltered on purpose. Separately, the existing `AudioEmbed` Lexical block gains a third mutually-exclusive `fileUrl` field, validated as an `https:` URL, normalized from Dropbox share links to direct-stream form on save, and rendered as a native `<audio controls>` element.

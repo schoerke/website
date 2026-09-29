@@ -2,6 +2,18 @@
 
 Date: 2026-09-27
 
+> **Superseded (2026-09-29):** the "Direct audio file playback" half of this spec (the
+> `fileUrl` field, Dropbox URL normalization, native `<audio>` rendering) was implemented,
+> shipped, then fully removed after real-world testing found Dropbox's CDN unreliable on iOS
+> Safari — it mislabels the served file's `Content-Type` as `application/json`, and separately
+> blocks the direct file for mobile user-agents entirely (serving an HTML interstitial instead).
+> That functionality was replaced by allowlisting SoundCloud's embed player for the existing
+> `embedCode` field (private-track secret links give the same "unguessable URL" privacy model,
+> and SoundCloud's own player handles correct headers/mobile compatibility). See commits
+> `2099ecc` (SoundCloud allowlist) and `7f84fcc` (fileUrl removal). The "Unlisted posts" half of
+> this spec remains live and unaffected. The rest of this document is kept as historical record
+> of the original design and is no longer fully accurate for the audio-playback portion.
+
 ## Problem
 
 Client wants to publish a "private" post embedding an MP3 (radio broadcast recording) hosted on
