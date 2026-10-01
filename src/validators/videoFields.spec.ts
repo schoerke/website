@@ -16,6 +16,12 @@ describe('validateVideoEmbedCode', () => {
     ).toBe(true)
   })
 
+  it('accepts a snippet with an unquoted src attribute', () => {
+    expect(
+      validateVideoEmbedCode('<iframe width="560" height="315" src=https://www.rsi.ch/play/embed?urn=x></iframe>')
+    ).toBe(true)
+  })
+
   it('accepts rts.ch iframes (shared with audio)', () => {
     expect(validateVideoEmbedCode('<iframe src="https://www.rts.ch/play/embed?urn=x"></iframe>')).toBe(true)
   })

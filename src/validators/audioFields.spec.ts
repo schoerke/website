@@ -64,6 +64,12 @@ describe('validateEmbedCode', () => {
     expect(validateEmbedCode('<iframe src="https://www.rts.ch/play/embed?urn=x"></iframe>')).toBe(true)
   })
 
+  it('accepts a real SoundCloud embed snippet with an unquoted src attribute', () => {
+    const soundcloudSnippet =
+      '<iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay; encrypted-media" src=https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%3Atracks%3A2410370775%3Fsecret_token%3Ds-QVkgXjGUlrQ&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true></iframe>'
+    expect(validateEmbedCode(soundcloudSnippet)).toBe(true)
+  })
+
   it('rejects an iframe from a non-allowlisted host', () => {
     expect(validateEmbedCode('<iframe src="https://evil.example.com/x"></iframe>')).toBe(
       'Embed iframe host is not allowed'

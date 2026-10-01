@@ -1,4 +1,4 @@
-import { IFRAME_ATTR, IFRAME_TAG } from '@/utils/audioEmbed'
+import { attrValue, IFRAME_ATTR, IFRAME_TAG } from '@/utils/audioEmbed'
 import { isEmptyField, isEmbedHostAllowed } from '@/utils/embeds'
 
 /**
@@ -103,12 +103,12 @@ export const validateEmbedCode = (value: unknown, { siblingData }: AudioURLConte
   }
 
   const tag = value.match(IFRAME_TAG)?.[0] ?? ''
-  const srcMatch = tag.match(IFRAME_ATTR('src'))
-  if (!srcMatch || !srcMatch[1]) return 'Please enter a valid embed code'
+  const src = attrValue(tag.match(IFRAME_ATTR('src')))
+  if (!src) return 'Please enter a valid embed code'
 
   let url: URL
   try {
-    url = new URL(srcMatch[1])
+    url = new URL(src)
   } catch {
     return 'Please enter a valid embed code'
   }

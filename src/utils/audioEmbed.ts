@@ -122,7 +122,23 @@ export interface ParsedIframe {
 
 export const IFRAME_TAG = /<iframe\b[^>]*>/i
 
-export const IFRAME_ATTR = (name: string) => new RegExp(`(?<![\\w-])${name}\\s*=\\s*["']([^"']*)["']`, 'i')
+/**
+ * Matches `name="value"`, `name='value'`, or the unquoted HTML5 form `name=value`
+ * (terminated by whitespace or `>`) -- e.g. SoundCloud's generated embed code omits
+ * quotes around `src`. Exactly one of the three capture groups will be defined
+ * depending on which form matched; use {@link attrValue} to resolve it.
+ */
+export const IFRAME_ATTR = (name: string) =>
+  new RegExp(`(?<![\\w-])${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i')
+
+/**
+ * Resolves the captured attribute value from an {@link IFRAME_ATTR} match,
+ * regardless of whether the source used double quotes, single quotes, or no
+ * quotes at all.
+ */
+export function attrValue(match: RegExpMatchArray | null): string | undefined {
+  return match?.[1] ?? match?.[2] ?? match?.[3]
+}
 
 /**
  * Extracts src/width/height/title from the first <iframe> tag in a snippet.
@@ -144,19 +160,19 @@ export function parseIframeEmbed(code: string): ParsedIframe | null {
   const tag = code.match(IFRAME_TAG)?.[0] ?? ''
   if (!tag) return null
 
-  const srcMatch = tag.match(IFRAME_ATTR('src'))
-  if (!srcMatch || !srcMatch[1]) return null
+  const src = attrValue(tag.match(IFRAME_ATTR('src')))
+  if (!src) return null
 
   const num = (match: RegExpMatchArray | null): number | undefined => {
-    const n = Number(match?.[1])
+    const n = Number(attrValue(match))
     return Number.isFinite(n) ? n : undefined
   }
 
-  const parsed: ParsedIframe = { src: srcMatch[1] }
+  const parsed: ParsedIframe = { src }
 
   const width = num(tag.match(IFRAME_ATTR('width')))
   const height = num(tag.match(IFRAME_ATTR('height')))
-  const title = tag.match(IFRAME_ATTR('title'))?.[1]
+  const title = attrValue(tag.match(IFRAME_ATTR('title')))
 
   if (width !== undefined) parsed.width = width
   if (height !== undefined) parsed.height = height

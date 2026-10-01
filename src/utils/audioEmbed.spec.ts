@@ -26,6 +26,24 @@ describe('parseIframeEmbed', () => {
     expect(parseIframeEmbed('<iframe width="392" height="58"></iframe>')).toBeNull()
   })
 
+  it('parses an unquoted src attribute (e.g. SoundCloud-generated embed code)', () => {
+    const snippet = `<iframe width="100" height="300" src=https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/123&color=%23ff5500></iframe>`
+    expect(parseIframeEmbed(snippet)).toMatchObject({
+      src: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/123&color=%23ff5500',
+      width: 100,
+    })
+  })
+
+  it('parses unquoted width/height/title attributes', () => {
+    const snippet = `<iframe src="https://www.rts.ch/x" width=392 height=58 title=Concert></iframe>`
+    expect(parseIframeEmbed(snippet)).toEqual({
+      src: 'https://www.rts.ch/x',
+      width: 392,
+      height: 58,
+      title: 'Concert',
+    })
+  })
+
   it('returns null for non-snippet garbage', () => {
     expect(parseIframeEmbed('not an iframe at all')).toBeNull()
     expect(parseIframeEmbed('')).toBeNull()
