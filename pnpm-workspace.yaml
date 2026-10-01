@@ -26,9 +26,19 @@ minimumReleaseAgeExclude:
   - '@payloadcms/translations@3.90.2'
   - '@payloadcms/ui@3.90.2'
   - payload@3.90.2
+  - '@next/env@16.3.8'
+  - '@next/swc-darwin-arm64@16.3.8'
+  - '@next/swc-darwin-x64@16.3.8'
+  - '@next/swc-linux-arm64-gnu@16.3.8'
+  - '@next/swc-linux-arm64-musl@16.3.8'
+  - '@next/swc-linux-x64-gnu@16.3.8'
+  - '@next/swc-linux-x64-musl@16.3.8'
+  - '@next/swc-win32-arm64-msvc@16.3.8'
+  - '@next/swc-win32-x64-msvc@16.3.8'
+  - next@16.3.8
 
 overrides:
-  dompurify: ^3.4.13
+  dompurify: ^3.4.16
   esbuild: ^0.28.1
   js-cookie: ^3.0.7
   ip-address: ^10.5.1
@@ -36,3 +46,4 @@ overrides:
   undici@6: ^6.28.1
   undici@7: ^7.29.1
   fast-uri: ^3.1.7
+  hono: ^4.13.7
