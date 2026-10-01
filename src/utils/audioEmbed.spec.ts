@@ -44,6 +44,15 @@ describe('parseIframeEmbed', () => {
     })
   })
 
+  it('stops an unquoted src right before a self-closing />, without swallowing the slash boundary', () => {
+    expect(parseIframeEmbed('<iframe src=https://www.rts.ch/x/></iframe>')).toMatchObject({
+      src: 'https://www.rts.ch/x/',
+    })
+    expect(parseIframeEmbed('<iframe src=https://www.rts.ch/x />')).toMatchObject({
+      src: 'https://www.rts.ch/x',
+    })
+  })
+
   it('returns null for non-snippet garbage', () => {
     expect(parseIframeEmbed('not an iframe at all')).toBeNull()
     expect(parseIframeEmbed('')).toBeNull()

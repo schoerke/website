@@ -127,6 +127,10 @@ export const IFRAME_TAG = /<iframe\b[^>]*>/i
  * (terminated by whitespace or `>`) -- e.g. SoundCloud's generated embed code omits
  * quotes around `src`. Exactly one of the three capture groups will be defined
  * depending on which form matched; use {@link attrValue} to resolve it.
+ *
+ * The unquoted branch doesn't need to guard against swallowing a following
+ * attribute: HTML always requires whitespace between two attributes regardless
+ * of quoting, so `[^\s>]+` naturally stops at the boundary either way.
  */
 export const IFRAME_ATTR = (name: string) =>
   new RegExp(`(?<![\\w-])${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i')
