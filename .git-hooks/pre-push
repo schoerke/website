@@ -1,4 +1,6 @@
 #!/bin/sh
 set -e
-export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+# mise shims first so the project's pinned tool versions (mise.toml) are used even in a
+# minimal git-hook shell that doesn't source the interactive shell's mise activation.
+export PATH="$HOME/.local/share/mise/shims:/opt/homebrew/bin:/usr/local/bin:$PATH"
 exec pnpm exec tsx scripts/pre-push.ts
