@@ -41,9 +41,6 @@ overrides:
   dompurify: ^3.4.16
   esbuild: ^0.28.1
   js-cookie: ^3.0.7
-  ip-address: ^10.5.1
   nodemailer: ^10.0.2
   undici@6: ^6.28.1
   undici@7: ^7.29.1
-  fast-uri: ^3.1.7
-  hono: ^4.13.7

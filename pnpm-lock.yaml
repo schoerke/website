@@ -8,12 +8,9 @@ overrides:
   dompurify: ^3.4.16
   esbuild: ^0.28.1
   js-cookie: ^3.0.7
-  ip-address: ^10.5.1
   nodemailer: ^10.0.2
   undici@6: ^6.28.1
   undici@7: ^7.29.1
-  fast-uri: ^3.1.7
-  hono: ^4.13.7
 
 importers:
 
@@ -818,7 +815,7 @@ packages:
     resolution: {integrity: sha512-ELuehkj5VCBdgEw9zs+ivkKwyzzUCSQuE96YmiPvn1ECBoZCczbFXJLeEGMTYjphP6gydh4pHMqEYPVMYUVgQg==}
     engines: {node: '>=20'}
     peerDependencies:
-      hono: ^4.13.7
+      hono: ^4
 
   '@icons-pack/react-simple-icons@13.15.1':
     resolution: {integrity: sha512-S35E7vJlJzMeoqjwwI7ZmQUJ2W+2KspnB6bc49KdoDGwp5mCgAy9L3sscfWMewQSMgBdPU8KWWwpSGq5DJyAFw==}
@@ -4514,8 +4511,8 @@ packages:
     resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  nodemailer@10.0.12:
-    resolution: {integrity: sha512-PQ46oNbNMuH/Sno7B5IWIU9etytwrO0xdTFvWXpIQFRXhBAXtzD48243AS+BCbQQTPD8y3fqUrgLn0tSo77gvg==}
+  nodemailer@10.0.13:
+    resolution: {integrity: sha512-SzG86OlvcW/NNhUFC6uROMwRTL4n7MswfQqC/T8mhkmnY1YVa23zUEMYi4ijSeXSl9GLz9ZeTJDUatEDuY5FeQ==}
     engines: {node: '>=20.0.0'}
 
   normalize-path@3.0.0:
@@ -7113,7 +7110,7 @@ snapshots:
 
   '@payloadcms/email-nodemailer@3.90.2(payload@3.90.2(graphql@16.14.2)(supports-color@7.2.0)(typescript@7.0.2))':
     dependencies:
-      nodemailer: 10.0.12
+      nodemailer: 10.0.13
       payload: 3.90.2(graphql@16.14.2)(supports-color@7.2.0)(typescript@7.0.2)
 
   '@payloadcms/email-resend@3.90.2(payload@3.90.2(graphql@16.14.2)(supports-color@7.2.0)(typescript@7.0.2))':
@@ -7176,7 +7173,7 @@ snapshots:
       '@aws-sdk/lib-storage': 3.1037.0(@aws-sdk/client-s3@3.1134.0)
       '@payloadcms/email-nodemailer': 3.90.2(payload@3.90.2(graphql@16.14.2)(supports-color@7.2.0)(typescript@7.0.2))
       amazon-cognito-identity-js: 6.3.16
-      nodemailer: 10.0.12
+      nodemailer: 10.0.13
       payload: 3.90.2(graphql@16.14.2)(supports-color@7.2.0)(typescript@7.0.2)
     transitivePeerDependencies:
       - aws-crt
@@ -9898,7 +9895,7 @@ snapshots:
       fetch-blob: 3.2.0
       formdata-polyfill: 4.0.10
 
-  nodemailer@10.0.12: {}
+  nodemailer@10.0.13: {}
 
   normalize-path@3.0.0: {}
 
