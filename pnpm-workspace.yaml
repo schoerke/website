@@ -38,9 +38,11 @@ minimumReleaseAgeExclude:
   - next@16.3.8
 
 overrides:
+  # CVE-2026-93687 / GHSA-vfj7-8cjw-p6xm: upstream braces 3.0.3 unpatched (micromatch/braces#72 closed).
+  # Guard-only backport of PR #72; preserves 3.0.3 behavior, adds 100-level nesting cap.
+  braces: npm:@dieub/braces-depth-guard@3.0.3-pn.0
   dompurify: ^3.4.16
   esbuild: ^0.28.1
   js-cookie: ^3.0.7
   nodemailer: ^10.0.2
-  undici@6: ^6.28.1
   undici@7: ^7.29.1
