@@ -55,7 +55,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ s
   )
   const hasNews = newsCount > 0
   const hasProjects = (artist.projects ?? []).some((p) => typeof p === 'object' && p !== null)
-  const season = getConcertSeason(new Date())
+  const season = getConcertSeason()
 
   const t = await getTranslations({ locale, namespace: 'custom.pages.artist' })
 
