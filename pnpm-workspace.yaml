@@ -26,23 +26,33 @@ minimumReleaseAgeExclude:
   - '@payloadcms/translations@3.90.2'
   - '@payloadcms/ui@3.90.2'
   - payload@3.90.2
-  - '@next/env@16.3.8'
-  - '@next/swc-darwin-arm64@16.3.8'
-  - '@next/swc-darwin-x64@16.3.8'
-  - '@next/swc-linux-arm64-gnu@16.3.8'
-  - '@next/swc-linux-arm64-musl@16.3.8'
-  - '@next/swc-linux-x64-gnu@16.3.8'
-  - '@next/swc-linux-x64-musl@16.3.8'
-  - '@next/swc-win32-arm64-msvc@16.3.8'
-  - '@next/swc-win32-x64-msvc@16.3.8'
-  - next@16.3.8
+  - '@next/env@16.4.3'
+  - '@next/swc-darwin-arm64@16.4.3'
+  - '@next/swc-darwin-x64@16.4.3'
+  - '@next/swc-linux-arm64-gnu@16.4.3'
+  - '@next/swc-linux-arm64-musl@16.4.3'
+  - '@next/swc-linux-x64-gnu@16.4.3'
+  - '@next/swc-linux-x64-musl@16.4.3'
+  - '@next/swc-win32-arm64-msvc@16.4.3'
+  - '@next/swc-win32-x64-msvc@16.4.3'
+  - next@16.4.3
 
 overrides:
   # CVE-2026-93687 / GHSA-vfj7-8cjw-p6xm: upstream braces 3.0.3 unpatched (micromatch/braces#72 closed).
   # Guard-only backport of PR #72; preserves 3.0.3 behavior, adds 100-level nesting cap.
   braces: npm:@dieub/braces-depth-guard@3.0.3-pn.0
-  dompurify: ^3.4.16
+  '@modelcontextprotocol/sdk': ^1.32.0
+  body-parser: ^2.4.0
+  dompurify: ^3.4.17
   esbuild: ^0.28.1
+  fast-copy: ^3.1.0
+  fast-uri: ^3.1.9
+  happy-dom: ^21.0.4
+  ip-address: ^10.7.4
   js-cookie: ^3.0.7
-  nodemailer: ^10.0.2
-  undici@7: ^7.29.1
+  nodemailer: ^10.1.4
+  postcss-selector-parser: ^6.1.5
+  proxy-addr: ^2.0.8
+  source-map-js: ^1.2.2
+  undici@6: ^6.29.1
+  undici@7: ^7.30.1
