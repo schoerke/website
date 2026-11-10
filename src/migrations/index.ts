@@ -9,6 +9,7 @@ import * as migration_20260828_210415_add_artist_quote_source from './20260828_2
 import * as migration_20260912_191733_add_post_published_date from './20260912_191733_add_post_published_date';
 import * as migration_20260918_181626_add_reset_password_requested_at from './20260918_181626_add_reset_password_requested_at';
 import * as migration_20260927_100145_add_posts_unlisted_and_audio_file_url from './20260927_100145_add_posts_unlisted_and_audio_file_url';
+import * as migration_20261110_205402_payload_3_93 from './20261110_205402_payload_3_93';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20260927_100145_add_posts_unlisted_and_audio_file_url.up,
     down: migration_20260927_100145_add_posts_unlisted_and_audio_file_url.down,
-    name: '20260927_100145_add_posts_unlisted_and_audio_file_url'
+    name: '20260927_100145_add_posts_unlisted_and_audio_file_url',
+  },
+  {
+    up: migration_20261110_205402_payload_3_93.up,
+    down: migration_20261110_205402_payload_3_93.down,
+    name: '20261110_205402_payload_3_93'
   },
 ];
