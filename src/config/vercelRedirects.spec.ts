@@ -17,6 +17,23 @@ interface VercelConfig {
 
 const vercelConfig = JSON.parse(readFileSync(new URL('../../vercel.json', import.meta.url), 'utf8')) as VercelConfig
 
+const ROUTE_ROOTS = ['src/app/(frontend)', 'src/app/(frontend)/[locale]', 'src/app/(payload)', 'src/app/api']
+
+// Reserved names with no route directory of their own: locale prefixes handled by next-intl,
+// framework internals, and well-known static files served by src/app/{robots,sitemap}.ts.
+const NON_ROUTE_SEGMENTS: readonly string[] = ['de', 'en', '_next', 'favicon.ico', 'robots.txt', 'sitemap.xml']
+
+function listDirectoryNames(relativeDir: string): string[] {
+  return readdirSync(join(process.cwd(), relativeDir), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+}
+
+function collectRouteSegments(): string[] {
+  const segments = ROUTE_ROOTS.flatMap(listDirectoryNames)
+  return [...new Set(segments)].filter((name) => !name.startsWith('_') && name !== '[locale]')
+}
+
 describe('vercel.json redirects', () => {
   it('is in sync with the redirect source module', () => {
     expect(vercelConfig.redirects).toEqual(allRedirects)
@@ -87,6 +104,19 @@ describe('vercel.json redirects', () => {
     }
   })
 
+  it('every reserved segment still maps to a real route directory', () => {
+    // Reverse of the test above: a deleted route must not leave its segment reserved forever,
+    // or a legacy WordPress post with that slug would silently 404 instead of redirecting.
+    // Prototype dirs are temporary, so this catches them being removed without the list entry.
+    const routeSegments = collectRouteSegments()
+
+    const staleSegments = RESERVED_SEGMENTS.filter(
+      (segment) => !NON_ROUTE_SEGMENTS.includes(segment) && !routeSegments.includes(segment)
+    )
+
+    expect(staleSegments, `stale RESERVED_SEGMENTS entries (no matching route dir): ${staleSegments}`).toEqual([])
+  })
+
   describe('legacy catch-all regex behavior', () => {
     const catchAllPattern = catchAllRedirects[0].source.replace(/^\/:slug/, '')
     const regex = new RegExp(`^${catchAllPattern}$`)
@@ -115,4 +145,3 @@ describe('vercel.json redirects', () => {
     })
   })
 })
-

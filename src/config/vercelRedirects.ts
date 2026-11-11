@@ -61,6 +61,7 @@ export const RESERVED_SEGMENTS = [
   'featured-quote-font-prototype',
   'performers-list-prototype',
   'performers-list-converter-prototype',
+  'works-list-prototype',
   'favicon.ico',
   'robots.txt',
   'sitemap.xml',

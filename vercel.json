@@ -1800,12 +1800,12 @@
       "statusCode": 301
     },
     {
-      "source": "/:slug((?!(?:de|en|api|admin|_next|preview|artists|news|projects|team|kontakt|contact|impressum|imprint|datenschutz|privacy-policy|brand|artist-links-prototype|featured-quote-font-prototype|performers-list-prototype|performers-list-converter-prototype|favicon\\.ico|robots\\.txt|sitemap\\.xml)$)[^/]+)",
+      "source": "/:slug((?!(?:de|en|api|admin|_next|preview|artists|news|projects|team|kontakt|contact|impressum|imprint|datenschutz|privacy-policy|brand|artist-links-prototype|featured-quote-font-prototype|performers-list-prototype|performers-list-converter-prototype|works-list-prototype|favicon\\.ico|robots\\.txt|sitemap\\.xml)$)[^/]+)",
       "destination": "/de/news",
       "statusCode": 301
     },
     {
-      "source": "/:slug((?!(?:de|en|api|admin|_next|preview|artists|news|projects|team|kontakt|contact|impressum|imprint|datenschutz|privacy-policy|brand|artist-links-prototype|featured-quote-font-prototype|performers-list-prototype|performers-list-converter-prototype|favicon\\.ico|robots\\.txt|sitemap\\.xml)$)[^/]+)/",
+      "source": "/:slug((?!(?:de|en|api|admin|_next|preview|artists|news|projects|team|kontakt|contact|impressum|imprint|datenschutz|privacy-policy|brand|artist-links-prototype|featured-quote-font-prototype|performers-list-prototype|performers-list-converter-prototype|works-list-prototype|favicon\\.ico|robots\\.txt|sitemap\\.xml)$)[^/]+)/",
       "destination": "/de/news",
       "statusCode": 301
     }
